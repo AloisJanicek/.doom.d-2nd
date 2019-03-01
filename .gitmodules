@@ -1,0 +1,3 @@
+[submodule "local/org-protocol-capture-html"]
+	path = local/org-protocol-capture-html
+	url = https://github.com/alphapapa/org-protocol-capture-html.git
