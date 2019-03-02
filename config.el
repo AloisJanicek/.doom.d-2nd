@@ -980,7 +980,7 @@ than having to call `add-to-list' multiple times."
 
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom*shut-up)
-  (dolist (i '(".org" ".pdf" ".epub" ".db"))
+  (dolist (i '("/technical/" "personal" ".pdf" ".epub" ".db" "/.emacs.d/session"))
     (add-to-list 'recentf-exclude i)
     )
   )
