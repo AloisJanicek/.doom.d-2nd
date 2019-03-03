@@ -632,7 +632,7 @@
    ;; settings for export to ical file
    ;; org-M-RET-may-split-line '((default . nil))
    org-complete-tags-always-offer-all-agenda-tags t
-   org-tags-match-list-sublevels 'indented
+   org-tags-match-list-sublevels 'true
    org-tags-exclude-from-inheritance '("crypt" "exclude")
    org-show-context-detail '((agenda . lineage)
                              ;; (org-agenda-goto &optional HIGHLIGHT)
@@ -727,13 +727,12 @@ than having to call `add-to-list' multiple times."
 
   (setq
    org-agenda-files `(,+TASKS ,+CALENDAR, +GOALS)
-   org-agenda-prefix-format '((agenda  . "  %-1t %6e ")
-                              (timeline  . "%s ")
-                              ;; (todo  . "%e ")
-                              (todo  . "  %-1t %6e ")
-                              (tags  . " ")
-                              (search . "%l"))
-
+   org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
+                              (timeline  . "  %-6t %6e ")
+                              (todo      . "  %-6t %6e ")
+                              (tags      . "  %-6t %6e ")
+                              (search    . "%l")
+                              )
    org-agenda-tags-column 68
    org-agenda-category-icon-alist
    `(("GTD" ,(list (all-the-icons-faicon "cogs")) nil nil :ascent center))
@@ -755,103 +754,103 @@ than having to call `add-to-list' multiple times."
    org-agenda-custom-commands
    `(
 
-      ("R" "Today"
-       ((todo ""
-              ((org-agenda-overriding-header "Today")
-               (org-super-agenda-groups
-                '((:name "Priority" :and (:priority "A" :scheduled today))
-                  (:name "Overdue" :scheduled past)
-                  (:name "Other" :scheduled today)
-                  (:discard (:anything t))
-                  ))))
-        (tags "+TODO=\"DONE\""
-              ((org-agenda-overriding-header "Completed")
-               (org-agenda-todo-ignore-scheduled t)
-               (org-agenda-tags-todo-honor-ignore-options t)))))
+     ("R" "Today"
+      ((todo ""
+             ((org-agenda-overriding-header "Today")
+              (org-super-agenda-groups
+               '((:name "Priority" :and (:priority "A" :scheduled today))
+                 (:name "Overdue" :scheduled past)
+                 (:name "Other" :scheduled today)
+                 (:discard (:anything t))
+                 ))))
+       (tags "+TODO=\"DONE\""
+             ((org-agenda-overriding-header " Completed")
+              (org-agenda-todo-ignore-scheduled t)
+              (org-agenda-tags-todo-honor-ignore-options t)))))
 
 
-      ("2" "Deadline this month"
-       ((tags "*"
-              ((org-agenda-overriding-header "Deadline this month")
-               (org-super-agenda-groups
-                '((:name none
-                         :deadline (before ,(return-target-date-for-deadline-agenda)))
-                  (:discard (:anything t))
-                  ))
-               )
-              )))
+     ("2" "Deadline this month"
+      ((tags "*"
+             ((org-agenda-overriding-header "Deadline this month")
+              (org-super-agenda-groups
+               '((:name none
+                        :deadline (before ,(return-target-date-for-deadline-agenda)))
+                 (:discard (:anything t))
+                 ))
+              )
+             )))
 
-      ;; ("R" "Current scheduled"
-      ;;  ((agenda "" ((org-agenda-overriding-header "")
-      ;;               (org-agenda-show-current-time-in-grid t)
-      ;;               (org-agenda-use-time-grid t)
-      ;;               (org-agenda-skip-scheduled-if-done t)
-      ;;               (org-agenda-span 'day)))
-      ;;   (tags "+PRIORITY=\"A\"|+TODO=\"DONE\""
-      ;;         ((org-agenda-overriding-header "Priority")
-      ;;          (org-agenda-todo-ignore-scheduled t)
-      ;;          (org-agenda-tags-todo-honor-ignore-options t))))
-      ;;  ((org-agenda-prefix-format '((agenda  . "  %-5t %6e ")
-      ;;                               (timeline  . "%s ")
-      ;;                               (todo  . " ")
-      ;;                               (tags  . " ")
-      ;;                               (search . "%l")))))
+     ;; ("R" "Current scheduled"
+     ;;  ((agenda "" ((org-agenda-overriding-header "")
+     ;;               (org-agenda-show-current-time-in-grid t)
+     ;;               (org-agenda-use-time-grid t)
+     ;;               (org-agenda-skip-scheduled-if-done t)
+     ;;               (org-agenda-span 'day)))
+     ;;   (tags "+PRIORITY=\"A\"|+TODO=\"DONE\""
+     ;;         ((org-agenda-overriding-header "Priority")
+     ;;          (org-agenda-todo-ignore-scheduled t)
+     ;;          (org-agenda-tags-todo-honor-ignore-options t))))
+     ;;  ((org-agenda-prefix-format '((agenda  . "  %-5t %6e ")
+     ;;                               (timeline  . "%s ")
+     ;;                               (todo  . " ")
+     ;;                               (tags  . " ")
+     ;;                               (search . "%l")))))
 
-      ;; ("T" "Todo (not scheduled)"
-      ;;  ((tags-todo "-PRIORITY=\"A\""
-      ;;              ((org-agenda-overriding-header "")
-      ;;               (org-agenda-todo-ignore-scheduled t)
-      ;;               (org-agenda-tags-todo-honor-ignore-options t))))
-      ;;  ((org-agenda-prefix-format '((agenda  . "  %-5t %6e ")
-      ;;                               (timeline  . "%s ")
-      ;;                               (todo  . " ")
-      ;;                               (tags  . " ")
-      ;;                               (search . "%l")))))
+     ;; ("T" "Todo (not scheduled)"
+     ;;  ((tags-todo "-PRIORITY=\"A\""
+     ;;              ((org-agenda-overriding-header "")
+     ;;               (org-agenda-todo-ignore-scheduled t)
+     ;;               (org-agenda-tags-todo-honor-ignore-options t))))
+     ;;  ((org-agenda-prefix-format '((agenda  . "  %-5t %6e ")
+     ;;                               (timeline  . "%s ")
+     ;;                               (todo  . " ")
+     ;;                               (tags  . " ")
+     ;;                               (search . "%l")))))
 
-      ("T" "Todos"
-       ((todo ""
-              ((org-agenda-overriding-header "Todos")
-               (org-agenda-sorting-strategy
-                '((agenda habit-down time-up priority-down category-keep)
-                  (todo   effort-up)
-                  (tags   priority-up category-keep)
-                  (search category-keep)))
-               (org-super-agenda-groups
-                '((:discard (:scheduled t))
-                  (:name "Not scheduled"
-                         :auto-parent t)))))))
+     ("T" "Todos"
+      ((tags "+Todo=\"TODO\"|+TODO=\"DONE\""
+             ((org-agenda-overriding-header "Todos")
+              (org-agenda-sorting-strategy
+               '((agenda habit-down time-up priority-down category-keep)
+                 (todo   effort-up)
+                 (tags   priority-up category-keep)
+                 (search category-keep)))
+              (org-super-agenda-groups
+               '((:discard (:scheduled t))
+                 (:name "Not scheduled"
+                        :auto-parent t)))))))
 
 
-      ("i" "Inbox" ((tags "*"))
-       ((org-agenda-files `(,+INBOX))
-        (org-tags-match-list-sublevels t)
-        (org-agenda-skip-entry-if 'todo)
-        (org-agenda-hide-tags-regexp "INBOX")
-        (org-agenda-skip-scheduled-if-done t)
-        ))
+     ("i" "Inbox" ((tags "*"))
+      ((org-agenda-files `(,+INBOX))
+       (org-tags-match-list-sublevels t)
+       (org-agenda-skip-entry-if 'todo)
+       (org-agenda-hide-tags-regexp "INBOX")
+       (org-agenda-skip-scheduled-if-done t)
+       ))
 
-      ("s" "Someday" ((tags "*"))
-       ((org-agenda-files `(,+SOMEDAY))
-        (org-tags-match-list-sublevels t)
-        (org-agenda-skip-entry-if 'todo)
-        (org-agenda-hide-tags-regexp "INBOX")
-        (org-agenda-skip-scheduled-if-done t)
-        ))
+     ("s" "Someday" ((tags "*"))
+      ((org-agenda-files `(,+SOMEDAY))
+       (org-tags-match-list-sublevels t)
+       (org-agenda-skip-entry-if 'todo)
+       (org-agenda-hide-tags-regexp "INBOX")
+       (org-agenda-skip-scheduled-if-done t)
+       ))
 
-      ("C" "Current project" ((tags "+LEVEL=1+CATEGORY=\"TASKS\"
+     ("C" "Current project" ((tags "+LEVEL=1+CATEGORY=\"TASKS\"
                                     |+LEVEL=2+CATEGORY=\"TASKS\""))
-       ((org-agenda-files (aj/return-project-org-file))
-        (org-agenda-overriding-header (aj/return-short-project-name))))
+      ((org-agenda-files (aj/return-project-org-file))
+       (org-agenda-overriding-header (aj/return-short-project-name))))
 
 
-      ("p" "Projectile Projects" ((todo ""))
-       ((org-agenda-files `,(get-all-projectile-README-org-files))
-        (org-agenda-overriding-header "All Projectile projects")
-        (org-super-agenda-groups
-         '((:name "Projects"
-                  :auto-group t)))))
+     ("p" "Projectile Projects" ((todo ""))
+      ((org-agenda-files `,(get-all-projectile-README-org-files))
+       (org-agenda-overriding-header "All Projectile projects")
+       (org-super-agenda-groups
+        '((:name "Projects"
+                 :auto-group t)))))
 
-      )
+     )
    )
   )
 
