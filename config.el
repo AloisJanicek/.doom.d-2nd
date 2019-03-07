@@ -1175,5 +1175,7 @@ than having to call `add-to-list' multiple times."
                           (dolist (file org-files)
                             (find-file-noselect file))
                           (persp-remove-buffer +persp-blacklist)
+                          (load! "~/.emacs.d/.local/custom.el")
                           (message "Org files loaded and ready!")
                           ))))
+
