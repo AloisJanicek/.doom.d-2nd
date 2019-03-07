@@ -6,6 +6,7 @@
 (set-popup-rule! "*backtrace\*" :size 0.4 :side 'right :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
 
+(def-package! ahk-mode)
 
 (def-package! all-the-icons-ivy
   :after ivy
