@@ -6,6 +6,9 @@
 ;; https://github.com/emacs-mirror/emacs/commit/2fde6275b69fd113e78243790bf112bbdd2fe2bf
 (defalias 'format-proper-list-p 'proper-list-p)
 (advice-add 'projectile-cleanup-known-projects :around #'doom*shut-up)
+;; fix for quelpa on Windows...
+(if IS-WINDOWS
+    (setq-default quelpa-build-tar-executable "c:/Program Files/Emacs/x86_64/bin/tar.exe"))
 
 (doom! :feature
        ;; debugger          ; stepping through code, to help you add bugs
