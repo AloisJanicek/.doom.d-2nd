@@ -1167,15 +1167,14 @@ than having to call `add-to-list' multiple times."
   )
 
 ;; lets load some org files...
-(make-thread
- (run-with-idle-timer 10 nil
-                      (lambda ()
-                        (let* ((persp-autokill-buffer-on-remove nil))
-                          (message "Loading org files...")
-                          (dolist (file org-files)
-                            (find-file-noselect file))
-                          (persp-remove-buffer +persp-blacklist)
-                          (load! "~/.emacs.d/.local/custom.el")
-                          (message "Org files loaded and ready!")
-                          ))))
-
+;; (make-thread
+;;  (run-with-idle-timer 10 nil
+;;                       (lambda ()
+;;                         (let* ((persp-autokill-buffer-on-remove nil))
+;;                           (message "Loading org files...")
+;;                           (dolist (file org-files)
+;;                             (find-file-noselect file))
+;;                           (persp-remove-buffer +persp-blacklist)
+;;                           (load! "~/.emacs.d/.local/custom.el")
+;;                           (message "Org files loaded and ready!")
+;;                           ))))
