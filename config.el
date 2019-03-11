@@ -325,6 +325,11 @@
   ;; (advice-add  #'+ivy-projectile-find-file-transformer :override #'+ivy-projectile-find-file-combined-transformer)
   )
 
+(after! doom-modeline
+  ;; Remove global-mode-string (misc-info) from doom-modeline
+  (advice-add '+modeline-indent-segment :after 'aj/remove-global-mode-string-from-modeline)
+  )
+
 (after! epa
   (setq epa-pinentry-mode 'ask))
 

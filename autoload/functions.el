@@ -1750,3 +1750,22 @@ point to the end of the line."
     ;; A hack that seems to work fine.  Yay, Postel!
     (format "%d-%02d-%02d" year month (1+ last-day-of-month))
     ))
+
+;;;###autoload
+(defun aj/remove-global-mode-string-from-modeline ()
+  "Remove global-mode-string (misc-info) from doom-modeline"
+    (doom-modeline-def-modeline 'main
+      '(bar window-number matches buffer-info remote-host buffer-position selection-info)
+      ;; '(misc-info persp-name irc mu4e github debug indent input-method buffer-encoding lsp major-mode process vcs checker))
+      '(persp-name irc mu4e github debug indent input-method buffer-encoding lsp major-mode process vcs checker))
+
+    (doom-modeline-def-modeline 'special
+      '(bar window-number matches buffer-info-simple buffer-position selection-info)
+      ;; '(misc-info persp-name debug input-method irc-buffers buffer-encoding lsp major-mode process checker))
+      '(persp-name debug input-method irc-buffers buffer-encoding lsp major-mode process checker))
+
+    (doom-modeline-def-modeline 'project
+      '(bar window-number buffer-default-directory)
+      ;; '(misc-info mu4e github debug fancy-battery " " major-mode))
+      '(mu4e github debug fancy-battery " " major-mode))
+  )
