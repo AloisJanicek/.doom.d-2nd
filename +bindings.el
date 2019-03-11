@@ -13,10 +13,10 @@
  ;; "M-9"   (λ! (+workspace/switch-to 8))
  ;; "M-0"   #'+workspace/switch-to-last
  ;; "M-t"   #'+workspace/new
- "C-k" #'evil-window-up
- "C-j" #'evil-window-down
- "C-h" #'evil-window-left
- "C-l" #'evil-window-right
+ :ni "C-k" #'evil-window-up
+ :ni "C-j" #'evil-window-down
+ :ni "C-h" #'evil-window-left
+ :ni "C-l" #'evil-window-right
  :i     "C-'"       #'forward-char
  :i     "C-;"       #'backward-char
  :i     "M-y"       #'counsel-yank-pop
