@@ -1,6 +1,6 @@
 ;;; ~/.doom.d/+bindings.el -*- lexical-binding: t; -*-
 
-;; global
+;;global
 (map!
  ;; "M-1"   (λ! (+workspace/switch-to 0))
  ;; "M-2"   (λ! (+workspace/switch-to 1))
@@ -44,7 +44,6 @@
    :n "k" #'avy-goto-line-above
    )
  )
-
 
 ;; modes
 (map!
@@ -440,7 +439,6 @@
    :map +popup-buffer-mode-map
    "C-l"  #'evil-window-right
    )
-
  (:after web-mode
    (:map web-mode-map
      (:localleader
@@ -449,7 +447,6 @@
        )
      )
    )
-
  (:after css-mode
    (:map css-mode-map
      (:localleader
@@ -458,7 +455,6 @@
        )
      )
    )
-
  (:after js2-mode
    (:map js2-mode-map
      (:localleader
@@ -467,7 +463,6 @@
        )
      )
    )
-
  (:after treemacs
    (:map treemacs-mode-map
      :iemnv "C-k" #'evil-window-up
@@ -487,194 +482,192 @@
      )
    )
  )
+
 ;; leader
-(map!
- :leader
- :desc "ivy-resume"                      "=" #'ivy-resume
- :desc "workspace" :prefix "TAB"
- :desc "Save session as"                 "S" #'aj/save-session-as
- :desc "Save session"                    "a" #'+workspace/save-session
-
-
- (:prefix ("q" . "quit")
-   :desc "Ask to save and quit"     "a" #'evil-quit-all
-   )
- ;; :prefix ("e" . "")
- (:prefix ("r" . "remote")
-   :desc "backup"                   "b" #'aj/my-backup
-   )
- (:prefix ("t" . "toggle")
-   :desc "light/dark theme"         "t" #'aj/toggle-doom-theme
-   :desc "Themes"                   "T" #'counsel-load-theme
-   :desc "Modeline"                 "m" #'hide-mode-line-mode
-   :desc "Flyspell"                 "s" #'aj/enable-flyspell-check-if-prog
-   ;; :desc "Swap dictionaries"        "S" (λ! (aj/swap-two-ispell-dicts "english" "czech"))
-   :desc "Swap dictionaries"        "S" (λ! (ispell-change-dictionary "czech"))
-   :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
-   )
- (:prefix ("y" . "yankpad")
-   :desc "yankpad: repeat" "y" #'yankpad-reapt
-   :desc "insert"          "i" #'yankpad-insert
-   :desc "capture"         "c" #'yankpad-capture-snippet
-   :desc "edit"            "e" #'yankpad-edit
-   :desc "reload"          "r" #'yankpad-reload
-   :desc "append category" "a" #'yankpad-append-category
-   :desc "set category"    "s" #'yankpad-append-category
-   )
- ;; universal argument     "u"
- (:prefix ("i" . "insert")
-   :desc "entity"                   "e" #'counsel-org-entity
-   :desc "unicode"                  "u" #'counsel-unicode-char
-   :desc "bash history"             "h" #'counsel-yank-bash-history
-   )
- (:prefix ("o" . "open")
-   (:prefix ("c" . "calibre")
-     :desc "cs"    "c" (λ! (aj/open-calibre-book (concat +Libraries "ComputerScience/")))
-     :desc "webdev"     "w" (λ! (aj/open-calibre-book (concat +Libraries "Webdev/")))
-     :desc "library"    "l" (λ! (aj/open-calibre-book (concat +Libraries "Library/")))
-     :desc "personal"   "p" (λ! (aj/open-calibre-book (concat +Libraries "Personal/")))
-     )
-   :desc "link"                     "o" #'link-hint-open-link
-   :desc "Agenda"                   "A" #'org-agenda
-   :desc "agenda"                   "a" #'gtd-agenda/body
-   :desc "App: Podcast"             "p" #'podcaster
-   :desc "App: MPD"                 "m" (λ! (let ((hydra-lv nil)) (aj/mpd-control/body)))
-   ;; :desc "Clock"                    "c" #'aj/clock-menu
-   :desc "Imenu-list"               "i" #'aj/open-imenu-sidebar
-   ;; :desc "Links"                    "l" #'aj/bookmarks
-   :desc "GTD"                      "g" #'aj/gtd/body
-   ;; :desc "GTD"                      "g" (λ! (let ((hydra-lv nil)) (aj/gtd/body)))
-   :desc "Sidebar"                   "s" #'+treemacs/toggle
-   )
- (:prefix ("p" . "project")
-   :desc "Agenda"                   "a" #'aj/project
-   :desc "bootstrap"                "B" #'aj/project-bootstrap
-   :desc "directories"              "d" #'counsel-projectile-find-dir
-   :desc "files"                    "f" #'counsel-projectile-find-file
-   :desc "buffer"                   "b" #'counsel-projectile-switch-to-buffer
-   :desc "Capture"                  "x" #'aj/org-projectile-capture-for-current-project
-   :desc "invalidate cache"         "i" #'projectile-invalidate-cache
-   :desc "P README"                 "p" #'aj/better-open-current-projectile-org-file
-   :desc "Switch"                   "s" #'counsel-projectile-switch-project
-   :desc "Add"                      "A" #'aj/projectile-add-known-project-and-save
-   :desc "Services"                 "t" #'prodigy
-   :desc "set variable"             "v" #'projectile-edit-dir-locals
-   :desc "Remove"                   "R" #'projectile-remove-known-project
-   :desc "grep"                     "g" #'+ivy/project-search
-   )
- ;; previous               "["
- ;; next                   "]"
- :desc "clock"     "\\" (λ! (let ((hydra-lv nil)) (aj/clocking/body)))
- :desc "agenda"    "a" #'gtd-agenda/body
- (:prefix ("s" . "snippet")
-   :desc "Preview"                  "p" #'ivy-yasnippet
-   )
- (:prefix ("d" . "dict")
-   :desc "word/stardict"            "s" #'sdcv-search-pointer
-   :desc "input/stardict"           "i" #'sdcv-search-input
-   :desc "online"                   "o" #'define-word
-   :desc "online/point"             "p" #'define-word-at-point
-   :desc "webster"                  "w" #'browse-webster-at-point
-   :desc "synosaurus"               "j" #'synosaurus-lookup
-   :desc "synosaurus"               "r" #'synosaurus-choose-and-replace
-   :desc "wordnut"                  "k" #'wordnut-lookup-current-word
-   :desc "google at point"          "g" #'google-translate-at-point
-   :desc "google at point reverse:" "G" #'google-translate-at-point-reverse
-   :desc "dictionary"               "d" #'browse-dictionary-at-point
-   )
- (:prefix ("f" . "file")
-   :desc "ag-cwd"                   "g" (λ! (+ivy/ag-from-cwd t))
-   :desc "ag-project"               "G" #'+ivy/ag
-   :desc "rg-cwd"                   "h" (λ! (+ivy/rg-from-cwd t))
-   :desc "rg-project"               "H" #'+ivy/rg
-   :desc "file"                     "f" #'counsel-find-file
-   :desc "jump org"                 "o" #'aj/jump-to-org-dir
-   :desc "jump file"                "j" #'counsel-file-jump
-   :desc "jump dir"                 "k" #'counsel-dired-jump
-   )
- (:desc "Follow"                    "F" #'link-hint-open-link)
- (:prefix "g"
-   :desc "/log"                     "/" #'counsel-git-log
-   )
- (:prefix "h"
-   :desc "helpful-symbol"           "a" #'helpful-symbol
-   :desc "update-diff"              "u" #'obsoke/ediff-dotfile-and-template
-   :desc "Info"                     "i" #'info
-   :desc "Info on symbol"           "I" #'counsel-info-lookup-symbol
-   :desc "Manual"                   "m" #'man
-   :desc "Echo"                     "e" #'view-echo-area-messages
-   :desc "Pop on error"             "P" #'toggle-debug-on-error
-   :desc "Dash docset"              "/" #'counsel-dash
-   :desc "Zeal at point"            "z" #'zeal-at-point
-   :desc "Zeal search"              "s" #'zeal-at-point-search
-   :desc "Zeal set buffer docset"   "Z" #'zeal-at-point-set-docset
-   :desc "Describe DOOM setting"    "S" #'doom/describe-setters
-   )
- (:prefix ("j" . "jump")
-   :desc "file"                     "f" #'counsel-file-jump
-   :desc "session"                  "S" #'+workspace/load-session
-   :desc "workspace"                "i" #'+workspace/switch-to
-   :desc "window"                   "o" #'ace-select-window
-   :desc "shell-buffer"             "s" #'counsel-switch-to-shell-buffer
-   :desc "word"                     "w" #'evil-avy-goto-word-1
-   :desc "Reference"                "r" (λ! (counsel-find-file "~/Reference"))
-   :desc "line"                     "l" #'evil-avy-goto-line
-   :desc "directory"                "d" #'counsel-dired-jump
-   :desc "view"                     "v" #'ivy-switch-view
-   :desc "clock"                    "c" #'org-clock-jump-to-current-clock
-   :desc "buffer"                   "b" #'counsel-ibuffer
-   :desc "project bookmark"         "p" #'counsel-projectile-bookmark
-   )
- ;; :desc "capture"   "k" (λ! (let ((hydra-lv nil)) (aj/capture/body)))
- :desc "capture" "k" (λ! (org-capture nil "c"))
- (:prefix ("l" . "link")
-   :desc "Org-store-link"           "s" #'org-store-link
-   :desc "Org-copy-link"            "c" #'my-org-retrieve-url-from-point
-   :desc "Open"                     "f" #'link-hint-open-link
-   :desc "Open all links"           "a" #'link-hint-open-all-links
-   :desc "Copy"                     "c" #'link-hint-copy-link
-   :desc "Copy all links"           "C" #'link-hint-copy-all-links
-   )
- ;; evil-ex                ";"
- :desc "popup"     "'" #'+popup/toggle
- ;; (:desc "zzzzzzzz" :prefix "z" )
- ;; scratch-buffer         "x"
- (:prefix ("c" . "code")
-   :desc "eval-last-sexp"           "s" #'eval-last-sexp
-   :desc "macro-expand"             "m" #'macrostep-expand
-   :desc "imenu-outline"            "o" #'counsel-imenu
-   ;;          :desc "Help in Dashdocs"      "h" #'counsel-dash
-   :desc "Help in Dashdocs"         "h" (lambda! (progn (require 'helm-dash) (counsel-dash)))
-   :desc "Info about error"         "i" #'flycheck-explain-error-at-point
-   )
- (:prefix ("v" . "view")
-   :desc "brain-visualize"          "v" #'org-brain-visualize
-   :desc "jump"                     "j" #'ivy-switch-view
-   :desc "save"                     "s" #'ivy-push-view
-   :desc "pop"                      "p" #'ivy-pop-view
-   )
- (:prefix ("b" . "buffer")
-   :desc "List"                     "l" #'ibuffer-list-buffers
-   :desc "Kill buffers"             "K" #'kill-buffer
-   )
- (:prefix ("n" . "notes")
-   :desc "notes"        "n" (λ! (aj/choose-note-to-indirect +TECHNICAL))
-   :desc "org-dir"      "o" (λ! (aj/choose-note-to-indirect org-directory))
-   :desc "personal"        "p" (λ! (aj/choose-note-to-indirect +PERSONAL))
-   :desc "grep"         "g" (λ! (+ivy/rg nil nil org-directory))
-   ;; :desc "visualize" "v" #'aj/visualize-brain-and-take-care-of-buffers
-   :desc "visualize"    "v" #'org-brain-visualize
-   :desc  "brain-goto" "b" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
-   :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
-   :desc "feed"         "f" #'elfeed
-   :desc "wikipedia"    "w" #'helm-wikipedia-suggest
-   )
- ;; (:desc "mmmmmmmm" :prefix "m" )
- ;; switch buffer          ","
- :desc "Switch buffer"            "," #'persp-switch-to-buffer
- ;; find file              ","
- (:prefix ("/" . "search")
-   :desc "Swiper"                   "/" #'aj/my-swiper
-   )
-
- )  
+(map! :leader
+      :desc "ivy-resume"                      "=" #'ivy-resume
+      (:prefix ("TAB")
+        :desc "Save session as"                 "S" #'aj/save-session-as
+        :desc "Save session"                    "a" #'+workspace/save-session
+        )
+      (:prefix ("q" . "quit")
+        :desc "Ask to save and quit"     "a" #'evil-quit-all
+        )
+      ;; :prefix ("e" . "")
+      (:prefix ("r" . "remote")
+        :desc "backup"                   "b" #'aj/my-backup
+        )
+      (:prefix ("t" . "toggle")
+        :desc "light/dark theme"         "t" #'aj/toggle-doom-theme
+        :desc "Themes"                   "T" #'counsel-load-theme
+        :desc "Modeline"                 "m" #'hide-mode-line-mode
+        :desc "Flyspell"                 "s" #'aj/enable-flyspell-check-if-prog
+        ;; :desc "Swap dictionaries"        "S" (λ! (aj/swap-two-ispell-dicts "english" "czech"))
+        :desc "Swap dictionaries"        "S" (λ! (ispell-change-dictionary "czech"))
+        :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
+        )
+      (:prefix ("y" . "yankpad")
+        :desc "yankpad: repeat" "y" #'yankpad-reapt
+        :desc "insert"          "i" #'yankpad-insert
+        :desc "capture"         "c" #'yankpad-capture-snippet
+        :desc "edit"            "e" #'yankpad-edit
+        :desc "reload"          "r" #'yankpad-reload
+        :desc "append category" "a" #'yankpad-append-category
+        :desc "set category"    "s" #'yankpad-append-category
+        )
+      ;; universal argument     "u"
+      (:prefix ("i" . "insert")
+        :desc "entity"                   "e" #'counsel-org-entity
+        :desc "unicode"                  "u" #'counsel-unicode-char
+        :desc "bash history"             "h" #'counsel-yank-bash-history
+        )
+      (:prefix ("o" . "open")
+        (:prefix ("c" . "calibre")
+          :desc "cs"    "c" (λ! (aj/open-calibre-book (concat +Libraries "ComputerScience/")))
+          :desc "webdev"     "w" (λ! (aj/open-calibre-book (concat +Libraries "Webdev/")))
+          :desc "library"    "l" (λ! (aj/open-calibre-book (concat +Libraries "Library/")))
+          :desc "personal"   "p" (λ! (aj/open-calibre-book (concat +Libraries "Personal/")))
+          )
+        :desc "link"                     "o" #'link-hint-open-link
+        :desc "Agenda"                   "A" #'org-agenda
+        :desc "agenda"                   "a" #'gtd-agenda/body
+        :desc "App: Podcast"             "p" #'podcaster
+        :desc "App: MPD"                 "m" (λ! (let ((hydra-lv nil)) (aj/mpd-control/body)))
+        ;; :desc "Clock"                    "c" #'aj/clock-menu
+        :desc "Imenu-list"               "i" #'aj/open-imenu-sidebar
+        ;; :desc "Links"                    "l" #'aj/bookmarks
+        :desc "GTD"                      "g" #'aj/gtd/body
+        ;; :desc "GTD"                      "g" (λ! (let ((hydra-lv nil)) (aj/gtd/body)))
+        :desc "Sidebar"                   "s" #'+treemacs/toggle
+        )
+      (:prefix ("p" . "project")
+        :desc "Agenda"                   "a" #'aj/project
+        :desc "bootstrap"                "B" #'aj/project-bootstrap
+        :desc "directories"              "d" #'counsel-projectile-find-dir
+        :desc "files"                    "f" #'counsel-projectile-find-file
+        :desc "buffer"                   "b" #'counsel-projectile-switch-to-buffer
+        :desc "Capture"                  "x" #'aj/org-projectile-capture-for-current-project
+        :desc "invalidate cache"         "i" #'projectile-invalidate-cache
+        :desc "P README"                 "p" #'aj/better-open-current-projectile-org-file
+        :desc "Switch"                   "s" #'counsel-projectile-switch-project
+        :desc "Add"                      "A" #'aj/projectile-add-known-project-and-save
+        :desc "Services"                 "t" #'prodigy
+        :desc "set variable"             "v" #'projectile-edit-dir-locals
+        :desc "Remove"                   "R" #'projectile-remove-known-project
+        :desc "grep"                     "g" #'+ivy/project-search
+        )
+      ;; previous               "["
+      ;; next                   "]"
+      :desc "clock"     "\\" (λ! (let ((hydra-lv nil)) (aj/clocking/body)))
+      :desc "agenda"    "a" #'gtd-agenda/body
+      (:prefix ("s" . "snippet")
+        :desc "Preview"                  "p" #'ivy-yasnippet
+        )
+      (:prefix ("d" . "dict")
+        :desc "word/stardict"            "s" #'sdcv-search-pointer
+        :desc "input/stardict"           "i" #'sdcv-search-input
+        :desc "online"                   "o" #'define-word
+        :desc "online/point"             "p" #'define-word-at-point
+        :desc "webster"                  "w" #'browse-webster-at-point
+        :desc "synosaurus"               "j" #'synosaurus-lookup
+        :desc "synosaurus"               "r" #'synosaurus-choose-and-replace
+        :desc "wordnut"                  "k" #'wordnut-lookup-current-word
+        :desc "google at point"          "g" #'google-translate-at-point
+        :desc "google at point reverse:" "G" #'google-translate-at-point-reverse
+        :desc "dictionary"               "d" #'browse-dictionary-at-point
+        )
+      (:prefix ("f" . "file")
+        :desc "ag-cwd"                   "g" (λ! (+ivy/ag-from-cwd t))
+        :desc "ag-project"               "G" #'+ivy/ag
+        :desc "rg-cwd"                   "h" (λ! (+ivy/rg-from-cwd t))
+        :desc "rg-project"               "H" #'+ivy/rg
+        :desc "file"                     "f" #'counsel-find-file
+        :desc "jump org"                 "o" #'aj/jump-to-org-dir
+        :desc "jump file"                "j" #'counsel-file-jump
+        :desc "jump dir"                 "k" #'counsel-dired-jump
+        )
+      (:desc "Follow"                    "F" #'link-hint-open-link)
+      (:prefix "g"
+        :desc "/log"                     "/" #'counsel-git-log
+        )
+      (:prefix "h"
+        :desc "helpful-symbol"           "a" #'helpful-symbol
+        :desc "update-diff"              "u" #'obsoke/ediff-dotfile-and-template
+        :desc "Info"                     "i" #'info
+        :desc "Info on symbol"           "I" #'counsel-info-lookup-symbol
+        :desc "Manual"                   "m" #'man
+        :desc "Echo"                     "e" #'view-echo-area-messages
+        :desc "Pop on error"             "P" #'toggle-debug-on-error
+        :desc "Dash docset"              "/" #'counsel-dash
+        :desc "Zeal at point"            "z" #'zeal-at-point
+        :desc "Zeal search"              "s" #'zeal-at-point-search
+        :desc "Zeal set buffer docset"   "Z" #'zeal-at-point-set-docset
+        :desc "Describe DOOM setting"    "S" #'doom/describe-setters
+        )
+      (:prefix ("j" . "jump")
+        :desc "file"                     "f" #'counsel-file-jump
+        :desc "session"                  "S" #'+workspace/load-session
+        :desc "workspace"                "i" #'+workspace/switch-to
+        :desc "window"                   "o" #'ace-select-window
+        :desc "shell-buffer"             "s" #'counsel-switch-to-shell-buffer
+        :desc "word"                     "w" #'evil-avy-goto-word-1
+        :desc "Reference"                "r" (λ! (counsel-find-file "~/Reference"))
+        :desc "line"                     "l" #'evil-avy-goto-line
+        :desc "directory"                "d" #'counsel-dired-jump
+        :desc "view"                     "v" #'ivy-switch-view
+        :desc "clock"                    "c" #'org-clock-jump-to-current-clock
+        :desc "buffer"                   "b" #'counsel-ibuffer
+        :desc "project bookmark"         "p" #'counsel-projectile-bookmark
+        )
+      ;; :desc "capture"   "k" (λ! (let ((hydra-lv nil)) (aj/capture/body)))
+      :desc "capture" "k" (λ! (org-capture nil "c"))
+      (:prefix ("l" . "link")
+        :desc "Org-store-link"           "s" #'org-store-link
+        :desc "Org-copy-link"            "c" #'my-org-retrieve-url-from-point
+        :desc "Open"                     "f" #'link-hint-open-link
+        :desc "Open all links"           "a" #'link-hint-open-all-links
+        :desc "Copy"                     "c" #'link-hint-copy-link
+        :desc "Copy all links"           "C" #'link-hint-copy-all-links
+        )
+      ;; evil-ex                ";"
+      :desc "popup"     "'" #'+popup/toggle
+      ;; (:desc "zzzzzzzz" :prefix "z" )
+      ;; scratch-buffer         "x"
+      (:prefix ("c" . "code")
+        :desc "eval-last-sexp"           "s" #'eval-last-sexp
+        :desc "macro-expand"             "m" #'macrostep-expand
+        :desc "imenu-outline"            "o" #'counsel-imenu
+        ;;          :desc "Help in Dashdocs"      "h" #'counsel-dash
+        :desc "Help in Dashdocs"         "h" (lambda! (progn (require 'helm-dash) (counsel-dash)))
+        :desc "Info about error"         "i" #'flycheck-explain-error-at-point
+        )
+      (:prefix ("v" . "view")
+        :desc "brain-visualize"          "v" #'org-brain-visualize
+        :desc "jump"                     "j" #'ivy-switch-view
+        :desc "save"                     "s" #'ivy-push-view
+        :desc "pop"                      "p" #'ivy-pop-view
+        )
+      (:prefix ("b" . "buffer")
+        :desc "List"                     "l" #'ibuffer-list-buffers
+        :desc "Kill buffers"             "K" #'kill-buffer
+        )
+      (:prefix ("n" . "notes")
+        :desc "notes"        "n" (λ! (aj/choose-note-to-indirect +TECHNICAL))
+        :desc "org-dir"      "o" (λ! (aj/choose-note-to-indirect org-directory))
+        :desc "personal"        "p" (λ! (aj/choose-note-to-indirect +PERSONAL))
+        :desc "grep"         "g" (λ! (+ivy/rg nil nil org-directory))
+        ;; :desc "visualize" "v" #'aj/visualize-brain-and-take-care-of-buffers
+        :desc "visualize"    "v" #'org-brain-visualize
+        :desc  "brain-goto" "b" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
+        :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
+        :desc "feed"         "f" #'elfeed
+        :desc "wikipedia"    "w" #'helm-wikipedia-suggest
+        )
+      ;; "m" is localleader
+      ;; switch buffer          ","
+      :desc "Switch buffer"            "," #'persp-switch-to-buffer
+      ;; find file              ","
+      (:prefix ("/" . "search")
+        :desc "Swiper"                   "/" #'aj/my-swiper
+        )
+      )
