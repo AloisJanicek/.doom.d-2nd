@@ -1733,16 +1733,6 @@ point to the end of the line."
   (replace-string (org-get-heading t t t t) label))
 
 ;;;###autoload
-(defun  ivy-rich--ivy-switch-buffer-transformer ()
-  "Dirty hack, could not figure-out why this thing isn't defined somewhere."
-  nil)
-
-;;;###autoload
-(defun  +agenda*change-all-lines-fixface(a b)
-  "Dirty hack, could not figure-out why this thing isn't defined somewhere."
-  nil)
-
-;;;###autoload
 (defun return-target-date-for-deadline-agenda ()
   "Return date representing end of the current month, use it for org-agendas."
   (-let* (((sec minute hour day month year dow dst utcoff) (decode-time))

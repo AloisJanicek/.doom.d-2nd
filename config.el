@@ -506,30 +506,6 @@
   (setq ivy-posframe-width 120)
   )
 
-(after! ivy-rich
-  (ivy-set-display-transformer 'counsel-recentf '+ivy-recentf-combined-transformer)
-  (setq ivy-rich--display-transformers-list
-        '(
-          counsel-M-x
-          (:columns
-           ((counsel-M-x-transformer (:width 40))
-            (ivy-rich-counsel-function-docstring (:face font-lock-doc-face :width 80))))
-          counsel-describe-function
-          (:columns
-           ((counsel-describe-function-transformer (:width 40))
-            (ivy-rich-counsel-function-docstring (:face font-lock-doc-face :width 80))))
-          counsel-describe-variable
-          (:columns
-           ((counsel-describe-variable-transformer (:width 40))
-            (ivy-rich-counsel-variable-docstring (:face font-lock-doc-face :width 80))))
-          counsel-bookmark
-          (:columns
-           ((ivy-rich-bookmark-type)       ; return the file type of the bookmark target
-            (ivy-rich-candidate (:width 0.2))   ; return the bookmark name
-            (ivy-rich-bookmark-info)))  ; return the true name of the related file
-          ))
-  )
-
 (after! js2-mode
   (add-hook 'js2-mode-hook (lambda () (setq-local counsel-dash-docsets '("JavaScript" "HTML" "CSS"))))
   (add-hook 'js2-mode-hook 'eslintd-fix-mode)
@@ -714,7 +690,6 @@ than having to call `add-to-list' multiple times."
   (advice-add #'aj/org-agenda-refile-to-file :after #'aj/take-care-of-org-buffers)
   (advice-add #'aj/org-agenda-refile-to-datetree :after #'aj/take-care-of-org-buffers)
   (advice-add #'aj/org-agenda-refile-to-project-readme :after #'aj/take-care-of-org-buffers)
-  (advice-add 'org-agenda-change-all-lines :before '+agenda*change-all-lines-fixface)
   (advice-add 'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add 'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add 'org-agenda-set-effort :after #'org-save-all-org-buffers)
