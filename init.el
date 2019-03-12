@@ -178,12 +178,6 @@
 (defvar +Libraries nil
   "Location of Calibre libraries.")
 
-(defvar +GTD "~/org/inbox.org"
-  "File where all stuff is captured.")
-
-(defvar +MAYBE "~/org/inbox.org"
-  "File where all stuff is captured.")
-
 (defvar +TASKS "~/org/tasks.org"
   "File where things must be done.")
 
