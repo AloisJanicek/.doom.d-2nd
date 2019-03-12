@@ -190,7 +190,7 @@
 (defvar +SOMEDAY "~/org/someday.org"
   "File where things must be done.")
 
-(defvar +JOURNAL "~/org/journal.org"
+(defvar +JOURNAL "~/org/archive/journal.org"
   "File where things are logged.")
 
 (defvar +GOALS "~/org/goals.org"

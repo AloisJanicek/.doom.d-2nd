@@ -707,7 +707,8 @@ than having to call `add-to-list' multiple times."
   (remove-hook 'org-agenda-finalize-hook '+org|cleanup-agenda-files)
 
   (setq
-   org-agenda-files `(,+TASKS ,+CALENDAR, +GOALS)
+   ;; org-agenda-files `(,+TASKS ,+CALENDAR, +GOALS)
+   org-agenda-files `(,org-directory)
    org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
                               (timeline  . "  %-6t %6e ")
                               (todo      . "  %-6t %6e ")
@@ -858,6 +859,10 @@ than having to call `add-to-list' multiple times."
 
                            ("c" "Capture" entry (file ,+INBOX)
                             "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
+                            :empty-lines 1)
+
+                           ("t" "Task" entry (file ,+TASKS)
+                            "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
                             :empty-lines 1)
 
                            ("P" "Project task" entry (file+headline ,(concat (projectile-project-root) "README.org") "TASKS")
@@ -1054,17 +1059,18 @@ than having to call `add-to-list' multiple times."
 (defhydra aj/capture ()
   "Capture:"
   ;; ("i" (org-capture nil "i") "issue" :exit t)
-  ("c" ((lambda () (let ((hydra-lv nil)) (aj/capture-code/body)))) "code:" :exit t)
-  ("i" (org-capture nil "i") "issue" :exit t)
-  ("k" (org-capture nil "gi") "inbox" :exit t)
-  ("e" (org-capture nil "ge") "env" :exit t)
-  ("j" (org-capture nil "gj") "job" :exit t)
-  ("d" (org-capture nil "gd") "education" :exit t)
-  ("p" (org-capture nil "gp") "personal" :exit t)
-  ("f" (org-capture nil "gf") "profession" :exit t)
-  ("j" (org-capture nil "e") "journal" :exit t)
-  ("C" (aj/calendar-the-right-way) "CAL:" :exit t)
-  ("P" (aj/capture-into-project) "into project:" :exit t)
+  ;; ("c" ((lambda () (let ((hydra-lv nil)) (aj/capture-code/body)))) "code:" :exit t)
+  ("k" (org-capture nil "c") "inbox" :exit t)
+  ("t" (org-capture nil "t") "task" :exit t)
+  ;; ("k" (org-capture nil "gi") "inbox" :exit t)
+  ;; ("e" (org-capture nil "ge") "env" :exit t)
+  ;; ("j" (org-capture nil "gj") "job" :exit t)
+  ;; ("d" (org-capture nil "gd") "education" :exit t)
+  ;; ("p" (org-capture nil "gp") "personal" :exit t)
+  ;; ("f" (org-capture nil "gf") "profession" :exit t)
+  ;; ("j" (org-capture nil "e") "journal" :exit t)
+  ;; ("C" (aj/calendar-the-right-way) "CAL:" :exit t)
+  ;; ("P" (aj/capture-into-project) "into project:" :exit t)
   )
 
 ;; Main hydra for GTD related operations
