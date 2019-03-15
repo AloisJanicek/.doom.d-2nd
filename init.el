@@ -257,7 +257,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
       org-directory "~/org/"
       +org-attach-dir "attach/"
       +org-export-dir "export"
-      +file-templates-dir "~/org/templates"
+      +file-templates-dir (concat org-directory "templates")
       doom-font                   (font-spec :family "Iosevka SS08" :size 16)
       doom-big-font               (font-spec :family "Iosevka SS08" :size 24)
       doom-variable-pitch-font    (font-spec :family "Roboto" :size 16)
