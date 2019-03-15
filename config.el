@@ -832,11 +832,11 @@ than having to call `add-to-list' multiple times."
 
                            ("c" "Capture" entry (file ,+INBOX)
                             "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
-                            :empty-lines 1)
+                            :empty-lines 1 :prepend t)
 
                            ("t" "Task" entry (file ,+TASKS)
                             "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
-                            :empty-lines 1)
+                            :empty-lines 1 :prepend t)
 
                            ("P" "Project task" entry (file+headline ,(concat (projectile-project-root) "README.org") "TASKS")
                             "* [ ] %?" :prepend t)
