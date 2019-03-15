@@ -762,33 +762,6 @@ than having to call `add-to-list' multiple times."
               )
              )))
 
-     ;; ("R" "Current scheduled"
-     ;;  ((agenda "" ((org-agenda-overriding-header "")
-     ;;               (org-agenda-show-current-time-in-grid t)
-     ;;               (org-agenda-use-time-grid t)
-     ;;               (org-agenda-skip-scheduled-if-done t)
-     ;;               (org-agenda-span 'day)))
-     ;;   (tags "+PRIORITY=\"A\"|+TODO=\"DONE\""
-     ;;         ((org-agenda-overriding-header "Priority")
-     ;;          (org-agenda-todo-ignore-scheduled t)
-     ;;          (org-agenda-tags-todo-honor-ignore-options t))))
-     ;;  ((org-agenda-prefix-format '((agenda  . "  %-5t %6e ")
-     ;;                               (timeline  . "%s ")
-     ;;                               (todo  . " ")
-     ;;                               (tags  . " ")
-     ;;                               (search . "%l")))))
-
-     ;; ("T" "Todo (not scheduled)"
-     ;;  ((tags-todo "-PRIORITY=\"A\""
-     ;;              ((org-agenda-overriding-header "")
-     ;;               (org-agenda-todo-ignore-scheduled t)
-     ;;               (org-agenda-tags-todo-honor-ignore-options t))))
-     ;;  ((org-agenda-prefix-format '((agenda  . "  %-5t %6e ")
-     ;;                               (timeline  . "%s ")
-     ;;                               (todo  . " ")
-     ;;                               (tags  . " ")
-     ;;                               (search . "%l")))))
-
      ("T" "Todos"
       ((tags "+Todo=\"TODO\"|+TODO=\"DONE\""
              ((org-agenda-overriding-header "Todos")
