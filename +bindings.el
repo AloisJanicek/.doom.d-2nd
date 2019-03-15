@@ -190,6 +190,7 @@
          :desc "Pomodoro"     "p" #'org-pomodoro
          )
 
+       "b" nil
        (:desc "Babel"        :prefix          "b"
          :desc "tangle"           "t" #'org-babel-tangle
          :desc "execute"          "e" #'org-babel-execute-src-block
@@ -200,11 +201,13 @@
          :desc "eXecute ALL"          "e" #'org-babel-execute-src-block
          )
 
+       "T" nil
        (:desc "Toggle"        :prefix        "T"
          :desc "heading"          "h" #'org-toggle-heading
          :desc "item"             "i" #'org-toggle-item
          )
 
+       "l" nil
        (:desc "Link"        :prefix           "l"
          :desc "store"            "s" #'org-store-link
          :desc "insert"           "i" #'org-insert-link
