@@ -1000,7 +1000,8 @@ than having to call `add-to-list' multiple times."
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
   ("m" (org-agenda nil "2") "month")
-  ("t" (org-agenda nil "T") "todos")
+  ("t" (org-agenda nil "t") "todos")
+  ("p" (org-agenda nil "T") "projects")
   ("i" (org-agenda nil "i") "inbox")
   ("s" (org-agenda nil "s") "someday")
   )
