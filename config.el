@@ -291,6 +291,8 @@
 (after! avy
   (setq avy-all-windows t
         avy-background t))
+(after! calendar
+  (setq calendar-week-start-day 1))
 
 (after! css-mode
   (add-hook 'css-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS"))))
@@ -314,10 +316,10 @@
   (set-popup-rule! "^\\*ivy-occur" :size 0.70 :ttl 0 :quit nil)
   (advice-add #'ivy-rich--ivy-switch-buffer-transformer :override #'+ivy-combined-buffer-transformer)
   (advice-add #'counsel-org-goto-bookmarks :after #'aj/take-care-of-org-buffers)
-  (advice-add #'counsel-org-tag-agenda :after #'(lambda ()
-                                                  (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
-                                                  (org-agenda-redo)
-                                                  ))
+  ;; (advice-add #'counsel-org-tag-agenda :after #'(lambda ()
+  ;;                                                 (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
+  ;;                                                 (org-agenda-redo)
+  ;;                                                 ))
   )
 
 (after! counsel-projectile
