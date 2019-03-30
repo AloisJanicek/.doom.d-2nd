@@ -51,6 +51,7 @@
   :init (add-to-list 'doom-large-file-modes-list 'ereader-mode)
   :config
   (add-hook 'ereader-mode-hook 'hide-mode-line-mode)
+  (add-hook 'ereader-mode-hook 'visual-line-mode)
   (add-hook 'ereader-mode-hook 'turn-off-solaire-mode)
   )
 
