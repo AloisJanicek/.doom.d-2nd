@@ -567,6 +567,7 @@
   )
 
 (after! org
+  (load! "+cool-agenda.el")
   (set-popup-rule! "^\\*org-brain\\*$"    :size 0.24 :side 'left  :vslot -2 :select t :quit nil :ttl nil               :autosave t)
   (set-popup-rule! "^CAPTURE.*\\.org$"    :size 0.4  :side 'bottom          :select t                                  :autosave t)
   (set-popup-rule! "^\\*Org Src"          :size 0.4  :side 'right           :select t :quit t                          :autosave t)
@@ -776,6 +777,36 @@ than having to call `add-to-list' multiple times."
                '((:discard (:scheduled t))
                  (:name "Not scheduled"
                         :auto-parent t)))))))
+     ("g" "gtd"
+      (
+
+       (agenda ""
+               ((org-agenda-overriding-header "")
+                (org-agenda-show-current-time-in-grid t)
+                (org-agenda-use-time-grid t)
+                (org-agenda-skip-scheduled-if-done nil)
+                (org-agenda-span 'day)
+                ))
+       (+agenda-tasks)
+       )
+      (
+       (org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
+       (org-agenda-tags-todo-honor-ignore-options t)
+       (org-agenda-todo-ignore-scheduled 'all)
+       (org-agenda-todo-ignore-deadlines 'far)
+       (org-agenda-skip-scheduled-if-done t)
+       (org-agenda-start-with-log-mode t)
+       (org-agenda-skip-deadline-if-done t)
+       (org-agenda-skip-scheduled-if-deadline-is-shown t)
+       (org-agenda-clockreport-parameter-plist `(:link t :maxlevel 6 :fileskip0 t :compact t :narrow 100))
+       (org-agenda-columns-add-appointments-to-effort-sum t)
+       (org-agenda-dim-blocked-tasks nil)
+       (org-agenda-todo-list-sublevels nil)
+       (org-agenda-block-separator "")
+       (org-agenda-time-grid '((daily today require-timed) nil " " " "))
+       )
+      )
+
 
 
      ("i" "Inbox" ((tags "*"))
@@ -998,7 +1029,7 @@ than having to call `add-to-list' multiple times."
 
 (defhydra gtd-agenda (:color blue
                              :body-pre
-                             (org-agenda nil "R"))
+                             (org-agenda nil "g"))
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
   ("m" (org-agenda nil "2") "month")
