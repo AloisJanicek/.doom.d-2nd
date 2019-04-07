@@ -589,6 +589,7 @@
         :desc "jump org"                 "o" #'aj/jump-to-org-dir
         :desc "jump file"                "j" #'counsel-file-jump
         :desc "jump dir"                 "k" #'counsel-dired-jump
+        :desc "recent"                   "r" #'counsel-recentf
         )
       (:desc "Follow"                    "F" #'link-hint-open-link)
       (:prefix "g"
