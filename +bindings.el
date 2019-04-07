@@ -167,6 +167,7 @@
          :desc "headline"           "h" #'counsel-org-goto
          )
        :desc "Wiki"       "w" #'aj/org-menu-and-goto
+       "r" nil
        (:desc "Refile:"       :prefix         "r"
          :desc "file"          "f" #'aj/refile-to-file
          :desc "targets"       "t" #'org-refile
@@ -215,7 +216,7 @@
          :desc "list"             "l" #'aj/insert-link-into-org-list-item
          :desc "open"             "o" #'org-open-at-point
          )
-
+       "f" nil
        (:desc "footnote"          :prefix     "f"
          :desc "action"             "a" #'org-footnote-action
          )
