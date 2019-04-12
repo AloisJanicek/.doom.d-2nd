@@ -624,8 +624,8 @@
         :desc "buffer"                   "b" #'counsel-ibuffer
         :desc "project bookmark"         "p" #'counsel-projectile-bookmark
         )
-      :desc "capture"   "k" (λ! (let ((hydra-lv nil)) (aj/capture/body)))
-      ;; :desc "capture" "k" (λ! (org-capture nil "c"))
+      ;; :desc "capture"   "k" (λ! (let ((hydra-lv nil)) (aj/capture/body)))
+      :desc "capture" "k" (λ! (aj/capture/body))
       (:prefix ("l" . "link")
         :desc "Org-store-link"           "s" #'org-store-link
         :desc "Org-copy-link"            "c" #'my-org-retrieve-url-from-point
