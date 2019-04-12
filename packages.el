@@ -65,8 +65,6 @@
 (package! ivy-pages :recipe (:fetcher github :repo "igorepst/ivy-pages")
   )
 
-(package! ivy-rich :recipe (:fetcher github :repo "Yevgnen/ivy-rich" :branch "customize" :files ("*")))
-
 (package! ivy-yasnippet
   :recipe (:fetcher github :repo "mkcms/ivy-yasnippet"))
 

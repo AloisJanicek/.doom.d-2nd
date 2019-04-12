@@ -488,7 +488,6 @@
   )
 
 (after! ivy
-  (ivy-rich-mode)
   (setq ivy-height 40)
   (require 'map)
   (map-put! ivy-display-functions-alist 't 'ivy-posframe-display-at-frame-center)
