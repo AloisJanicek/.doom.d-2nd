@@ -274,6 +274,7 @@
   ;; (add-to-list 'hippie-expand-try-functions-list #'yankpad-expand)
   )
 
+(def-package! xah-css-mode)
 (def-package! zeal-at-point
   :commands (zeal-at-point zeal-at-point-search zeal-at-point-set-docset)
   :config
@@ -299,6 +300,7 @@
   (add-hook 'css-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS"))))
   (add-hook 'scss-mode-hook (lambda () (setq-local counsel-dash-docsets '("Sass" "HTML" "CSS"))))
   (set-face-attribute 'css-selector nil :foreground "#E06C75")
+  (set-face-attribute 'css-property nil :foreground "#ECBE7B")
   )
 
 (after! cus-edit

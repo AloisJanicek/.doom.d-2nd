@@ -139,6 +139,7 @@
   )
 
 (package! xml+)
+(package! xah-css-mode :recipe (:fetcher github :repo "xahlee/xah-css-mode"))
 
 (package! zeal-at-point
   :recipe (:fetcher github :repo "jinzhu/zeal-at-point")
