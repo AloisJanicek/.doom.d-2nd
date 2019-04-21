@@ -82,7 +82,7 @@
        flycheck
        flyspell
        gist              ; interacting with github gists
-       ;;lsp
+       ;; lsp
        ;; macos             ; MacOS-specific commands
        ;; make              ; run make tasks from Emacs
        magit             ;
@@ -114,7 +114,9 @@
        ;; (haskell +intero) ; a language that's lazier than I am
        ;; hy                ; readability of scheme w/ speed of python
        ;; (java +meghanada) ; the poster child for carpal tunnel syndrome
-       javascript        ; all(hope(abandon(ye(who(enter(here))))))
+       (javascript        ; all(hope(abandon(ye(who(enter(here))))))
+        ;; +lsp
+        )
        ;; julia             ; a better, faster MATLAB
        ;; latex             ; writing papers in Emacs has never been so fun
        ;; ledger            ; an accounting system in Emacs
@@ -145,7 +147,9 @@
         )        ; she sells (ba|z|fi)sh shells on the C xor
        ;; solidity          ; do you need a blockchain? No.
        ;; swift             ; who asked for emoji variables?
-       web               ; the tubes
+       (web               ; the tubes
+        ;; +lsp
+        )
        ;;vala              ; GObjective-C
 
        ;; Applications are complex and opinionated modules that transform Emacs

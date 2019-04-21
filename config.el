@@ -297,7 +297,9 @@
 
 (after! css-mode
   (add-hook 'css-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS"))))
-  (add-hook 'scss-mode-hook (lambda () (setq-local counsel-dash-docsets '("Sass" "HTML" "CSS")))))
+  (add-hook 'scss-mode-hook (lambda () (setq-local counsel-dash-docsets '("Sass" "HTML" "CSS"))))
+  (set-face-attribute 'css-selector nil :foreground "#E06C75")
+  )
 
 (after! cus-edit
   (set-popup-rule! "*Customize\*"                   :size 0.4 :side 'left :select t :transient nil))
@@ -360,6 +362,12 @@
 
 (after! emmet-mode
 ;;; run remaping function before entering emmet-preview
+  (setq
+   ;; emmet-move-cursor-after-expanding nil
+   ;;      emmet-move-cursor-between-quotes nil
+   ;; emmet-preview-default t
+   )
+
   (advice-add 'emmet-preview :before 'aj/remap-emmet)
   (defadvice emmet-preview-accept (after emmet-after activate) (aj/indent-if-not-webmode)))
 
@@ -534,6 +542,10 @@
           ;; ("." . gk-browse-url)
           ("." . browse-url-chromium)
           ))
+  )
+
+(after! lsp
+  (setq lsp-ui-sideline-enable nil)
   )
 
 (after! magit
@@ -1008,7 +1020,8 @@ than having to call `add-to-list' multiple times."
   (add-hook 'web-mode-hook 'my-web-mode-hook)
   (add-hook 'web-mode-hook 'er/add-web-mode-expansions)
   (add-hook 'web-mode-hook 'flycheck-mode)
-  (setq web-mode-enable-current-element-highlight t)
+  (setq web-mode-enable-current-element-highlight t
+        web-mode-auto-close-style 1)
   (set-face-attribute 'web-mode-current-element-highlight-face nil :background "#21242b" :foreground "#51afef")
   (set-face-attribute 'web-mode-html-attr-equal-face nil :foreground "#5B6268")
   (set-face-attribute 'web-mode-html-tag-bracket-face nil :foreground "#5B6268")

@@ -445,6 +445,7 @@
    )
  (:after web-mode
    (:map web-mode-map
+     :i "M-r" #'aj/mark-region-and-preview-emmet
      (:localleader
        :desc "dash at point" "." #'+lookup/in-docsets
        :desc "docsets at point" ">" #'+lookup/in-devdocs
