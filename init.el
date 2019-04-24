@@ -36,20 +36,20 @@
        ;;deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does
        doom-dashboard    ; a nifty splash screen for Emacs
-       ;; doom-modeline     ; a snazzy Atom-inspired mode-line
        doom-quit         ; DOOM quit-message prompts when you quit Emacs
-       evil-goggles      ; display visual hints when editing in evil
-       ;; fci               ; a `fill-column' indicator
+       ;;fill-column       ; a `fill-column' indicator
        hl-todo           ; highlight todo/fixme/note tags
+       ;;indent-guides     ; highlighted indent columns
        modeline          ; snazzy, Atom-inspired modeline, plus API
        nav-flash         ; blink the current line after jumping
        ;; neotree           ; a project drawer, like NERDTree for vim
-       treemacs          ; a project drawer, like neotree but cooler
+       ophints           ; highlight the region an operation acts on
        (popup            ; tame sudden yet inevitable temporary windows
         +all             ; catch all popups that start with an asterix
         +defaults)       ; default popup rules
        ;; pretty-code       ; replace bits of code with pretty symbols
        ;; tabbar            ;  an (incomplete) tab bar for Emacs
+       treemacs          ; a project drawer, like neotree but cooler
        ;; unicode           ; extended unicode support for various languages
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
@@ -65,7 +65,7 @@
 
        :emacs
        (dired            ; making dired pretty [functional]
-       +ranger         ; bringing the goodness of ranger to dired
+       ;; +ranger         ; bringing the goodness of ranger to dired
        +icons          ; colorful icons for dired-mode
         )
        electric   ; smarter, keyword-based electric-indent
@@ -97,6 +97,7 @@
        ;;vterm             ; another terminals in Emacs
 
        :lang
+       ;;agda              ; types of types of types of types...
        ;; assembly          ; assembly for fun or debugging
        ;; (cc +irony +rtags); C/C++/Obj-C madness
        ;; clojure           ; java with a lisp
@@ -113,6 +114,7 @@
        ;; go                ; the hipster dialect
        ;; (haskell +intero) ; a language that's lazier than I am
        ;; hy                ; readability of scheme w/ speed of python
+       ;;idris             ;
        ;; (java +meghanada) ; the poster child for carpal tunnel syndrome
        (javascript        ; all(hope(abandon(ye(who(enter(here))))))
         ;; +lsp
@@ -130,7 +132,9 @@
         +babel           ; running code in org
         +capture         ; org-capture in and outside of Emacs
         +export          ; Exporting org to whatever you want
-        +present)        ; Emacs for presentations
+        +habit           ; Keep track of your habits
+        +present         ; Emacs for presentations
+        +protocol)       ; Support for org-protocol:// links
        ;; perl              ; write code no one else can comprehend
        ;; php               ; perl's insecure younger brother
        ;; plantuml          ; diagrams for confusing people more
@@ -147,6 +151,7 @@
         )        ; she sells (ba|z|fi)sh shells on the C xor
        ;; solidity          ; do you need a blockchain? No.
        ;; swift             ; who asked for emoji variables?
+       ;;terra             ; Earth and Moon in alignment for performance.
        (web               ; the tubes
         ;; +lsp
         )
