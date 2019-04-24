@@ -300,7 +300,7 @@
   (add-hook 'css-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS"))))
   (add-hook 'scss-mode-hook (lambda () (setq-local counsel-dash-docsets '("Sass" "HTML" "CSS"))))
   (set-face-attribute 'css-selector nil :foreground "#E06C75")
-  (set-face-attribute 'css-property nil :foreground "#ECBE7B")
+  ;; (set-face-attribute 'css-property nil :foreground "#ECBE7B")
   )
 
 (after! cus-edit
