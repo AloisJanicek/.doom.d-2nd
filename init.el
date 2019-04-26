@@ -10,18 +10,7 @@
 (if IS-WINDOWS
     (setq-default quelpa-build-tar-executable "c:/Program Files/Emacs/x86_64/bin/tar.exe"))
 
-(doom! :feature
-       ;; debugger          ; stepping through code, to help you add bugs
-       eval              ; run code, run (also, repls)
-       (evil +everywhere); come to the dark side, we have cookies
-       file-templates    ; auto-snippets for empty files
-       (lookup           ; helps you navigate your code and documentation
-        +devdocs         ; ...on devdocs.io online
-        +docsets)        ; ...or in Dash docsets locally
-       snippets          ; my elves. They type so I don't have to
-       workspaces        ; tab emulation, persistence & separate workspaces
-
-       :completion
+(doom! :completion
        (company          ; the ultimate code completion backend
         +auto            ; as-you-type code completion
         +childframe)
@@ -54,14 +43,17 @@
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        window-select     ; visually switch windows
+       workspaces        ; tab emulation, persistence & separate workspaces
 
        :editor
+       (evil +everywhere); come to the dark side, we have cookies
        fold              ; (nigh) universal code folding
        ;;(format +onsave)  ; automated prettiness
        ;;lispy             ; vim for lisp, for people who dont like vim
        multiple-cursors  ; editing in many places at once
        ;; parinfer          ; turn lisp into python, sort of
        rotate-text       ; cycle region at point between text candidates
+       snippets          ; my elves. They type so I don't have to
 
        :emacs
        (dired            ; making dired pretty [functional]
@@ -76,16 +68,22 @@
 
        :tools
        ansible
+       ;;debugger          ; FIXME stepping through code, to help you add bugs
+       ;;direnv
        docker
        editorconfig      ; let someone else argue about tabs vs spaces
        ;;ein               ; tame Jupyter notebooks with emacs
+       eval              ; run code, run (also, repls)
        flycheck
        flyspell
        gist              ; interacting with github gists
+      (lookup           ; helps you navigate your code and documentation
+        +devdocs         ; ...on devdocs.io online
+        +docsets)        ; ...or in Dash docsets locally
        ;; lsp
        ;; macos             ; MacOS-specific commands
-       ;; make              ; run make tasks from Emacs
        magit             ;
+       ;; make              ; run make tasks from Emacs
        ;; password-store    ; password manager for nerds
        pdf               ; pdf enhancements
        prodigy           ;  managing external services & code builders
