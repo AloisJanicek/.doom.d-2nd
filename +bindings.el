@@ -598,6 +598,7 @@
         )
       (:prefix "h"
         :desc "helpful-symbol"           "a" #'helpful-symbol
+        :desc "helpful-symbol"           "." #'helpful-at-point
         :desc "update-diff"              "u" #'obsoke/ediff-dotfile-and-template
         :desc "Info"                     "i" #'info
         :desc "Info on symbol"           "I" #'counsel-info-lookup-symbol
