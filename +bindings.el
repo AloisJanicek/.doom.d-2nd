@@ -224,6 +224,7 @@
        (:desc "property"          :prefix     "p"
          :desc "set"              "s" #'org-set-property
          )
+       "i" nil
        (:desc "insert:"           :prefix     "i"
          :desc "id"                 "i" #'org-id-get-create
          :desc "drawer"             "d" #'org-insert-drawer
@@ -232,6 +233,7 @@
            :desc "inactive"             "i" #'org-time-stamp-inactive
            )
          )
+       "h" nil
        (:desc "hydras"            :prefix     "h"
          :desc "refile"            "r" (λ! (let ((hydra-lv nil)) (aj/gtd-review-refile/body)))
          )
