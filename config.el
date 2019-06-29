@@ -681,6 +681,8 @@
   ;; refile targets
   (dolist (file (directory-files-recursively "~/org/technical" ".org"))
     (add-to-list 'org-refile-targets `(,file :level . 1)))
+ (dolist (file (directory-files-recursively "~/org/personal" ".org"))
+    (add-to-list 'org-refile-targets `(,file :level . 1)))
 
   (defun jlp/add-to-list-multiple (list to-add)
     "Adds multiple items to LIST.
