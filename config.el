@@ -334,7 +334,7 @@
 
 (after! doom-modeline
   ;; Remove global-mode-string (misc-info) from doom-modeline
-  (advice-add '+modeline-indent-segment :after 'aj/remove-global-mode-string-from-modeline)
+  (aj/remove-global-mode-string-from-modeline)
   )
 
 (after! epa
