@@ -81,6 +81,7 @@
   :recipe (:fetcher github :repo "zweifisch/ob-javascript" :files ("*")))
 
 (package! org-brain
+  :recipe (:fetcher github :repo "Kungsgeten/org-brain")
   )
 
 (package! org-edna
