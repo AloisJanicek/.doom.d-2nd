@@ -544,6 +544,18 @@
           ;; ("." . gk-browse-url)
           ("." . browse-url-chromium)
           ))
+  (if
+      (string-match "Microsoft"
+                    (with-temp-buffer (shell-command "uname -r" t)
+                                      (goto-char (point-max))
+                                      (delete-char -1)
+                                      (buffer-string)))
+      (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
+            (cmd-args '("/c" "start")))
+        (setq browse-url-generic-program  cmd-exe
+              browse-url-generic-args     cmd-args
+              browse-url-browser-function 'browse-url-generic))
+    )
   )
 
 (after! lsp
@@ -594,6 +606,7 @@
   (add-hook 'org-mode-hook #'visual-line-mode)
   (advice-add 'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add 'org-save-all-org-buffers :around 'doom*shut-up)
+  (advice-add 'org-protocol-check-filename-for-protocol :around 'doom*shut-up)
   (advice-add #'org-refile :after #'aj/take-care-of-org-buffers)
   ;;(advice-add #'aj/has-children-p :after #'winner-undo)
   ;;(advice-add #'aj/has-children-p :after #'aj/take-care-of-org-buffers)
