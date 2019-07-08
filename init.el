@@ -196,11 +196,15 @@
 if running under WSL")
 
 (if (aj/wsl-p)
-    (setq
-     +BASE-HOME "/mnt/c/Users/alois/"
+    (setq +BASE-HOME
+          (concat
+           "/mnt/c/Users/"
+           (car (cdr (split-string (shell-command-to-string
+                                    "whoami.exe | sed -e \"s/\\r//g\" | tr -d \"\\\\n\" ")
+                                   "\\\\")))))
 
-     )
-  (setq +BASE-HOME (expand-file-name "~")))
+  (setq +BASE-HOME (expand-file-name "~"))
+  )
 
 (defvar +Reference nil
   "Location of Reference folder.")
