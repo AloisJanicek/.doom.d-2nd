@@ -1,6 +1,7 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(toggle-frame-maximized)
 (setq prefer-coding-system 'utf-8)
 
 ;; fix for emacs 27
