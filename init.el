@@ -8,6 +8,14 @@
 (defalias 'format-proper-list-p 'proper-list-p)
 (advice-add 'projectile-cleanup-known-projects :around #'doom*shut-up)
 
+(defun aj/wsl-p ()
+  "Return non-nil value if emacs is running inside WSL"
+  (string-match "Microsoft"
+                (with-temp-buffer (shell-command "uname -r" t)
+                                  (goto-char (point-max))
+                                  (delete-char -1)
+                                  (buffer-string))))
+
 (doom! :input
        ;;chinese
        ;;japanese
@@ -60,8 +68,8 @@
 
        :emacs
        (dired            ; making dired pretty [functional]
-       ;;+ranger         ; bringing the goodness of ranger to dired
-       +icons          ; colorful icons for dired-mode
+        ;;+ranger         ; bringing the goodness of ranger to dired
+        +icons          ; colorful icons for dired-mode
         )
        electric          ; smarter, keyword-based electric-indent
        vc                ; version-control and Emacs, sitting in a tree
@@ -181,33 +189,50 @@
        ;; The default module sets reasonable defaults for Emacs. It also
        ;; provides a Spacemacs-inspired keybinding scheme and a smartparens
        ;; config. Use it as a reference for your own modules.
-        (default +bindings +snippets +evil-commands +smartparens))
+       (default +bindings +snippets +evil-commands +smartparens))
+
+(defvar +BASE-HOME nil
+  "Variable which equals to ~ on linux or to a specified host home directory
+if running under WSL")
+
+(if (aj/wsl-p)
+    (setq
+     +BASE-HOME "/mnt/c/Users/alois/"
+
+     )
+  (setq +BASE-HOME (expand-file-name "~")))
+
+(defvar +Reference nil
+  "Location of Reference folder.")
+
+(defvar +Repos nil
+  "Location of Repos folder.")
 
 (defvar +Libraries nil
   "Location of Calibre libraries.")
 
-(defvar +TASKS "~/org/tasks.org"
+(defvar +TASKS nil
   "File where things must be done.")
 
-(defvar +INBOX "~/org/inbox.org"
+(defvar +INBOX nil
   "File where all stuff is captured.")
 
-(defvar +CALENDAR "~/org/calendar.org"
+(defvar +CALENDAR nil
   "File where reminders are set.")
 
-(defvar +SOMEDAY "~/org/someday.org"
+(defvar +SOMEDAY nil
   "File where things must be done.")
 
-(defvar +JOURNAL "~/org/archive/journal.org"
+(defvar +JOURNAL nil
   "File where things are logged.")
 
-(defvar +GOALS "~/org/goals.org"
+(defvar +GOALS nil
   "File where Goals are set and tracked.")
 
-(defvar +TECHNICAL "~/org/technical/"
+(defvar +TECHNICAL nil
   "Directory of technical notes.")
 
-(defvar +PERSONAL "~/org/personal/"
+(defvar +PERSONAL nil
   "Directory of personal notes.")
 
 (defvar org-files nil
@@ -227,7 +252,6 @@ to `t', otherwise, just do everything in the background.")
 (defvar +org-projectile-per-project-filepath "README.org"
   "Org file in every project which can be used to contribute into agenda")
 
-
 (defvar +persp-blacklist nil
   "Contains list files which should not be considered as part of workspace")
 
@@ -241,19 +265,11 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 (defvar +refile-targets-with-headlines t
   "List of org files which should be allowed offer refile under headlines")
 
-(setq org-files (directory-files-recursively +TECHNICAL ".org"))
-(add-to-list 'org-files (expand-file-name +TASKS))
-(add-to-list 'org-files (expand-file-name +CALENDAR))
-(add-to-list 'org-files (expand-file-name +JOURNAL))
-(add-to-list 'org-files (expand-file-name +INBOX))
-(add-to-list 'org-files (expand-file-name +SOMEDAY))
-
 (setq user-mail-address "janicek.dev@gmail.com"
       user-full-name    "Alois Janíček"
       +refile-targets-with-headlines `(,+TASKS)
       +refile-targets-with-headlines nil
-      +Libraries (expand-file-name "~/Reference/Libraries/")
-      +aj/time-blocks
+      +aj/time-block
       '(["06:30" (0630 0700 0730 0800) "MORNING"]
         ["08:00" (0800 0830 0900 0930 1000 1030 1100 1130 1200) "WORK"]
         ["12:00" (1200 1230) "LUNCH"]
@@ -262,25 +278,38 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
         ["19:30" (1930 2000 2030 2100) "EVENING"]
         ["21:00" (2100 2130 2200) "SLEEP"]
         ["22:00" (2200 0600) nil])
-      org-directory "~/org/"
-      +org-attach-dir "attach/"
-      +org-export-dir "export"
-      +file-templates-dir "~/repos/templates"
+      org-directory (concat +BASE-HOME "org")
+      org-attach-directory "attach/"
+      +org-export-directory "export/"
+      +file-templates-dir (concat +Repos "templates")
+      +Reference (concat +BASE-HOME "Reference")
+      +Libraries (concat +BASE-HOME "Libraries")
+      +Repos (concat +BASE-HOME "repos/")
+      +TASKS (expand-file-name "tasks.org" org-directory)
+      +INBOX (expand-file-name "inbox.org" org-directory)
+      +CALENDAR (expand-file-name "calendar.org" org-directory)
+      +SOMEDAY (expand-file-name "someday.org" org-directory)
+      +JOURNAL (expand-file-name "journal.org" (concat org-directory "/archive"))
+      +GOALS (expand-file-name "goals.org" org-directory)
+      +TECHNICAL (concat org-directory "/technical")
+      +PERSONAL (concat org-directory "/personal")
       doom-font                   (font-spec :family "Iosevka SS08" :size 16)
       doom-big-font               (font-spec :family "Iosevka SS08" :size 24)
       doom-variable-pitch-font    (font-spec :family "Roboto" :size 16)
       doom-unicode-font           (font-spec :family "Iosevka SS08" :size 16)
-      +doom-modeline-bar-width    4
-      doom-neotree-project-size 1
-      doom-neotree-line-spacing 0
       doom-theme 'doom-one
-      doom-neotree-folder-size 1.0
-      doom-neotree-chevron-size 0.6
       all-the-icons-scale-factor 1
       +doom-quit-messages '("")
-      doom-scratch-buffer-major-mode t
       )
 
+
+(setq org-files (directory-files-recursively +TECHNICAL ".org"))
+
+(add-to-list 'org-files (expand-file-name +TASKS))
+(add-to-list 'org-files (expand-file-name +CALENDAR))
+(add-to-list 'org-files (expand-file-name +JOURNAL))
+(add-to-list 'org-files (expand-file-name +INBOX))
+(add-to-list 'org-files (expand-file-name +SOMEDAY))
 (setq-default tab-width 2)
 
 (def-package-hook! langtool

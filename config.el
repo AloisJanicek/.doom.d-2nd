@@ -185,7 +185,7 @@
   (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt)
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
-        org-brain-path "~/org/technical/"
+        org-brain-path +TECHNICAL
         )
   )
 
@@ -453,7 +453,7 @@
   (set-popup-rule! "*Google Translate\*"            :size 0.4 :side 'top :select t))
 
 (after! helm-dash
-  (setq helm-dash-docsets-path (expand-file-name "~/Reference/Docsets"))
+  (setq helm-dash-docsets-path (concat +Reference "/Docsets"))
   (setq helm-dash-browser-func 'browse-url-chromium)
   )
 
@@ -544,18 +544,13 @@
           ;; ("." . gk-browse-url)
           ("." . browse-url-chromium)
           ))
-  (if
-      (string-match "Microsoft"
-                    (with-temp-buffer (shell-command "uname -r" t)
-                                      (goto-char (point-max))
-                                      (delete-char -1)
-                                      (buffer-string)))
+
+  (if (aj/wsl-p)
       (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
             (cmd-args '("/c" "start")))
         (setq browse-url-generic-program  cmd-exe
               browse-url-generic-args     cmd-args
-              browse-url-browser-function 'browse-url-generic))
-    )
+              browse-url-browser-function 'browse-url-generic)))
   )
 
 (after! lsp
@@ -692,9 +687,9 @@
    )
 
   ;; refile targets
-  (dolist (file (directory-files-recursively "~/org/technical" ".org"))
+  (dolist (file (directory-files-recursively +TECHNICAL ".org"))
     (add-to-list 'org-refile-targets `(,file :level . 1)))
- (dolist (file (directory-files-recursively "~/org/personal" ".org"))
+ (dolist (file (directory-files-recursively +PERSONAL ".org"))
     (add-to-list 'org-refile-targets `(,file :level . 1)))
 
   (defun jlp/add-to-list-multiple (list to-add)
@@ -939,7 +934,7 @@ than having to call `add-to-list' multiple times."
 
 (after! ox-icalendar
   org-icalendar-store-UID t
-  org-icalendar-combined-agenda-file "~/org/agenda.ics"
+  org-icalendar-combined-agenda-file (expand-file-name "agenda.ics" org-directory)
   org-icalendar-include-todo '(all)
   org-icalendar-use-scheduled '(event-if-todo event-if-not-todo)
   org-icalendar-use-deadline '(event-if-todo event-if-not-todo)
@@ -1054,7 +1049,7 @@ than having to call `add-to-list' multiple times."
   (set-popup-rule! "*WordNut\*"                     :size 0.4 :side 'top :select t))
 
 (after! yasnippet
-  (push "~/org/snippets" yas-snippet-dirs))
+  (push (concat org-directory "/snippets") yas-snippet-dirs))
 
 
 (defhydra gtd-agenda (:color blue
@@ -1188,16 +1183,3 @@ than having to call `add-to-list' multiple times."
   ("p" (mixed-pitch-mode) "Pretty" :exit t)
   ("d" (org-decrypt-entries) "Decrypt entries" :exit t)
   )
-
-;; lets load some org files...
-;; (make-thread
-;;  (run-with-idle-timer 10 nil
-;;                       (lambda ()
-;;                         (let* ((persp-autokill-buffer-on-remove nil))
-;;                           (message "Loading org files...")
-;;                           (dolist (file org-files)
-;;                             (find-file-noselect file))
-;;                           (persp-remove-buffer +persp-blacklist)
-;;                           (load! "~/.emacs.d/.local/custom.el")
-;;                           (message "Org files loaded and ready!")
-;;                           ))))

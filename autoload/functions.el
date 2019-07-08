@@ -189,7 +189,7 @@ Use `org-agenda-refile' in `org-agenda' mode."
 ;;;###autoload
 (defun aj/projectile-add-known-project-and-save (project-root)
   "Add PROJECT-ROOT to the list of known projects and save it to the list of known projects."
-  (interactive (list (read-directory-name "Add to known projects: " "~/repos/")))
+  (interactive (list (read-directory-name "Add to known projects: " +Repos)))
   (unless (projectile-ignored-project-p project-root)
     (setq projectile-known-projects
           (delete-dups
@@ -377,7 +377,7 @@ and returns that weird time number which Emacs understands."
         (pop-to-buffer "calendar.org")
         (emacs-lock-mode 'kill))
     (progn
-      (pop-to-buffer (find-file-noselect (expand-file-name "~/org/calendar.org")))
+      (pop-to-buffer (find-file-noselect (expand-file-name "calendar.org" org-directory)))
       (emacs-lock-mode 'kill)
       (turn-off-solaire-mode))))
 ;;;###autoload
@@ -871,7 +871,7 @@ with external browser."
 (defun aj/jump-to-org-dir ()
   "Jumps to org directory"
   (interactive)
-  (let ((default-directory "~/org/"))
+  (let ((default-directory org-directory))
     (counsel-find-file)))
 
 ;;;###autoload
@@ -951,7 +951,7 @@ If STRICT-P, return nil if no project was found, otherwise return
 (defun aj/project-bootstrap ()
   (interactive)
   (let* ((project (read-string "New project name: "))
-         (directory (read-directory-name "Directory: " "~/repos/"))
+         (directory (read-directory-name "Directory: " +Repos))
          (template (ivy-read "Template: " '("web-starter-kit" "other")))
          (gitlab (ivy-read "Gitlab?:" '("yes" "no")))
          (full-path (concat directory project))
@@ -1034,7 +1034,7 @@ imenu-list sidbar so it doesn't get closed in any other way then from inside of 
   (progn
     ;; (if (not (get-buffer "GTD.org"))
     ;;     (pop-to-buffer (find-file-noselect +GTD)))
-    (if (aj/has-children-p "~/org/GTD.org" "INBOX")
+    (if (aj/has-children-p (expand-file-name "GTD.org" org-directory) "INBOX")
         (org-agenda nil "i")
       (if (string-equal "Sat" (format-time-string "%a"))
           (let ((org-agenda-tag-filter-preset '("+SATURDAY")))
@@ -1428,7 +1428,7 @@ In ~%s~:
                                    ,line :immediate-finish t)))
          )
     (org-capture nil "s")))
-;; ("c" "calendar" entry (file+headline "~/org/GTD.org" "CALENDAR")
+;; ("c" "calendar" entry (file+headline (expand-file-name "GTD.org" org-directory) "CALENDAR")
 ;;  "** %^{Title} %^g\n %^{Date:}t \n %?")
 
 (defun aj/calendar-the-right-way ()
@@ -1611,7 +1611,7 @@ If `README' is t, ask user for projectile project instead of file.
                      (org-agenda-error)))
          (buffer (marker-buffer marker))
          (file (if (and (not file-name) (not readme))
-                   (read-file-name "Choose file to refile into: " "~/org/technical/")
+                   (read-file-name "Choose file to refile into: " +TECHNICAL)
                  (if (and (not file-name) readme)
                      (ivy-read "File: " (get-all-projectile-README-org-files)
                                :action (lambda (x) x))
@@ -1759,3 +1759,12 @@ point to the end of the line."
     ;; '(misc-info mu4e github debug fancy-battery " " major-mode process))
     '(mu4e github debug fancy-battery " " major-mode process))
   )
+
+;;;###autoload
+(defun aj/wsl-p ()
+  "Return non-nil value if emacs is running inside WSL"
+  (string-match "Microsoft"
+                (with-temp-buffer (shell-command "uname -r" t)
+                                  (goto-char (point-max))
+                                  (delete-char -1)
+                                  (buffer-string))))
