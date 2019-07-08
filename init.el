@@ -201,7 +201,9 @@ if running under WSL")
            "/mnt/c/Users/"
            (car (cdr (split-string (shell-command-to-string
                                     "whoami.exe | sed -e \"s/\\r//g\" | tr -d \"\\\\n\" ")
-                                   "\\\\")))))
+                                   "\\\\")))
+	   "/"
+	   ))
 
   (setq +BASE-HOME (expand-file-name "~"))
   )
