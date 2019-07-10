@@ -674,7 +674,7 @@
    org-refile-target-verify-function 'aj/verify-headlines-for-refile
 
    org-id-track-globally t
-   org-id-locations-file (concat org-directory ".org-ids-locations")
+   org-id-locations-file (expand-file-name ".org-ids-locations" org-directory)
    org-use-property-inheritance t
 
    org-log-done 'time
