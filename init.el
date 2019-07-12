@@ -290,7 +290,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
       +org-export-directory "export/"
       +file-templates-dir (concat +Repos "templates")
       +Reference (concat +BASE-HOME "Reference")
-      +Libraries (concat +BASE-HOME "Libraries")
+      +Libraries (concat +Reference "/" "Libraries")
       +Repos (concat +BASE-HOME "repos/")
       +TASKS (expand-file-name "tasks.org" org-directory)
       +INBOX (expand-file-name "inbox.org" org-directory)

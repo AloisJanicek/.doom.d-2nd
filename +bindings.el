@@ -530,10 +530,10 @@
         )
       (:prefix ("o" . "open")
         (:prefix ("c" . "calibre")
-          :desc "cs"    "c" (λ! (aj/open-calibre-book (concat +Libraries "ComputerScience/")))
-          :desc "webdev"     "w" (λ! (aj/open-calibre-book (concat +Libraries "Webdev/")))
-          :desc "library"    "l" (λ! (aj/open-calibre-book (concat +Libraries "Library/")))
-          :desc "personal"   "p" (λ! (aj/open-calibre-book (concat +Libraries "Personal/")))
+          :desc "cs"    "c" (λ! (aj/open-calibre-book (concat +Libraries "/ComputerScience/")))
+          :desc "webdev"     "w" (λ! (aj/open-calibre-book (concat +Libraries "/Webdev/")))
+          :desc "library"    "l" (λ! (aj/open-calibre-book (concat +Libraries "/Library/")))
+          :desc "personal"   "p" (λ! (aj/open-calibre-book (concat +Libraries "/Personal/")))
           )
         :desc "link"                     "o" #'link-hint-open-link
         :desc "Agenda"                   "A" #'org-agenda
