@@ -15,9 +15,9 @@
      :marker (org-agenda-new-marker (org-element-property :begin headline)))))
 ;; Renderer
 (defconst +agenda-projects-not-task-faces '(("NEXT" . '(:inherit org-todo :weight normal))
-                                            ("TODO" . '(:inherit org-todo :weight normal))))
+                                            ("TODO" . '(:inherit org-todo :weight normal :foreground "#ECBE7B"))))
 
-(defconst +agenda-projects-task-faces '(("NEXT" . '(:inherit org-todo :weight bold :foreground "#98be65"))
+(defconst +agenda-projects-task-faces '(("NEXT" . '(:inherit org-todo :weight bold :background "#98be65" :foreground "#21242B"))
                                         ("TODO" . '(:inherit org-todo :weight bold))))
 
 (defun +agenda-format-entry (prefix entry)
