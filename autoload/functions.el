@@ -1768,3 +1768,10 @@ point to the end of the line."
                                   (goto-char (point-max))
                                   (delete-char -1)
                                   (buffer-string))))
+
+;;;###autoload
+(defun aj/return-wsl-user-name ()
+  "Return path poiting to home directory of current Windows user"
+  (car (cdr (split-string (shell-command-to-string
+                           "whoami.exe | sed -e \"s/\\r//g\" | tr -d \"\\\\n\" ")
+                          "\\\\"))))
