@@ -233,7 +233,7 @@ if running under WSL")
 (defvar +PERSONAL nil
   "Directory of personal notes.")
 
-(defvar org-files nil
+(defvar +org-files nil
   "Lists of org files I always want to have opened for quick access.")
 
 (defvar aj/org-agenda nil
@@ -292,13 +292,13 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
       )
 
 
-(setq org-files (directory-files-recursively +TECHNICAL ".org"))
+(setq +org-files (directory-files-recursively +TECHNICAL ".org"))
 
-(add-to-list 'org-files (expand-file-name +TASKS))
-(add-to-list 'org-files (expand-file-name +CALENDAR))
-(add-to-list 'org-files (expand-file-name +JOURNAL))
-(add-to-list 'org-files (expand-file-name +INBOX))
-(add-to-list 'org-files (expand-file-name +SOMEDAY))
+(add-to-list '+org-files (expand-file-name +TASKS))
+(add-to-list '+org-files (expand-file-name +CALENDAR))
+(add-to-list '+org-files (expand-file-name +JOURNAL))
+(add-to-list '+org-files (expand-file-name +INBOX))
+(add-to-list '+org-files (expand-file-name +SOMEDAY))
 (setq-default tab-width 2)
 
 (def-package-hook! langtool
