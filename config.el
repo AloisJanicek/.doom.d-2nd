@@ -1,4 +1,103 @@
 ;;;  -*- lexical-binding: t; -*-
+
+(defvar +BASE-HOME nil
+  "Variable which equals to ~ on linux or to a specified host home directory
+if running under WSL")
+
+(if (aj/wsl-p)
+    (setq +BASE-HOME (concat "/mnt/c/Users/" (aj/return-wsl-user-name) "/"))
+  (setq +BASE-HOME (expand-file-name "~")))
+
+(defvar +Reference (concat +BASE-HOME "Reference")
+  "Location of Reference folder.")
+
+(defvar +Libraries (concat +Reference "/" "Libraries")
+  "Location of Calibre libraries.")
+
+(defvar +Repos (concat +BASE-HOME "repos/")
+  "Location of Repos folder.")
+
+(setq org-directory (concat +BASE-HOME "org"))
+
+(defvar +TASKS (expand-file-name "tasks.org" org-directory)
+  "File where things must be done.")
+
+(defvar +INBOX (expand-file-name "inbox.org" org-directory)
+  "File where all stuff is captured.")
+
+(defvar +CALENDAR (expand-file-name "calendar.org" org-directory)
+  "File where reminders are set.")
+
+(defvar +SOMEDAY (expand-file-name "someday.org" org-directory)
+  "File where things must be done.")
+
+(defvar +JOURNAL (expand-file-name "journal.org" (concat org-directory "/archive"))
+  "File where things are logged.")
+
+(defvar +GOALS (expand-file-name "goals.org" org-directory)
+  "File where Goals are set and tracked.")
+
+(defvar +TECHNICAL (concat org-directory "/technical")
+  "Directory of technical notes.")
+
+(defvar +PERSONAL (concat org-directory "/personal")
+  "Directory of personal notes.")
+
+(defvar +org-files (directory-files-recursively +TECHNICAL ".org")
+  "Lists of org files I always want to have opened for quick access.")
+
+(defvar aj/org-agenda nil
+  "Variable for preserving filter choice between agenda views.")
+
+(defvar hydra-stack nil
+  "Holds names of hydras for display when nesting them.")
+
+(defvar org-refile-directly-show-after nil
+  "When refiling directly (using the `org-refile-directly'
+function), show the destination buffer afterwards if this is set
+to `t', otherwise, just do everything in the background.")
+
+(defvar +org-projectile-per-project-filepath "README.org"
+  "Org file in every project which can be used to contribute into agenda")
+
+(defvar +persp-blacklist nil
+  "Contains list files which should not be considered as part of workspace")
+
+(defvar +aj/time-block nil
+  "Is a list of sequences where first item is string representing time in
+\"%H:%S\" format, second item is list of integers indicating time which should
+have a grid line in agenda and it is being passed to `org-agenda-grid' and
+third item is string representing tag with leading plus sign \"+\" to which
+should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
+
+(defvar +refile-targets-with-headlines t
+  "List of org files which should be allowed offer refile under headlines")
+
+(setq user-mail-address "janicek.dev@gmail.com"
+      user-full-name    "Alois Janíček"
+      +refile-targets-with-headlines `(,+TASKS)
+      +refile-targets-with-headlines nil
+      +file-templates-dir (concat +Repos "templates")
+      org-attach-directory "attach/"
+      +org-export-directory "export/"
+      doom-font                   (font-spec :family "Iosevka SS08" :size 16)
+      doom-big-font               (font-spec :family "Iosevka SS08" :size 24)
+      doom-variable-pitch-font    (font-spec :family "Roboto" :size 16)
+      doom-unicode-font           (font-spec :family "Iosevka SS08" :size 16)
+      doom-theme 'doom-one
+      all-the-icons-scale-factor 1
+      +doom-quit-messages '("")
+      )
+
+
+(add-to-list '+org-files (expand-file-name +TASKS))
+(add-to-list '+org-files (expand-file-name +CALENDAR))
+(add-to-list '+org-files (expand-file-name +JOURNAL))
+(add-to-list '+org-files (expand-file-name +INBOX))
+(add-to-list '+org-files (expand-file-name +SOMEDAY))
+
+(setq-default tab-width 2)
+
 (load! "+bindings")
 
 (add-hook 'org-load-hook '(lambda () (setq org-modules (append '(org-man org-eww org-protocol org-habit) org-modules))))
@@ -385,6 +484,7 @@
   (add-hook 'after-save-hook #'prettier-stylelint-fix-file-and-revert)
   (add-hook 'after-save-hook #'beautify-html-file-and-revert)
   (setq large-file-warning-threshold 30000000)
+  (add-to-list 'safe-local-variable-values '(org-src-fontify-natively))
   )
 
 (after! flycheck
@@ -573,6 +673,9 @@
   (set-face-attribute 'Man-underline nil :inherit 'underline :foreground "#98be65")
   (set-popup-rule! "*Man\*"                         :size 0.4 :side 'left :select t)
   (set-popup-rule! "*man\*"                         :size 0.6 :side 'left :select t))
+
+(after! nav-flash
+  (add-to-list '+nav-flash-exclude-commands 'find-file-noselect))
 
 (after! ob-core
   (setq
@@ -970,6 +1073,7 @@ than having to call `add-to-list' multiple times."
   (set-popup-rule! "^.*-Profiler-Report.*$"         :size 0.4 :side 'right :select t))
 
 (after! projectile
+  (advice-add 'projectile-cleanup-known-projects :around #'doom*shut-up)
   (setq projectile-globally-ignored-file-suffixes (append (list ".elc"))
         projectile-globally-ignored-directories (append (list "node_modules"))
         projectile-track-known-projects-automatically nil
