@@ -1,6 +1,6 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
-
+(package! aio)
 (package! ahk-mode
   )
 (package! all-the-icons-ivy
