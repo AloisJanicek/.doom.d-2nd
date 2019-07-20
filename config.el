@@ -406,8 +406,11 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   (set-popup-rule! "*Customize\*"                   :size 0.4 :side 'left :select t :transient nil))
 
 (after! company
-  (setq company-idle-delay 0.6)
+  (setq company-idle-delay 0.05)
   (setq company-minimum-prefix-length 2))
+
+(after! company-lsp
+  (setq company-lsp-cache-candidates auto))
 
 (after! counsel
   (setq counsel-grep-base-command "grep -E -n -i -e %s %s")
