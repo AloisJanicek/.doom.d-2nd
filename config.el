@@ -381,7 +381,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   (set-popup-rule! "*Customize\*"                   :size 0.4 :side 'left :select t :transient nil))
 
 (after! company
-  (setq company-idle-delay 0.05)
+  (setq company-idle-delay nil)
   (setq company-minimum-prefix-length 2))
 
 (after! company-lsp
