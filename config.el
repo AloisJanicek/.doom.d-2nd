@@ -349,7 +349,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   ;; (add-to-list 'hippie-expand-try-functions-list #'yankpad-expand)
   )
 
-;; (def-package! xah-css-mode)
 (def-package! zeal-at-point
   :commands (zeal-at-point zeal-at-point-search zeal-at-point-set-docset)
   :config

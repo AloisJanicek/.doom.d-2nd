@@ -26,9 +26,6 @@
 (package! emacs-ereader
   :recipe (:fetcher github :repo "bddean/emacs-ereader" :files ("org-ebook.el" "ereader.el")))
 
-;; (package! eaf :recipe (:fetcher github :repo "manateelazycat/emacs-application-framework" :files ("*"))
-;;   )
-
 (package! emms
   :disable t)
 
@@ -43,9 +40,6 @@
 
 (package! fish-mode
   )
-
-;; (package! flycheck
-;;   :recipe (:fetcher github :repo "flycheck/flycheck" :branch "fix-1398-quoted-lambdas"))
 
 (package! flyspell-lazy
   :disable t)
@@ -137,7 +131,6 @@
   )
 
 (package! xml+)
-;; (package! xah-css-mode :recipe (:fetcher github :repo "xahlee/xah-css-mode"))
 
 (package! zeal-at-point
   :recipe (:fetcher github :repo "jinzhu/zeal-at-point")
