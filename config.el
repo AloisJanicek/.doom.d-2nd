@@ -721,7 +721,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   ;; refile targets
   (dolist (file (directory-files-recursively +TECHNICAL ".org"))
     (add-to-list 'org-refile-targets `(,file :level . 1)))
- (dolist (file (directory-files-recursively +PERSONAL ".org"))
+  (dolist (file (directory-files-recursively +PERSONAL ".org"))
     (add-to-list 'org-refile-targets `(,file :level . 1)))
 
   (defun jlp/add-to-list-multiple (list to-add)
