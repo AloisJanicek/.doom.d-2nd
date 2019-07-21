@@ -492,8 +492,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 
 (after! flycheck
   (flycheck-add-mode 'html-tidy 'web-mode)
-  (setq flycheck-stylelintrc "~/.stylelintrc.json"
-        flycheck-tidyrc "~/.tidyrc")
+  (setq flycheck-tidyrc "~/.tidyrc")
   (setq-default flycheck-disabled-checkers '(css-csslint scss sass/scss-sass-lint))
   ;; note: broken with default flycheck, needs :branch "fix-1398-quoted-lambdas"
   ;; see: https://github.com/flycheck/flycheck/pull/1440
