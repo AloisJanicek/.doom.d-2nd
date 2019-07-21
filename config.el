@@ -236,27 +236,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
   )
 
-;; (def-package! origami
-;;   :general (:keymaps 'org-super-agenda-header-map
-;;                      "TAB" #'origami-toggle-node)
-;;   :config
-
-;;   (defvar ap/org-super-agenda-auto-show-groups
-;;     '("Schedule" "Bills" "Priority A items" "Priority B items"))
-
-;;   (defun ap/org-super-agenda-origami-fold-default ()
-;;     "Fold certain groups by default in Org Super Agenda buffer."
-;;     (forward-line 3)
-;;     (cl-loop do (origami-forward-toggle-node (current-buffer) (point))
-;;              while (origami-forward-fold-same-level (current-buffer) (point)))
-;;     (--each ap/org-super-agenda-auto-show-groups
-;;       (goto-char (point-min))
-;;       (when (re-search-forward (rx-to-string `(seq bol " " ,it)) nil t)
-;;         (origami-show-node (current-buffer) (point)))))
-
-;;   :hook ((org-agenda-mode . origami-mode)
-;;          (org-agenda-finalize . ap/org-super-agenda-origami-fold-default)))
-
 (def-package! org-brain
   ;; :after org
   :commands
@@ -323,9 +302,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   :after ox
   )
 
-;; (def-package! plain-org-wiki
-;;   :config
-;;   (setq pow-directory +TECHNICAL))
 
 (def-package! podcaster
   :disabled
@@ -449,7 +425,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
                                     ("Hydra" "^\\s-*(defhydra +\\([^ ()\n]+\\)" 1)))
                  (add-to-list 'imenu-generic-expression imenu-exp)))
             t)
-  ;; (add-hook 'emacs-lisp-mode-hook '+evil:fold-close-all)
   )
 
 (after! evil
@@ -1081,9 +1056,6 @@ than having to call `add-to-list' multiple times."
   (set-face-attribute     'treemacs-root-face nil :height 1.0)
   (add-hook 'treemacs-mode-hook 'variable-pitch-mode)
   )
-
-;; (after! undo-tree
-;;   (setq undo-tree-auto-save-history t))
 
 (after! web-mode
   (add-hook 'web-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS" "Bootstrap_4"))))
