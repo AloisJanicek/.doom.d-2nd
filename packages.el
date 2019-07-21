@@ -114,9 +114,6 @@
 (package! ox-hugo
   )
 
-(package! plain-org-wiki
-  :recipe (:fetcher github :repo "AloisJanicek/plain-org-wiki") :disable t)
-
 (package! podcaster
   :disable t)
 
