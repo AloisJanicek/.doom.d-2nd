@@ -384,8 +384,8 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   (setq company-idle-delay nil)
   (setq company-minimum-prefix-length 2))
 
-(after! company-lsp
-  (setq company-lsp-cache-candidates auto))
+;; (after! company-lsp
+;;   (setq company-lsp-cache-candidates auto))
 
 (after! counsel
   (setq counsel-grep-base-command "grep -E -n -i -e %s %s")
