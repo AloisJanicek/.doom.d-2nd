@@ -585,6 +585,10 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   (setq lsp-ui-sideline-enable nil)
   )
 
+(after! lsp-ui
+  (remove-hook 'lsp-ui-mode-hook '+lsp|init-ui-flycheck-or-flymake)
+  )
+
 (after! magit
   (add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell))
 
