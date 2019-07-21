@@ -466,7 +466,8 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 
 (after! flycheck
   (flycheck-add-mode 'html-tidy 'web-mode)
-  (setq flycheck-tidyrc "~/.tidyrc")
+  (setq flycheck-tidyrc "~/.tidyrc"
+        flycheck-javascript-eslint-executable "eslint_d")
   (setq-default flycheck-disabled-checkers '(css-csslint scss sass/scss-sass-lint))
   )
 
