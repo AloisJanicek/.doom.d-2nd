@@ -494,54 +494,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   (flycheck-add-mode 'html-tidy 'web-mode)
   (setq flycheck-tidyrc "~/.tidyrc")
   (setq-default flycheck-disabled-checkers '(css-csslint scss sass/scss-sass-lint))
-  ;; note: broken with default flycheck, needs :branch "fix-1398-quoted-lambdas"
-  ;; see: https://github.com/flycheck/flycheck/pull/1440
-  ;; see: https://github.com/flycheck/flycheck/issues/1398
-  ;;   (flycheck-define-checker javascript-eslint-custom
-  ;;     "A Javascript syntax and style checker using eslint.
-  ;; See URL `http://eslint.org/'."
-  ;;     :command ("eslint" "--format=json"
-  ;;               (option-list "--rulesdir" flycheck-eslint-rules-directories)
-  ;;               "--stdin" "--stdin-filename" source-original)
-  ;;     :standard-input t
-  ;;     :error-parser flycheck-parse-eslint
-  ;;     :enabled (lambda () (flycheck-eslint-config-exists-p))
-  ;;     :modes (js-mode js-jsx-mode js2-mode js2-jsx-mode js3-mode rjsx-mode)
-  ;;     :working-directory flycheck-eslint--find-working-directory
-  ;;     :error-explainer
-  ;;     (lambda (error)
-  ;;       (let ((error-code (flycheck-error-id error)))
-  ;;         (progn
-  ;;           (browse-url (concat "https://eslint.org/docs/rules/" error-code)))))
-  ;;     :verify
-  ;;     (lambda (_)
-  ;;       (let* ((default-directory
-  ;;                (flycheck-compute-working-directory 'javascript-eslint))
-  ;;              (have-config (flycheck-eslint-config-exists-p)))
-  ;;         (list
-  ;;          (flycheck-verification-result-new
-  ;;           :label "config file"
-  ;;           :message (if have-config "found" "missing or incorrect")
-  ;;           :face (if have-config 'success '(bold error)))))))
-  ;;   (add-to-list 'flycheck-checkers 'javascript-eslint-custom)
-  ;; css-styleling checke with explainer
-  ;;   (flycheck-define-checker css-stylelint-custom
-  ;;     "A CSS syntax and style checker using stylelint.
-
-  ;; See URL `http://stylelint.io/'."
-  ;;     :command ("stylelint"
-  ;;               (eval flycheck-stylelint-args)
-  ;;               (option-flag "--quiet" flycheck-stylelint-quiet)
-  ;;               (config-file "--config" flycheck-stylelintrc))
-  ;;     :standard-input t
-  ;;     :error-parser flycheck-parse-stylelint
-  ;;     :error-explainer
-  ;;     (lambda (error)
-  ;;       (let ((error-code (flycheck-error-id error)))
-  ;;         (progn
-  ;;           (browse-url (concat "https://stylelint.io/user-guide/rules/" error-code)))))
-  ;;     :modes (css-mode))
-  ;;   (add-to-list 'flycheck-checkers 'css-stylelint-custom)
   )
 
 (after! flyspell
