@@ -1778,8 +1778,6 @@ point to the end of the line."
 
 ;;;###autoload
 (defun aj/copy-set-agenda-filter (string type &optional expand)
-  "Set first argument passed to this function as a
-value of `org-agenda-tag-filter-preset.'
+  "Set first argument passed to this function as a value of `org-agenda-tag-filter-preset'.
 This function is meant to be used as advice for `org-agenda-filter-apply'"
-  ;; (message "this was passed: %s" (car string))
-  (setq org-agenda-tag-filter-preset (list (car string))))
+  (setq org-agenda-tag-filter-preset  string))
