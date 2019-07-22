@@ -758,7 +758,6 @@ than having to call `add-to-list' multiple times."
   (advice-add 'org-agenda-set-effort :after #'org-save-all-org-buffers)
   (advice-add 'org-agenda-exit :before 'org-save-all-org-buffers)
   (advice-add 'org-agenda-switch-to :after 'turn-off-solaire-mode)
-  (advice-add 'org-agenda-filter-by-tag :around 'aj/copy-agenda-filter)
   (advice-add 'org-agenda-filter-apply :after 'aj/copy-set-agenda-filter)
   (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
   (add-hook 'org-agenda-mode-hook #'hide-mode-line-mode)
