@@ -78,6 +78,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
       +refile-targets-with-headlines `(,+TASKS)
       +refile-targets-with-headlines nil
       +file-templates-dir (concat +Repos "templates")
+      +snippets-dir (concat +Repos "/snippets")
       org-attach-directory "attach/"
       +org-export-directory "export/"
       doom-font                   (font-spec :family "Iosevka SS08" :size 16)
@@ -1083,7 +1084,7 @@ than having to call `add-to-list' multiple times."
   (set-popup-rule! "*WordNut\*"                     :size 0.4 :side 'top :select t))
 
 (after! yasnippet
-  (push (concat org-directory "/snippets") yas-snippet-dirs))
+  )
 
 
 (defhydra gtd-agenda (:color blue
