@@ -451,7 +451,7 @@
      :i "C-h" #'evil-window-left
      :i "C-j" #'evil-window-down
      :i "C-k" #'evil-window-up
-     :i "C-l" #'evil-window-right)
+     )
    )
  (:after web-mode
    (:map web-mode-map
