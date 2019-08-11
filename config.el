@@ -645,7 +645,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   (advice-add #'aj/bookmarks :after #'aj/take-care-of-org-buffers)
   (advice-add #'aj/refile-to-file :after #'aj/take-care-of-org-buffers)
   (advice-add #'aj/refile-to-project-readme :after #'aj/take-care-of-org-buffers)
-  ;; (add-hook! :append 'org-mode-hook #'aj/my-org-faces)
+  (add-hook! org-mode-hook :append #'aj/my-org-faces)
   (remove-hook 'org-mode-hook #'auto-fill-mode)
   ;; clock persistence
   (org-clock-persistence-insinuate)
@@ -1044,7 +1044,7 @@ than having to call `add-to-list' multiple times."
 (after! term
   (add-hook! 'term-mode-hook #'hide-mode-line-mode)
   ;; remap keys for terminal with Evil
-  ;; (add-hook! :append term-mode 'aj/set-term-keys)
+  (add-hook! term-mode :append #'aj/set-term-keys)
   (add-hook 'term-mode-hook '(lambda () (interactive)(setq left-fringe-width 0
                                                            right-ringe-width 0))))
 
