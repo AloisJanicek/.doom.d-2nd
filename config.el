@@ -148,7 +148,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 (def-package! ereader
   :commands (ereader-read-epub ereader-mode)
   :mode ("\\.epub\\'". ereader-mode)
-  :init (add-to-list 'doom-large-file-modes-list 'ereader-mode)
+  ;; :init (add-to-list 'doom-large-file-modes-list 'ereader-mode)
   :config
   (add-hook 'ereader-mode-hook 'hide-mode-line-mode)
   (add-hook 'ereader-mode-hook 'visual-line-mode)
@@ -275,7 +275,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 
 (def-package! org-super-agenda
   :after org-agenda
-  :init (advice-add #'org-super-agenda-mode :around #'doom*shut-up)
+  :init (advice-add #'org-super-agenda-mode :around #'doom-shut-up-a)
   :config (org-super-agenda-mode)
   ;; (setq org-super-agenda-header-separator "               ")
   ;; (setq org-super-agenda-header-separator nil)
@@ -544,7 +544,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   )
 
 (after! ivy-posframe
-  (advice-add #'ivy-posframe-enable :around #'doom*shut-up)
+  (advice-add #'ivy-posframe-enable :around #'doom-shut-up-a)
   (setq ivy-posframe-width 120)
   )
 
@@ -637,8 +637,8 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   (add-hook 'org-after-todo-state-change-hook 'org-save-all-org-buffers)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (advice-add 'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
-  (advice-add 'org-save-all-org-buffers :around 'doom*shut-up)
-  (advice-add 'org-protocol-check-filename-for-protocol :around 'doom*shut-up)
+  (advice-add 'org-save-all-org-buffers :around 'doom-shut-up-a)
+  (advice-add 'org-protocol-check-filename-for-protocol :around 'doom-shut-up-a)
   (advice-add #'org-refile :after #'aj/take-care-of-org-buffers)
   ;;(advice-add #'aj/has-children-p :after #'winner-undo)
   ;;(advice-add #'aj/has-children-p :after #'aj/take-care-of-org-buffers)
@@ -748,7 +748,7 @@ than having to call `add-to-list' multiple times."
                                            (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
                                            (org-agenda-redo)
                                            ))
-  (advice-add #'org-agenda-redo :around #'doom*shut-up)
+  (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
   (advice-add #'org-agenda-refile :after #'aj/take-care-of-org-buffers)
   (advice-add #'org-agenda-exit :after #'aj/take-care-of-org-buffers)
   (advice-add #'aj/org-agenda-refile-to-file :after #'aj/take-care-of-org-buffers)
@@ -944,7 +944,7 @@ than having to call `add-to-list' multiple times."
 (after! org-clock
   (advice-add 'org-clock-in :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add 'org-clock-out :after (lambda (&rest _) (org-save-all-org-buffers)))
-  (advice-add #'org-clock-load :around #'doom*shut-up)
+  (advice-add #'org-clock-load :around #'doom-shut-up-a)
 
   (setq
    org-clock-auto-clock-resolution (quote when-no-clock-is-running)
@@ -996,7 +996,7 @@ than having to call `add-to-list' multiple times."
 
 (after! persp-mode
   (setq persp-kill-foreign-buffer-action nil)
-  (advice-add 'persp-remove-buffer :around 'doom*shut-up)
+  (advice-add 'persp-remove-buffer :around 'doom-shut-up-a)
   (dolist (file (directory-files-recursively org-directory ".org"))
     (add-to-list '+persp-blacklist `,(file-name-nondirectory file)))
 
@@ -1007,7 +1007,7 @@ than having to call `add-to-list' multiple times."
   (set-popup-rule! "^.*-Profiler-Report.*$"         :size 0.4 :side 'right :select t))
 
 (after! projectile
-  (advice-add 'projectile-cleanup-known-projects :around #'doom*shut-up)
+  (advice-add 'projectile-cleanup-known-projects :around #'doom-shut-up-a)
   (setq projectile-globally-ignored-file-suffixes (append (list ".elc"))
         projectile-globally-ignored-directories (append (list "node_modules"))
         projectile-track-known-projects-automatically nil
@@ -1032,7 +1032,7 @@ than having to call `add-to-list' multiple times."
   (add-hook 'python-mode-hook (lambda () (setq-local counsel-dash-docsets '("Python_3")))))
 
 (after! recentf
-  (advice-add #'recentf-cleanup :around #'doom*shut-up)
+  (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
   (dolist (i '("/technical/" "personal" ".pdf" ".epub" ".db" "/.emacs.d/session" "/workspaces/autosave" "/usr/share/emacs"))
     (add-to-list 'recentf-exclude i)
     )
