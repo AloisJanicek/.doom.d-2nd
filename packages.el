@@ -13,18 +13,18 @@
   :disable t)
 
 (package! counsel-org-clock
-  :recipe (:fetcher github :repo "akirak/counsel-org-clock")
+  :recipe (:host github :repo "akirak/counsel-org-clock")
   )
 
 (package! counsel-projectile
-  :recipe (:fetcher github :repo "akash-akya/counsel-projectile" :branch "remap-fix")
+  :recipe (:host github :repo "akash-akya/counsel-projectile" :branch "remap-fix")
   )
 
 (package! define-word
   )
 
 (package! emacs-ereader
-  :recipe (:fetcher github :repo "bddean/emacs-ereader" :files ("org-ebook.el" "ereader.el")))
+  :recipe (:host github :repo "bddean/emacs-ereader" :files ("org-ebook.el" "ereader.el")))
 
 (package! emms
   :disable t)
@@ -54,28 +54,28 @@
   )
 
 (package! ivy-mpdel
-  :recipe (:fetcher github :repo "mpdel/ivy-mpdel") :disable t)
+  :recipe (:host github :repo "mpdel/ivy-mpdel") :disable t)
 
-(package! ivy-pages :recipe (:fetcher github :repo "igorepst/ivy-pages")
+(package! ivy-pages :recipe (:host github :repo "igorepst/ivy-pages")
   )
 
 (package! ivy-yasnippet
-  :recipe (:fetcher github :repo "mkcms/ivy-yasnippet"))
+  :recipe (:host github :repo "mkcms/ivy-yasnippet"))
 
 (package! link-hint
   )
 
 (package! mpdel
-  :recipe (:fetcher github :repo "mpdel/mpdel") :disable t)
+  :recipe (:host github :repo "mpdel/mpdel") :disable t)
 
 (package! ob-async
-  :recipe (:fetcher github :repo "astahlman/ob-async"))
+  :recipe (:host github :repo "astahlman/ob-async"))
 
 (package! ob-javascript
-  :recipe (:fetcher github :repo "zweifisch/ob-javascript" :files ("*")))
+  :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*")))
 
 (package! org-brain
-  :recipe (:fetcher github :repo "Kungsgeten/org-brain")
+  :recipe (:host github :repo "Kungsgeten/org-brain")
   )
 
 (package! org-edna
@@ -88,7 +88,7 @@
   )
 
 (package! org-starter
-  :recipe (:fetcher github :repo "akirak/org-starter")
+  :recipe (:host github :repo "akirak/org-starter")
   :disable t
   )
 
@@ -112,13 +112,13 @@
   :disable t)
 
 (package! powerthesaurus
-  :recipe (:fetcher github :repo "SavchenkoValeriy/emacs-powerthesaurus"))
+  :recipe (:host github :repo "SavchenkoValeriy/emacs-powerthesaurus"))
 
 (package! robots-txt-mode
   )
 
 (package! sdcv
-  :recipe (:fetcher github :repo "stardiviner/sdcv.el" :files ("sdcv.el")))
+  :recipe (:host github :repo "stardiviner/sdcv.el" :files ("sdcv.el")))
 
 (package! systemd
   )
@@ -133,5 +133,5 @@
 (package! xml+)
 
 (package! zeal-at-point
-  :recipe (:fetcher github :repo "jinzhu/zeal-at-point")
+  :recipe (:host github :repo "jinzhu/zeal-at-point")
   )
