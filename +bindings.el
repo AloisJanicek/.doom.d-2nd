@@ -445,6 +445,14 @@
    :map +popup-buffer-mode-map
    "C-l"  #'evil-window-right
    )
+ (:after vterm
+   (:map vterm-mode-map
+     ;; Easier window movement
+     :i "C-h" #'evil-window-left
+     :i "C-j" #'evil-window-down
+     :i "C-k" #'evil-window-up
+     :i "C-l" #'evil-window-right)
+   )
  (:after web-mode
    (:map web-mode-map
      :i "M-r" #'aj/mark-region-and-preview-emmet

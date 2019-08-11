@@ -1062,6 +1062,11 @@ than having to call `add-to-list' multiple times."
   (add-hook 'treemacs-mode-hook 'variable-pitch-mode)
   )
 
+(after! vterm
+  (add-hook! 'vterm-mode-hook #'hide-mode-line-mode)
+  (add-hook 'vterm-mode-hook '(lambda () (interactive)(setq left-fringe-width 0
+                                                            right-ringe-width 0))))
+
 (after! web-mode
   (add-hook 'web-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS" "Bootstrap_4"))))
   (add-hook 'web-mode-hook 'my-web-mode-hook)
