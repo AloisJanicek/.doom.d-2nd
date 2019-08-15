@@ -156,6 +156,7 @@
          :desc "Region"         "r" #'org-change-tag-in-region
          )
 
+       "a" nil
        (:desc "Attach"          :prefix       "a"
          :desc "Dispatch"           "d" #'org-attach
          )
@@ -221,6 +222,7 @@
          :desc "action"             "a" #'org-footnote-action
          )
 
+       "p" nil
        (:desc "property"          :prefix     "p"
          :desc "set"              "s" #'org-set-property
          )
