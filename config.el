@@ -17,7 +17,7 @@ if running under WSL")
 (defvar +Repos (concat +BASE-HOME "repos/")
   "Location of Repos folder.")
 
-(setq org-directory (concat +BASE-HOME "org"))
+(setq org-directory (concat +BASE-HOME "Dropbox/org"))
 
 (defvar +TASKS (expand-file-name "tasks.org" org-directory)
   "File where things must be done.")
