@@ -34,9 +34,6 @@ if running under WSL")
 (defvar +JOURNAL (expand-file-name "journal.org" (concat org-directory "/archive"))
   "File where things are logged.")
 
-(defvar +GOALS (expand-file-name "goals.org" org-directory)
-  "File where Goals are set and tracked.")
-
 (defvar +TECHNICAL (concat org-directory "/technical")
   "Directory of technical notes.")
 
@@ -771,7 +768,7 @@ than having to call `add-to-list' multiple times."
   (remove-hook 'org-agenda-finalize-hook '+org|cleanup-agenda-files)
 
   (setq
-   ;; org-agenda-files `(,+TASKS ,+CALENDAR, +GOALS)
+   ;; org-agenda-files `(,+TASKS ,+CALENDAR)
    org-agenda-files `(,org-directory)
    org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
                               (timeline  . "  %-6t %6e ")
@@ -1182,7 +1179,6 @@ than having to call `add-to-list' multiple times."
   "GTD file:"
   ("i" (find-file-other-window +INBOX) "inbox" )
   ("t" (find-file-other-window +TASKS) "tasks" )
-  ("g" (find-file-other-window +GOALS) "goals" )
   ("j" (find-file-other-window +JOURNAL) "journal" )
   ("s" (find-file-other-window +SOMEDAY) "someday" )
   ("c" (find-file-other-window +CALENDAR) "calendar" )
@@ -1199,7 +1195,6 @@ than having to call `add-to-list' multiple times."
 (defhydra aj/gtd-refile (:color blue :after-exit (hydra-pop))
   "GTD Refile:"
   ("t" (org-refile-directly +TASKS) "tasks")
-  ("g" (org-refile-directly +GOALS) "goals")
   ("c" (org-refile-directly +CALENDAR) "calendar")
   ("s" (org-refile-directly +SOMEDAY) "someday")
   ("T" (aj/refile-to-file-in +TECHNICAL) "Technical")
