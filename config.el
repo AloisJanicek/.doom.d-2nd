@@ -708,7 +708,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
    org-refile-target-verify-function 'aj/verify-headlines-for-refile
 
    org-id-track-globally t
-   org-id-locations-file (expand-file-name ".org-ids-locations" org-directory)
+   org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)
    org-use-property-inheritance t
 
    org-log-done 'time
