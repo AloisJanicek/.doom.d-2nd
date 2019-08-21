@@ -332,15 +332,8 @@
      (:prefix "d"
        :m         "s"     #'org-agenda-schedule
        (:desc "refile:"   :prefix "r"
-
          :desc "targets"        :m "t"  #'org-agenda-refile
-
-         :desc "GTD"            :m "g"  (λ! (aj/org-agenda-refile-to-file-custom +GTD nil))
-         :desc "someday"        :m "s"  (λ! (aj/org-agenda-refile-to-file-custom +SOMEDAY t))
-         :desc "maybe"          :m "m"  (λ! (aj/org-agenda-refile-to-file-custom +MAYBE t))
-
          :desc "journal"        :m "j"  (λ! (aj/org-agenda-refile-to-datetree +JOURNAL))
-
          :desc "file top level"            :m "F"  (λ! (aj/org-agenda-refile-to-file-custom nil t))
          :desc "file and headline"         :m "f"  (λ! (aj/org-agenda-refile-to-file-custom nil nil))
          :desc "project readme"            :m "p"  (λ! (aj/org-agenda-refile-to-file-custom nil nil t))
@@ -666,6 +659,7 @@
         :desc "Kill buffers"             "K" #'kill-buffer
         )
       (:prefix ("n" . "notes")
+        :desc "private"      "r" (λ! (aj/choose-note-to-indirect +PRIVATE))
         :desc "notes"        "n" (λ! (aj/choose-note-to-indirect +TECHNICAL))
         :desc "org-dir"      "o" (λ! (aj/choose-note-to-indirect org-directory))
         :desc "personal"        "p" (λ! (aj/choose-note-to-indirect +PERSONAL))

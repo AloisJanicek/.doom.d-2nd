@@ -8,7 +8,7 @@ if running under WSL")
     (setq +BASE-HOME (concat "/mnt/c/Users/" (aj/return-wsl-user-name) "/"))
   (setq +BASE-HOME (expand-file-name "~")))
 
-(defvar +Reference (concat +BASE-HOME "Reference")
+(defvar +Reference (concat +BASE-HOME "Documents/MEGAsync")
   "Location of Reference folder.")
 
 (defvar +Libraries (concat +Reference "/" "Libraries")
@@ -19,19 +19,13 @@ if running under WSL")
 
 (setq org-directory (concat +BASE-HOME "Dropbox/org"))
 
-(defvar +TASKS (expand-file-name "tasks.org" org-directory)
-  "File where things must be done.")
-
 (defvar +INBOX (expand-file-name "inbox.org" org-directory)
   "File where all stuff is captured.")
 
-(defvar +CALENDAR (expand-file-name "calendar.org" org-directory)
-  "File where reminders are set.")
-
-(defvar +SOMEDAY (expand-file-name "someday.org" org-directory)
+(defvar +TASKS (expand-file-name "tasks.org" org-directory)
   "File where things must be done.")
 
-(defvar +JOURNAL (expand-file-name "journal.org" (concat org-directory "/archive"))
+(defvar +JOURNAL (expand-file-name "journal.org" org-directory)
   "File where things are logged.")
 
 (defvar +TECHNICAL (concat org-directory "/technical")
@@ -39,6 +33,9 @@ if running under WSL")
 
 (defvar +PERSONAL (concat org-directory "/personal")
   "Directory of personal notes.")
+
+(defvar +PRIVATE (concat org-directory "/private")
+  "Directory of private notes.")
 
 (defvar +org-files (directory-files-recursively +TECHNICAL ".org")
   "Lists of org files I always want to have opened for quick access.")
@@ -89,10 +86,8 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 
 
 (add-to-list '+org-files (expand-file-name +TASKS))
-(add-to-list '+org-files (expand-file-name +CALENDAR))
 (add-to-list '+org-files (expand-file-name +JOURNAL))
 (add-to-list '+org-files (expand-file-name +INBOX))
-(add-to-list '+org-files (expand-file-name +SOMEDAY))
 
 (setq-default tab-width 2)
 
@@ -725,6 +720,8 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
     (add-to-list 'org-refile-targets `(,file :level . 1)))
   (dolist (file (directory-files-recursively +PERSONAL ".org"))
     (add-to-list 'org-refile-targets `(,file :level . 1)))
+  (dolist (file (directory-files-recursively +PRIVATE ".org"))
+    (add-to-list 'org-refile-targets `(,file :level . 1)))
 
   (defun jlp/add-to-list-multiple (list to-add)
     "Adds multiple items to LIST.
@@ -768,7 +765,6 @@ than having to call `add-to-list' multiple times."
   (remove-hook 'org-agenda-finalize-hook '+org|cleanup-agenda-files)
 
   (setq
-   ;; org-agenda-files `(,+TASKS ,+CALENDAR)
    org-agenda-files `(,org-directory)
    org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
                               (timeline  . "  %-6t %6e ")
@@ -875,13 +871,6 @@ than having to call `add-to-list' multiple times."
        (org-agenda-skip-scheduled-if-done t)
        ))
 
-     ("s" "Someday" ((tags "*"))
-      ((org-agenda-files `(,+SOMEDAY))
-       (org-tags-match-list-sublevels t)
-       (org-agenda-skip-entry-if 'todo)
-       (org-agenda-hide-tags-regexp "INBOX")
-       (org-agenda-skip-scheduled-if-done t)
-       ))
 
      ("C" "Current project" ((tags "+LEVEL=1+CATEGORY=\"TASKS\"
                                     |+LEVEL=2+CATEGORY=\"TASKS\""))
@@ -1030,7 +1019,7 @@ than having to call `add-to-list' multiple times."
 
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
-  (dolist (i '("/technical/" "personal" ".pdf" ".epub" ".db" "/.emacs.d/session" "/workspaces/autosave" "/usr/share/emacs"))
+  (dolist (i '("/technical/" "personal" "private" ".pdf" ".epub" ".db" "/.emacs.d/session" "/workspaces/autosave" "/usr/share/emacs"))
     (add-to-list 'recentf-exclude i)
     )
   )
@@ -1088,7 +1077,7 @@ than having to call `add-to-list' multiple times."
 (after! yasnippet
   )
 
-
+;; Hydras
 (defhydra gtd-agenda (:color blue
                              :body-pre
                              (org-agenda nil "g"))
@@ -1098,7 +1087,6 @@ than having to call `add-to-list' multiple times."
   ("t" (org-agenda nil "t") "todos")
   ("p" (org-agenda nil "T") "projects")
   ("i" (org-agenda nil "i") "inbox")
-  ("s" (org-agenda nil "s") "someday")
   )
 
 
@@ -1138,7 +1126,6 @@ than having to call `add-to-list' multiple times."
   ;; ("p" (org-capture nil "gp") "personal" :exit t)
   ;; ("f" (org-capture nil "gf") "profession" :exit t)
   ;; ("j" (org-capture nil "e") "journal" :exit t)
-  ;; ("C" (aj/calendar-the-right-way) "CAL:" :exit t)
   ;; ("P" (aj/capture-into-project) "into project:" :exit t)
   )
 
@@ -1180,8 +1167,6 @@ than having to call `add-to-list' multiple times."
   ("i" (find-file-other-window +INBOX) "inbox" )
   ("t" (find-file-other-window +TASKS) "tasks" )
   ("j" (find-file-other-window +JOURNAL) "journal" )
-  ("s" (find-file-other-window +SOMEDAY) "someday" )
-  ("c" (find-file-other-window +CALENDAR) "calendar" )
   )
 
 (defhydra aj/gtd-edit (:color blue :after-exit (hydra-pop))
@@ -1195,9 +1180,8 @@ than having to call `add-to-list' multiple times."
 (defhydra aj/gtd-refile (:color blue :after-exit (hydra-pop))
   "GTD Refile:"
   ("t" (org-refile-directly +TASKS) "tasks")
-  ("c" (org-refile-directly +CALENDAR) "calendar")
-  ("s" (org-refile-directly +SOMEDAY) "someday")
   ("T" (aj/refile-to-file-in +TECHNICAL) "Technical")
+  ("I" (aj/refile-to-file-in +PRIVATE) "Private")
   ("P" (aj/refile-to-file-in +PERSONAL) "Personal")
   )
 
