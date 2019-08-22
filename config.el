@@ -700,7 +700,7 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
    ;; org-refile-targets '((org-agenda-files :maxlevel . 5))
    org-refile-use-outline-path 'file
    org-outline-path-complete-in-steps nil
-   org-refile-target-verify-function 'aj/verify-headlines-for-refile
+   ;; org-refile-target-verify-function 'aj/verify-headlines-for-refile
 
    org-id-track-globally t
    org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)
