@@ -6,7 +6,7 @@ if running under WSL")
 
 (if (aj/wsl-p)
     (setq +BASE-HOME (concat "/mnt/c/Users/" (aj/return-wsl-user-name) "/"))
-  (setq +BASE-HOME (expand-file-name "~")))
+  (setq +BASE-HOME (expand-file-name "~/")))
 
 (defvar +Reference (concat +BASE-HOME "Documents/MEGAsync")
   "Location of Reference folder.")
