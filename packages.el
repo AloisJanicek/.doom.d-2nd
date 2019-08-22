@@ -93,6 +93,7 @@
   )
 
 (package! org-super-agenda
+  :disable t
   )
 
 (package! origami

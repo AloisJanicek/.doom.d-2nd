@@ -57,13 +57,6 @@ to `t', otherwise, just do everything in the background.")
 (defvar +persp-blacklist nil
   "Contains list files which should not be considered as part of workspace")
 
-(defvar +aj/time-block nil
-  "Is a list of sequences where first item is string representing time in
-\"%H:%S\" format, second item is list of integers indicating time which should
-have a grid line in agenda and it is being passed to `org-agenda-grid' and
-third item is string representing tag with leading plus sign \"+\" to which
-should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
-
 (defvar +refile-targets-with-headlines t
   "List of org files which should be allowed offer refile under headlines")
 
@@ -135,8 +128,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 (def-package! define-word
   :commands (define-word  define-word-at-point))
 
-;; (def-package! eaf)
-
 (def-package! ereader
   :commands (ereader-read-epub ereader-mode)
   :mode ("\\.epub\\'". ereader-mode)
@@ -150,21 +141,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 (def-package! esqlite
   :commands (esqlite-stream-open)
   )
-
-(def-package! exwm
-  :disabled
-  :config
-  (require 'exwm)
-  (require 'exwm-config)
-  (exwm-config-default)
-  (setq exwm-workspace-number 4)
-  (require 'exwm-randr)
-  (setq exwm-randr-workspace-output-plist '(0 "VGA-1"))
-  (add-hook 'exwm-randr-screen-change-hook
-            (lambda ()
-              (start-process-shell-command
-               "xrandr" nil "xrandr --output VGA-1 --right-of LVDS-1 --auto")))
-  (exwm-randr-enable))
 
 (def-package! fish-mode
   :commands (fish-mode))
@@ -188,11 +164,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 (def-package! ivy-yasnippet
   :commands (ivy-yasnippet))
 
-(def-package! ivy-mpdel
-  :disabled
-  :config
-  (set-popup-rule! "*MPDEL Current Playlist*"       :size 0.4 :side 'left :select t :transient nil))
-
 (def-package! ivy-pages
   :after ivy
   )
@@ -205,18 +176,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   :config
   (setq link-hint-avy-all-windows nil)
   )
-
-(def-package! mpdel
-  :disabled
-  :config
-  (defhydra aj/mpd-control ()
-    "Control podcaster:"
-    ("a" (ivy-mpdel-artists) "artist")
-    ("A" (mpdel-nav-add-to-current-playlist) "Add" :color blue)
-    ("l" (ivy-mpdel-stored-playlists) "list")
-    ("p" (libmpdel-playback-play-pause) "play/pause" :color blue)
-    ("s" (libmpdel-stop) "stop" :color blue)
-    ("o" (aj-mpdel-playlist-open) "open" :color blue)))
 
 (def-package! ob-async
   :commands ob-async-org-babel-execute-src-block
@@ -264,15 +223,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   :commands (org-ebook-open org-ebook-store-link)
   )
 
-
-(def-package! org-super-agenda
-  :after org-agenda
-  :init (advice-add #'org-super-agenda-mode :around #'doom-shut-up-a)
-  :config (org-super-agenda-mode)
-  ;; (setq org-super-agenda-header-separator "               ")
-  ;; (setq org-super-agenda-header-separator nil)
-  )
-
 (def-package! org-pdfview
   :commands (org-pdfview-open org-pdfview-store-link org-pdfview-complete-link org-pdfview-export)
   )
@@ -294,20 +244,6 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 (def-package! ox-hugo
   :after ox
   )
-
-
-(def-package! podcaster
-  :disabled
-  :commands podcaster
-  :init
-  :config
-  (setq podcaster-feeds-urls (list "https://talkpython.fm/episodes/rss" "http://feeds.soundcloud.com/users/soundcloud:users:277306156/sounds.rss"))
-  (defhydra aj/podcaster-control ()
-    "Control podcaster:"
-    ("l" (podcaster) "listen")
-    ("p" (podcaster-pause) "pause")
-    ("s" (podcaster-stop) "stop")
-    ("r" (podcaster-resume) "resume")))
 
 (def-package! robots-txt-mode
   :mode (("/robots\\.txt\\'" . robots-txt-mode)))
@@ -381,9 +317,9 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
 ;;   (setq company-lsp-cache-candidates auto))
 
 (after! counsel
-  (setq counsel-grep-base-command "grep -E -n -i -e %s %s")
-  (setq counsel-org-goto-face-style 'verbatim
-        counsel-org-headline-display-style 'path
+  (setq counsel-grep-base-command "grep -E -n -i -e %s %s"
+        counsel-outline-face-style 'verbatim
+        counsel-outline-display-style 'path
         counsel-org-headline-display-tags t
         counsel-org-headline-display-todo nil
         counsel-org-tags t
@@ -407,8 +343,8 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   (aj/remove-global-mode-string-from-modeline)
   )
 
-(after! epa
-  (setq epa-pinentry-mode 'ask))
+(after! epg-config
+  (setq epg-pinentry-mode 'ask))
 
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
@@ -617,28 +553,28 @@ should be agenda-view filtered by `org-agenda-tag-filter-preset'.")
   )
 
 (after! org
-  (load! "+cool-agenda.el")
   (set-popup-rule! "^\\*org-brain\\*$"    :size 0.24 :side 'left  :vslot -2 :select t :quit nil :ttl nil               :autosave t)
   (set-popup-rule! "^CAPTURE.*\\.org$"    :size 0.4  :side 'bottom          :select t                                  :autosave t)
   (set-popup-rule! "^\\*Org Src"          :size 0.4  :side 'right           :select t :quit t                          :autosave t)
   (set-popup-rule! "^\\*Org Agenda.*\\*$" :size 0.32 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
 
   (add-hook 'doom-load-theme-hook #'aj/my-org-faces)
-  (advice-add '+popup--delete-window :before #'(lambda (&rest _) (when (eq major-mode 'org-mode) (save-buffer))))
-  (add-hook 'org-capture-mode-hook 'flyspell-mode)
   (add-hook 'org-after-todo-state-change-hook 'org-save-all-org-buffers)
+  (add-hook 'org-capture-mode-hook 'flyspell-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)
-  (advice-add 'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
-  (advice-add 'org-save-all-org-buffers :around 'doom-shut-up-a)
-  (advice-add 'org-protocol-check-filename-for-protocol :around 'doom-shut-up-a)
-  (advice-add #'org-refile :after #'aj/take-care-of-org-buffers)
-  ;;(advice-add #'aj/has-children-p :after #'winner-undo)
-  ;;(advice-add #'aj/has-children-p :after #'aj/take-care-of-org-buffers)
+  (add-hook! org-mode-hook :append #'aj/my-org-faces)
   (advice-add #'aj/bookmarks :after #'aj/take-care-of-org-buffers)
   (advice-add #'aj/refile-to-file :after #'aj/take-care-of-org-buffers)
   (advice-add #'aj/refile-to-project-readme :after #'aj/take-care-of-org-buffers)
-  (add-hook! org-mode-hook :append #'aj/my-org-faces)
+  (advice-add #'org-refile :after #'aj/take-care-of-org-buffers)
+  (advice-add '+popup--delete-window :before #'(lambda (&rest _) (when (eq major-mode 'org-mode) (save-buffer))))
+  (advice-add 'org-protocol-check-filename-for-protocol :around 'doom-shut-up-a)
+  (advice-add 'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
+  (advice-add 'org-save-all-org-buffers :around 'doom-shut-up-a)
   (remove-hook 'org-mode-hook #'auto-fill-mode)
+  ;;(advice-add #'aj/has-children-p :after #'aj/take-care-of-org-buffers)
+  ;;(advice-add #'aj/has-children-p :after #'winner-undo)
+
   ;; clock persistence
   (org-clock-persistence-insinuate)
 
@@ -742,25 +678,25 @@ than having to call `add-to-list' multiple times."
                                            (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
                                            (org-agenda-redo)
                                            ))
-  (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
-  (advice-add #'org-agenda-refile :after #'aj/take-care-of-org-buffers)
-  (advice-add #'org-agenda-exit :after #'aj/take-care-of-org-buffers)
-  (advice-add #'aj/org-agenda-refile-to-file :after #'aj/take-care-of-org-buffers)
-  (advice-add #'aj/org-agenda-refile-to-datetree :after #'aj/take-care-of-org-buffers)
-  (advice-add #'aj/org-agenda-refile-to-project-readme :after #'aj/take-care-of-org-buffers)
-  (advice-add 'org-agenda-archive :after #'org-save-all-org-buffers)
-  (advice-add 'org-agenda-archive-default :after #'org-save-all-org-buffers)
-  (advice-add 'org-agenda-set-effort :after #'org-save-all-org-buffers)
-  (advice-add 'org-agenda-exit :before 'org-save-all-org-buffers)
-  (advice-add 'org-agenda-switch-to :after 'turn-off-solaire-mode)
-  (advice-add 'org-agenda-filter-apply :after 'aj/copy-set-agenda-filter)
-  (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
-  (add-hook 'org-agenda-mode-hook #'hide-mode-line-mode)
-  (add-hook 'org-agenda-mode-hook #'aj/complete-all-tags-for-org)
   (add-hook 'org-agenda-after-show-hook 'org-narrow-to-subtree)
+  (add-hook 'org-agenda-mode-hook #'aj/complete-all-tags-for-org)
+  (add-hook 'org-agenda-mode-hook #'hide-mode-line-mode)
   (add-hook 'org-agenda-finalize-hook '(lambda ()
                                          (setq-local org-global-tags-completion-table
                                                      (org-global-tags-completion-table org-agenda-contributing-files))))
+  (advice-add #'aj/org-agenda-refile-to-datetree :after #'aj/take-care-of-org-buffers)
+  (advice-add #'aj/org-agenda-refile-to-file :after #'aj/take-care-of-org-buffers)
+  (advice-add #'aj/org-agenda-refile-to-project-readme :after #'aj/take-care-of-org-buffers)
+  (advice-add #'org-agenda-exit :after #'aj/take-care-of-org-buffers)
+  (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
+  (advice-add #'org-agenda-refile :after #'aj/take-care-of-org-buffers)
+  (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
+  (advice-add 'org-agenda-archive :after #'org-save-all-org-buffers)
+  (advice-add 'org-agenda-archive-default :after #'org-save-all-org-buffers)
+  (advice-add 'org-agenda-exit :before 'org-save-all-org-buffers)
+  (advice-add 'org-agenda-filter-apply :after 'aj/copy-set-agenda-filter)
+  (advice-add 'org-agenda-set-effort :after #'org-save-all-org-buffers)
+  (advice-add 'org-agenda-switch-to :after 'turn-off-solaire-mode)
   ;; (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
   (remove-hook 'org-agenda-finalize-hook '+org|cleanup-agenda-files)
 
@@ -791,101 +727,7 @@ than having to call `add-to-list' multiple times."
      (tags   priority-down category-keep)
      (search category-keep))
    org-agenda-custom-commands
-   `(
-
-     ("R" "Today"
-      ((todo ""
-             ((org-agenda-overriding-header "Today")
-              (org-super-agenda-groups
-               '((:name "Priority" :and (:priority "A" :scheduled today))
-                 (:name "Overdue" :scheduled past)
-                 (:name "Other" :scheduled today)
-                 (:discard (:anything t))
-                 ))))
-       (tags "+TODO=\"DONE\""
-             ((org-agenda-overriding-header " Completed")
-              (org-agenda-todo-ignore-scheduled t)
-              (org-agenda-tags-todo-honor-ignore-options t)))))
-
-
-     ("2" "Deadline this month"
-      ((tags "*"
-             ((org-agenda-overriding-header "Deadline this month")
-              (org-super-agenda-groups
-               '((:name none
-                        :deadline (before ,(return-target-date-for-deadline-agenda)))
-                 (:discard (:anything t))
-                 ))
-              )
-             )))
-
-     ("T" "Todos"
-      ((tags "+Todo=\"TODO\"|+TODO=\"DONE\""
-             ((org-agenda-overriding-header "Todos")
-              (org-agenda-sorting-strategy
-               '((agenda habit-down time-up priority-down category-keep)
-                 (todo   effort-up)
-                 (tags   priority-up category-keep)
-                 (search category-keep)))
-              (org-super-agenda-groups
-               '((:discard (:scheduled t))
-                 (:name "Not scheduled"
-                        :auto-parent t)))))))
-     ("g" "gtd"
-      (
-
-       (agenda ""
-               ((org-agenda-overriding-header "")
-                (org-agenda-show-current-time-in-grid t)
-                (org-agenda-use-time-grid t)
-                (org-agenda-skip-scheduled-if-done nil)
-                (org-agenda-span 'day)
-                ))
-       (+agenda-tasks)
-       )
-      (
-       (org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
-       (org-agenda-tags-todo-honor-ignore-options t)
-       (org-agenda-todo-ignore-scheduled 'all)
-       (org-agenda-todo-ignore-deadlines 'far)
-       (org-agenda-skip-scheduled-if-done t)
-       (org-agenda-start-with-log-mode t)
-       (org-agenda-skip-deadline-if-done t)
-       (org-agenda-skip-scheduled-if-deadline-is-shown t)
-       (org-agenda-clockreport-parameter-plist `(:link t :maxlevel 6 :fileskip0 t :compact t :narrow 100))
-       (org-agenda-columns-add-appointments-to-effort-sum t)
-       (org-agenda-dim-blocked-tasks nil)
-       (org-agenda-todo-list-sublevels nil)
-       (org-agenda-block-separator "")
-       (org-agenda-time-grid '((daily today require-timed) nil " " " "))
-       )
-      )
-
-
-
-     ("i" "Inbox" ((tags "*"))
-      ((org-agenda-files `(,+INBOX))
-       (org-tags-match-list-sublevels t)
-       (org-agenda-skip-entry-if 'todo)
-       (org-agenda-hide-tags-regexp "INBOX")
-       (org-agenda-skip-scheduled-if-done t)
-       ))
-
-
-     ("C" "Current project" ((tags "+LEVEL=1+CATEGORY=\"TASKS\"
-                                    |+LEVEL=2+CATEGORY=\"TASKS\""))
-      ((org-agenda-files (aj/return-project-org-file))
-       (org-agenda-overriding-header (aj/return-short-project-name))))
-
-
-     ("p" "Projectile Projects" ((todo ""))
-      ((org-agenda-files `,(get-all-projectile-README-org-files))
-       (org-agenda-overriding-header "All Projectile projects")
-       (org-super-agenda-groups
-        '((:name "Projects"
-                 :auto-group t)))))
-
-     )
+   `()
    )
   )
 
@@ -917,12 +759,6 @@ than having to call `add-to-list' multiple times."
                            ("t" "Task" entry (file ,+TASKS)
                             "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
                             :empty-lines 1 :prepend t)
-
-                           ("P" "Project task" entry (file+headline ,(concat (projectile-project-root) "README.org") "TASKS")
-                            "* [ ] %?" :prepend t)
-
-                           ("J" "Project journal" entry (file+olp+datetree ,(concat (projectile-project-root) "README.org") "JOURNAL")
-                            "**** %?" :tree-type week)
                            )
    )
   )
@@ -981,7 +817,7 @@ than having to call `add-to-list' multiple times."
   )
 
 (after! persp-mode
-  (setq persp-kill-foreign-buffer-action nil)
+  (setq persp-kill-foreign-buffer-behaviour nil)
   (advice-add 'persp-remove-buffer :around 'doom-shut-up-a)
   (dolist (file (directory-files-recursively org-directory ".org"))
     (add-to-list '+persp-blacklist `,(file-name-nondirectory file)))
@@ -1094,7 +930,6 @@ than having to call `add-to-list' multiple times."
   "Agenda:"
   ("c" (aj/clock-menu) "clock" )
   ("p" (org-pomodoro) "pomodoro" )
-  ("r" (aj/gtd-review-refile/body) "refile")
   )
 
 (defhydra aj/clocking (:color blue)
@@ -1119,86 +954,4 @@ than having to call `add-to-list' multiple times."
   ;; ("c" ((lambda () (let ((hydra-lv nil)) (aj/capture-code/body)))) "code:" :exit t)
   ("k" (org-capture nil "c") "inbox" :exit t)
   ("t" (org-capture nil "t") "task" :exit t)
-  ;; ("k" (org-capture nil "gi") "inbox" :exit t)
-  ;; ("e" (org-capture nil "ge") "env" :exit t)
-  ;; ("j" (org-capture nil "gj") "job" :exit t)
-  ;; ("d" (org-capture nil "gd") "education" :exit t)
-  ;; ("p" (org-capture nil "gp") "personal" :exit t)
-  ;; ("f" (org-capture nil "gf") "profession" :exit t)
-  ;; ("j" (org-capture nil "e") "journal" :exit t)
-  ;; ("P" (aj/capture-into-project) "into project:" :exit t)
-  )
-
-;; Main hydra for GTD related operations
-
-(defhydra aj/gtd (:color teal)
-  "gtd"
-  ("a" (org-refile-to-datetree +JOURNAL) "archive" :color red)
-  ("g" (progn
-         (aj/gtd-goto/body)
-         (hydra-push '(aj/gtd/body)))
-   "goto:")
-  ("r" (progn
-         (aj/gtd-refile/body)
-         (hydra-push '(aj/gtd/body)))
-   "refile:")
-  ("t" (progn
-         (counsel-org-tag)
-         (hydra-push '(aj/gtd/body))
-         (hydra-pop))
-   "tag:")
-  ("e" (progn
-         (aj/gtd-edit/body)
-         (hydra-push '(aj/gtd/body)))
-   "edit:")
-  ("c" (progn
-         (aj/clocking/body)
-         (hydra-push '(aj/gtd/body)))
-   "clock:")
-  ("q" nil :exit t)
-  ("j" org-next-visible-heading :color red)
-  ("k" org-previous-visible-heading :color red)
-  ("d" org-cut-subtree "delete" :color red)
-  ("s" (org-save-all-org-buffers) "save" :color red)
-  )
-
-(defhydra aj/gtd-goto (:color blue :after-exit (hydra-pop))
-  "GTD file:"
-  ("i" (find-file-other-window +INBOX) "inbox" )
-  ("t" (find-file-other-window +TASKS) "tasks" )
-  ("j" (find-file-other-window +JOURNAL) "journal" )
-  )
-
-(defhydra aj/gtd-edit (:color blue :after-exit (hydra-pop))
-  "edit"
-  ("t" org-todo "todo")
-  ("s" org-schedule "schedule")
-  ("d" org-deadline "deadline")
-  ("r" org-rename-header "rename")
-  )
-
-(defhydra aj/gtd-refile (:color blue :after-exit (hydra-pop))
-  "GTD Refile:"
-  ("t" (org-refile-directly +TASKS) "tasks")
-  ("T" (aj/refile-to-file-in +TECHNICAL) "Technical")
-  ("I" (aj/refile-to-file-in +PRIVATE) "Private")
-  ("P" (aj/refile-to-file-in +PERSONAL) "Personal")
-  )
-
-(defhydra aj/grep-or-nothing (:color blue)
-  "grep this file:"
-  ("g" (counsel-grep-or-swiper)))
-
-
-(defhydra aj/wiki-select (:color blue)
-  "Goto:"
-  ("g" (progn
-         (widen)
-         (org-set-visibility-according-to-property)
-         (outline-show-branches)
-         (counsel-org-goto-private-wiki))  "goto:" :exit t)
-  ("v" (org-brain-visualize (org-brain-entry-at-pt)) "visualize:" :exit t)
-  ("f" (lambda () (interactive) (progn (widen) (swiper))) "find:" :exit t)
-  ("p" (mixed-pitch-mode) "Pretty" :exit t)
-  ("d" (org-decrypt-entries) "Decrypt entries" :exit t)
   )
