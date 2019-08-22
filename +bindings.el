@@ -2,17 +2,6 @@
 
 ;;global
 (map!
- ;; "M-1"   (λ! (+workspace/switch-to 0))
- ;; "M-2"   (λ! (+workspace/switch-to 1))
- ;; "M-3"   (λ! (+workspace/switch-to 2))
- ;; "M-4"   (λ! (+workspace/switch-to 3))
- ;; "M-5"   (λ! (+workspace/switch-to 4))
- ;; "M-6"   (λ! (+workspace/switch-to 5))
- ;; "M-7"   (λ! (+workspace/switch-to 6))
- ;; "M-8"   (λ! (+workspace/switch-to 7))
- ;; "M-9"   (λ! (+workspace/switch-to 8))
- ;; "M-0"   #'+workspace/switch-to-last
- ;; "M-t"   #'+workspace/new
  :ni "C-k" #'evil-window-up
  :ni "C-j" #'evil-window-down
  :ni "C-h" #'evil-window-left
@@ -446,6 +435,17 @@
      :i "C-h" #'evil-window-left
      :i "C-j" #'evil-window-down
      :i "C-k" #'evil-window-up
+     :i "M-1"   (λ! (+workspace/switch-to 0))
+     :i "M-2"   (λ! (+workspace/switch-to 1))
+     :i "M-3"   (λ! (+workspace/switch-to 2))
+     :i "M-4"   (λ! (+workspace/switch-to 3))
+     :i "M-5"   (λ! (+workspace/switch-to 4))
+     :i "M-6"   (λ! (+workspace/switch-to 5))
+     :i "M-7"   (λ! (+workspace/switch-to 6))
+     :i "M-8"   (λ! (+workspace/switch-to 7))
+     :i "M-9"   (λ! (+workspace/switch-to 8))
+     :i "M-0"   #'+workspace/switch-to-last
+     :i "M-t"   #'+workspace/new
      )
    )
  (:after web-mode
