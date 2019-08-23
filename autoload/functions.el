@@ -1795,3 +1795,10 @@ than having to call `add-to-list' multiple times."
 (defun aj/save-and-refresh-agenda (&optional arg)
   (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
   (org-agenda-redo))
+
+;;;###autoload
+(defun aj/open-file-the-right-way-from-agenda (orig-fun &rest args)
+  "This function is intended as an advice for org-agenda. It overrides `pop-to-buffer-same-window'
+with my heavily customized alternative `aj/open-file-switch-create-indirect-buffer-per-persp'"
+  (cl-letf (((symbol-function 'pop-to-buffer-same-window) #'aj/open-file-switch-create-indirect-buffer-per-persp))
+    (apply orig-fun args)))
