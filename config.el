@@ -223,6 +223,12 @@ to `t', otherwise, just do everything in the background.")
 
 (def-package! org-ql
   :after org
+  :commands org-ql-search
+  )
+
+(def-package! org-ql-agenda
+  :after org
+  :commands org-ql-agenda
   )
 
 (def-package! org-super-agenda
@@ -526,6 +532,8 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "^CAPTURE.*\\.org$"    :size 0.4  :side 'bottom          :select t                                  :autosave t)
   (set-popup-rule! "^\\*Org Src"          :size 0.4  :side 'right           :select t :quit t                          :autosave t)
   (set-popup-rule! "^\\*Org Agenda.*\\*$" :size 0.32 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*Org QL Search.*\\*$" :size 0.32 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :size 0.32 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
 
   (add-hook 'doom-load-theme-hook #'aj/my-org-faces)
   (add-hook 'org-after-todo-state-change-hook 'org-save-all-org-buffers)
@@ -871,13 +879,35 @@ to `t', otherwise, just do everything in the background.")
 ;; Hydras
 (defhydra gtd-agenda (:color blue
                              :body-pre
-                             (org-agenda nil "g"))
+                             (org-ql-search (org-agenda-files)
+                               '(todo)
+                               :sort '(date priority todo)
+                               :groups '((:auto-category t)))
+                             )
   "agenda"
-  ("a" (org-agenda nil "a") "agenda")
-  ("m" (org-agenda nil "2") "month")
-  ("t" (org-agenda nil "t") "todos")
-  ("p" (org-agenda nil "T") "projects")
-  ("i" (org-agenda nil "i") "inbox")
+  ("a" (org-ql-agenda (org-agenda-files)
+         (and (or (ts-active :on today)
+                  (deadline auto)
+                  (scheduled :to today))
+              (not (done)))) "agenda")
+
+  ("n" (org-ql-search (org-agenda-files)
+         '(todo "NEXT")
+         :sort '(date priority todo)
+         :groups '((:auto-category t))) "next")
+
+  ("s" (org-ql-search (org-agenda-files)
+         '(tags "someday")
+         :sort '(date priority todo)
+         :groups '((:auto-category t))) "someday")
+
+  ("r" (org-ql-search (org-agenda-files)
+         '(ts :from -7 :to today)
+         :sort '(date priority todo)
+         :groups '((:auto-ts t))) "recent")
+
+  ("i" (org-ql-search `(,+INBOX) "*"
+         :sort '(date)) "inbox")
   )
 
 
