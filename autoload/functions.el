@@ -1790,3 +1790,8 @@ than having to call `add-to-list' multiple times."
   (interactive)
   (dolist (item to-add)
     (add-to-list list item)))
+
+;;;###autoload
+(defun aj/save-and-refresh-agenda (&optional arg)
+  (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
+  (org-agenda-redo))

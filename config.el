@@ -626,11 +626,7 @@ to `t', otherwise, just do everything in the background.")
         '("◉")))
 
 (after! org-agenda
-
-  (advice-add #'org-agenda-todo :after #'(lambda (&optional arg)
-                                           (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
-                                           (org-agenda-redo)
-                                           ))
+  (advice-add #'org-agenda-todo :after #'aj/save-and-refresh-agenda)
   (add-hook 'org-agenda-after-show-hook 'org-narrow-to-subtree)
   (add-hook 'org-agenda-mode-hook #'aj/complete-all-tags-for-org)
   (add-hook 'org-agenda-mode-hook #'hide-mode-line-mode)
