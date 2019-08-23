@@ -633,7 +633,7 @@ to `t', otherwise, just do everything in the background.")
    org-src-fontify-natively t
    org-imenu-depth 9
 
-   ;; org-refile-targets '((org-agenda-files :maxlevel . 5))
+   org-refile-targets '((org-agenda-files :maxlevel . 1))
    org-refile-use-outline-path 'file
    org-outline-path-complete-in-steps nil
    ;; org-refile-target-verify-function 'aj/verify-headlines-for-refile
@@ -650,14 +650,6 @@ to `t', otherwise, just do everything in the background.")
    org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA"
    org-drawers (quote ("PROPERTIES" "LOGBOOK"))
    )
-
-  ;; refile targets
-  (dolist (file (directory-files-recursively +TECHNICAL ".org"))
-    (add-to-list 'org-refile-targets `(,file :level . 1)))
-  (dolist (file (directory-files-recursively +PERSONAL ".org"))
-    (add-to-list 'org-refile-targets `(,file :level . 1)))
-  (dolist (file (directory-files-recursively +PRIVATE ".org"))
-    (add-to-list 'org-refile-targets `(,file :level . 1)))
 
   (defun jlp/add-to-list-multiple (list to-add)
     "Adds multiple items to LIST.
