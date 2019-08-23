@@ -701,7 +701,12 @@ than having to call `add-to-list' multiple times."
   (remove-hook 'org-agenda-finalize-hook '+org|cleanup-agenda-files)
 
   (setq
-   org-agenda-files `(,org-directory)
+   org-agenda-files (apply 'append
+                           (mapcar
+                            (lambda (directory)
+                              (directory-files-recursively
+                               directory org-agenda-file-regexp))
+                            `(,org-directory)))
    org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
                               (timeline  . "  %-6t %6e ")
                               (todo      . "  %-6t %6e ")
