@@ -818,9 +818,8 @@ to `t', otherwise, just do everything in the background.")
 
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
-  (dolist (i '("/technical/" "personal" "private" ".pdf" ".epub" ".db" "/.emacs.d/session" "/workspaces/autosave" "/usr/share/emacs"))
-    (add-to-list 'recentf-exclude i)
-    )
+  (dolist (i '("org/" ".pdf" ".epub" ".db" "/.emacs.d/session" "/workspaces/autosave" "/usr/share/emacs"))
+    (add-to-list 'recentf-exclude i))
   )
 
 (after! synosaurus
