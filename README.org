@@ -1,1 +1,5 @@
 #+TITLE: README
+
+* 2nd generation of my .doom.d
+This is my private module for [[https://github.com/hlissner/doom-emacs][doom-emacs]].
+You maybe saw [[https://github.com/AloisJanicek/.doom.d][first generation]] of this config, which was archived in affection.
