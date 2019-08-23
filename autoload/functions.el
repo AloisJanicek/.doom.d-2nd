@@ -1781,3 +1781,12 @@ point to the end of the line."
   "Set first argument passed to this function as a value of `org-agenda-tag-filter-preset'.
 This function is meant to be used as advice for `org-agenda-filter-apply'"
   (setq org-agenda-tag-filter-preset  string))
+
+;;;###autoload
+(defun jlp/add-to-list-multiple (list to-add)
+  "Adds multiple items to LIST.
+Allows for adding a sequence of items to the same list, rather
+than having to call `add-to-list' multiple times."
+  (interactive)
+  (dolist (item to-add)
+    (add-to-list list item)))

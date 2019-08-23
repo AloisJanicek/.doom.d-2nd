@@ -87,13 +87,15 @@
 (package! org-pomodoro
   )
 
+(package! org-ql
+  )
+
 (package! org-starter
   :recipe (:host github :repo "akirak/org-starter")
   :disable t
   )
 
 (package! org-super-agenda
-  :disable t
   )
 
 (package! origami

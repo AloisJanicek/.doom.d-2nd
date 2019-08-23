@@ -86,8 +86,6 @@ to `t', otherwise, just do everything in the background.")
 
 (load! "+bindings")
 
-;; (add-hook 'org-load-hook '(lambda () (setq org-modules (append '(org-man org-eww org-protocol org-habit) org-modules))))
-
 (set-popup-rule! "*backtrace\*" :size 0.4 :side 'right :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
 (def-package! aio)
@@ -113,17 +111,11 @@ to `t', otherwise, just do everything in the background.")
          ("access\\.conf\\'" . apache-mode)
          ("sites-\\(available\\|enabled\\)/" . apache-mode)))
 
-(def-package! cheatsheet
-  :commands (cheatsheet-add cheatsheet-add-group cheatsheet-get cheatsheet-show))
-
 (def-package! counsel-org-clock
   :commands (counsel-org-clock-context counsel-org-clock-history)
   :config
   (setq counsel-org-clock-history-limit 15)
   )
-
-(def-package! counsel-org-starter
-  :commands (counsel-org-starter counsel-org-starter-known-file))
 
 (def-package! define-word
   :commands (define-word  define-word-at-point))
@@ -131,7 +123,6 @@ to `t', otherwise, just do everything in the background.")
 (def-package! ereader
   :commands (ereader-read-epub ereader-mode)
   :mode ("\\.epub\\'". ereader-mode)
-  ;; :init (add-to-list 'doom-large-file-modes-list 'ereader-mode)
   :config
   (add-hook 'ereader-mode-hook 'hide-mode-line-mode)
   (add-hook 'ereader-mode-hook 'visual-line-mode)
@@ -144,12 +135,6 @@ to `t', otherwise, just do everything in the background.")
 
 (def-package! fish-mode
   :commands (fish-mode))
-
-(def-package! find-file-in-project
-  :commands (ffip ffip-show-diff))
-
-(def-package! gulp-task-runner
-  :commands gulp)
 
 (def-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now))
@@ -236,10 +221,15 @@ to `t', otherwise, just do everything in the background.")
         )
   )
 
-(def-package! other-frame-window)
+(def-package! org-ql
+  :after org
+  )
 
-(def-package! outline-magic
-  :commands (outline-cycle outline-next-line outline-move-subtree-up outline-move-subtree-down outline-promote outline-demote))
+(def-package! org-super-agenda
+  :after org
+  :config
+  (org-super-agenda-mode)
+  )
 
 (def-package! ox-hugo
   :after ox
@@ -272,10 +262,6 @@ to `t', otherwise, just do everything in the background.")
              yankpad-capture-snippet
              )
   :config
-  ;; If you want to complete snippets using company-mode
-  ;; (add-to-list 'company-backends #'company-yankpad)
-  ;; If you want to expand snippets with hippie-expand
-  ;; (add-to-list 'hippie-expand-try-functions-list #'yankpad-expand)
   )
 
 (def-package! zeal-at-point
@@ -303,7 +289,6 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'css-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS"))))
   (add-hook 'scss-mode-hook (lambda () (setq-local counsel-dash-docsets '("Sass" "HTML" "CSS"))))
   (set-face-attribute 'css-selector nil :foreground "#E06C75")
-  ;; (set-face-attribute 'css-property nil :foreground "#ECBE7B")
   )
 
 (after! cus-edit
@@ -312,9 +297,6 @@ to `t', otherwise, just do everything in the background.")
 (after! company
   (setq company-idle-delay nil)
   (setq company-minimum-prefix-length 2))
-
-;; (after! company-lsp
-;;   (setq company-lsp-cache-candidates auto))
 
 (after! counsel
   (setq counsel-grep-base-command "grep -E -n -i -e %s %s"
@@ -327,15 +309,10 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "^\\*ivy-occur" :size 0.70 :ttl 0 :quit nil)
   (advice-add #'ivy-rich--ivy-switch-buffer-transformer :override #'+ivy-combined-buffer-transformer)
   (advice-add #'counsel-org-goto-bookmarks :after #'aj/take-care-of-org-buffers)
-  ;; (advice-add #'counsel-org-tag-agenda :after #'(lambda ()
-  ;;                                                 (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
-  ;;                                                 (org-agenda-redo)
-  ;;                                                 ))
   )
 
 (after! counsel-projectile
   (ivy-set-display-transformer #'counsel-projectile-find-file #'+ivy-projectile-find-file-combined-transformer)
-  ;; (advice-add  #'+ivy-projectile-find-file-transformer :override #'+ivy-projectile-find-file-combined-transformer)
   )
 
 (after! doom-modeline
@@ -360,7 +337,6 @@ to `t', otherwise, just do everything in the background.")
 
 (after! evil-org
   (setq evil-org-key-theme '(textobjects insert navigation additional shift heading))
-  ;; (setq evil-org-special-o/O '(table-row item))
   )
 
 (after! evil-org-agenda
@@ -374,7 +350,6 @@ to `t', otherwise, just do everything in the background.")
    ;;      emmet-move-cursor-between-quotes nil
    ;; emmet-preview-default t
    )
-
   (advice-add 'emmet-preview :before 'aj/remap-emmet)
   (defadvice emmet-preview-accept (after emmet-after activate) (aj/indent-if-not-webmode)))
 
@@ -425,7 +400,6 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "*Ibuffer\*"                     :size 0.4 :side 'left :select t))
 
 (after! imenu-list
-
   (set-popup-rule! "^\\*Ilist"
     :side 'right :size 35 :select nil :ttl nil :quit nil)
   ;; First create new face which is a copy of hl-line-face
@@ -489,7 +463,6 @@ to `t', otherwise, just do everything in the background.")
 (after! loaddefs
   (setq browse-url-browser-function
         '(
-          ;; ("wikipedia\\.org" . browse-url-firefox)
           ("github" . browse-url-chromium)
           ("reddit" . browse-url-chromium)
           ("gitlab" . browse-url-chromium)
@@ -523,11 +496,7 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell))
 
 (after! magit-todos
-  (setq magit-todos-keywords-list `("FIXME")
-        ;; magit-todos-group-by '(magit-todos-item-keyword magit-todos-item-filename)
-        ;; magit-todos-auto-group-items 20
-        ;; magit-todos-show-filenames t
-        )
+  (setq magit-todos-keywords-list `("FIXME"))
   )
 
 (after! man
@@ -650,14 +619,6 @@ to `t', otherwise, just do everything in the background.")
    org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA"
    org-drawers (quote ("PROPERTIES" "LOGBOOK"))
    )
-
-  (defun jlp/add-to-list-multiple (list to-add)
-    "Adds multiple items to LIST.
-Allows for adding a sequence of items to the same list, rather
-than having to call `add-to-list' multiple times."
-    (interactive)
-    (dolist (item to-add)
-      (add-to-list list item)))
   )
 
 (after! org-bullets
@@ -943,7 +904,6 @@ than having to call `add-to-list' multiple times."
   ("a" (aj/capture-code-but-ask-first-where) "ask where:" )
   ("c" (aj/capture-code-but-ask-first-for-name) "code of name:" )
   )
-
 
 (defhydra aj/capture ()
   "Capture:"
