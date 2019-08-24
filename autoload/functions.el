@@ -1264,6 +1264,7 @@ so you can kill it as usual without affecting rest of the workflow.
              (new-buffer (if (and (bufferp buffer-or-path) persp-buffer-is-there)
                              file-name
                            (concat source-buffer "-" current-persp-name)))
+             (select (if (eq major-mode 'org-agenda-mode) t))
              )
         (if (not persp-buffer-is-there)
             (persp-remove-buffer (get-buffer source-buffer))
