@@ -1152,7 +1152,7 @@ is nil, refile in the current file."
         (org-paste-subtree 4)
         (widen)
         (save-buffer)
-        (bury-buffer)
+        (persp-remove-buffer (current-buffer))
         ))))
 
 ;;;###autoload
