@@ -774,7 +774,9 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! persp-mode
-  (setq persp-kill-foreign-buffer-behaviour nil)
+  (setq persp-kill-foreign-buffer-behaviour nil
+        persp-autokill-buffer-on-remove nil
+        )
   (advice-add 'persp-remove-buffer :around 'doom-shut-up-a)
   (dolist (file (directory-files-recursively org-directory ".org"))
     (add-to-list '+persp-blacklist `,(file-name-nondirectory file)))
