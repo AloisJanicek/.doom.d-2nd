@@ -1797,8 +1797,10 @@ with my heavily customized alternative `aj/open-file-switch-create-indirect-buff
   "Return t if the file `FILE' has heading. Otherwise nil"
   (save-excursion
     (find-file file)
-    (goto-char (point-min))
-    (if (search-forward "*" nil t)
-        (progn (bury-buffer) t)
-      (progn (bury-buffer) nil))))
-
+    (let ((buffer (current-buffer)))
+      (goto-char (point-min))
+      (if (search-forward "*" nil t)
+          (progn
+            (persp-remove-buffer buffer) t)
+        (progn
+          (persp-remove-buffer buffer) nil)))))
