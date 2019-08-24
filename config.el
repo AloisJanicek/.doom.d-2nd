@@ -326,8 +326,7 @@ to `t', otherwise, just do everything in the background.")
   (aj/remove-global-mode-string-from-modeline)
   )
 
-(after! epg-config
-  (setq epg-pinentry-mode 'ask))
+(setq epg-pinentry-mode 'ask)
 
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
