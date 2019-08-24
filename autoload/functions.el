@@ -1190,6 +1190,9 @@ is nil, refile in the current file."
        (goto-char marker)
        (org-cut-subtree)
        (if file (find-file file))
+        ;; assuming first asterix in file coresponds to first heading...
+        (goto-char (point-min))
+        (goto-char (search-forward "\*"))
        (org-datetree-find-iso-week-create date) ;; for week-based datatree
        ;; (org-datetree-find-date-create date)  ;; for month-based datatree
        (org-narrow-to-subtree)
