@@ -22,9 +22,6 @@ if running under WSL")
 (defvar +INBOX (expand-file-name "inbox.org" org-directory)
   "File where all stuff is captured.")
 
-(defvar +TASKS (expand-file-name "tasks.org" org-directory)
-  "File where things must be done.")
-
 (defvar +JOURNAL (expand-file-name "journal.org" org-directory)
   "File where things are logged.")
 
@@ -36,9 +33,6 @@ if running under WSL")
 
 (defvar +PRIVATE (concat org-directory "/private")
   "Directory of private notes.")
-
-(defvar +org-files (directory-files-recursively +TECHNICAL ".org")
-  "Lists of org files I always want to have opened for quick access.")
 
 (defvar aj/org-agenda nil
   "Variable for preserving filter choice between agenda views.")
@@ -62,7 +56,6 @@ to `t', otherwise, just do everything in the background.")
 
 (setq user-mail-address "janicek.dev@gmail.com"
       user-full-name    "Alois Janíček"
-      +refile-targets-with-headlines `(,+TASKS)
       +refile-targets-with-headlines nil
       +file-templates-dir (concat +Repos "templates")
       +snippets-dir (concat +Repos "/snippets")
@@ -76,11 +69,6 @@ to `t', otherwise, just do everything in the background.")
       all-the-icons-scale-factor 1
       +doom-quit-messages '("")
       )
-
-
-(add-to-list '+org-files (expand-file-name +TASKS))
-(add-to-list '+org-files (expand-file-name +JOURNAL))
-(add-to-list '+org-files (expand-file-name +INBOX))
 
 (setq-default tab-width 2)
 
@@ -721,7 +709,7 @@ to `t', otherwise, just do everything in the background.")
                             "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
                             :empty-lines 1 :prepend t)
 
-                           ("t" "Task" entry (file ,+TASKS)
+                           ("t" "Task" entry (file ,+INBOX)
                             "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
                             :empty-lines 1 :prepend t)
                            )

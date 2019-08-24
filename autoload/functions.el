@@ -350,25 +350,6 @@ and returns that weird time number which Emacs understands."
       (forward-line 3)
       )))
 ;;;###autoload
-(defun aj/goto-tasks ()
-  (interactive)
-  (persp-remove-buffer "tasks.org")
-  (if (get-buffer "tasks.org")
-      (progn
-        (pop-to-buffer "tasks.org")
-        (emacs-lock-mode 'kill)
-        (widen)
-        (goto-char (point-min))
-        (forward-line 6)
-        )
-    (progn
-      (pop-to-buffer (find-file-noselect +TASKS))
-      (emacs-lock-mode 'kill)
-      (widen)
-      (goto-char (point-min))
-      (forward-line 6)
-      (turn-off-solaire-mode))))
-;;;###autoload
 (defun aj/goto-calendar ()
   (interactive)
   (persp-remove-buffer "calendar.org")
