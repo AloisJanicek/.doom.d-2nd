@@ -224,6 +224,9 @@ to `t', otherwise, just do everything in the background.")
 (def-package! org-ql
   :after org
   :commands org-ql-search
+  :config
+  ;; because I don't want to hear about empty org file
+  (advice-add #'org-ql--select :around #'doom-shut-up-a)
   )
 
 (def-package! org-ql-agenda
