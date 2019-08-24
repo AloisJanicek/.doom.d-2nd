@@ -268,6 +268,11 @@ to `t', otherwise, just do everything in the background.")
   (add-to-list 'zeal-at-point-mode-alist '(pug-mode . ("html" "pug")))
   )
 
+(after! alert
+  (setq alert-default-style 'libnotify)
+  (if (aj/wsl-p)
+      (setq alert-libnotify-command (expand-file-name "notify-wsl" "~/.local/bin"))))
+
 (after! apropos
   (set-popup-rule! "*apropos\*"                     :size 0.4 :side 'left :select t)
   (set-popup-rule! "*Apropos\*"                     :size 0.4 :side 'left :select t))
