@@ -1791,3 +1791,14 @@ than having to call `add-to-list' multiple times."
 with my heavily customized alternative `aj/open-file-switch-create-indirect-buffer-per-persp'"
   (cl-letf (((symbol-function 'pop-to-buffer-same-window) #'aj/open-file-switch-create-indirect-buffer-per-persp))
     (apply orig-fun args)))
+
+;;;###autoload
+(defun aj/has-heading-p (file)
+  "Return t if the file `FILE' has heading. Otherwise nil"
+  (save-excursion
+    (find-file file)
+    (goto-char (point-min))
+    (if (search-forward "*" nil t)
+        (progn (bury-buffer) t)
+      (progn (bury-buffer) nil))))
+

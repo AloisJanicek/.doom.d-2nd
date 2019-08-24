@@ -872,10 +872,13 @@ to `t', otherwise, just do everything in the background.")
 ;; Hydras
 (defhydra gtd-agenda (:color blue
                              :body-pre
-                             (org-ql-search (org-agenda-files)
-                               '(todo)
-                               :sort '(date priority todo)
-                               :groups '((:auto-category t)))
+                             (if (aj/has-heading-p +INBOX)
+                                 (org-ql-search `(,+INBOX) "*"
+                                   :sort '(date))
+                               (org-ql-search (org-agenda-files)
+                                 '(todo)
+                                 :sort '(date priority todo)
+                                 :groups '((:auto-category t))))
                              )
   "agenda"
   ("a" (org-ql-agenda (org-agenda-files)
@@ -893,6 +896,10 @@ to `t', otherwise, just do everything in the background.")
          '(tags "someday")
          :sort '(date priority todo)
          :groups '((:auto-category t))) "someday")
+  ("t" (org-ql-search (org-agenda-files)
+         '(todo)
+         :sort '(date priority todo)
+         :groups '((:auto-category t))) "todo")
 
   ("r" (org-ql-search (org-agenda-files)
          '(ts :from -7 :to today)
