@@ -675,6 +675,7 @@
         :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
         :desc "feed"         "f" #'elfeed
         :desc "wikipedia"    "w" #'helm-wikipedia-suggest
+        :desc "query"        "q" #'org-ql-search
         )
       ;; "m" is localleader
       ;; switch buffer          ","

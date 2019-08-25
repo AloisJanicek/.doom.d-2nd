@@ -1804,3 +1804,9 @@ with my heavily customized alternative `aj/open-file-switch-create-indirect-buff
             (persp-remove-buffer buffer) t)
         (progn
           (persp-remove-buffer buffer) nil)))))
+
+;;;###autoload
+(defun my-set-org-agenda-type (&rest args)
+  (when (and (not org-agenda-type)
+             (eq major-mode 'org-agenda-mode))
+    (set (make-local-variable 'org-agenda-type) 'agenda)))
