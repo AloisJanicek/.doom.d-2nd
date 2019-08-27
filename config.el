@@ -899,9 +899,14 @@ to `t', otherwise, just do everything in the background.")
               (not (done)))) "agenda")
 
   ("t" (org-ql-search (org-agenda-files)
+         '(todo)
+         :sort '(date priority todo)
+         :groups '((:auto-category t))) "tasks")
+
+  ("T" (org-ql-search (org-agenda-files)
          '(todo "TODO")
          :sort '(date priority todo)
-         :groups '((:auto-category t))) "todo")
+         :groups '((:auto-category t))) "Todo")
 
   ("n" (org-ql-search (org-agenda-files)
          '(todo "NEXT")
