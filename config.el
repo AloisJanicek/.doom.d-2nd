@@ -76,10 +76,10 @@ to `t', otherwise, just do everything in the background.")
 
 (set-popup-rule! "*backtrace\*" :size 0.4 :side 'right :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
-(def-package! aio)
-(def-package! ahk-mode)
+(use-package! aio)
+(use-package! ahk-mode)
 
-(def-package! all-the-icons-ivy
+(use-package! all-the-icons-ivy
   :after ivy
   :config
   (all-the-icons-ivy-setup)
@@ -91,7 +91,7 @@ to `t', otherwise, just do everything in the background.")
                   counsel-projectile-switch-project))
     (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
-(def-package! apache-mode
+(use-package! apache-mode
   :mode (("apache\\.conf\\'" . apache-mode)
          ("\\.htaccess\\'" . apache-mode)
          ("httpd\\.conf\\'" . apache-mode)
@@ -99,16 +99,16 @@ to `t', otherwise, just do everything in the background.")
          ("access\\.conf\\'" . apache-mode)
          ("sites-\\(available\\|enabled\\)/" . apache-mode)))
 
-(def-package! counsel-org-clock
+(use-package! counsel-org-clock
   :commands (counsel-org-clock-context counsel-org-clock-history)
   :config
   (setq counsel-org-clock-history-limit 15)
   )
 
-(def-package! define-word
+(use-package! define-word
   :commands (define-word  define-word-at-point))
 
-(def-package! ereader
+(use-package! ereader
   :commands (ereader-read-epub ereader-mode)
   :mode ("\\.epub\\'". ereader-mode)
   :config
@@ -117,31 +117,31 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'ereader-mode-hook 'turn-off-solaire-mode)
   )
 
-(def-package! esqlite
+(use-package! esqlite
   :commands (esqlite-stream-open)
   )
 
-(def-package! fish-mode
+(use-package! fish-mode
   :commands (fish-mode))
 
-(def-package! highlight-blocks
+(use-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now))
 
-(def-package! hungry-delete
+(use-package! hungry-delete
   :demand t
   :config
   (setq hungry-delete-except-modes
         '(term-mode help-mode minibuffer-inactive-mode calc-mode))
   (global-hungry-delete-mode 1))
 
-(def-package! ivy-yasnippet
+(use-package! ivy-yasnippet
   :commands (ivy-yasnippet))
 
-(def-package! ivy-pages
+(use-package! ivy-pages
   :after ivy
   )
 
-(def-package! link-hint
+(use-package! link-hint
   :commands (link-hint-open-all-links
              link-hint-copy-all-links
              link-hint-open-link
@@ -150,18 +150,18 @@ to `t', otherwise, just do everything in the background.")
   (setq link-hint-avy-all-windows nil)
   )
 
-(def-package! ob-async
+(use-package! ob-async
   :commands ob-async-org-babel-execute-src-block
   )
 
-(def-package! ob-javascript
+(use-package! ob-javascript
   :after ob-core)
 
 (after! evil-snipe
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
   )
 
-(def-package! org-brain
+(use-package! org-brain
   ;; :after org
   :commands
   (org-brain-visualize
@@ -192,15 +192,15 @@ to `t', otherwise, just do everything in the background.")
         )
   )
 
-(def-package! org-ebook
+(use-package! org-ebook
   :commands (org-ebook-open org-ebook-store-link)
   )
 
-(def-package! org-pdfview
+(use-package! org-pdfview
   :commands (org-pdfview-open org-pdfview-store-link org-pdfview-complete-link org-pdfview-export)
   )
 
-(def-package! org-pomodoro
+(use-package! org-pomodoro
   ;; :after org
   :commands (org-pomodoro org-pomodoro-remaining-seconds org-pomodoro-state)
   :config
@@ -209,7 +209,7 @@ to `t', otherwise, just do everything in the background.")
         )
   )
 
-(def-package! org-ql
+(use-package! org-ql
   :after org
   :commands org-ql-search
   :config
@@ -217,39 +217,39 @@ to `t', otherwise, just do everything in the background.")
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
   )
 
-(def-package! org-ql-agenda
+(use-package! org-ql-agenda
   :after org
   :commands org-ql-agenda
   )
 
-(def-package! org-super-agenda
+(use-package! org-super-agenda
   :after org
   :config
   (org-super-agenda-mode)
   )
 
-(def-package! ox-hugo
+(use-package! ox-hugo
   :after ox
   )
 
-(def-package! robots-txt-mode
+(use-package! robots-txt-mode
   :mode (("/robots\\.txt\\'" . robots-txt-mode)))
 
-(def-package! sdcv
+(use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)
   :config
   (set-popup-rule! "*SDCV\*" :size 0.4 :side 'top :select t))
 
-(def-package! systemd
+(use-package! systemd
   :commands (systemd-mode))
 
-(def-package! xml+
+(use-package! xml+
   :commands (xml+-query--generic xml+-query-all xml+-query-first xml+-node-text xml+-node-text--helper))
 
-(def-package! x-path-walker
+(use-package! x-path-walker
   :commands (helm-x-path-walker))
 
-(def-package! yankpad
+(use-package! yankpad
   :commands (
              yankpad-map
              yankpad-edit
@@ -261,7 +261,7 @@ to `t', otherwise, just do everything in the background.")
   :config
   )
 
-(def-package! zeal-at-point
+(use-package! zeal-at-point
   :commands (zeal-at-point zeal-at-point-search zeal-at-point-set-docset)
   :config
   (add-to-list 'zeal-at-point-mode-alist '(web-mode . "html"))
