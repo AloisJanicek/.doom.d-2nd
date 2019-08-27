@@ -522,7 +522,7 @@
         :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
         )
       (:prefix ("y" . "yankpad")
-        :desc "yankpad: repeat" "y" #'yankpad-reapt
+        :desc "yankpad: repeat" "y" #'yankpad-repeat
         :desc "insert"          "i" #'yankpad-insert
         :desc "capture"         "c" #'yankpad-capture-snippet
         :desc "edit"            "e" #'yankpad-edit
