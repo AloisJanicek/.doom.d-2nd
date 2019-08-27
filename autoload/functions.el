@@ -1797,13 +1797,20 @@ with my heavily customized alternative `aj/open-file-switch-create-indirect-buff
   "Return t if the file `FILE' has heading. Otherwise nil"
   (save-excursion
     (find-file file)
-    (let ((buffer (current-buffer)))
+    (let ((buffer (current-buffer))
+          (was-buffer-last? (if (< (length (persp-buffer-list)) 2) t)))
       (goto-char (point-min))
       (if (search-forward "*" nil t)
           (progn
-            (persp-remove-buffer buffer) t)
+            (progn
+              (persp-remove-buffer buffer)
+              (if was-buffer-last?
+                  (switch-to-buffer "*doom*"))) t)
         (progn
-          (persp-remove-buffer buffer) nil)))))
+          (progn
+            (persp-remove-buffer buffer)
+            (if was-buffer-last?
+                (switch-to-buffer "*doom*"))) nil)))))
 
 ;;;###autoload
 (defun my-set-org-agenda-type (&rest args)
