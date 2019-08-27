@@ -576,6 +576,7 @@ to `t', otherwise, just do everything in the background.")
    )
 
   (setq
+   org-modules '(org-protocol)
    org-crypt-tag-matcher "+crypt-nocrypt"
    ;; settings for export to ical file
    ;; org-M-RET-may-split-line '((default . nil))
