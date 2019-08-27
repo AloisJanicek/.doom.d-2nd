@@ -26,6 +26,8 @@
 (package! emacs-ereader
   :recipe (:host github :repo "bddean/emacs-ereader" :files ("org-ebook.el" "ereader.el")))
 
+(package! google-translate)
+
 (package! emms
   :disable t)
 

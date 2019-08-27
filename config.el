@@ -124,6 +124,12 @@ to `t', otherwise, just do everything in the background.")
 (use-package! fish-mode
   :commands (fish-mode))
 
+(use-package! google-translate
+  :config
+  (setq google-translate-default-source-language "cs"
+        google-translate-default-target-language "en")
+  (set-popup-rule! "*Google Translate\*"            :size 0.4 :side 'top :select t))
+
 (use-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now))
 
@@ -384,11 +390,6 @@ to `t', otherwise, just do everything in the background.")
   (setq flyspell-issue-message-flag nil
         flyspell-issue-welcome-flag nil)
   (add-to-list 'ispell-skip-region-alist '("^#+BEGIN_SRC" . "^#+END_SRC")))
-
-(after! google-translate-default-ui
-  (setq google-translate-default-source-language "cs"
-        google-translate-default-target-language "en")
-  (set-popup-rule! "*Google Translate\*"            :size 0.4 :side 'top :select t))
 
 (after! helm-dash
   (setq helm-dash-docsets-path (concat +Reference "/Docsets"))
