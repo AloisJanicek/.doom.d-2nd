@@ -881,7 +881,7 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "*WordNut\*"                     :size 0.4 :side 'top :select t))
 
 (after! yasnippet
-  )
+  (setq yas-wrap-around-region t))
 
 ;; Hydras
 (defhydra gtd-agenda (:color blue
