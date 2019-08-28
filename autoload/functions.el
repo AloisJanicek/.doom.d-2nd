@@ -1817,3 +1817,26 @@ with my heavily customized alternative `aj/open-file-switch-create-indirect-buff
   (when (and (not org-agenda-type)
              (eq major-mode 'org-agenda-mode))
     (set (make-local-variable 'org-agenda-type) 'agenda)))
+
+;;;###autoload
+(defun yankpad-maybe-expand ()
+  "Return t if there is yankpad snippet matching symbol at point
+Code is from `yankpad-expand' with minor edit.
+"
+  (when (and (called-interactively-p 'any)
+             (not yankpad-category))
+    (yankpad-set-category))
+  (let* ((symbol (symbol-name (symbol-at-point)))
+         (bounds (bounds-of-thing-at-point 'symbol))
+         (snippet-prefix (concat symbol yankpad-expand-separator))
+         (case-fold-search nil))
+    (when (and symbol yankpad-category)
+      (catch 'loop
+        (mapc
+         (lambda (snippet)
+           (when (string-match-p (concat "\\(\\b\\|" yankpad-expand-separator "\\)" snippet-prefix)
+                                 (car (split-string (car snippet) " ")))
+             t
+             (throw 'loop snippet)))
+         (yankpad-active-snippets))
+        nil))))
