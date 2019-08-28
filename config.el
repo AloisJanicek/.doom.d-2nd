@@ -58,7 +58,7 @@ to `t', otherwise, just do everything in the background.")
       user-full-name    "Alois Janíček"
       +refile-targets-with-headlines nil
       +file-templates-dir (concat +Repos "templates")
-      +snippets-dir (concat +Repos "/snippets")
+      +snippets-dir (concat +Repos "snippets")
       org-attach-directory "attach/"
       +org-export-directory "export/"
       doom-font                   (font-spec :family "Iosevka SS08" :size 16)
@@ -256,15 +256,18 @@ to `t', otherwise, just do everything in the background.")
   :commands (helm-x-path-walker))
 
 (use-package! yankpad
-  :commands (
-             yankpad-map
-             yankpad-edit
-             yankpad-expand
-             yankpad-insert
-             yankpad-set-category
-             yankpad-capture-snippet
-             )
+  :commands
+  (yankpad-append-category
+   yankpad-capture-snippet
+   yankpad-edit
+   yankpad-expand
+   yankpad-insert
+   yankpad-map
+   yankpad-reload
+   yankpad-repeat
+   yankpad-set-category)
   :config
+  (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   )
 
 (use-package! zeal-at-point

@@ -1,6 +1,19 @@
 ;;; ~/.doom.d/+bindings.el -*- lexical-binding: t; -*-
 
 ;;global
+(map! (:map override
+        ;; Smart tab, these will only work in GUI Emacs
+        :i [tab] (general-predicate-dispatch nil ; fall back to nearest keymap
+                   (and (featurep! :editor snippets)
+                        (bound-and-true-p yas-minor-mode)
+                        (yas-maybe-expand-abbrev-key-filter 'yas-expand))
+                   'yas-expand
+                   nil
+                   'yankpad-expand
+                   (and (featurep! :completion company +tng)
+                        (+company-has-completion-p))
+                   '+company/complete)))
+
 (map!
  :ni "C-k" #'evil-window-up
  :ni "C-j" #'evil-window-down
@@ -522,13 +535,15 @@
         :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
         )
       (:prefix ("y" . "yankpad")
-        :desc "yankpad: repeat" "y" #'yankpad-repeat
-        :desc "insert"          "i" #'yankpad-insert
-        :desc "capture"         "c" #'yankpad-capture-snippet
-        :desc "edit"            "e" #'yankpad-edit
-        :desc "reload"          "r" #'yankpad-reload
-        :desc "append category" "a" #'yankpad-append-category
-        :desc "set category"    "s" #'yankpad-append-category
+        :desc "append category" "a"   #'yankpad-append-category
+        :desc "capture"         "c"   #'yankpad-capture-snippet
+        :desc "edit"            "e"   #'yankpad-edit
+        :desc "expand"          "TAB" #'yankpad-expand
+        :desc "insert"          "y"   #'yankpad-insert
+        :desc "map"             "m"   #'yankpad-map
+        :desc "reload"          "r"   #'yankpad-reload
+        :desc "repeat"          "."   #'yankpad-repeat
+        :desc "set category"    "s"   #'yankpad-set-category
         )
       ;; universal argument     "u"
       (:prefix ("i" . "insert")
