@@ -6,6 +6,8 @@
 (package! all-the-icons-ivy
   )
 
+(package! anki-editor)
+
 (package! apache-mode
   )
 

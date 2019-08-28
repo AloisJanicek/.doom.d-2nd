@@ -91,6 +91,11 @@ to `t', otherwise, just do everything in the background.")
                   counsel-projectile-switch-project))
     (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
+(use-package! anki-editor
+  :config
+  (setq anki-editor-create-decks t)
+  )
+
 (use-package! apache-mode
   :mode (("apache\\.conf\\'" . apache-mode)
          ("\\.htaccess\\'" . apache-mode)
