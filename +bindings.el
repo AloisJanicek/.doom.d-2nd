@@ -30,7 +30,7 @@
  "M-F"       #'swiper-all
  "M-s"       #'save-buffer
  "C-s"       #'ispell-word
-:in "C-="       #'recenter-top-bottom
+ :in "C-="       #'recenter-top-bottom
  "C-\\"      #'move-to-window-line-top-bottom
  "C-<right>" #'next-buffer
  "C-<left>"  #'previous-buffer
