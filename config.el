@@ -461,7 +461,7 @@ to `t', otherwise, just do everything in the background.")
 
 (after! ivy-posframe
   (advice-add #'ivy-posframe-enable :around #'doom-shut-up-a)
-  (setq ivy-posframe-width 120)
+  (setq ivy-posframe-width 160)
   )
 
 (after! js2-mode

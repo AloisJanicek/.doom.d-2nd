@@ -126,7 +126,6 @@
 
      "C-]"   #'org-insert-subheading
      "<tab>" #'org-cycle
-     :i   "M-r"   (λ! (let ((hydra-lv nil)) (aj/gtd-refile/body)))
      :inv "M-l"   #'aj/insert-link-in-org
      :n   "J"     #'outline-next-visible-heading
      :n   "K"     #'outline-previous-visible-heading
@@ -166,10 +165,7 @@
          :desc "Subtree"           "s" #'org-archive-subtree
          )
 
-       (:desc "jump:"          :prefix        "j"
-         :desc "headline"           "h" #'counsel-org-goto
-         )
-       :desc "Wiki"       "w" #'aj/org-menu-and-goto
+       :desc "Wiki"                "w" #'aj/org-menu-and-goto
        "r" nil
        (:desc "Refile:"       :prefix         "r"
          :desc "file"          "f" #'aj/refile-to-file
@@ -563,13 +559,8 @@
         :desc "link"                     "o" #'link-hint-open-link
         :desc "Agenda"                   "A" #'org-agenda
         :desc "agenda"                   "a" #'gtd-agenda/body
-        :desc "App: Podcast"             "p" #'podcaster
-        :desc "App: MPD"                 "m" (λ! (let ((hydra-lv nil)) (aj/mpd-control/body)))
         ;; :desc "Clock"                    "c" #'aj/clock-menu
         :desc "Imenu-list"               "i" #'aj/open-imenu-sidebar
-        ;; :desc "Links"                    "l" #'aj/bookmarks
-        :desc "GTD"                      "g" #'aj/gtd/body
-        ;; :desc "GTD"                      "g" (λ! (let ((hydra-lv nil)) (aj/gtd/body)))
         :desc "Sidebar"                   "s" #'+treemacs/toggle
         )
       (:prefix ("p" . "project")
@@ -693,9 +684,8 @@
         :desc "grep"         "g" (λ! (+ivy/rg nil nil org-directory))
         ;; :desc "visualize" "v" #'aj/visualize-brain-and-take-care-of-buffers
         :desc "visualize"    "v" #'org-brain-visualize
-        :desc  "brain-goto" "b" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
+        :desc "brain-goto"   "b" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
         :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
-        :desc "feed"         "f" #'elfeed
         :desc "wikipedia"    "w" #'helm-wikipedia-suggest
         :desc "query"        "q" #'org-ql-search
         )

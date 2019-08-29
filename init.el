@@ -1,6 +1,6 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
-(toggle-frame-maximized)
+;; (toggle-frame-maximized)
 
 ;; fix for emacs 27
 ;; https://github.com/emacs-mirror/emacs/commit/2fde6275b69fd113e78243790bf112bbdd2fe2bf
