@@ -427,11 +427,18 @@
        :desc "clock-IN"     "i" #'org-clock-in
        :desc "clock-OUT"    "o" #'org-clock-out))
    )
+
  (:after org-ql-agenda
    (:map org-ql-view-map
      :m "r" #'org-ql-search-refresh
-     )
-   )
+     ))
+
+ (:after org-ql
+   (:map org-ql-view-map
+     :mne "j" #'org-agenda-next-item
+     :mne "k" #'org-agenda-previous-item
+     ))
+
  (:after pdf-tools
    (:map pdf-view-mode-map
      :nimve "j" #'pdf-view-next-line-or-next-page
