@@ -444,9 +444,7 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! ivy
-  (setq ivy-height 40)
-  (require 'map)
-  (map-put! ivy-display-functions-alist 't 'ivy-posframe-display-at-frame-center)
+  (setq ivy-height 20)
   (ivy-set-actions
    'counsel-projectile-bookmark
    '(("d" bookmark-delete "delete")
@@ -460,8 +458,12 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! ivy-posframe
-  (advice-add #'ivy-posframe-enable :around #'doom-shut-up-a)
-  (setq ivy-posframe-width 160)
+  (setf (alist-get t ivy-posframe-display-functions-alist)
+        #'ivy-posframe-display-at-frame-top-center)
+  (setq ivy-posframe-size-function '(lambda () (list :height 20
+                                                     :width (round (* (frame-width) 0.62))
+                                                     :min-height 20
+                                                     :min-width 80)))
   )
 
 (after! js2-mode
