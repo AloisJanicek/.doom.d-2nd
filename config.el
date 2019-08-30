@@ -618,7 +618,7 @@ to `t', otherwise, just do everything in the background.")
    org-src-fontify-natively t
    org-imenu-depth 9
 
-   org-refile-targets '((org-agenda-files :maxlevel . 1))
+   org-refile-targets '((org-agenda-files :maxlevel . 2))
    org-refile-use-outline-path 'file
    org-outline-path-complete-in-steps nil
    ;; org-refile-target-verify-function 'aj/verify-headlines-for-refile
