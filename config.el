@@ -64,7 +64,7 @@ to `t', otherwise, just do everything in the background.")
       doom-font                   (font-spec :family "Iosevka SS08" :size 16)
       doom-big-font               (font-spec :family "Iosevka SS08" :size 24)
       doom-variable-pitch-font    (font-spec :family "Roboto" :size 16)
-      doom-unicode-font           (font-spec :family "Iosevka SS08" :size 16)
+      doom-unicode-font           "Noto Color Emoji"
       doom-theme 'doom-one
       all-the-icons-scale-factor 1
       +doom-quit-messages '("")
