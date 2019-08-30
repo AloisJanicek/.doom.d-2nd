@@ -502,6 +502,7 @@ to `t', otherwise, just do everything in the background.")
 
 (after! lsp
   (setq lsp-ui-sideline-enable nil)
+  (add-to-list 'lsp-disabled-clients '(web-mode . angular-ls))
   )
 
 (after! lsp-ui
