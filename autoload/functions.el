@@ -1840,3 +1840,18 @@ Code is from `yankpad-expand' with minor edit.
              (throw 'loop snippet)))
          (yankpad-active-snippets))
         nil))))
+
+;;;###autoload
+(defun aj/org-attach-id-folder-format-and-create (id)
+  "Translate an ID into a folder-path, then create id-specific folder
+if doesn't exits, and return that directory.
+Original function is `org-attach-id-folder-format'."
+  (let* ((id-str
+          (format "%s" id))
+         (id-base-dir
+          (file-name-directory (gethash id-str org-id-locations)))
+         (full-path (expand-file-name id-str (expand-file-name org-attach-id-dir id-base-dir))))
+
+    (if (not (file-directory-p full-path))
+        (make-directory full-path t))
+    id-str))

@@ -59,7 +59,6 @@ to `t', otherwise, just do everything in the background.")
       +refile-targets-with-headlines nil
       +file-templates-dir (concat +Repos "templates")
       +snippets-dir (concat +Repos "snippets")
-      org-attach-directory "attach/"
       +org-export-directory "export/"
       doom-font                   (font-spec :family "Iosevka SS08" :size 16)
       doom-big-font               (font-spec :family "Iosevka SS08" :size 24)
@@ -623,8 +622,6 @@ to `t', otherwise, just do everything in the background.")
    org-outline-path-complete-in-steps nil
    ;; org-refile-target-verify-function 'aj/verify-headlines-for-refile
 
-   org-id-track-globally t
-   org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)
    org-use-property-inheritance t
 
    org-log-done 'time
@@ -755,11 +752,22 @@ to `t', otherwise, just do everything in the background.")
 
   )
 
+
+(after! org-attach
+  (setq
+   org-attach-dir-relative nil
+   org-attach-directory "attach/"
+   org-attach-id-dir "attach/"
+   org-attach-id-to-path-function #'aj/org-attach-id-folder-format-and-create
+   ))
+
+(after! org-id
+  (setq org-id-track-globally t
+        org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)))
+
 (after! org-list
   (setq
-   org-checkbox-hierarchical-statistics t
-   )
-  )
+   org-checkbox-hierarchical-statistics t))
 
 ;; (after! org-protocol
 ;;   (load! "local/org-protocol-capture-html/org-protocol-capture-html.el"))
