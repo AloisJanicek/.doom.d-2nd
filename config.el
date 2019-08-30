@@ -899,11 +899,7 @@ to `t', otherwise, just do everything in the background.")
                                  :groups '((:auto-category t))))
                              )
   "agenda"
-  ("a" (org-ql-agenda (org-agenda-files)
-         (and (or (ts-active :on today)
-                  (deadline auto)
-                  (scheduled :to today))
-              (not (done)))) "agenda")
+  ("a" (org-agenda nil "a") "agenda")
 
   ("t" (org-ql-search (org-agenda-files)
          '(todo)
