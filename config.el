@@ -511,10 +511,6 @@ to `t', otherwise, just do everything in the background.")
 (after! magit
   (add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell))
 
-(after! magit-todos
-  (setq magit-todos-keywords-list `("FIXME"))
-  )
-
 (after! man
   (set-face-attribute 'Man-overstrike nil :inherit 'bold :foreground "#ff7a79")
   (set-face-attribute 'Man-underline nil :inherit 'underline :foreground "#98be65")
