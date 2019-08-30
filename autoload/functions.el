@@ -1262,9 +1262,9 @@ so you can kill it as usual without affecting rest of the workflow.
             (make-indirect-buffer (get-buffer source-buffer) new-buffer t))
         (persp-add-buffer (get-buffer new-buffer))
         (aj/find-me-org-buffer new-buffer)
-        (if (not select)
-            (select-window win)
-          )
+        ;; (if (not select)
+        ;;     (select-window win)
+        ;;   )
         ;; (goto-char pos)
         )
 
