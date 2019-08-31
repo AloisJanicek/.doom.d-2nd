@@ -199,6 +199,9 @@ to `t', otherwise, just do everything in the background.")
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
         org-brain-path +TECHNICAL
+        org-brain-data-file (expand-file-name ".org-brain-data.el" org-brain-path)
+        org-brain-include-file-entries nil
+        org-brain-file-entries-use-title nil
         )
   )
 
