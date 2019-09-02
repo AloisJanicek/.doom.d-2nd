@@ -151,7 +151,7 @@ to `t', otherwise, just do everything in the background.")
   :after ivy
   )
 
-(use-package! js-react-redux-yasnippets :after yasnippet)
+(use-package! js-react-redux-yasnippets)
 
 (use-package! link-hint
   :commands (link-hint-open-all-links
