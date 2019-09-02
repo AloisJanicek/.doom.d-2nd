@@ -510,7 +510,7 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! lsp-ui
-  (remove-hook 'lsp-ui-mode-hook '+lsp|init-ui-flycheck-or-flymake)
+  ;; (remove-hook 'lsp-ui-mode-hook '+lsp-init-ui-flycheck-or-flymake-h)
   )
 
 (after! magit
