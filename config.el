@@ -514,6 +514,9 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! magit
+  (setq magit-repository-directories `((,+Repos . 1))
+        magit-clone-default-directory `,+Repos
+        )
   (add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell))
 
 (after! man
