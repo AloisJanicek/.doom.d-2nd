@@ -566,11 +566,7 @@ Unless GOTO-FILE-FUNC is nil, use `pop-to-buffer-same-window' for opening the en
     (with-current-buffer buffer
       (save-excursion
         (org-brain-stop-wandering)
-        (unless entry (setq entry (org-brain-choose-entry
-                                   "Entry: "
-                                   (append (org-brain-files t)
-                                           (org-brain-headline-entries))
-                                   nil t)))
+        (unless entry (setq entry (org-brain-choose-entry "Entry: " 'all nil t)))
         (let ((marker (org-brain-entry-marker entry)))
           (apply (or goto-file-func #'pop-to-buffer-same-window)
                  (list (marker-buffer marker)))
@@ -581,14 +577,10 @@ Unless GOTO-FILE-FUNC is nil, use `pop-to-buffer-same-window' for opening the en
           (if (string-match "*" (thing-at-point 'line t))
               (progn
                 (outline-show-branches)
-                (org-narrow-to-subtree)))
-          )
-        entry
-        )
-      )
-    (select-window window)
-    )
-  )
+                (org-narrow-to-subtree))))
+        entry))
+    (select-window window)))
+
 ;;;###autoload
 (defun my/org-brain-goto-current (&optional same-window)
   "Use `org-brain-goto' on `org-brain-entry-at-pt', in other window..
