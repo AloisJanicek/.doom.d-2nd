@@ -1546,9 +1546,9 @@ Epub files offten has very poor quality."
   (when (not (featurep 'link-hint))
     (require 'link-hint))
   (avy-with link-hint-open-link
-            (link-hint--one :open)
-            (my/org-brain-goto-current)
-            ))
+    (link-hint--one :open)
+    (my/org-brain-goto-current)
+    ))
 
 ;;;###autoload
 (defun +javascript*sort-imenu-index-by-position (orig-fn)
