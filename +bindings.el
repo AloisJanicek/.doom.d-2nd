@@ -437,6 +437,10 @@
 
  (:after pdf-tools
    (:map pdf-view-mode-map
+     :nimve "C-h" #'evil-window-left
+     :nimve "C-j" #'evil-window-down
+     :nimve "C-k" #'evil-window-up
+     :nimve "C-l" #'evil-window-right
      :nimve "j" #'pdf-view-next-line-or-next-page
      :nimve "k" #'pdf-view-previous-line-or-previous-page
      :nimve "l" #'org-store-link
