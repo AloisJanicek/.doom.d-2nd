@@ -555,7 +555,10 @@
         :desc "bash history"             "h" #'counsel-yank-bash-history
         )
       (:prefix ("o" . "open")
-        :desc "link"                     "c" (lambda! (aj/open-calibre-book (read-directory-name "Select library: " +Libraries)))
+        (:prefix ("c" . "calibre")
+          :desc "technical"                     "c" (lambda! (aj/open-calibre-book (concat +Libraries "/Technical/")))
+          :desc "personal"                      "p" (lambda! (aj/open-calibre-book (concat +Libraries "/Personal/")))
+          )
         :desc "link"                     "o" #'link-hint-open-link
         :desc "Agenda"                   "A" #'org-agenda
         :desc "agenda"                   "a" #'gtd-agenda/body
