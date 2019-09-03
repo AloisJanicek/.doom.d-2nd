@@ -806,6 +806,9 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'pdf-view-mode-hook 'brds/pdf-jump-last-viewed-bookmark)
   )
 
+(after! pdf-occur
+  (advice-add 'evil-collection-pdf-setup :after 'aj/remap-in-pdf-occur-buffer))
+
 (after! persp-mode
   (setq persp-kill-foreign-buffer-behaviour nil
         persp-autokill-buffer-on-remove nil

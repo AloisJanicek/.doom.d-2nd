@@ -1847,3 +1847,9 @@ Original function is `org-attach-id-folder-format'."
     (if (not (file-directory-p full-path))
         (make-directory full-path t))
     id-str))
+
+;;;###autoload
+(defun aj/remap-in-pdf-occur-buffer ()
+  "..."
+  (evil-define-key 'normal 'pdf-occur-buffer-mode-map
+    (kbd "RET") 'pdf-occur-view-occurrence))
