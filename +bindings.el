@@ -441,6 +441,7 @@
      :nimve "C-j" #'evil-window-down
      :nimve "C-k" #'evil-window-up
      :nimve "C-l" #'evil-window-right
+     :nimve "M-f" #'pdf-occur
      :nimve "j" #'pdf-view-next-line-or-next-page
      :nimve "k" #'pdf-view-previous-line-or-previous-page
      :nimve "l" #'org-store-link
@@ -448,6 +449,11 @@
      :nimve "o" #'counsel-imenu
      :nimve "y" #'pdf-view-kill-ring-save
      :nimve "q" (λ! (progn (brds/pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
+     )
+   )
+ (:after pdf-occur
+   (:map pdf-occur-buffer-mode-map
+     :nimve "RET" #'pdf-occur-view-occurrence
      )
    )
  (:after popup-buffer
