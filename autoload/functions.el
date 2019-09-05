@@ -1752,7 +1752,7 @@ point to the end of the line."
 
 ;;;###autoload
 (defun aj/return-wsl-user-name ()
-  "Return path poiting to home directory of current Windows user"
+  "Return lowercase representation of name of the user hosting WSL"
   (car (cdr (split-string (shell-command-to-string
                            "whoami.exe | sed -e \"s/\\r//g\" | tr -d \"\\\\n\" ")
                           "\\\\"))))
@@ -1847,3 +1847,9 @@ Original function is `org-attach-id-folder-format'."
     (if (not (file-directory-p full-path))
         (make-directory full-path t))
     id-str))
+
+;;;###autoload
+(defun aj/remap-in-pdf-occur-buffer ()
+  "..."
+  (evil-define-key 'normal 'pdf-occur-buffer-mode-map
+    (kbd "RET") 'pdf-occur-view-occurrence))
