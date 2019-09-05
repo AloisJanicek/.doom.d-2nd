@@ -60,6 +60,7 @@ to `t', otherwise, just do everything in the background.")
       +file-templates-dir (concat +Repos "templates")
       +snippets-dir (concat +Repos "snippets")
       +org-export-directory "export/"
+      doom-scratch-buffer-major-mode 'emacs-lisp-mode
       doom-font                   (font-spec :family "Iosevka SS08" :size 16)
       doom-big-font               (font-spec :family "Iosevka SS08" :size 24)
       doom-variable-pitch-font    (font-spec :family "Roboto" :size 16)
