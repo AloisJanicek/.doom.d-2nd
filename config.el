@@ -168,7 +168,10 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (use-package! ob-javascript
-  :after ob-core)
+  :after ob-core
+  :config
+  (advice-add #'ob-javascript--node-path :override #'aj/ob-javascript--node-path)
+  )
 
 (after! evil-snipe
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)

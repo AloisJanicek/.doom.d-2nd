@@ -1853,3 +1853,18 @@ Original function is `org-attach-id-folder-format'."
   "..."
   (evil-define-key 'normal 'pdf-occur-buffer-mode-map
     (kbd "RET") 'pdf-occur-view-occurrence))
+
+;;;###autoload
+(defun aj/ob-javascript--node-path ()
+  "Check for more possibilities when searching for node_modules folder.
+Functions is intended as a replacement for `ob-javascript--node-path'.
+"
+  (let ((node-path (or (getenv "NODE_PATH") ""))
+        (node-modules (or (when (buffer-file-name)
+                            (locate-dominating-file (buffer-file-name) "node_modules"))
+                          (getenv "npm_config_prefix")
+                          (concat (getenv "HOME") "/node_modules"))))
+    (if node-modules
+        ;; WTF?
+        (format "%s:%snode_modules" node-path (file-truename node-modules))
+      node-path)))
