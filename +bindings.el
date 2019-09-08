@@ -173,7 +173,6 @@
          :desc "visible"       "v" #'avy-org-refile-as-child
          :desc "Journal"        "j" (λ! (org-refile-to-datetree +JOURNAL))
          :desc "Project"        "p" #'aj/refile-to-project-readme
-         :desc "GTD"            "g" (λ! (let ((hydra-lv nil)) (aj/gtd-refile/body)))
          )
 
        (:desc "Export"        :prefix "e"
@@ -235,7 +234,7 @@
          )
        "h" nil
        (:desc "hydras"            :prefix     "h"
-         :desc "refile"            "r" (λ! (let ((hydra-lv nil)) (aj/gtd-review-refile/body)))
+         :desc "refile"            "r" nil
          )
 
        (:desc "Mind"          :prefix         "m"
@@ -590,7 +589,7 @@
         )
       ;; previous               "["
       ;; next                   "]"
-      :desc "clock"     "\\" (λ! (let ((hydra-lv nil)) (aj/clocking/body)))
+      :desc "clock"     "\\" #'aj/clocking/body
       :desc "agenda"    "a" #'gtd-agenda/body
       (:prefix ("s" . "snippet")
         :desc "Preview"                  "p" #'ivy-yasnippet
@@ -653,8 +652,7 @@
         :desc "buffer"                   "b" #'counsel-ibuffer
         :desc "project bookmark"         "p" #'counsel-projectile-bookmark
         )
-      ;; :desc "capture"   "k" (λ! (let ((hydra-lv nil)) (aj/capture/body)))
-      :desc "capture" "k" (λ! (aj/capture/body))
+      :desc "capture"   "k" #'aj/capture/body
       (:prefix ("l" . "link")
         :desc "Org-store-link"           "s" #'org-store-link
         :desc "Org-copy-link"            "c" #'my-org-retrieve-url-from-point

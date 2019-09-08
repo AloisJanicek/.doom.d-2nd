@@ -418,6 +418,9 @@ to `t', otherwise, just do everything in the background.")
 (after! helpful
   (set-popup-rule! "*helpful\*"                     :size 0.4 :side 'left :select t))
 
+(after! hydra
+  (setq hydra-hint-display-type 'message))
+
 (after! ibuffer
   (set-popup-rule! "*Ibuffer\*"                     :size 0.4 :side 'left :select t))
 
@@ -985,7 +988,7 @@ to `t', otherwise, just do everything in the background.")
 (defhydra aj/capture ()
   "Capture:"
   ;; ("i" (org-capture nil "i") "issue" :exit t)
-  ;; ("c" ((lambda () (let ((hydra-lv nil)) (aj/capture-code/body)))) "code:" :exit t)
+  ;; ("c" (aj/capture-code/body) "code:" :exit t)
   ("k" (org-capture nil "c") "inbox" :exit t)
   ("t" (org-capture nil "t") "task" :exit t)
   )
