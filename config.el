@@ -992,3 +992,12 @@ to `t', otherwise, just do everything in the background.")
   ("k" (org-capture nil "c") "inbox" :exit t)
   ("t" (org-capture nil "t") "task" :exit t)
   )
+
+(defhydra hydra-change-mode (:color blue
+                                    :body-pre (insert "j")
+                                    :idle 1.0)
+  ("k" (progn
+         (delete-char -1)
+         (evil-normal-state))))
+(define-key evil-insert-state-map
+  (kbd "j") 'hydra-change-mode/body)
