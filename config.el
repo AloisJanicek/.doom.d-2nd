@@ -742,7 +742,7 @@ to `t', otherwise, just do everything in the background.")
                             :empty-lines 1 :prepend t)
 
                            ("t" "Task" entry (file ,+INBOX)
-                            "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
+                           ,(concat "* TO" "DO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n")
                             :empty-lines 1 :prepend t)
                            )
    )
