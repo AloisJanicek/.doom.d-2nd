@@ -145,6 +145,22 @@ to `t', otherwise, just do everything in the background.")
         '(term-mode help-mode minibuffer-inactive-mode calc-mode))
   (global-hungry-delete-mode 1))
 
+(use-package! howdoyou
+  :config
+  (defhydra aj/howdoyou (:color blue)
+    "How do you:"
+    ("h" (call-interactively 'howdoyou-query) "query" :exit t)
+    ("f" (howdoyou-go-back-to-first-link) "first")
+    ("n" (howdoyou-next-link) "next")
+    ("p" (howdoyou-previous-link) "previos")
+    ("r" (howdoyou-reload-link) "refresh"))
+
+  (set-popup-rule! "*How Do You*" :size 0.4 :side 'top :select t)
+
+  (map! :leader
+        (:prefix ("o" . "open")
+          :desc "howdoyou" "h" #'aj/howdoyou/body)))
+
 (use-package! ivy-yasnippet
   :commands (ivy-yasnippet))
 

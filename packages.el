@@ -57,6 +57,9 @@
 (package! hungry-delete
   )
 
+(package! howdoyou
+  :recipe (:host github :repo "thanhvg/emacs-howdoyou"))
+
 (package! ivy-mpdel
   :recipe (:host github :repo "mpdel/ivy-mpdel") :disable t)
 
