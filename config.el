@@ -117,9 +117,9 @@ to `t', otherwise, just do everything in the background.")
   :commands (ereader-read-epub ereader-mode)
   :mode ("\\.epub\\'". ereader-mode)
   :config
-  (add-hook 'ereader-mode-hook 'hide-mode-line-mode)
-  (add-hook 'ereader-mode-hook 'visual-line-mode)
-  (add-hook 'ereader-mode-hook 'turn-off-solaire-mode)
+  (add-hook 'ereader-mode-hook #'hide-mode-line-mode)
+  (add-hook 'ereader-mode-hook #'visual-line-mode)
+  (add-hook 'ereader-mode-hook #'turn-off-solaire-mode)
   )
 
 (use-package! esqlite
@@ -215,7 +215,7 @@ to `t', otherwise, just do everything in the background.")
   :init
   (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode)
   :config
-  (add-hook 'org-brain-visualize-mode-hook 'visual-line-mode)
+  (add-hook 'org-brain-visualize-mode-hook #'visual-line-mode)
   (advice-add #'org-brain-visualize :after #'aj/take-care-of-org-buffers)
   (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt)
   (setq org-brain-visualize-default-choices 'all
@@ -398,7 +398,7 @@ to `t', otherwise, just do everything in the background.")
 
 (after! eww
   (set-popup-rule! "*eww\*"                         :size 0.4 :side 'left :select t)
-  (add-hook 'eww-mode-hook 'visual-line-mode))
+  (add-hook 'eww-mode-hook #'visual-line-mode))
 
 (after! faces
   (set-face-attribute 'fixed-pitch-serif nil :family "Iosevka Slab")
@@ -458,8 +458,8 @@ to `t', otherwise, just do everything in the background.")
   (set-face-attribute 'imenu-list-entry-face-3 nil
                       :foreground `,(doom-lighten 'blue 0.25))
   ;; Finally, the hook
-  (add-hook 'imenu-list-major-mode-hook 'my-imenu-list-hl-line)
-  (add-hook 'imenu-list-major-mode-hook 'variable-pitch-mode)
+  (add-hook 'imenu-list-major-mode-hook #'my-imenu-list-hl-line)
+  (add-hook 'imenu-list-major-mode-hook #'variable-pitch-mode)
   )
 
 (after! info
@@ -495,7 +495,7 @@ to `t', otherwise, just do everything in the background.")
 
 (after! js2-mode
   (add-hook 'js2-mode-hook (lambda () (setq-local counsel-dash-docsets '("JavaScript" "HTML" "CSS"))))
-  (add-hook 'js2-mode-hook 'eslintd-fix-mode)
+  (add-hook 'js2-mode-hook #'eslintd-fix-mode)
   (setq-default indent-tabs-mode nil)
   (setq-default js2-basic-offset 2)
   )
@@ -540,7 +540,7 @@ to `t', otherwise, just do everything in the background.")
   (setq magit-repository-directories `((,+Repos . 1))
         magit-clone-default-directory `,+Repos
         )
-  (add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell))
+  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (after! man
   (set-face-attribute 'Man-overstrike nil :inherit 'bold :foreground "#ff7a79")
@@ -573,8 +573,8 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :size 0.32 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
 
   (add-hook 'doom-load-theme-hook #'aj/my-org-faces)
-  (add-hook 'org-after-todo-state-change-hook 'org-save-all-org-buffers)
-  (add-hook 'org-capture-mode-hook 'flyspell-mode)
+  (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
+  (add-hook 'org-capture-mode-hook #'flyspell-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (add-hook! org-mode-hook :append #'aj/my-org-faces)
   (advice-add #'aj/bookmarks :after #'aj/take-care-of-org-buffers)
@@ -603,14 +603,14 @@ to `t', otherwise, just do everything in the background.")
                             :complete #'org-pdfview-complete-link
                             :store #'org-pdfview-store-link)
    (org-add-link-type "pdfview" 'org-pdfview-open)
-   (add-hook 'org-store-link-functions 'org-pdfview-store-link)
+   (add-hook 'org-store-link-functions #'org-pdfview-store-link)
 
    ;; ...and same thing for org-ebook
    (org-link-set-parameters "ebook"
                             :follow #'org-ebook-open
                             :store #'org-ebook-store-link)
    (org-add-link-type "ebook" 'org-ebook-open)
-   (add-hook 'org-store-link-functions 'org-ebook-store-link)
+   (add-hook 'org-store-link-functions #'org-ebook-store-link)
    )
 
   (setq
@@ -670,9 +670,9 @@ to `t', otherwise, just do everything in the background.")
         '("◉")))
 
 (after! org-agenda
-  (add-hook 'org-agenda-after-show-hook 'org-narrow-to-subtree)
-  (add-hook 'org-agenda-mode-hook 'aj/complete-all-tags-for-org)
-  (add-hook 'org-agenda-mode-hook 'hide-mode-line-mode)
+  (add-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
+  (add-hook 'org-agenda-mode-hook #'aj/complete-all-tags-for-org)
+  (add-hook 'org-agenda-mode-hook #'hide-mode-line-mode)
   (add-hook 'org-agenda-finalize-hook (lambda ()
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
@@ -694,7 +694,7 @@ to `t', otherwise, just do everything in the background.")
   (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
   ;; (advice-add #'org-agenda-switch-to :after #'turn-off-solaire-mode)
   ;; (add-hook #'org-after-todo-statistics-hook #'org-summary-todo)
-  (remove-hook 'org-agenda-finalize-hook '+org|cleanup-agenda-files)
+  (remove-hook 'org-agenda-finalize-hook #'+org|cleanup-agenda-files)
 
   (setq
    org-agenda-files (apply 'append
@@ -827,7 +827,7 @@ to `t', otherwise, just do everything in the background.")
 
   ;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
   ;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
-  (add-hook 'pdf-view-mode-hook 'brds/pdf-jump-last-viewed-bookmark)
+  (add-hook 'pdf-view-mode-hook #'brds/pdf-jump-last-viewed-bookmark)
   )
 
 (after! pdf-occur
@@ -865,8 +865,8 @@ to `t', otherwise, just do everything in the background.")
     :kill-process-buffer-on-stop t))
 
 (after! prog-mode
-  (add-hook! 'prog-mode-hook 'goto-address-mode)
-  (add-hook! 'prog-mode-hook 'which-function-mode)
+  (add-hook! 'prog-mode-hook #'goto-address-mode)
+  (add-hook! 'prog-mode-hook #'which-function-mode)
   )
 
 (after! python
@@ -898,8 +898,8 @@ to `t', otherwise, just do everything in the background.")
   (setq evil-treemacs-state-cursor 'box)
   (setq treemacs-project-follow-cleanup t)
 
-  (set-face-attribute     'treemacs-root-face nil :height 1.0)
-  (add-hook 'treemacs-mode-hook 'variable-pitch-mode)
+  (set-face-attribute 'treemacs-root-face nil :height 1.0)
+  (add-hook 'treemacs-mode-hook #'variable-pitch-mode)
   )
 
 (after! vterm
@@ -909,8 +909,8 @@ to `t', otherwise, just do everything in the background.")
 
 (after! web-mode
   (add-hook 'web-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS" "Bootstrap_4"))))
-  (add-hook 'web-mode-hook 'my-web-mode-hook)
-  (add-hook 'web-mode-hook 'er/add-web-mode-expansions)
+  (add-hook 'web-mode-hook #'my-web-mode-hook)
+  (add-hook 'web-mode-hook #'er/add-web-mode-expansions)
   (add-hook 'web-mode-hook 'flycheck-mode)
   (setq web-mode-enable-current-element-highlight t
         web-mode-auto-close-style 1)
