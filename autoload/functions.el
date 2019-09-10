@@ -1433,8 +1433,7 @@ In ~%s~:
 ;;;###autoload
 (defun aj/open-calibre-book (base)
   "Select book from calibre database, choose file format and open it.
-Requires esqlite and dash.el.
-"
+Requires esqlite and dash.el."
   (interactive)
   (ivy-read "Books: "
             (mapcar (lambda (member)
@@ -1443,10 +1442,7 @@ Requires esqlite and dash.el.
             :action (lambda (x)
                       (let ((path (aj/return-calibre-book-path x base)))
                         (kill-new path)
-                        (find-file path))
-                      )
-            )
-  )
+                        (find-file path)))))
 
 ;;;###autoload
 (defun aj/return-calibre-book-path (x base)
@@ -1460,15 +1456,8 @@ and returns string representing path to the chosen book file."
          (formats (esqlite-read dbpath (concat "SELECT format FROM data WHERE book=" id ";")))
          (format (if (> (length formats) 1)
                      (concat "." (downcase (ivy-read "Choose format: " (nconc (last formats) (butlast formats)))))
-                   (concat "." (downcase (car (car formats))))))
-         )
-    (concat base
-            path "/"
-            name
-            format
-            )
-    )
-  )
+                   (concat "." (downcase (car (car formats)))))))
+    (concat base path "/" name format)))
 
 ;;;###autoload
 (defun brds/pdf-set-last-viewed-bookmark ()
