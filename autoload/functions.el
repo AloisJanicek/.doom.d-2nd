@@ -1459,7 +1459,7 @@ and returns string representing path to the chosen book file."
          (name (car (-flatten (esqlite-read dbpath (concat "SELECT name FROM data WHERE book=" id ";")))))
          (formats (esqlite-read dbpath (concat "SELECT format FROM data WHERE book=" id ";")))
          (format (if (> (length formats) 1)
-                     (concat "." (downcase (ivy-read "Choose format: " formats)))
+                     (concat "." (downcase (ivy-read "Choose format: " (nconc (last formats) (butlast formats)))))
                    (concat "." (downcase (car (car formats))))))
          )
     (concat base
