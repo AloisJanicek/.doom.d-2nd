@@ -383,7 +383,7 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! evil-org-agenda
-  (advice-add 'evil-org-agenda-set-keys :after 'aj/fix-evil-org-agenda-keys)
+  (advice-add #'evil-org-agenda-set-keys :after #'aj/fix-evil-org-agenda-keys)
   )
 
 (after! emmet-mode
@@ -393,7 +393,7 @@ to `t', otherwise, just do everything in the background.")
    ;;      emmet-move-cursor-between-quotes nil
    ;; emmet-preview-default t
    )
-  (advice-add 'emmet-preview :before 'aj/remap-emmet)
+  (advice-add #'emmet-preview :before #'aj/remap-emmet)
   (defadvice emmet-preview-accept (after emmet-after activate) (aj/indent-if-not-webmode)))
 
 (after! eww
@@ -463,7 +463,7 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! info
-  (advice-add 'info :before 'aj/set-info-popup-width))
+  (advice-add #'info :before #'aj/set-info-popup-width))
 
 (after! ispell
   (setq ispell-program-name "aspell")
@@ -481,7 +481,7 @@ to `t', otherwise, just do everything in the background.")
    '(("e" ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own"))))
 
 (after! ivy-pages
-  (advice-add 'ivy-pages-transformer :override 'ivy-pages-transformer-clear-string)
+  (advice-add #'ivy-pages-transformer :override #'ivy-pages-transformer-clear-string)
   )
 
 (after! ivy-posframe
@@ -581,10 +581,10 @@ to `t', otherwise, just do everything in the background.")
   (advice-add #'aj/refile-to-file :after #'aj/take-care-of-org-buffers)
   (advice-add #'aj/refile-to-project-readme :after #'aj/take-care-of-org-buffers)
   (advice-add #'org-refile :after #'aj/take-care-of-org-buffers)
-  (advice-add '+popup--delete-window :before (lambda (&rest _) (when (eq major-mode 'org-mode) (save-buffer))))
-  (advice-add 'org-protocol-check-filename-for-protocol :around 'doom-shut-up-a)
-  (advice-add 'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
-  (advice-add 'org-save-all-org-buffers :around 'doom-shut-up-a)
+  (advice-add #'+popup--delete-window :before (lambda (&rest _) (when (eq major-mode 'org-mode) (save-buffer))))
+  (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
+  (advice-add #'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
+  (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
   (remove-hook 'org-mode-hook #'auto-fill-mode)
   ;;(advice-add #'aj/has-children-p :after #'aj/take-care-of-org-buffers)
   ;;(advice-add #'aj/has-children-p :after #'winner-undo)
@@ -676,24 +676,24 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'org-agenda-finalize-hook (lambda ()
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
-  (advice-add 'aj/org-agenda-refile-to-datetree :after 'aj/take-care-of-org-buffers)
-  (advice-add 'aj/org-agenda-refile-to-file :after 'aj/take-care-of-org-buffers)
-  (advice-add 'aj/org-agenda-refile-to-project-readme :after 'aj/take-care-of-org-buffers)
-  (advice-add 'org-agenda-archive :after 'org-save-all-org-buffers)
-  (advice-add 'org-agenda-archive-default :after 'org-save-all-org-buffers)
-  (advice-add 'org-agenda-deadline :before 'my-set-org-agenda-type)
-  (advice-add 'org-agenda-exit :after 'aj/take-care-of-org-buffers)
-  (advice-add 'org-agenda-exit :before 'org-save-all-org-buffers)
-  (advice-add 'org-agenda-filter-apply :after 'aj/copy-set-agenda-filter)
-  (advice-add 'org-agenda-redo :around 'doom-shut-up-a)
-  (advice-add 'org-agenda-refile :after 'aj/take-care-of-org-buffers)
-  (advice-add 'org-agenda-schedule :before 'my-set-org-agenda-type)
-  (advice-add 'org-agenda-set-effort :after 'org-save-all-org-buffers)
-  (advice-add 'org-agenda-switch-to :around 'aj/open-file-the-right-way-from-agenda)
-  (advice-add 'org-agenda-todo :after 'aj/save-and-refresh-agenda)
-  (advice-add 'org-copy :after 'aj/take-care-of-org-buffers)
-  ;; (advice-add 'org-agenda-switch-to :after 'turn-off-solaire-mode)
-  ;; (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+  (advice-add #'aj/org-agenda-refile-to-datetree :after #'aj/take-care-of-org-buffers)
+  (advice-add #'aj/org-agenda-refile-to-file :after #'aj/take-care-of-org-buffers)
+  (advice-add #'aj/org-agenda-refile-to-project-readme :after #'aj/take-care-of-org-buffers)
+  (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
+  (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
+  (advice-add #'org-agenda-deadline :before #'my-set-org-agenda-type)
+  (advice-add #'org-agenda-exit :after #'aj/take-care-of-org-buffers)
+  (advice-add #'org-agenda-exit :before #'org-save-all-org-buffers)
+  (advice-add #'org-agenda-filter-apply :after #'aj/copy-set-agenda-filter)
+  (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
+  (advice-add #'org-agenda-refile :after #'aj/take-care-of-org-buffers)
+  (advice-add #'org-agenda-schedule :before #'my-set-org-agenda-type)
+  (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
+  (advice-add #'org-agenda-switch-to :around #'aj/open-file-the-right-way-from-agenda)
+  (advice-add #'org-agenda-todo :after #'aj/save-and-refresh-agenda)
+  (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
+  ;; (advice-add #'org-agenda-switch-to :after #'turn-off-solaire-mode)
+  ;; (add-hook #'org-after-todo-statistics-hook #'org-summary-todo)
   (remove-hook 'org-agenda-finalize-hook '+org|cleanup-agenda-files)
 
   (setq
@@ -733,8 +733,8 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! org-archive
-  (advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)
-  (advice-add 'org-archive-subtree-default :after #'org-save-all-org-buffers)
+  (advice-add #'org-archive-subtree :after #'org-save-all-org-buffers)
+  (advice-add #'org-archive-subtree-default :after #'org-save-all-org-buffers)
   )
 
 (after! org-capture
@@ -765,8 +765,8 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! org-clock
-  (advice-add 'org-clock-in :after (lambda (&rest _) (org-save-all-org-buffers)))
-  (advice-add 'org-clock-out :after (lambda (&rest _) (org-save-all-org-buffers)))
+  (advice-add #'org-clock-in :after (lambda (&rest _) (org-save-all-org-buffers)))
+  (advice-add #'org-clock-out :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
 
   (setq
@@ -831,13 +831,13 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! pdf-occur
-  (advice-add 'evil-collection-pdf-setup :after 'aj/remap-in-pdf-occur-buffer))
+  (advice-add #'evil-collection-pdf-setup :after #'aj/remap-in-pdf-occur-buffer))
 
 (after! persp-mode
   (setq persp-kill-foreign-buffer-behaviour nil
         persp-autokill-buffer-on-remove nil
         )
-  (advice-add 'persp-remove-buffer :around 'doom-shut-up-a)
+  (advice-add #'persp-remove-buffer :around #'doom-shut-up-a)
   (dolist (file (directory-files-recursively org-directory ".org"))
     (add-to-list '+persp-blacklist `,(file-name-nondirectory file)))
 
@@ -848,7 +848,7 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "^.*-Profiler-Report.*$"         :size 0.4 :side 'right :select t))
 
 (after! projectile
-  (advice-add 'projectile-cleanup-known-projects :around #'doom-shut-up-a)
+  (advice-add #'projectile-cleanup-known-projects :around #'doom-shut-up-a)
   (setq projectile-globally-ignored-file-suffixes (append (list ".elc"))
         projectile-globally-ignored-directories (append (list "node_modules"))
         projectile-track-known-projects-automatically nil
