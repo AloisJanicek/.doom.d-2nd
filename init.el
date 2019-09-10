@@ -182,6 +182,7 @@
 
 (setq +doom-dashboard-functions
       '(doom-dashboard-widget-banner
-        doom-dashboard-widget-loaded))
+        doom-dashboard-widget-loaded
+        doom-dashboard-widget-footer))
 
 (provide 'init.el)
