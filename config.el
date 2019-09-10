@@ -368,10 +368,10 @@ to `t', otherwise, just do everything in the background.")
 
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
-            '(lambda ()
-               (dolist (imenu-exp '(("After" "^\\s-*(after! +\\([^ ()\n]+\\)" 1)
-                                    ("Hydra" "^\\s-*(defhydra +\\([^ ()\n]+\\)" 1)))
-                 (add-to-list 'imenu-generic-expression imenu-exp)))
+            (lambda ()
+              (dolist (imenu-exp '(("After" "^\\s-*(after! +\\([^ ()\n]+\\)" 1)
+                                   ("Hydra" "^\\s-*(defhydra +\\([^ ()\n]+\\)" 1)))
+                (add-to-list 'imenu-generic-expression imenu-exp)))
             t)
   )
 
@@ -487,10 +487,10 @@ to `t', otherwise, just do everything in the background.")
 (after! ivy-posframe
   (setf (alist-get t ivy-posframe-display-functions-alist)
         #'ivy-posframe-display-at-frame-top-center)
-  (setq ivy-posframe-size-function '(lambda () (list :height 20
-                                                     :width (round (* (frame-width) 0.62))
-                                                     :min-height 20
-                                                     :min-width 80)))
+  (setq ivy-posframe-size-function (lambda () (list :height 20
+                                                    :width (round (* (frame-width) 0.62))
+                                                    :min-height 20
+                                                    :min-width 80)))
   )
 
 (after! js2-mode
@@ -581,7 +581,7 @@ to `t', otherwise, just do everything in the background.")
   (advice-add #'aj/refile-to-file :after #'aj/take-care-of-org-buffers)
   (advice-add #'aj/refile-to-project-readme :after #'aj/take-care-of-org-buffers)
   (advice-add #'org-refile :after #'aj/take-care-of-org-buffers)
-  (advice-add '+popup--delete-window :before #'(lambda (&rest _) (when (eq major-mode 'org-mode) (save-buffer))))
+  (advice-add '+popup--delete-window :before (lambda (&rest _) (when (eq major-mode 'org-mode) (save-buffer))))
   (advice-add 'org-protocol-check-filename-for-protocol :around 'doom-shut-up-a)
   (advice-add 'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add 'org-save-all-org-buffers :around 'doom-shut-up-a)
@@ -673,9 +673,9 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'org-agenda-after-show-hook 'org-narrow-to-subtree)
   (add-hook 'org-agenda-mode-hook 'aj/complete-all-tags-for-org)
   (add-hook 'org-agenda-mode-hook 'hide-mode-line-mode)
-  (add-hook 'org-agenda-finalize-hook '(lambda ()
-                                         (setq-local org-global-tags-completion-table
-                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
+  (add-hook 'org-agenda-finalize-hook (lambda ()
+                                        (setq-local org-global-tags-completion-table
+                                                    (org-global-tags-completion-table org-agenda-contributing-files))))
   (advice-add 'aj/org-agenda-refile-to-datetree :after 'aj/take-care-of-org-buffers)
   (advice-add 'aj/org-agenda-refile-to-file :after 'aj/take-care-of-org-buffers)
   (advice-add 'aj/org-agenda-refile-to-project-readme :after 'aj/take-care-of-org-buffers)
@@ -758,7 +758,7 @@ to `t', otherwise, just do everything in the background.")
                             :empty-lines 1 :prepend t)
 
                            ("t" "Task" entry (file ,+INBOX)
-                           ,(concat "* TO" "DO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n")
+                            ,(concat "* TO" "DO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n")
                             :empty-lines 1 :prepend t)
                            )
    )
@@ -813,15 +813,15 @@ to `t', otherwise, just do everything in the background.")
 
 (after! pdf-view
   (setq pdf-view-midnight-colors `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))
-  (add-hook 'pdf-view-mode-hook '(lambda ()
-                                   (hide-mode-line-mode)
-                                   (turn-off-solaire-mode)
-                                   (pdf-view-fit-width-to-window)
-                                   (pdf-view-auto-slice-minor-mode)
-                                   (pdf-view-midnight-minor-mode)
-                                   (set (make-local-variable 'evil-normal-state-cursor) (list nil))
-                                   ))
-  ;; (add-hook 'pdf-view-after-change-page-hook '(lambda ()
+  (add-hook 'pdf-view-mode-hook (lambda ()
+                                  (hide-mode-line-mode)
+                                  (turn-off-solaire-mode)
+                                  (pdf-view-fit-width-to-window)
+                                  (pdf-view-auto-slice-minor-mode)
+                                  (pdf-view-midnight-minor-mode)
+                                  (set (make-local-variable 'evil-normal-state-cursor) (list nil))
+                                  ))
+  ;; (add-hook 'pdf-view-after-change-page-hook (lambda ()
   ;;                                               (hide-mode-line-mode -1)
   ;;                                               ))
 
@@ -885,8 +885,8 @@ to `t', otherwise, just do everything in the background.")
   (add-hook! 'term-mode-hook #'hide-mode-line-mode)
   ;; remap keys for terminal with Evil
   (add-hook! term-mode :append #'aj/set-term-keys)
-  (add-hook 'term-mode-hook '(lambda () (interactive)(setq left-fringe-width 0
-                                                           right-ringe-width 0))))
+  (add-hook 'term-mode-hook (lambda () (interactive)(setq left-fringe-width 0
+                                                          right-ringe-width 0))))
 
 (after! tide
   (setq tide-completion-detailed nil
@@ -904,8 +904,8 @@ to `t', otherwise, just do everything in the background.")
 
 (after! vterm
   (add-hook! 'vterm-mode-hook #'hide-mode-line-mode)
-  (add-hook 'vterm-mode-hook '(lambda () (interactive)(setq left-fringe-width 0
-                                                            right-ringe-width 0))))
+  (add-hook 'vterm-mode-hook (lambda () (interactive)(setq left-fringe-width 0
+                                                           right-ringe-width 0))))
 
 (after! web-mode
   (add-hook 'web-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS" "Bootstrap_4"))))

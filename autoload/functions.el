@@ -3,7 +3,7 @@
 (defun transform-square-brackets-to-round-ones(string-to-transform)
   "Transforms [ into ( and ] into ), other chars left unchanged."
   (concat
-   (mapcar #'(lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform)))
+   (mapcar (lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform)))
 ;;;###autoload
 (defun my-yank-org-link (text)
   (string-match org-bracket-link-regexp text)
@@ -589,8 +589,8 @@ If run with `\\[universal-argument]', or SAME-WINDOW as t, use current window."
   (require 'org-brain)
   (if same-window
       (my/org-brain-goto (org-brain-entry-at-pt))
-    (my/org-brain-goto (org-brain-entry-at-pt) '(lambda (x)
-                                                  (aj/open-file-switch-create-indirect-buffer-per-persp x t))
+    (my/org-brain-goto (org-brain-entry-at-pt) (lambda (x)
+                                                 (aj/open-file-switch-create-indirect-buffer-per-persp x t))
                        )))
 ;;;###autoload
 (defun aj/org-brain-visualize-entry-at-pt ()
@@ -1289,8 +1289,8 @@ to the right and displays buffer there."
             (split-window (selected-window) (/ (window-total-width) 2) 'left)
           ;; (split-window-right)
           )
-        (select-window (some-window '(lambda (x)
-                                       (not (eq x (selected-window))))))
+        (select-window (some-window (lambda (x)
+                                      (not (eq x (selected-window))))))
         (switch-to-buffer buffer)
         )
       )
@@ -1513,7 +1513,7 @@ and returns string representing path to the chosen book file."
 ;;                                 ;; (org-element-property :level el) ; get depth
 ;;                                 ;; >> could add other properties here
 ;;                                 )))
-;;                 :action '(lambda (x)
+;;                 :action (lambda (x)
 ;;                            ;; (print (if (stringp x) x (car x)))
 ;;                            (goto-char
 ;;                             (org-find-exact-headline-in-buffer (substring-no-properties (if (stringp x) x (car x))))
@@ -1535,9 +1535,9 @@ Epub files offten has very poor quality."
   (when (not (featurep 'link-hint))
     (require 'link-hint))
   (avy-with link-hint-open-link
-    (link-hint--one :open)
-    (my/org-brain-goto-current)
-    ))
+            (link-hint--one :open)
+            (my/org-brain-goto-current)
+            ))
 
 ;;;###autoload
 (defun +javascript*sort-imenu-index-by-position (orig-fn)
@@ -1600,8 +1600,8 @@ If `README' is t, ask user for projectile project instead of file.
 
        (if (not top-level)
            (ivy-read "Choose headline: " (counsel-outline-candidates (cdr (assq major-mode counsel-outline-settings)))
-                     :action '(lambda (x)
-                                (goto-char (cdr x))))
+                     :action (lambda (x)
+                               (goto-char (cdr x))))
          (goto-char (point-max)))
 
        (let ((level (if (not top-level)
