@@ -149,7 +149,8 @@ to `t', otherwise, just do everything in the background.")
   :config
   (defhydra aj/howdoyou (:color blue)
     "How do you:"
-    ("h" (call-interactively 'howdoyou-query) "query" :exit t)
+    ("q" (call-interactively #'howdoyou-query) "query" :exit t)
+    ("h" (call-interactively #'helm-howdoyou) "helm" :exit t)
     ("f" (howdoyou-go-back-to-first-link) "first")
     ("n" (howdoyou-next-link) "next")
     ("p" (howdoyou-previous-link) "previos")
@@ -159,7 +160,34 @@ to `t', otherwise, just do everything in the background.")
 
   (map! :leader
         (:prefix ("o" . "open")
-          :desc "howdoyou" "h" #'aj/howdoyou/body)))
+          :desc "howdoyou" "h" #'aj/howdoyou/body))
+
+  ;; https://github.com/thanhvg/emacs-howdoyou/issues/2
+  (defun helm-howdoyou--print-link (link)
+    (promise-chain (howdoyou--promise-dom link)
+      (then #'howdoyou--promise-so-answer)
+      (then #'howdoyou--print-answer)
+      (promise-catch (lambda (reason)
+                       (message "catch error in n-link: %s" reason)))))
+
+  (defun helm-howdoyou--transform-candidate (candidate)
+    (if-let* ((title-with-dashes
+               (s-with (s-match "questions/[0-9]+/\\([-a-z]+\\)" candidate) cadr)))
+        (s-replace "-" " " title-with-dashes)
+      ""))
+
+  (defun helm-howdoyou--transform-candidates (candidates)
+    (-zip-pair
+     (mapcar #'helm-howdoyou--transform-candidate candidates)
+     candidates))
+
+  (defun helm-howdoyou ()
+    (interactive)
+    (helm :sources (helm-build-sync-source "howdoyou links"
+                     :candidates (helm-howdoyou--transform-candidates howdoyou--links)
+                     :action (helm-make-actions "print" #'helm-howdoyou--print-link))
+          :buffer "*helm howdoyou*"))
+  )
 
 (use-package! ivy-yasnippet
   :commands (ivy-yasnippet))
