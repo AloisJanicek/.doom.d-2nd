@@ -148,7 +148,10 @@ to `t', otherwise, just do everything in the background.")
 
 (use-package! howdoyou
   :config
-  (defhydra aj/howdoyou (:color blue)
+  (defhydra aj/howdoyou (:color blue
+                                :body-pre
+                                (when (get-buffer "*How Do You*")
+                                  (pop-to-buffer "*How Do You*")))
     "How do you:"
     ("q" (call-interactively #'howdoyou-query) "query" :exit t)
     ("h" (call-interactively #'helm-howdoyou) "helm" :exit t)
