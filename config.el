@@ -451,6 +451,9 @@ to `t', otherwise, just do everything in the background.")
         flyspell-issue-welcome-flag nil)
   (add-to-list 'ispell-skip-region-alist '("^#+BEGIN_SRC" . "^#+END_SRC")))
 
+(after! helm
+  (helm-mode -1))
+
 (after! helm-dash
   (setq helm-dash-docsets-path (concat +Reference "/Docsets"))
   (setq helm-dash-browser-func 'browse-url-chromium)

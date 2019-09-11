@@ -14,7 +14,8 @@
        (company
         +auto
         +childframe)
-       ;;helm
+       (helm
+        +childframe)
        ;;ido
        (ivy
         +icons
