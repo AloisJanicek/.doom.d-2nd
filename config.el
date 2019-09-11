@@ -4,9 +4,10 @@
   "Variable which equals to ~ on linux or to a specified host home directory
 if running under WSL")
 
-(if (aj/wsl-p)
-    (setq +BASE-HOME (concat "/mnt/c/Users/" (aj/return-wsl-user-name) "/"))
-  (setq +BASE-HOME (expand-file-name "~/")))
+(setq +BASE-HOME (if (aj/wsl-p)
+                     (concat "/mnt/c/Users/" (aj/return-wsl-user-name) "/")
+                   (setq +BASE-HOME (expand-file-name "~/"))))
+
 
 (defvar +Reference (concat +BASE-HOME "Documents/MEGAsync")
   "Location of Reference folder.")
@@ -336,8 +337,9 @@ to `t', otherwise, just do everything in the background.")
 
 (after! alert
   (setq alert-default-style 'libnotify)
-  (if (aj/wsl-p)
-      (setq alert-libnotify-command (expand-file-name "notify-wsl" "~/.local/bin"))))
+  (setq alert-libnotify-command (if (aj/wsl-p)
+                                    (expand-file-name "notify-wsl" "~/.local/bin")
+                                  "/usr/bin/notify-send")))
 
 (after! apropos
   (set-popup-rule! "*apropos\*"                     :size 0.4 :side 'left :select t)
@@ -455,7 +457,7 @@ to `t', otherwise, just do everything in the background.")
   (helm-mode -1))
 
 (after! helm-dash
-  (setq helm-dash-docsets-path (concat +Reference "/Docsets"))
+  (setq helm-dash-docsets-path (expand-file-name  "Documentation" (concat +BASE-HOME "Documents")))
   (setq helm-dash-browser-func 'browse-url-chromium)
   )
 
@@ -550,12 +552,12 @@ to `t', otherwise, just do everything in the background.")
           ("." . browse-url-chromium)
           ))
 
-  (if (aj/wsl-p)
-      (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
-            (cmd-args '("/c" "start")))
-        (setq browse-url-generic-program  cmd-exe
-              browse-url-generic-args     cmd-args
-              browse-url-browser-function 'browse-url-generic)))
+  (when (aj/wsl-p)
+    (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
+          (cmd-args '("/c" "start")))
+      (setq browse-url-generic-program  cmd-exe
+            browse-url-generic-args     cmd-args
+            browse-url-browser-function 'browse-url-generic)))
   )
 
 (after! lsp
