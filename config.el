@@ -157,7 +157,7 @@ to `t', otherwise, just do everything in the background.")
     ("p" (howdoyou-previous-link) "previos")
     ("r" (howdoyou-reload-link) "refresh"))
 
-  (set-popup-rule! "*How Do You*" :size 0.4 :side 'top :select t)
+  (set-popup-rule! "*How Do You*" :size 0.4 :side 'left :select t :ttl nil)
 
   (map! :leader
         (:prefix ("o" . "open")
