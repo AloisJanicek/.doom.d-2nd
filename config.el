@@ -154,7 +154,7 @@ to `t', otherwise, just do everything in the background.")
                                   (pop-to-buffer "*How Do You*")))
     "How do you:"
     ("q" (call-interactively #'howdoyou-query) "query" :exit t)
-    ("h" (call-interactively #'helm-howdoyou) "helm" :exit t)
+    ("h" (call-interactively #'aj/counsel-howdoyou) "counsel" :exit t)
     ("f" (howdoyou-go-back-to-first-link) "first")
     ("n" (howdoyou-next-link) "next")
     ("p" (howdoyou-previous-link) "previos")
@@ -167,12 +167,6 @@ to `t', otherwise, just do everything in the background.")
           :desc "howdoyou" "h" #'aj/howdoyou/body))
 
   ;; https://github.com/thanhvg/emacs-howdoyou/issues/2
-  (defun helm-howdoyou--print-link (link)
-    (promise-chain (howdoyou--promise-dom link)
-      (then #'howdoyou--promise-so-answer)
-      (then #'howdoyou--print-answer)
-      (promise-catch (lambda (reason)
-                       (message "catch error in n-link: %s" reason)))))
 
   (defun helm-howdoyou--transform-candidate (candidate)
     (if-let* ((title-with-dashes
@@ -185,13 +179,21 @@ to `t', otherwise, just do everything in the background.")
      (mapcar #'helm-howdoyou--transform-candidate candidates)
      candidates))
 
-  (defun helm-howdoyou ()
+  (defun helm-howdoyou--print-link (link)
+    (promise-chain (howdoyou--promise-dom link)
+      (then #'howdoyou--promise-so-answer)
+      (then #'howdoyou--print-answer)
+      (promise-catch (lambda (reason)
+                       (message "catch error in n-link: %s" reason)))))
+
+  (defun aj/counsel-howdoyou ()
+    "howdoyou"
     (interactive)
-    (helm :sources (helm-build-sync-source "howdoyou links"
-                     :candidates (helm-howdoyou--transform-candidates howdoyou--links)
-                     :action (helm-make-actions "print" #'helm-howdoyou--print-link))
-          :buffer "*helm howdoyou*"))
-  )
+    (ivy-read "Choose links: "
+              (helm-howdoyou--transform-candidates howdoyou--links)
+              :action (lambda (x)
+                        (helm-howdoyou--print-link (cdr x)))
+              :caller 'aj/counsel-howdoto)))
 
 (use-package! ivy-yasnippet
   :commands (ivy-yasnippet))
