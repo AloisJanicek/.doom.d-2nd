@@ -387,7 +387,9 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! counsel-dash
-  (setq counsel-dash-docsets-path (concat +BASE-HOME ".local/share/Zeal"))
+  (setq counsel-dash-docsets-path (if (aj/wsl-p)
+                                      (concat +BASE-HOME "AppData/Local/Zeal/Zeal/docsets")
+                                    (concat +BASE-HOME ".local/share/Zeal")))
   (setq counsel-dash-browser-func 'eww)
   )
 
