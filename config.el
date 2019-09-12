@@ -154,7 +154,7 @@ to `t', otherwise, just do everything in the background.")
                                   (pop-to-buffer "*How Do You*")))
     "How do you:"
     ("q" (call-interactively #'howdoyou-query) "query" :exit t)
-    ("h" (call-interactively #'aj/counsel-howdoyou) "counsel" :exit t)
+    ("s" (call-interactively #'aj/counsel-howdoyou) "search" :exit t)
     ("f" (howdoyou-go-back-to-first-link) "first")
     ("n" (howdoyou-next-link) "next")
     ("p" (howdoyou-previous-link) "previos")
@@ -163,8 +163,8 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "*How Do You*" :size 0.4 :side 'left :select t :ttl nil)
 
   (map! :leader
-        (:prefix ("o" . "open")
-          :desc "howdoyou" "h" #'aj/howdoyou/body))
+        (:prefix ("h" . "help")
+          :desc "stack overflow" "s" #'aj/howdoyou/body))
 
   ;; https://github.com/thanhvg/emacs-howdoyou/issues/2
 

@@ -633,7 +633,7 @@
         :desc "Pop on error"             "P" #'toggle-debug-on-error
         :desc "Dash docset"              "/" #'counsel-dash
         :desc "Zeal at point"            "z" #'zeal-at-point
-        :desc "Zeal search"              "s" #'zeal-at-point-search
+        ;; :desc "Zeal search"              "s" #'zeal-at-point-search
         :desc "Zeal set buffer docset"   "Z" #'zeal-at-point-set-docset
         :desc "Describe DOOM setting"    "S" #'doom/describe-setters
         )
