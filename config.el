@@ -361,10 +361,10 @@ to `t', otherwise, just do everything in the background.")
   (setq calendar-week-start-day 1))
 
 (after! css-mode
-  (add-hook 'css-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS"))))
-  (add-hook 'scss-mode-hook (lambda () (setq-local counsel-dash-docsets '("Sass" "HTML" "CSS"))))
   (set-face-attribute 'css-selector nil :foreground "#E06C75")
-  )
+  (set-docsets! '(css-mode scss-mode)
+    "CSS" "HTML"
+    ["Sass" (memq major-mode '(scss-mode))]))
 
 (after! cus-edit
   (set-popup-rule! "*Customize\*"                   :size 0.4 :side 'left :select t :transient nil))
@@ -384,6 +384,11 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "^\\*ivy-occur" :size 0.70 :ttl 0 :quit nil)
   (advice-add #'ivy-rich--ivy-switch-buffer-transformer :override #'+ivy-combined-buffer-transformer)
   (advice-add #'counsel-org-goto-bookmarks :after #'aj/take-care-of-org-buffers)
+  )
+
+(after! counsel-dash
+  (setq counsel-dash-docsets-path (concat +BASE-HOME ".local/share/Zeal"))
+  (setq counsel-dash-browser-func 'eww)
   )
 
 (after! counsel-projectile
@@ -461,11 +466,6 @@ to `t', otherwise, just do everything in the background.")
 (after! helm
   (helm-mode -1))
 
-(after! helm-dash
-  (setq helm-dash-docsets-path (expand-file-name  "Documentation" (concat +BASE-HOME "Documents")))
-  (setq helm-dash-browser-func 'browse-url-chromium)
-  )
-
 (after! help
   (set-popup-rule! "*help\*"                        :size 0.4 :side 'left :select t))
 
@@ -531,8 +531,11 @@ to `t', otherwise, just do everything in the background.")
                                                     :min-width 80)))
   )
 
+(after! (:any js2-mode rjsx-mode web-mode)
+  (set-docsets! '(js2-mode rjsx-mode)
+    "JavaScript" "Angular" "Bootstrap_4" "jQuery" "NodeJS" "React" "VueJS"))
+
 (after! js2-mode
-  (add-hook 'js2-mode-hook (lambda () (setq-local counsel-dash-docsets '("JavaScript" "HTML" "CSS"))))
   (add-hook 'js2-mode-hook #'eslintd-fix-mode)
   (setq-default indent-tabs-mode nil)
   (setq-default js2-basic-offset 2)
@@ -908,7 +911,7 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! python
-  (add-hook 'python-mode-hook (lambda () (setq-local counsel-dash-docsets '("Python_3")))))
+  (set-docsets! 'python-mode "Python 3"))
 
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
@@ -946,7 +949,7 @@ to `t', otherwise, just do everything in the background.")
                                                            right-ringe-width 0))))
 
 (after! web-mode
-  (add-hook 'web-mode-hook (lambda () (setq-local counsel-dash-docsets '("HTML" "CSS" "Bootstrap_4"))))
+  (set-docsets! 'web-mode "HTML" "CSS" "WordPress")
   (add-hook 'web-mode-hook #'my-web-mode-hook)
   (add-hook 'web-mode-hook #'er/add-web-mode-expansions)
   (add-hook 'web-mode-hook 'flycheck-mode)
