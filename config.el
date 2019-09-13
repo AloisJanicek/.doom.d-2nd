@@ -77,8 +77,10 @@ to `t', otherwise, just do everything in the background.")
 
 (set-popup-rule! "*backtrace\*" :size 0.4 :side 'right :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
-(use-package! aio)
-(use-package! ahk-mode)
+
+(use-package! ahk-mode
+  :commands ahk-mode
+  )
 
 (use-package! all-the-icons-ivy
   :after ivy
@@ -93,11 +95,13 @@ to `t', otherwise, just do everything in the background.")
     (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
 (use-package! anki-editor
+  :commands anki-editor-mode
   :config
   (setq anki-editor-create-decks t)
   )
 
 (use-package! apache-mode
+  :commands apache-mode
   :mode (("apache\\.conf\\'" . apache-mode)
          ("\\.htaccess\\'" . apache-mode)
          ("httpd\\.conf\\'" . apache-mode)
@@ -124,13 +128,11 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (use-package! esqlite
-  :commands (esqlite-stream-open)
-  )
-
-(use-package! fish-mode
-  :commands (fish-mode))
+  :commands (esqlite-stream-open esqlite-read))
 
 (use-package! google-translate
+  :commands (google-translate-at-point
+             google-translate-at-point-reverse)
   :config
   (setq google-translate-default-source-language "cs"
         google-translate-default-target-language "en")
@@ -147,6 +149,7 @@ to `t', otherwise, just do everything in the background.")
   (global-hungry-delete-mode 1))
 
 (use-package! howdoyou
+  :commands (howdoyou-query aj/howdoyou/body)
   :config
   (defhydra aj/howdoyou (:color blue
                                 :body-pre
@@ -160,49 +163,20 @@ to `t', otherwise, just do everything in the background.")
     ("p" (howdoyou-previous-link) "previos")
     ("r" (howdoyou-reload-link) "refresh"))
 
+
   (set-popup-rule! "*How Do You*" :size 0.4 :side 'left :select t :ttl nil)
-
-  (map! :leader
-        (:prefix ("h" . "help")
-          :desc "stack overflow" "s" #'aj/howdoyou/body))
-
-  ;; https://github.com/thanhvg/emacs-howdoyou/issues/2
-
-  (defun helm-howdoyou--transform-candidate (candidate)
-    (if-let* ((title-with-dashes
-               (s-with (s-match "questions/[0-9]+/\\([-a-z]+\\)" candidate) cadr)))
-        (s-replace "-" " " title-with-dashes)
-      ""))
-
-  (defun helm-howdoyou--transform-candidates (candidates)
-    (-zip-pair
-     (mapcar #'helm-howdoyou--transform-candidate candidates)
-     candidates))
-
-  (defun helm-howdoyou--print-link (link)
-    (promise-chain (howdoyou--promise-dom link)
-      (then #'howdoyou--promise-so-answer)
-      (then #'howdoyou--print-answer)
-      (promise-catch (lambda (reason)
-                       (message "catch error in n-link: %s" reason)))))
-
-  (defun aj/counsel-howdoyou ()
-    "howdoyou"
-    (interactive)
-    (ivy-read "Choose links: "
-              (helm-howdoyou--transform-candidates howdoyou--links)
-              :action (lambda (x)
-                        (helm-howdoyou--print-link (cdr x)))
-              :caller 'aj/counsel-howdoto)))
+  )
 
 (use-package! ivy-yasnippet
   :commands (ivy-yasnippet))
 
+;; for navigation in epub files
 (use-package! ivy-pages
-  :after ivy
-  )
+  :commands ivy-pages)
 
-(use-package! js-react-redux-yasnippets)
+;; TODO Investigate lazy loading
+(use-package! js-react-redux-yasnippets
+  )
 
 (use-package! link-hint
   :commands (link-hint-open-all-links
@@ -213,15 +187,10 @@ to `t', otherwise, just do everything in the background.")
   (setq link-hint-avy-all-windows nil)
   )
 
-(use-package! ob-async
-  :commands ob-async-org-babel-execute-src-block
-  )
-
 (use-package! ob-javascript
   :after ob-core
   :config
-  (advice-add #'ob-javascript--node-path :override #'aj/ob-javascript--node-path)
-  )
+  (advice-add #'ob-javascript--node-path :override #'aj/ob-javascript--node-path))
 
 (after! evil-snipe
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
@@ -274,9 +243,7 @@ to `t', otherwise, just do everything in the background.")
   :commands (org-pomodoro org-pomodoro-remaining-seconds org-pomodoro-state)
   :config
   (setq alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
-        org-pomodoro-ask-upon-killing nil
-        )
-  )
+        org-pomodoro-ask-upon-killing nil))
 
 (use-package! org-ql
   :after org
@@ -298,12 +265,18 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (use-package! ox-hugo
-  :after ox
-  )
+  :after ox)
+
+;; TODO why I have both synosaurus and powerthesaurus?
+(use-package! powerthesaurus
+  :commands (powerthesaurus-lookup-word
+             powerthesaurus-lookup-word-dwim
+             powerthesaurus-lookup-word-at-point))
 
 (use-package! robots-txt-mode
   :mode (("/robots\\.txt\\'" . robots-txt-mode)))
 
+;; TODO investigate lazy-loading
 (use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)
   :config
@@ -312,9 +285,11 @@ to `t', otherwise, just do everything in the background.")
 (use-package! systemd
   :commands (systemd-mode))
 
+;; TODO why I have this?
 (use-package! xml+
   :commands (xml+-query--generic xml+-query-all xml+-query-first xml+-node-text xml+-node-text--helper))
 
+;; TODO can this be done without helm?
 (use-package! x-path-walker
   :commands (helm-x-path-walker))
 

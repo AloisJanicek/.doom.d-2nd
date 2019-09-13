@@ -1857,3 +1857,35 @@ Functions is intended as a replacement for `ob-javascript--node-path'.
         ;; WTF?
         (format "%s:%snode_modules" node-path (file-truename node-modules))
       node-path)))
+
+;; https://github.com/thanhvg/emacs-howdoyou/issues/2
+;;;###autoload
+(defun helm-howdoyou--transform-candidate (candidate)
+  (if-let* ((title-with-dashes
+             (s-with (s-match "questions/[0-9]+/\\([-a-z]+\\)" candidate) cadr)))
+      (s-replace "-" " " title-with-dashes)
+    ""))
+
+;;;###autoload
+(defun helm-howdoyou--transform-candidates (candidates)
+  (-zip-pair
+   (mapcar #'helm-howdoyou--transform-candidate candidates)
+   candidates))
+
+;;;###autoload
+(defun helm-howdoyou--print-link (link)
+  (promise-chain (howdoyou--promise-dom link)
+    (then #'howdoyou--promise-so-answer)
+    (then #'howdoyou--print-answer)
+    (promise-catch (lambda (reason)
+                     (message "catch error in n-link: %s" reason)))))
+
+;;;###autoload
+(defun aj/counsel-howdoyou ()
+  "howdoyou"
+  (interactive)
+  (ivy-read "Choose links: "
+            (helm-howdoyou--transform-candidates howdoyou--links)
+            :action (lambda (x)
+                      (helm-howdoyou--print-link (cdr x)))
+            :caller 'aj/counsel-howdoto))
