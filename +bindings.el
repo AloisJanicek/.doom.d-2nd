@@ -90,7 +90,7 @@
    )
  (:after info
    (:map Info-mode-map
-     "o"      #'ace-link-info
+     :nemv     "o"      #'ace-link-info
      )
    )
  (:after magit
