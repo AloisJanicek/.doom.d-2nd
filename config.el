@@ -174,7 +174,6 @@ to `t', otherwise, just do everything in the background.")
 (use-package! ivy-pages
   :commands ivy-pages)
 
-;; TODO Investigate lazy loading
 (use-package! js-react-redux-yasnippets
   )
 
@@ -267,7 +266,6 @@ to `t', otherwise, just do everything in the background.")
 (use-package! ox-hugo
   :after ox)
 
-;; TODO why I have both synosaurus and powerthesaurus?
 (use-package! powerthesaurus
   :commands (powerthesaurus-lookup-word
              powerthesaurus-lookup-word-dwim
@@ -284,7 +282,7 @@ to `t', otherwise, just do everything in the background.")
 (use-package! systemd
   :commands (systemd-mode))
 
-;; TODO why I have this?
+;; needed for ereader
 (use-package! xml+
   :commands (xml+-query--generic xml+-query-all xml+-query-first xml+-node-text xml+-node-text--helper))
 

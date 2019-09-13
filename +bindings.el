@@ -600,8 +600,10 @@
         :desc "online"                   "o" #'define-word
         :desc "online/point"             "p" #'define-word-at-point
         :desc "webster"                  "w" #'browse-webster-at-point
-        :desc "synosaurus"               "j" #'synosaurus-lookup
-        :desc "synosaurus"               "r" #'synosaurus-choose-and-replace
+        :desc "powerthesaurus synonym"   "j" #'powerthesaurus-lookup-word
+        :desc "wordnet synonym"          "J" #'synosaurus-lookup
+        :desc "powerthesaurus replace"   "r" #'powerthesaurus-lookup-word-dwim
+        :desc "wordnet synonym replace"  "R" #'synosaurus-choose-and-replace
         :desc "wordnut"                  "k" #'wordnut-lookup-current-word
         :desc "google at point"          "g" #'google-translate-at-point
         :desc "google at point reverse:" "G" #'google-translate-at-point-reverse
