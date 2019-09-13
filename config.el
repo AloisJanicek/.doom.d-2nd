@@ -276,7 +276,6 @@ to `t', otherwise, just do everything in the background.")
 (use-package! robots-txt-mode
   :mode (("/robots\\.txt\\'" . robots-txt-mode)))
 
-;; TODO investigate lazy-loading
 (use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)
   :config

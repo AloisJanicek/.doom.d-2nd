@@ -64,7 +64,8 @@
 
 (package! systemd)
 
-(package! x-path-walker)
+(package! x-path-walker
+  :recipe (:host github :repo "AloisJanicek/x-path-walker"))
 
 (package! yankpad)
 
