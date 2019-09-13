@@ -566,7 +566,9 @@
           )
         :desc "link"                     "o" #'link-hint-open-link
         :desc "Agenda"                   "A" #'org-agenda
-        :desc "agenda"                   "a" #'gtd-agenda/body
+        :desc "agenda"              "a" (lambda ()
+                                          (interactive)
+                                          (let ((hydra-hint-display-type 'message)) (gtd-agenda/body)))
         ;; :desc "Clock"                    "c" #'aj/clock-menu
         :desc "Imenu-list"               "i" #'aj/open-imenu-sidebar
         :desc "Sidebar"                   "s" #'+treemacs/toggle
@@ -589,8 +591,12 @@
         )
       ;; previous               "["
       ;; next                   "]"
-      :desc "clock"     "\\" #'aj/clocking/body
-      :desc "agenda"    "a" #'gtd-agenda/body
+      :desc "clock"              "\\" (lambda ()
+                                        (interactive)
+                                        (let ((hydra-hint-display-type 'message)) (aj/clocking/body)))
+      :desc "agenda"              "a" (lambda ()
+                                        (interactive)
+                                        (let ((hydra-hint-display-type 'message)) (gtd-agenda/body)))
       (:prefix ("s" . "snippet")
         :desc "Preview"                  "p" #'ivy-yasnippet
         )
@@ -636,7 +642,9 @@
         :desc "Dash docset"              "/" #'counsel-dash
         :desc "Zeal at point"            "z" #'zeal-at-point
         ;; :desc "Zeal search"              "s" #'zeal-at-point-search
-        :desc "Stack Overflow"              "s" #'aj/howdoyou/body
+        :desc "Stack Overflow"              "s" (lambda ()
+                                                  (interactive)
+                                                  (let ((hydra-hint-display-type 'message)) (aj/howdoyou/body)))
         :desc "Zeal set buffer docset"   "Z" #'zeal-at-point-set-docset
         :desc "Describe DOOM setting"    "S" #'doom/describe-setters
         )
@@ -655,7 +663,9 @@
         :desc "buffer"                   "b" #'counsel-ibuffer
         :desc "project bookmark"         "p" #'counsel-projectile-bookmark
         )
-      :desc "capture"   "k" #'aj/capture/body
+      :desc "capture"              "k" (lambda ()
+                                         (interactive)
+                                         (let ((hydra-hint-display-type 'message)) (aj/capture/body)))
       (:prefix ("l" . "link")
         :desc "Org-store-link"           "s" #'org-store-link
         :desc "Org-copy-link"            "c" #'my-org-retrieve-url-from-point
