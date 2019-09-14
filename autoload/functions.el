@@ -1851,11 +1851,10 @@ Functions is intended as a replacement for `ob-javascript--node-path'.
   (let ((node-path (or (getenv "NODE_PATH") ""))
         (node-modules (or (when (buffer-file-name)
                             (locate-dominating-file (buffer-file-name) "node_modules"))
-                          (getenv "npm_config_prefix")
+                          (concat (getenv "npm_config_prefix") "/lib/node_modules")
                           (concat (getenv "HOME") "/node_modules"))))
     (if node-modules
-        ;; WTF?
-        (format "%s:%snode_modules" node-path (file-truename node-modules))
+        (format "%s:%s:node_modules" node-path (file-truename node-modules))
       node-path)))
 
 ;; https://github.com/thanhvg/emacs-howdoyou/issues/2
