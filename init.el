@@ -100,7 +100,7 @@
        :lang
        ;;agda
        ;;assembly
-       ;;cc
+       cc
        ;;clojure
        common-lisp
        ;;coq
