@@ -115,6 +115,10 @@ to `t', otherwise, just do everything in the background.")
   (setq counsel-org-clock-history-limit 15)
   )
 
+(use-package! counsel-tramp
+  :commands counsel-tramp
+  )
+
 (use-package! counsel-web
   :commands (counsel-web-search counsel-web-suggest)
   :config

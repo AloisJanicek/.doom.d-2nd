@@ -625,6 +625,7 @@
         :desc "jump file"                "j" #'counsel-file-jump
         :desc "jump dir"                 "k" #'counsel-dired-jump
         :desc "recent"                   "r" #'counsel-recentf
+        :desc "tramp"                    "t" #'counsel-tramp
         )
       (:desc "Follow"                    "F" #'link-hint-open-link)
       (:prefix "g"

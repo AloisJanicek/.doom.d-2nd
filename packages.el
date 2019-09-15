@@ -10,6 +10,8 @@
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock"))
 
+(package! counsel-tramp)
+
 (package! counsel-web
   :recipe (:host github :repo "mnewt/counsel-web"))
 
