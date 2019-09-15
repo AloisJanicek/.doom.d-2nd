@@ -462,7 +462,9 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "*help\*"                        :size 0.4 :side 'left :select t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"                     :size 0.4 :side 'left :select t))
+  (set-popup-rule! "*helpful\*"                     :size 0.35 :side 'left :select t)
+  (add-hook 'helpful-mode-hook #'visual-line-mode)
+  )
 
 (after! ibuffer
   (set-popup-rule! "*Ibuffer\*"                     :size 0.4 :side 'left :select t))

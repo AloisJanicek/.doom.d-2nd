@@ -67,8 +67,8 @@
 
        :term
        ;;eshell
-       term
-       ;; vterm
+       ;; term
+       vterm
 
        :tools
        ansible
