@@ -49,6 +49,11 @@
 
 ;; modes
 (map!
+ (:after ansible-doc
+   (:map ansible-doc-module-mode-map
+     :nm "o" #'ace-link-woman
+     )
+   )
  (:after css-mode
    (:map css-mode-map
      (:localleader

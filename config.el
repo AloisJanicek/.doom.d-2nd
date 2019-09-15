@@ -331,6 +331,10 @@ to `t', otherwise, just do everything in the background.")
   (setq alert-libnotify-command (if (aj/wsl-p)
                                     (expand-file-name "notify-wsl" "~/.local/bin")
                                   "/usr/bin/notify-send")))
+(after! ansible-doc
+  (set-popup-rule! "*ansible-doc " :size 0.32 :side 'left :select t :ttl t)
+  (add-hook 'ansible-doc-module-mode-hook #'evil-normal-state)
+  (add-hook 'ansible-doc-module-mode-hook #'visual-line-mode))
 
 (after! apropos
   (set-popup-rule! "*apropos\*"                     :size 0.4 :side 'left :select t)
