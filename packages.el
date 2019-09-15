@@ -10,6 +10,9 @@
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock"))
 
+(package! counsel-web
+  :recipe (:host github :repo "mnewt/counsel-web"))
+
 (package! define-word)
 
 (package! emacs-ereader

@@ -645,8 +645,8 @@
         :desc "Stack Overflow"              "s" (lambda ()
                                                   (interactive)
                                                   (let ((hydra-hint-display-type 'message)) (aj/howdoyou/body)))
+        :desc "Search Web"              "S" #'counsel-web-search
         :desc "Zeal set buffer docset"   "Z" #'zeal-at-point-set-docset
-        :desc "Describe DOOM setting"    "S" #'doom/describe-setters
         )
       (:prefix ("j" . "jump")
         :desc "file"                     "f" #'counsel-file-jump

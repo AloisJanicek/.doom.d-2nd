@@ -115,6 +115,17 @@ to `t', otherwise, just do everything in the background.")
   (setq counsel-org-clock-history-limit 15)
   )
 
+(use-package! counsel-web
+  :commands (counsel-web-search counsel-web-suggest)
+  :config
+  (setq
+   counsel-web-search-function #'counsel-web-search--google
+   counsel-web-search-action #'browse-url-default-browser
+   counsel-web-search-alternate-action #'eww
+   counsel-web-search-dynamic-update t
+   )
+  )
+
 (use-package! define-word
   :commands (define-word  define-word-at-point))
 
