@@ -114,12 +114,10 @@
    )
  (:after man
    (:map Man-mode-map
-     "J" #'Man-next-section
-     "K" #'Man-previous-section
-     (:localleader
-       :desc "section"        "s" #'Man-goto-section
-       :desc "follow"        "f" #'man-follow
-       )
+     :nm "J" #'Man-next-section
+     :nm "K" #'Man-previous-section
+     :nm "o" #'Man-goto-section
+     :nm "f" #'ace-link-woman
      ))
  (:after org-colview
    (:map org-columns-map
