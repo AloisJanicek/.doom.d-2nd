@@ -82,18 +82,6 @@ to `t', otherwise, just do everything in the background.")
   :commands ahk-mode
   )
 
-(use-package! all-the-icons-ivy
-  :after ivy
-  :config
-  (all-the-icons-ivy-setup)
-  (dolist (cmd '( counsel-find-file
-                  counsel-file-jump
-                  projectile-find-file
-                  counsel-projectile-find-file
-                  counsel-dired-jump counsel-projectile-find-dir
-                  counsel-projectile-switch-project))
-    (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
-
 (use-package! anki-editor
   :commands anki-editor-mode
   :config
@@ -229,6 +217,16 @@ to `t', otherwise, just do everything in the background.")
   :after ob-core
   :config
   (advice-add #'ob-javascript--node-path :override #'aj/ob-javascript--node-path))
+
+
+(after! all-the-icons-ivy
+  (dolist (cmd '( counsel-find-file
+                  counsel-file-jump
+                  projectile-find-file
+                  counsel-projectile-find-file
+                  counsel-dired-jump counsel-projectile-find-dir
+                  counsel-projectile-switch-project))
+    (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
 (after! evil-snipe
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
