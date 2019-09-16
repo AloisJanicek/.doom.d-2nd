@@ -850,22 +850,17 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   (hide-mode-line-mode)
                                   (turn-off-solaire-mode)
-                                  (pdf-view-fit-width-to-window)
                                   (pdf-view-auto-slice-minor-mode)
                                   (pdf-view-midnight-minor-mode)
+                                  (pdf-outline-imenu-enable)
+                                  (evil-normal-state)
                                   (set (make-local-variable 'evil-normal-state-cursor) (list nil))
                                   ))
-  ;; (add-hook 'pdf-view-after-change-page-hook (lambda ()
-  ;;                                               (hide-mode-line-mode -1)
-  ;;                                               ))
 
   ;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
   ;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
   (add-hook 'pdf-view-mode-hook #'brds/pdf-jump-last-viewed-bookmark)
   )
-
-(after! pdf-occur
-  (advice-add #'evil-collection-pdf-setup :after #'aj/remap-in-pdf-occur-buffer))
 
 (after! persp-mode
   (setq persp-kill-foreign-buffer-behaviour nil

@@ -453,6 +453,11 @@
      :nimve "q" (λ! (progn (brds/pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
      )
    )
+ (:after pdf-occur
+   (:map pdf-occur-buffer-mode-map
+     :nm "RET" #'pdf-occur-view-occurrence
+     )
+   )
 
  (:after popup-buffer
    :map +popup-buffer-mode-map
