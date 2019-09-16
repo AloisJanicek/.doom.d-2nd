@@ -182,6 +182,30 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "*How Do You*" :size 0.4 :side 'left :select t :ttl nil)
   )
 
+(use-package! imenu-list
+  :commands imenu-list-smart-toggle
+  :config
+  (set-popup-rule! "^\\*Ilist"
+    :side 'right :size 35 :select nil :ttl nil :quit nil)
+  ;; First create new face which is a copy of hl-line-face
+  (copy-face 'hl-line 'hl-line-imenu-list-face)
+  ;; Change what you want in this new face
+  (set-face-attribute 'hl-line-imenu-list-face nil
+                      :background `,(doom-color 'base4) :weight 'bold :underline t)
+
+  (set-face-attribute 'imenu-list-entry-face-0 nil
+                      :foreground `,(doom-color 'blue))
+  (set-face-attribute 'imenu-list-entry-face-1 nil
+                      :foreground `,(doom-color 'magenta))
+  (set-face-attribute 'imenu-list-entry-face-2 nil
+                      :foreground `,(doom-color 'violet))
+  (set-face-attribute 'imenu-list-entry-face-3 nil
+                      :foreground `,(doom-lighten 'blue 0.25))
+  ;; Finally, the hook
+  (add-hook 'imenu-list-major-mode-hook #'my-imenu-list-hl-line)
+  (add-hook 'imenu-list-major-mode-hook #'variable-pitch-mode)
+  )
+
 (use-package! ivy-yasnippet
   :commands (ivy-yasnippet))
 
@@ -468,28 +492,6 @@ to `t', otherwise, just do everything in the background.")
 
 (after! ibuffer
   (set-popup-rule! "*Ibuffer\*"                     :size 0.4 :side 'left :select t))
-
-(after! imenu-list
-  (set-popup-rule! "^\\*Ilist"
-    :side 'right :size 35 :select nil :ttl nil :quit nil)
-  ;; First create new face which is a copy of hl-line-face
-  (copy-face 'hl-line 'hl-line-imenu-list-face)
-  ;; Change what you want in this new face
-  (set-face-attribute 'hl-line-imenu-list-face nil
-                      :background `,(doom-color 'base4) :weight 'bold :underline t)
-
-  (set-face-attribute 'imenu-list-entry-face-0 nil
-                      :foreground `,(doom-color 'blue))
-  (set-face-attribute 'imenu-list-entry-face-1 nil
-                      :foreground `,(doom-color 'magenta))
-  (set-face-attribute 'imenu-list-entry-face-2 nil
-                      :foreground `,(doom-color 'violet))
-  (set-face-attribute 'imenu-list-entry-face-3 nil
-                      :foreground `,(doom-lighten 'blue 0.25))
-  ;; Finally, the hook
-  (add-hook 'imenu-list-major-mode-hook #'my-imenu-list-hl-line)
-  (add-hook 'imenu-list-major-mode-hook #'variable-pitch-mode)
-  )
 
 (after! info
   (advice-add #'info :before #'aj/set-info-popup-width))

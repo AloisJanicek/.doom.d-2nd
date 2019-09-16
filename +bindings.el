@@ -573,7 +573,7 @@
                                           (interactive)
                                           (let ((hydra-hint-display-type 'message)) (gtd-agenda/body)))
         ;; :desc "Clock"                    "c" #'aj/clock-menu
-        :desc "Imenu-list"               "i" #'aj/open-imenu-sidebar
+        :desc "Imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "Sidebar"                   "s" #'+treemacs/toggle
         )
       (:prefix ("p" . "project")
