@@ -112,6 +112,7 @@
        ;;elm
        emacs-lisp
        ;;ess
+       ;;fsharp
        ;;go
        ;;(haskell +intero)
        ;;hy
@@ -121,6 +122,7 @@
        ;;julia
        ;;kotlin
        ;;latex
+       ;;lean
        ;;ledger
        ;;lua
        markdown
@@ -146,12 +148,13 @@
        ;;ruby
        ;;rust
        ;;scala
+       scheme
        (sh +lsp)
        ;;solidity
        ;;swift
        ;;terra
-       (web +lsp)
        ;;vala
+       (web +lsp)
 
        :email
        ;;(mu4e +gmail)
