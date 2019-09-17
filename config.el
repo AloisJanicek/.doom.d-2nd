@@ -899,11 +899,17 @@ to `t', otherwise, just do everything in the background.")
 (after! python
   (set-docsets! 'python-mode "Python 3"))
 
+(after! racket-mode
+  (set-popup-rule! "^\\*Racket REPL" :size 10 :select t :quit nil))
+
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
   (dolist (i '("org/" ".pdf" ".epub" ".db" "/.emacs.d/session" "/workspaces/autosave" "/usr/share/emacs"))
     (add-to-list 'recentf-exclude i))
   )
+
+(after! scheme
+  (set-popup-rule! "^\\* Guile REPL *" :size 10 :select t :quit nil))
 
 (after! synosaurus
   (set-popup-rule! "*Synonyms List\*"               :size 0.4 :side 'top :select t))
