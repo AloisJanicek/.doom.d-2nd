@@ -775,11 +775,11 @@ to `t', otherwise, just do everything in the background.")
   ;; (advice-add #'org-capture-finalize :after #'aj/take-care-of-org-buffers)
   (setq
    org-capture-templates `(("p" "Protocol" entry (file ,+INBOX)
-                            "**** [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:quote:\n%u\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n"
+                            "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n"
                             :immediate-finish t :prepend t)
 
                            ("L" "Protocol Link" entry (file ,+INBOX)
-                            "**** [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u"
+                            "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u"
                             :immediate-finish t :prepend t)
 
                            ("w" "Website" entry (file ,+INBOX)
