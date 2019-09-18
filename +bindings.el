@@ -542,21 +542,21 @@
 (map! :leader
       :desc "ivy-resume"                      "=" #'ivy-resume
 
-      (:prefix-map ("TAB")
+      (:prefix ("TAB")
         :desc "Save session as"                 "S" #'aj/save-session-as
         :desc "Save session"                    "a" #'+workspace/save-session
         )
 
-      (:prefix-map ("q" . "quit")
+      (:prefix ("q" . "quit")
         :desc "Ask to save and quit"     "a" #'evil-quit-all
         )
 
       ;; :prefix ("e" . "")
-      (:prefix-map ("r" . "remote")
+      (:prefix ("r" . "remote")
         :desc "backup"                   "b" #'aj/my-backup
         )
 
-      (:prefix-map ("t" . "toggle")
+      (:prefix ("t" . "toggle")
         :desc "light/dark theme"         "t" #'aj/toggle-doom-theme
         :desc "Themes"                   "T" #'counsel-load-theme
         :desc "Modeline"                 "m" #'hide-mode-line-mode
@@ -566,7 +566,7 @@
         :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
         )
 
-      (:prefix-map ("y" . "yankpad")
+      (:prefix ("y" . "yankpad")
         :desc "append category" "a"   #'yankpad-append-category
         :desc "capture"         "c"   #'yankpad-capture-snippet
         :desc "edit"            "e"   #'yankpad-edit
@@ -579,13 +579,13 @@
         )
 
       ;; universal argument     "u"
-      (:prefix-map ("i" . "insert")
+      (:prefix ("i" . "insert")
         :desc "entity"                   "e" #'counsel-org-entity
         :desc "unicode"                  "u" #'counsel-unicode-char
         :desc "bash history"             "h" #'counsel-yank-bash-history
         )
 
-      (:prefix-map ("o" . "open")
+      (:prefix ("o" . "open")
         (:prefix ("c" . "calibre")
           :desc "technical"                     "c" (lambda! (aj/open-calibre-book (concat +Libraries "/Technical/")))
           :desc "personal"                      "p" (lambda! (aj/open-calibre-book (concat +Libraries "/Personal/")))
@@ -601,7 +601,7 @@
         :desc "Sidebar"                   "s" #'+treemacs/toggle
         )
 
-      (:prefix-map ("p" . "project")
+      (:prefix ("p" . "project")
         :desc "Agenda"                   "a" #'aj/project
         :desc "bootstrap"                "B" #'aj/project-bootstrap
         :desc "directories"              "d" #'counsel-projectile-find-dir
@@ -627,11 +627,11 @@
                                         (interactive)
                                         (let ((hydra-hint-display-type 'message)) (gtd-agenda/body)))
 
-      (:prefix-map ("s" . "snippet")
+      (:prefix ("s" . "snippet")
         :desc "Preview"                  "p" #'ivy-yasnippet
         )
 
-      (:prefix-map ("d" . "dict")
+      (:prefix ("d" . "dict")
         :desc "word/stardict"            "s" #'sdcv-search-pointer
         :desc "input/stardict"           "i" #'sdcv-search-input
         :desc "online"                   "o" #'define-word
@@ -647,7 +647,7 @@
         :desc "dictionary"               "d" #'browse-dictionary-at-point
         )
 
-      (:prefix-map ("f" . "file")
+      (:prefix ("f" . "file")
         :desc "ag-cwd"                   "g" (λ! (+ivy/ag-from-cwd t))
         :desc "ag-project"               "G" #'+ivy/ag
         :desc "rg-cwd"                   "h" (λ! (+ivy/rg-from-cwd t))
@@ -662,11 +662,11 @@
 
       (:desc "Follow"                    "F" #'link-hint-open-link)
 
-      (:prefix-map ("g" . "git")
+      (:prefix ("g" . "git")
         :desc "/log"                     "/" #'counsel-git-log
         )
 
-      (:prefix-map ("h" . "help")
+      (:prefix ("h" . "help")
         :desc "helpful-symbol"           "a" #'helpful-symbol
         :desc "helpful-symbol"           "." #'helpful-at-point
         :desc "update-diff"              "u" #'obsoke/ediff-dotfile-and-template
@@ -685,7 +685,7 @@
         :desc "Zeal set buffer docset"   "Z" #'zeal-at-point-set-docset
         )
 
-      (:prefix-map ("j" . "jump")
+      (:prefix ("j" . "jump")
         :desc "file"                     "f" #'counsel-file-jump
         :desc "session"                  "S" #'+workspace/load-session
         :desc "workspace"                "i" #'+workspace/switch-to
@@ -704,7 +704,7 @@
       :desc "capture"              "k" (lambda ()
                                          (interactive)
                                          (let ((hydra-hint-display-type 'message)) (aj/capture/body)))
-      (:prefix-map ("l" . "link")
+      (:prefix ("l" . "link")
         :desc "Org-store-link"           "s" #'org-store-link
         :desc "Org-copy-link"            "c" #'my-org-retrieve-url-from-point
         :desc "Open"                     "f" #'link-hint-open-link
@@ -717,7 +717,7 @@
       :desc "popup"     "'" #'+popup/toggle
       ;; (:desc "zzzzzzzz" :prefix "z" )
       ;; scratch-buffer         "x"
-      (:prefix-map ("c" . "code")
+      (:prefix ("c" . "code")
         :desc "eval-last-sexp"           "s" #'eval-last-sexp
         :desc "macro-expand"             "m" #'macrostep-expand
         :desc "imenu-outline"            "o" #'counsel-imenu
@@ -726,19 +726,19 @@
         :desc "Info about error"         "i" #'flycheck-explain-error-at-point
         )
 
-      (:prefix-map ("v" . "view")
+      (:prefix ("v" . "view")
         :desc "brain-visualize"          "v" #'org-brain-visualize
         :desc "jump"                     "j" #'ivy-switch-view
         :desc "save"                     "s" #'ivy-push-view
         :desc "pop"                      "p" #'ivy-pop-view
         )
 
-      (:prefix-map ("b" . "buffer")
+      (:prefix ("b" . "buffer")
         :desc "List"                     "l" #'ibuffer-list-buffers
         :desc "Kill buffers"             "K" #'kill-buffer
         )
 
-      (:prefix-map ("n" . "notes")
+      (:prefix ("n" . "notes")
         :desc "private"      "r" (λ! (aj/choose-note-to-indirect +PRIVATE))
         :desc "notes"        "n" (λ! (aj/choose-note-to-indirect +TECHNICAL))
         :desc "org-dir"      "o" (λ! (aj/choose-note-to-indirect org-directory))
@@ -756,7 +756,7 @@
       ;; switch buffer          ","
       :desc "Switch buffer"            "," #'persp-switch-to-buffer
       ;; find file              ","
-      (:prefix-map ("/" . "search")
+      (:prefix ("/" . "search")
         :desc "Swiper"                   "/" #'aj/my-swiper
         )
       )
