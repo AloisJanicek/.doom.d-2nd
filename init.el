@@ -71,8 +71,8 @@
 
        :tools
        ansible
-       ;;debugger
-       ;;direnv
+       debugger
+       direnv
        docker
        editorconfig
        ;;ein
@@ -86,7 +86,7 @@
        lsp
        ;;macos
        magit
-       ;;make
+       make
        ;;pass
        pdf
        prodigy
@@ -99,12 +99,12 @@
        :lang
        ;;agda
        ;;assembly
-       cc
+       (cc +lsp)
        ;;clojure
        common-lisp
        ;;coq
        ;;crystal
-       ;;csharp
+       csharp
        data
        ;;erlang
        ;;elixir
@@ -112,11 +112,11 @@
        emacs-lisp
        ;;ess
        ;;fsharp
-       ;;go
-       ;;(haskell +intero)
+       (go +lsp)
+       (haskell +lsp)
        ;;hy
        ;;idris
-       ;;(java +meghanada)
+       (java +lsp)
        (javascript +lsp)
        ;;julia
        ;;kotlin
@@ -128,24 +128,18 @@
        ;;nim
        ;;nix
        ;;ocaml
-       (org
-        +dragndrop
-        ;; +ipython
-        +pandoc
-        ;; +present
-        )
+       (org +dragndrop +pandoc)
        ;;perl
-       (php
-        +lsp)
+       (php +lsp)
        ;;plantuml
        ;;purescript
-       (python
-        +lsp)
+       (python +lsp)
        ;;qt
        racket
        rest
-       ;;ruby
-       ;;rust
+       (ruby +lsp)
+       (rust +lsp)
+       rust
        ;;scala
        scheme
        (sh +lsp)
@@ -165,9 +159,7 @@
        ;;irc
        ;;rss +org
        ;;twitter
-       (write
-        +wordnut
-        +langtool)
+       (write +wordnut +langtool)
 
        :collab
        ;;floobits
