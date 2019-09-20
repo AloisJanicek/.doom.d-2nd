@@ -455,18 +455,18 @@
 
  (:after pdf-tools
    :map pdf-view-mode-map
-   :nimve "C-h" #'evil-window-left
-   :nimve "C-j" #'evil-window-down
-   :nimve "C-k" #'evil-window-up
-   :nimve "C-l" #'evil-window-right
-   :nimve "M-f" #'pdf-occur
-   :nimve "j" #'pdf-view-next-line-or-next-page
-   :nimve "k" #'pdf-view-previous-line-or-previous-page
-   :nimve "l" #'org-store-link
-   :nimve "O" #'pdf-outline
-   :nimve "o" #'counsel-imenu
-   :nimve "y" #'pdf-view-kill-ring-save
-   :nimve "q" (λ! (progn (brds/pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
+   :n "C-h" #'evil-window-left
+   :n "C-j" #'evil-window-down
+   :n "C-k" #'evil-window-up
+   :n "C-l" #'evil-window-right
+   :n "M-f" #'pdf-occur
+   :n "j" #'pdf-view-next-line-or-next-page
+   :n "k" #'pdf-view-previous-line-or-previous-page
+   :n "l" #'org-store-link
+   :n "O" #'pdf-outline
+   :n "o" #'counsel-imenu
+   :n "y" #'pdf-view-kill-ring-save
+   :n "q" (λ! (progn (brds/pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
    )
 
  (:after pdf-occur

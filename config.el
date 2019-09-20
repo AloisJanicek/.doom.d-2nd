@@ -851,7 +851,6 @@ to `t', otherwise, just do everything in the background.")
                                   (pdf-view-auto-slice-minor-mode)
                                   (pdf-view-midnight-minor-mode)
                                   (pdf-outline-imenu-enable)
-                                  (evil-normal-state)
                                   (set (make-local-variable 'evil-normal-state-cursor) (list nil))
                                   ))
 
