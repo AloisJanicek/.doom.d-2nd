@@ -75,7 +75,7 @@ to `t', otherwise, just do everything in the background.")
 
 (load! "+bindings")
 
-(set-popup-rule! "*backtrace\*" :size 0.4 :side 'right :select t)
+(set-popup-rule! "*backtrace\*" :size 0.5 :side 'bottom :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
 
 (use-package! ahk-mode
@@ -167,7 +167,7 @@ to `t', otherwise, just do everything in the background.")
     ("r" (howdoyou-reload-link) "refresh"))
 
 
-  (set-popup-rule! "*How Do You*" :size 0.4 :side 'left :select t :ttl nil)
+  (set-popup-rule! "*How Do You*" :size 80 :side 'left :select t :ttl nil)
   )
 
 (use-package! imenu-list
@@ -481,10 +481,10 @@ to `t', otherwise, just do everything in the background.")
   (helm-mode -1))
 
 (after! help
-  (set-popup-rule! "*help\*"                        :size 0.4 :side 'left :select t))
+  (set-popup-rule! "*help\*"                        :size 60 :side 'left :select t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"                     :size 0.35 :side 'left :select t)
+  (set-popup-rule! "*helpful\*"                     :size 60 :side 'left :select t)
   (add-hook 'helpful-mode-hook #'visual-line-mode)
   )
 
@@ -597,12 +597,12 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! org
-  (set-popup-rule! "^\\*org-brain\\*$"    :size 0.24 :side 'left  :vslot -2 :select t :quit nil :ttl nil               :autosave t)
+  (set-popup-rule! "^\\*org-brain\\*$"    :size 50 :side 'left  :vslot -2 :select t :quit nil :ttl nil               :autosave t)
   (set-popup-rule! "^CAPTURE.*\\.org$"    :size 0.4  :side 'bottom          :select t                                  :autosave t)
-  (set-popup-rule! "^\\*Org Src"          :size 0.4  :side 'right           :select t :quit t                          :autosave t)
-  (set-popup-rule! "^\\*Org Agenda.*\\*$" :size 0.32 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
-  (set-popup-rule! "^\\*Org QL Search.*\\*$" :size 0.32 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
-  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :size 0.32 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*Org Src"          :size 80  :side 'right           :select t :quit t                          :autosave t)
+  (set-popup-rule! "^\\*Org Agenda.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*Org QL Search.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
 
   (add-hook 'doom-load-theme-hook #'aj/my-org-faces)
   (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
