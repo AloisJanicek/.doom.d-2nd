@@ -465,6 +465,10 @@ to `t', otherwise, just do everything in the background.")
   (add-to-list 'safe-local-variable-values '(org-src-fontify-natively))
   )
 
+(after! format-all
+  (dolist (mode '(css-mode js2-mode scss-mode))
+    (add-to-list '+format-on-save-enabled-modes mode t)))
+
 (after! flycheck
   (flycheck-add-mode 'html-tidy 'web-mode)
   (setq flycheck-tidyrc "~/.tidyrc"
