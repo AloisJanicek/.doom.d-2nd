@@ -12,7 +12,6 @@
 
        :completion
        (company
-        +auto
         +childframe)
        ;; (helm
        ;;  +childframe)
