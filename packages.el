@@ -70,6 +70,8 @@
 
 (package! systemd)
 
+(package! vimrc-mode)
+
 (package! x-path-walker
   :recipe (:host github :repo "AloisJanicek/x-path-walker"))
 

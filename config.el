@@ -313,6 +313,10 @@ to `t', otherwise, just do everything in the background.")
 (use-package! x-path-walker
   :commands (helm-x-path-walker  x-path-get-mode))
 
+(use-package! vimrc-mode
+  :commands vimrc-mode
+  )
+
 (use-package! yankpad
   :commands
   (yankpad-append-category
