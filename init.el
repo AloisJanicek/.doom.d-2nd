@@ -58,14 +58,14 @@
 
        :emacs
        (dired
-        ;;+ranger
+        +ranger
         +icons
         )
        electric
        vc
 
        :term
-       ;;eshell
+       eshell
        ;; term
        vterm
 
