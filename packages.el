@@ -31,6 +31,8 @@
 (package! howdoyou
   :recipe (:host github :repo "thanhvg/emacs-howdoyou"))
 
+(package! indium)
+
 (package! imenu-list)
 
 (package! ivy-pages :recipe (:host github :repo "igorepst/ivy-pages"))

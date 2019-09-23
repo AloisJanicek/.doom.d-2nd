@@ -157,6 +157,10 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "*How Do You*" :size 80 :side 'left :select t :ttl nil)
   )
 
+(use-package! indium
+  :commands indium-connect
+  )
+
 (use-package! imenu-list
   :commands imenu-list-smart-toggle
   :config
