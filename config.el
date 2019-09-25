@@ -601,6 +601,7 @@ to `t', otherwise, just do everything in the background.")
   (set-popup-rule! "^\\*Org Src"          :size 80  :side 'right           :select t :quit t                          :autosave t)
   (set-popup-rule! "^\\*Org Agenda.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
   (set-popup-rule! "^\\*Org QL Search.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*Org QL View.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
   (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
 
   (add-hook 'doom-load-theme-hook #'aj/my-org-faces)
