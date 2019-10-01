@@ -56,6 +56,9 @@
 
 (package! org-pomodoro)
 
+(package! org-sidebar
+  :recipe (:host github :repo "alphapapa/org-sidebar"))
+
 (package! org-ql)
 
 (package! org-super-agenda)
