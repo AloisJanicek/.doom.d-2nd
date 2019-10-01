@@ -461,7 +461,7 @@ to `t', otherwise, just do everything in the background.")
   )
 
 (after! format-all
-  (dolist (mode '(css-mode js2-mode scss-mode))
+  (dolist (mode '(css-mode js2-mode scss-mode yaml-mode))
     (add-to-list '+format-on-save-enabled-modes mode t)))
 
 (after! flycheck
