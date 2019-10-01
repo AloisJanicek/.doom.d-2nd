@@ -285,6 +285,10 @@ to `t', otherwise, just do everything in the background.")
   :commands org-ql-agenda
   )
 
+(use-package! org-sidebar
+  :commands (org-sidebar org-sidebar-tree org-sidebar-ql)
+  )
+
 (use-package! org-super-agenda
   :after org
   :config
