@@ -104,7 +104,7 @@
        common-lisp
        ;;coq
        ;;crystal
-       csharp
+       (csharp +lsp)
        data
        ;;erlang
        ;;elixir
