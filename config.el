@@ -295,9 +295,6 @@ to `t', otherwise, just do everything in the background.")
   (org-super-agenda-mode)
   )
 
-(use-package! ox-hugo
-  :after ox)
-
 (use-package! powerthesaurus
   :commands (powerthesaurus-lookup-word
              powerthesaurus-lookup-word-dwim

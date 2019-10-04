@@ -63,8 +63,6 @@
 
 (package! org-super-agenda)
 
-(package! ox-hugo)
-
 (package! powerthesaurus
   :recipe (:host github :repo "SavchenkoValeriy/emacs-powerthesaurus"))
 
