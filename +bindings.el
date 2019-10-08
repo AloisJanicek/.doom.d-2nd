@@ -15,6 +15,7 @@
                    '+company/complete)))
 
 (map!
+ "M-t"   #'+workspace/new
  :ni "C-k" #'evil-window-up
  :ni "C-j" #'evil-window-down
  :ni "C-h" #'evil-window-left
