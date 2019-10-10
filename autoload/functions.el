@@ -1467,15 +1467,13 @@ and returns string representing path to the chosen book file."
 
 ;;;###autoload
 (defun brds/pdf-jump-last-viewed-bookmark ()
-  (bookmark-set "fake") ; this is new
   (when
       (brds/pdf-has-last-viewed-bookmark)
     (bookmark-jump (brds/pdf-generate-bookmark-name))))
 
 ;;;###autoload
 (defun brds/pdf-has-last-viewed-bookmark ()
-  (assoc
-   (brds/pdf-generate-bookmark-name) bookmark-alist))
+  (member (brds/pdf-generate-bookmark-name) (bookmark-all-names)))
 
 ;;;###autoload
 (defun brds/pdf-generate-bookmark-name ()

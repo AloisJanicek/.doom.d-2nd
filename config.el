@@ -857,6 +857,7 @@ to `t', otherwise, just do everything in the background.")
 
   ;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
   ;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
+  ;; https://github.com/politza/pdf-tools/issues/18#issuecomment-532175227
   (add-hook 'pdf-view-mode-hook #'brds/pdf-jump-last-viewed-bookmark)
   )
 
