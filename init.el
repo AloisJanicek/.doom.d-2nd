@@ -128,7 +128,7 @@
        ;;nim
        ;;nix
        ;;ocaml
-       (org +dragndrop +pandoc +hugo)
+       (org +dragndrop +pandoc +hugo +pomodoro)
        ;;perl
        (php +lsp)
        ;;plantuml

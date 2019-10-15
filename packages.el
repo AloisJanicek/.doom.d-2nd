@@ -54,8 +54,6 @@
 
 (package! org-pdfview)
 
-(package! org-pomodoro)
-
 (package! org-sidebar
   :recipe (:host github :repo "alphapapa/org-sidebar"))
 

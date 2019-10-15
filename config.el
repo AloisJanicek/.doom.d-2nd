@@ -265,10 +265,7 @@ to `t', otherwise, just do everything in the background.")
   :commands (org-pdfview-open org-pdfview-store-link org-pdfview-complete-link org-pdfview-export)
   )
 
-(use-package! org-pomodoro
-  ;; :after org
-  :commands (org-pomodoro org-pomodoro-remaining-seconds org-pomodoro-state)
-  :config
+(after! org-pomodoro
   (setq alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
         org-pomodoro-ask-upon-killing nil))
 
