@@ -1725,7 +1725,7 @@ point to the end of the line."
   (doom-modeline-def-modeline 'project
     '(bar window-number buffer-default-directory)
     ;; '(misc-info mu4e github debug fancy-battery " " major-mode process))
-    '(mu4e github debug fancy-battery " " major-mode process))
+    '(mu4e github debug " " major-mode process))
   )
 
 ;;;###autoload
