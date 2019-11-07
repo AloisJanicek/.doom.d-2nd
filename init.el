@@ -168,7 +168,7 @@
        :config
        (default +bindings +snippets +evil-commands +smartparens))
 
-(def-package-hook! langtool
+(use-package-hook! langtool
   :pre-config
   (setq langtool-language-tool-jar t)
   (setq langtool-java-classpath
