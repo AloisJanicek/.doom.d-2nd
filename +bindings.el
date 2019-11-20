@@ -169,6 +169,7 @@
      :desc "Dispatch"           "d" #'org-attach
      )
 
+   "A" nil
    (:desc "Archive"          :prefix      "A"
      :desc "Subtree"           "s" #'org-archive-subtree
      )
