@@ -654,10 +654,10 @@
         )
 
       (:prefix ("f" . "file")
-        :desc "ag-cwd"                   "g" (λ! (+ivy/ag-from-cwd t))
-        :desc "ag-project"               "G" #'+ivy/ag
-        :desc "rg-cwd"                   "h" (λ! (+ivy/rg-from-cwd t))
-        :desc "rg-project"               "H" #'+ivy/rg
+        :desc "grep"              "g" (lambda ()
+                                          (interactive)
+                                          (let ((hydra-hint-display-type 'message))
+                                            (+default/search-cwd)))
         :desc "file"                     "f" #'counsel-find-file
         :desc "jump org"                 "o" #'aj/jump-to-org-dir
         :desc "jump file"                "j" #'counsel-file-jump
@@ -749,7 +749,7 @@
         :desc "notes"        "n" (λ! (aj/choose-note-to-indirect +TECHNICAL))
         :desc "org-dir"      "o" (λ! (aj/choose-note-to-indirect org-directory))
         :desc "personal"        "p" (λ! (aj/choose-note-to-indirect +PERSONAL))
-        :desc "grep"         "g" (λ! (+ivy/rg nil nil org-directory))
+        :desc "grep"         "g" #'+default/org-notes-search
         ;; :desc "visualize" "v" #'aj/visualize-brain-and-take-care-of-buffers
         :desc "visualize"    "v" #'org-brain-visualize
         :desc "brain-goto"   "b" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
