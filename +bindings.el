@@ -567,6 +567,9 @@
         ;; :desc "Swap dictionaries"        "S" (λ! (aj/swap-two-ispell-dicts "english" "czech"))
         :desc "Swap dictionaries"        "S" (λ! (ispell-change-dictionary "czech"))
         :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
+        :desc "visual-line-mode"         "v" #'visual-line-mode
+        :desc "whitespace-mode"         "w" #'whitespace-mode
+        :desc "center"                  "c" #'+write-mode
         )
 
       (:prefix ("y" . "yankpad")
