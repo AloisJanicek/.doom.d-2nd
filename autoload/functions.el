@@ -1720,7 +1720,7 @@ point to the end of the line."
   (doom-modeline-def-modeline 'special
     '(bar window-number matches buffer-info-simple buffer-position selection-info)
     ;; '(objed-state misc-info persp-name debug input-method irc-buffers buffer-encoding lsp major-mode process checker))
-    '(objed-state persp-name debug input-method irc-buffers buffer-encoding lsp major-mode process checker))
+    '(objed-state persp-name debug input-method  buffer-encoding lsp major-mode process checker))
 
   (doom-modeline-def-modeline 'project
     '(bar window-number buffer-default-directory)
