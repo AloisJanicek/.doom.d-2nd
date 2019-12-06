@@ -49,12 +49,14 @@
        file-templates
        fold
        (format +onsave)
+       ;;god
        ;;lispy
        multiple-cursors
        ;;objed
        ;;parinfer
        rotate-text
        snippets
+       ;;word-wrap
 
        :emacs
        (dired
@@ -62,10 +64,12 @@
         +icons
         )
        electric
+       ;;ibuffer
        vc
 
        :term
        eshell
+       shell
        ;; term
        vterm
 
@@ -76,7 +80,9 @@
        docker
        editorconfig
        ;;ein
-       eval
+       (eval
+        +overlay
+        )
        flycheck
        flyspell
        gist
@@ -94,7 +100,6 @@
        ;;terraform
        ;;tmux
        upload
-       ;;wakatime
 
        :lang
        ;;agda
@@ -106,11 +111,12 @@
        ;;crystal
        (csharp +lsp)
        data
-       ;;erlang
        ;;elixir
        ;;elm
        emacs-lisp
+       ;;erlang
        ;;ess
+       ;;faust
        ;;fsharp
        (go +lsp)
        (haskell +lsp)
@@ -122,6 +128,7 @@
        ;;kotlin
        ;;latex
        ;;lean
+       ;;factor
        ;;ledger
        ;;lua
        markdown
@@ -137,16 +144,15 @@
        ;;qt
        racket
        rest
+       ;;rst
        (ruby +lsp)
        (rust +lsp)
-       rust
        ;;scala
        scheme
        (sh +lsp)
        ;;solidity
        ;;swift
        ;;terra
-       ;;vala
        (web +lsp)
 
        :email
@@ -157,16 +163,13 @@
        :app
        ;;calendar
        ;;irc
-       ;;rss +org
+       ;;(rss +org)
        ;;twitter
        (write +wordnut +langtool)
 
-       :collab
-       ;;floobits
-       ;;impatient-mode
-
        :config
-       (default +bindings +snippets +evil-commands +smartparens))
+       ;;literate
+       (default +bindings +smartparens))
 
 (use-package-hook! langtool
   :pre-config
