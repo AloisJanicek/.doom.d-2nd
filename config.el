@@ -680,7 +680,9 @@ to `t', otherwise, just do everything in the background.")
    org-src-fontify-natively t
    org-imenu-depth 9
 
-   org-refile-targets '((org-agenda-files :maxlevel . 2))
+   org-refile-targets `((,(directory-files-recursively
+                         org-directory org-agenda-file-regexp)
+                        :maxlevel . 2))
    org-refile-use-outline-path 'file
    org-outline-path-complete-in-steps nil
    ;; org-refile-target-verify-function 'aj/verify-headlines-for-refile
@@ -729,12 +731,6 @@ to `t', otherwise, just do everything in the background.")
   (remove-hook 'org-agenda-finalize-hook #'+org|cleanup-agenda-files)
 
   (setq
-   org-agenda-files (apply 'append
-                           (mapcar
-                            (lambda (directory)
-                              (directory-files-recursively
-                               directory org-agenda-file-regexp))
-                            `(,org-directory)))
    org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
                               (timeline  . "  %-6t %6e ")
                               (todo      . "  %-6t %6e ")
