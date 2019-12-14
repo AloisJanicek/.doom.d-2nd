@@ -1886,3 +1886,11 @@ Functions is intended as a replacement for `ob-javascript--node-path'.
             :action (lambda (x)
                       (helm-howdoyou--print-link (cdr x)))
             :caller 'aj/counsel-howdoto))
+
+;;;###autoload
+(defun aj/org-clear-all-tags ()
+  "Clears all tags of org-mode headline at once."
+  (interactive)
+  (save-excursion
+    (org-back-to-heading t)
+    (org-set-tags-to nil)))
