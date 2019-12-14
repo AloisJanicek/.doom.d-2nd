@@ -290,6 +290,7 @@ to `t', otherwise, just do everything in the background.")
   :after org
   :config
   (org-super-agenda-mode)
+  (setq org-super-agenda-header-map (make-sparse-keymap))
   )
 
 (use-package! powerthesaurus
