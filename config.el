@@ -20,11 +20,8 @@ if running under WSL")
 
 (setq org-directory (concat +BASE-HOME "Dropbox/org"))
 
-(defvar +INBOX (expand-file-name "inbox.org" org-directory)
-  "File where all stuff is captured.")
-
-(defvar +JOURNAL (expand-file-name "journal.org" org-directory)
-  "File where things are logged.")
+(defvar +TASKS (expand-file-name "tasks.org" org-directory)
+  "File where all stuff goes.")
 
 (defvar +TECHNICAL (concat org-directory "/technical")
   "Directory of technical notes.")
@@ -666,9 +663,8 @@ to `t', otherwise, just do everything in the background.")
                           (wl . wl-other-frame))
    org-todo-keywords
    ;;           todo     ongoing  hold         zap      done
-   '((sequence "[ ](T)" "[-](O)" "[!](H)" "|" "[✘](Z)" "[✔](D)")
-     (sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "LATER(l)" "|" "DONE(d)" "CANCELLED(c)"))
-   org-todo-keyword-faces '(("NEXT" . "#98be65") ("HOLD" . "#c678dd") ("TODO" . "#ECBE7B"))
+   '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "SOMEDAY(s)" "MAYBE(m)" "|" "DONE(d)" "CANCELLED(c)"))
+   org-todo-keyword-faces '(("NEXT" . "#98be65") ("WAIT" . "#c678dd") ("TODO" . "#ECBE7B") ("SOMEDAY" . "#5b6268") ("MAYBE" . "#5b6268"))
    org-enforce-todo-dependencies nil ;; if t, it hides todo entries with todo children from agenda
    org-enforce-todo-checkbox-dependencies nil
    org-provide-todo-statistics t
@@ -770,22 +766,22 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'org-capture-mode-hook #'aj/complete-all-tags-for-org)
   ;; (advice-add #'org-capture-finalize :after #'aj/take-care-of-org-buffers)
   (setq
-   org-capture-templates `(("p" "Protocol" entry (file ,+INBOX)
+   org-capture-templates `(("p" "Protocol" entry (file ,+TASKS)
                             "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n"
                             :immediate-finish t :prepend t)
 
-                           ("L" "Protocol Link" entry (file ,+INBOX)
+                           ("L" "Protocol Link" entry (file ,+TASKS)
                             "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u"
                             :immediate-finish t :prepend t)
 
-                           ("w" "Website" entry (file ,+INBOX)
-                            "* %c :website:\n\n%U %?\n\n%:initial" :immediate-finish t)
+                           ("w" "Website" entry (file ,+TASKS)
+                            "* %c :website:\n\n%U %?\n\n%:initial" :immediate-finish t :prepend t)
 
-                           ("c" "Capture" entry (file ,+INBOX)
+                           ("c" "Capture" entry (file ,+TASKS)
                             "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
                             :empty-lines 1 :prepend t)
 
-                           ("t" "Task" entry (file ,+INBOX)
+                           ("t" "Task" entry (file ,+TASKS)
                             ,(concat "* TO" "DO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n")
                             :empty-lines 1 :prepend t)
                            )

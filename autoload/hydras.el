@@ -15,14 +15,14 @@
 
 ;;;###autoload (autoload 'gtd-agenda/body "autoload/hydras" nil t)
 (defhydra gtd-agenda (:color blue
-                             :body-pre
-                             (if (aj/has-heading-p +INBOX)
-                                 (org-ql-search `(,+INBOX) "*"
-                                   :sort '(date))
-                               (org-ql-search (org-agenda-files)
-                                 '(todo "NEXT")
-                                 :sort '(date priority todo)
-                                 :super-groups '((:auto-parent t))))
+                             ;; :body-pre
+                             ;; (if (aj/has-heading-p +INBOX)
+                             ;;     (org-ql-search `(,+INBOX) "*"
+                             ;;       :sort '(date))
+                             ;;   (org-ql-search (org-agenda-files)
+                             ;;     '(todo "NEXT")
+                             ;;     :sort '(date priority todo)
+                             ;;     :super-groups '((:auto-parent t))))
                              )
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
@@ -52,17 +52,35 @@
          :super-groups '((:auto-parent t))
          :title "Next Action") "Next")
 
-  ("h" (org-ql-search (org-agenda-files)
-         '(todo "HOLD")
+  ("w" (org-ql-search (org-agenda-files)
+         '(todo "WAIT")
          :sort '(date priority todo)
          :super-groups '((:auto-parent t))
-         :title "HOLD") "Hold")
+         :title "WAITING") "Wait")
 
   ("s" (org-ql-search (org-agenda-files)
-         '(tags "someday")
+         '(todo "SOMEDAY")
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
          :title "Someday") "Someday")
+
+  ("m" (org-ql-search (org-agenda-files)
+         '(todo "MAYBE")
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "Maybe") "Maybe")
+
+  ("c" (org-ql-search (org-agenda-files)
+         '(todo "CANCELLED")
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "Cancelled") "Cancelled")
+
+  ("d" (org-ql-search (org-agenda-files)
+         '(todo "DONE")
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "Done") "Done")
 
   ("r" (org-ql-search (org-agenda-files)
          '(ts :from -7 :to today)
