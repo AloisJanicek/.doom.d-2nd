@@ -73,9 +73,14 @@
        ;; term
        vterm
 
+       :checkers
+       syntax
+       spell
+       grammar
+
        :tools
        ansible
-       debugger
+       ;; debugger
        direnv
        docker
        editorconfig
@@ -83,8 +88,6 @@
        (eval
         +overlay
         )
-       flycheck
-       flyspell
        gist
        (lookup
         +devdocs
@@ -165,7 +168,7 @@
        ;;irc
        ;;(rss +org)
        ;;twitter
-       (write +wordnut +langtool)
+       ;; (write +wordnut +langtool)
 
        :config
        ;;literate
