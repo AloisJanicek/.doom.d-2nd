@@ -178,7 +178,7 @@
 
    "r" nil
    (:prefix ("r" . "refile")
-     :desc "file"          "f" #'aj/refile-to-file
+     :desc "file"          "f" #'aj/refile-to-file-in
      :desc "targets"       "t" #'org-refile
      :desc "visible"       "v" #'avy-org-refile-as-child
      :desc "Journal"        "j" (λ! (org-refile-to-datetree +JOURNAL))
