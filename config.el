@@ -769,22 +769,22 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'org-capture-mode-hook #'aj/complete-all-tags-for-org)
   ;; (advice-add #'org-capture-finalize :after #'aj/take-care-of-org-buffers)
   (setq
-   org-capture-templates `(("p" "Protocol" entry (file ,+TASKS)
+   org-capture-templates `(("p" "Protocol" entry (file ,+INBOX)
                             "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n"
                             :immediate-finish t :prepend t)
 
-                           ("L" "Protocol Link" entry (file ,+TASKS)
+                           ("L" "Protocol Link" entry (file ,+INBOX)
                             "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u"
                             :immediate-finish t :prepend t)
 
-                           ("w" "Website" entry (file ,+TASKS)
+                           ("w" "Website" entry (file ,+INBOX)
                             "* %c :website:\n\n%U %?\n\n%:initial" :immediate-finish t :prepend t)
 
-                           ("c" "Capture" entry (file ,+TASKS)
+                           ("c" "Capture" entry (file ,+INBOX)
                             "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
                             :empty-lines 1 :prepend t)
 
-                           ("t" "Task" entry (file ,+TASKS)
+                           ("t" "Task" entry (file ,+INBOX)
                             ,(concat "* TO" "DO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n")
                             :empty-lines 1 :prepend t)
                            )
