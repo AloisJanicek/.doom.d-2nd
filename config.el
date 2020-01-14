@@ -681,7 +681,7 @@ to `t', otherwise, just do everything in the background.")
 
    org-refile-targets `((,(directory-files-recursively
                          org-directory org-agenda-file-regexp)
-                        :maxlevel . 2))
+                        :maxlevel . 1))
    org-refile-use-outline-path 'file
    org-outline-path-complete-in-steps nil
    ;; org-refile-target-verify-function 'aj/verify-headlines-for-refile
