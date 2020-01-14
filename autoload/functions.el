@@ -1311,7 +1311,7 @@ With prefix ARG initiate refile into current file."
   (let* ((org-refile-target-verify-function nil)
          (file (if arg
                    (buffer-file-name (current-buffer))
-                 (read-file-name "Choose file: " path)))
+                 (ivy-read "Choose file: " (directory-files-recursively org-directory "org"))))
          (org-refile-targets `((,file :maxlevel . 9))))
     (org-refile)))
 
