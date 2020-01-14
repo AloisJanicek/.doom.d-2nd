@@ -20,6 +20,9 @@ if running under WSL")
 
 (setq org-directory (concat +BASE-HOME "Dropbox/org"))
 
+(defvar +INBOX (expand-file-name "inbox.org" org-directory)
+  "File where all stuff goes initially.")
+
 (defvar +TASKS (expand-file-name "tasks.org" org-directory)
   "File where all stuff goes.")
 
