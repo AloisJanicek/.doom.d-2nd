@@ -15,14 +15,14 @@
 
 ;;;###autoload (autoload 'gtd-agenda/body "autoload/hydras" nil t)
 (defhydra gtd-agenda (:color blue
-                             ;; :body-pre
-                             ;; (if (aj/has-heading-p +INBOX)
-                             ;;     (org-ql-search `(,+INBOX) "*"
-                             ;;       :sort '(date))
-                             ;;   (org-ql-search (org-agenda-files)
-                             ;;     '(todo "NEXT")
-                             ;;     :sort '(date priority todo)
-                             ;;     :super-groups '((:auto-parent t))))
+                             :body-pre
+                             (if (aj/has-heading-p +INBOX)
+                                 (org-ql-search `(,+INBOX) "*"
+                                   :sort '(date))
+                               (org-ql-search (org-agenda-files)
+                                 '(todo "NEXT")
+                                 :sort '(date priority todo)
+                                 :super-groups '((:auto-parent t))))
                              )
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
