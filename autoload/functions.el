@@ -1282,20 +1282,16 @@ to the right and displays buffer there."
     (if (windowp window)
         (progn
           (select-window window t)
-          (switch-to-buffer buffer)
-          )
+          (switch-to-buffer buffer))
       (progn
-        (if (= (length (window-list)) 1)
-            (split-window (selected-window) (/ (window-total-width) 2) 'left)
-          ;; (split-window-right)
-          )
-        (select-window (some-window (lambda (x)
-                                      (not (eq x (selected-window))))))
-        (switch-to-buffer buffer)
-        )
-      )
-    )
-  )
+        (if (and (= (length (window-list)) 1)
+                 (> (window-width) 120))
+            (progn
+              (split-window (selected-window) (/ (window-total-width) 2) 'left)
+              (select-window (some-window (lambda (x)
+                                            (not (eq x (selected-window))))))))
+        (select-window (selected-window))
+        (switch-to-buffer buffer)))))
 
 ;;;###autoload
 (defun aj/choose-note-to-indirect-action (x)
