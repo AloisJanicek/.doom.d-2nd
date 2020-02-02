@@ -512,7 +512,13 @@
         :desc "Ask to save and quit"     "a" #'evil-quit-all
         )
 
-      ;; :prefix ("e" . "")
+      (:prefix ("e" . "encrypt")
+        :desc "encrypt region"                   "r" #'epa-encrypt-region
+        :desc "decrypt region"                   "R" #'epa-decrypt-region
+        :desc "encrypt file"                   "f" #'epa-encrypt-file
+        :desc "decrypt file"                   "F" #'epa-decrypt-file
+        )
+
       (:prefix ("r" . "remote")
         :desc "backup"                   "b" #'aj/my-backup
         )
