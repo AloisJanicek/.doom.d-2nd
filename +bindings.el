@@ -129,10 +129,7 @@
 
  (:after org
    :map org-mode-map
-   "C-]"   #'org-insert-subheading
-   "<tab>" #'org-cycle
-   :inv "M-l"   #'aj/insert-link-in-org
-   :n   "J"     #'outline-next-visible-heading
+   :n   "j"     #'outline-next-visible-heading
    :n   "K"     #'outline-previous-visible-heading
 
    (:prefix "g"
@@ -152,26 +149,12 @@
      :desc "Decrypt entries"       "D" #'org-decrypt-entry
      )
 
-   :desc "Todo"         "t" #'org-todo
    :desc "Open"         "o" #'ace-link
-   :desc "Edna"           "E" #'org-edna-edit
-   :desc "Strike"         "=" #'aj-strike-through-org-headline
 
    (:prefix ("g" . "tags")
      :desc "Tags"           "g" #'counsel-org-tag
      :desc "Search"         "s" #'org-tags-view
      :desc "Region"         "r" #'org-change-tag-in-region
-     )
-
-   "a" nil
-
-   (:desc "Attach"          :prefix       "a"
-     :desc "Dispatch"           "d" #'org-attach
-     )
-
-   "A" nil
-   (:desc "Archive"          :prefix      "A"
-     :desc "Subtree"           "s" #'org-archive-subtree
      )
 
    :desc "Wiki"                "w" #'aj/org-menu-and-goto
@@ -196,27 +179,7 @@
      )
 
    (:prefix ("c" . "clock")
-     :desc "IN"           "i" #'org-clock-in
-     :desc "OUT"          "o" #'org-clock-out
-     :desc "Goto"         "g" #'org-clock-goto
      :desc "Pomodoro"     "p" #'org-pomodoro
-     )
-
-   "b" nil
-   (:prefix ("b" . "babel")
-     :desc "tangle"           "t" #'org-babel-tangle
-     :desc "execute"          "e" #'org-babel-execute-src-block
-     )
-
-   (:prefix ("x" . "execute")
-     :desc "execute"          "x" #'org-babel-execute-src-block
-     :desc "eXecute ALL"          "e" #'org-babel-execute-src-block
-     )
-
-   "T" nil
-   (:prefix ("T" . "toggle")
-     :desc "heading"          "h" #'org-toggle-heading
-     :desc "item"             "i" #'org-toggle-item
      )
 
    "l" nil
@@ -231,11 +194,6 @@
    "f" nil
    (:prefix ("f" . "footnote")
      :desc "action"             "a" #'org-footnote-action
-     )
-
-   "p" nil
-   (:prefix ("p" . "property")
-     :desc "set"              "s" #'org-set-property
      )
 
    "i" nil
