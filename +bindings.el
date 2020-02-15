@@ -129,7 +129,7 @@
 
  (:after org
    :map org-mode-map
-   :n   "j"     #'outline-next-visible-heading
+   :n   "J"     #'outline-next-visible-heading
    :n   "K"     #'outline-previous-visible-heading
 
    (:prefix "g"
