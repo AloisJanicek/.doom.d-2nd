@@ -1890,3 +1890,22 @@ Functions is intended as a replacement for `ob-javascript--node-path'.
   (save-excursion
     (org-back-to-heading t)
     (org-set-tags-to nil)))
+
+
+;;;###autoload
+(defun individual-visibility-source-blocks ()
+  "Fold some blocks in the current buffer."
+  (interactive)
+  (org-show-block-all)
+  (org-block-map
+   (lambda ()
+     (let ((case-fold-search t))
+       (when (and
+              (save-excursion
+                (beginning-of-line 1)
+                (looking-at org-block-regexp))
+              (cl-assoc
+               ':hidden
+               (cl-third
+                (org-babel-get-src-block-info))))
+         (org-hide-block-toggle))))))
