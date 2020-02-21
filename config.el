@@ -728,7 +728,6 @@ to `t', otherwise, just do everything in the background.")
   (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
   ;; (advice-add #'org-agenda-switch-to :after #'turn-off-solaire-mode)
   ;; (add-hook #'org-after-todo-statistics-hook #'org-summary-todo)
-  (remove-hook 'org-agenda-finalize-hook #'+org|cleanup-agenda-files)
 
   (setq
    org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
