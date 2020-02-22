@@ -367,7 +367,8 @@ to `t', otherwise, just do everything in the background.")
   (setq calendar-week-start-day 1))
 
 (after! css-mode
-  (set-face-attribute 'css-selector nil :foreground "#E06C75")
+  (custom-set-faces!
+    `(css-selector :foreground ,(doom-lighten 'red 0.1)))
   (set-docsets! '(css-mode scss-mode)
     "CSS" "HTML"
     ["Sass" (memq major-mode '(scss-mode))]))
@@ -573,8 +574,9 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (after! man
-  (set-face-attribute 'Man-overstrike nil :inherit 'bold :foreground "#ff7a79")
-  (set-face-attribute 'Man-underline nil :inherit 'underline :foreground "#98be65")
+  (custom-set-faces!
+     `(Man-overstrike :inherit 'bold :foreground ,(doom-lighten 'red 0.2))
+     `(Man-underline :inherit 'underline :foreground ,(doom-lighten 'green 0.2)))
   (set-popup-rule! "*Man\*"                         :size 0.4 :side 'left :select t)
   (set-popup-rule! "*man\*"                         :size 0.6 :side 'left :select t))
 
@@ -666,9 +668,13 @@ to `t', otherwise, just do everything in the background.")
                           (file . find-file-other-window)
                           (wl . wl-other-frame))
    org-todo-keywords
-   ;;           todo     ongoing  hold         zap      done
-   '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "SOMEDAY(s)" "MAYBE(m)" "|" "DONE(d)" "CANCELLED(c)"))
-   org-todo-keyword-faces '(("NEXT" . "#98be65") ("WAIT" . "#c678dd") ("TODO" . "#ECBE7B") ("SOMEDAY" . "#5b6268") ("MAYBE" . "#5b6268"))
+   '((sequence "TODO(t)" "PROJECT(p)" "NEXT(n)" "WAIT(w)" "SOMEDAY(s)" "MAYBE(m)" "|" "DONE(d)" "CANCELLED(c)"))
+   org-todo-keyword-faces `(("NEXT" . ,(doom-color 'green))
+                            ("WAIT" . ,(doom-color 'magenta))
+                            ("PROJECT" . ,(doom-color 'yellow))
+                            ("TODO" . ,(doom-color 'yellow))
+                            ("SOMEDAY" . ,(doom-color 'base5))
+                            ("MAYBE" . ,(doom-color 'base5)))
    org-enforce-todo-dependencies nil ;; if t, it hides todo entries with todo children from agenda
    org-enforce-todo-checkbox-dependencies nil
    org-provide-todo-statistics t
@@ -942,11 +948,14 @@ to `t', otherwise, just do everything in the background.")
   (add-hook 'web-mode-hook 'flycheck-mode)
   (setq web-mode-enable-current-element-highlight t
         web-mode-auto-close-style 1)
-  (set-face-attribute 'web-mode-current-element-highlight-face nil :background "#21242b" :foreground "#51afef")
-  (set-face-attribute 'web-mode-html-attr-equal-face nil :foreground "#5B6268")
-  (set-face-attribute 'web-mode-html-tag-bracket-face nil :foreground "#5B6268")
-  (set-face-attribute 'web-mode-html-tag-face nil :foreground "#E06C75")
-  (set-face-attribute 'web-mode-html-tag-unclosed-face nil :inherit 'web-mode-html-tag-face :underline '(:color "#ff6c6b" :style wave)))
+
+  (custom-set-faces!
+    `(web-mode-current-element-highlight-face :background ,(doom-color 'bg-alt) :foreground ,(doom-color 'blue))
+    `(web-mode-html-attr-equal-face :foreground ,(doom-color 'base5))
+    `(web-mode-html-tag-bracket-face :foreground ,(doom-color 'base5))
+    `(web-mode-html-tag-face :foreground ,(doom-lighten 'red 0.2))
+    `(web-mode-html-tag-unclosed-face :inherit 'web-mode-html-tag-face :underline '(:color ,(doom-lighten 'red 0.1) :style wave)))
+  )
 
 (after! which-key
   (setq which-key-idle-delay 0.8
