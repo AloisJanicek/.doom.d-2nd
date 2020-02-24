@@ -480,10 +480,10 @@ to `t', otherwise, just do everything in the background.")
   (helm-mode -1))
 
 (after! help
-  (set-popup-rule! "*help\*"                        :size 60 :side 'left :select t))
+  (set-popup-rule! "*help\*"                        :size 76 :side 'left :select t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"                     :size 60 :side 'left :select t)
+  (set-popup-rule! "*helpful\*"                     :size 76 :side 'left :select t)
   (add-hook 'helpful-mode-hook #'visual-line-mode)
   )
 
