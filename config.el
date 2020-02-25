@@ -73,6 +73,8 @@ if running under WSL")
 (set-popup-rule! "*backtrace\*" :size 0.5 :side 'bottom :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
 
+(use-package! ace-link)
+
 (use-package! ahk-mode
   :commands ahk-mode
   )

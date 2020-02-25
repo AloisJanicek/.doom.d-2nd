@@ -1,6 +1,8 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
 
+(package! ace-link)
+
 (package! ahk-mode)
 
 (package! anki-editor)
