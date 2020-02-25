@@ -1804,23 +1804,9 @@ If headline `HEADLINE' is provided, use it as refile target instead.
     (org-agenda-refile nil (list headline file nil pos))))
 
 ;;;###autoload
-(defun aj/org-agenda-refile-to-datetree (file &optional week)
-  "Refile into file `FILE' under datetree. `WEEK' for ISO week format."
-  (let* ((datetree-date (or (org-entry-get nil "TIMESTAMP" t)
-                            (org-read-date t nil "now")))
-         (date (org-date-to-gregorian datetree-date))
-         (pos (save-excursion
-                (find-file-noselect file)
-                (with-current-buffer (find-buffer-visiting file)
-                  (if week
-                      (org-datetree-find-iso-week-create date)
-                    (org-datetree-find-date-create date))
-                  (point)))))
-         (org-agenda-refile nil (list nil file nil pos))))
-
-;;;###autoload
 (defun aj/org-refile-to-datetree (file &optional week)
-  "Refile into file `FILE' under datetree. `WEEK' for ISO week format."
+  "Refile into file `FILE' under datetree. `WEEK' for ISO week format.
+If run from org-agenda, it uses `org-agenda-refile' instead."
   (let* ((datetree-date (or (org-entry-get nil "TIMESTAMP" t)
                             (org-read-date t nil "now")))
          (date (org-date-to-gregorian datetree-date))
@@ -1831,4 +1817,6 @@ If headline `HEADLINE' is provided, use it as refile target instead.
                       (org-datetree-find-iso-week-create date)
                     (org-datetree-find-date-create date))
                   (point)))))
-    (org-refile nil nil (list nil file nil pos))))
+    (if (eq major-mode 'org-agenda-mode)
+        (org-agenda-refile nil (list nil file nil pos))
+      (org-refile nil nil (list nil file nil pos)))))
