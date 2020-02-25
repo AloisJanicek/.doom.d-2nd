@@ -22,22 +22,22 @@
                                (org-ql-search (org-agenda-files)
                                  '(todo "NEXT")
                                  :sort '(date priority todo)
-                                 :super-groups '((:auto-parent t))))
+                                 :super-groups '((:auto-category t))))
                              )
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
 
   ("p" (org-ql-search (org-agenda-files)
-         '(and (todo "TODO")
+         '(and (todo)
                (children)
                (not (descendants (todo "NEXT"))))
-         :super-groups '((:auto-parent t))
+         :super-groups '((:auto-category t))
          :title "Stucked Projects") "projects")
 
   ("t" (org-ql-search (org-agenda-files)
          '(and (todo "TODO")
                (not (children)))
-         :super-groups '((:auto-parent t ))
+         :super-groups '((:auto-category t ))
          :title "Plain Todos") "tasks")
 
   ("T" (org-ql-search (org-agenda-files)
@@ -49,13 +49,13 @@
   ("n" (org-ql-search (org-agenda-files)
          '(todo "NEXT")
          :sort '(date priority todo)
-         :super-groups '((:auto-parent t))
+         :super-groups '((:auto-category t))
          :title "Next Action") "Next")
 
   ("w" (org-ql-search (org-agenda-files)
          '(todo "WAIT")
          :sort '(date priority todo)
-         :super-groups '((:auto-parent t))
+         :super-groups '((:auto-category t))
          :title "WAITING") "Wait")
 
   ("s" (org-ql-search (org-agenda-files)
