@@ -162,10 +162,15 @@
    "r" nil
    (:prefix ("r" . "refile")
      :desc "file"          "f" #'aj/refile-to-file-in
-     :desc "targets"       "t" #'org-refile
-     :desc "visible"       "v" #'avy-org-refile-as-child
-     :desc "Journal"        "j" (λ! (org-refile-to-datetree +JOURNAL))
-     :desc "Project"        "p" #'aj/refile-to-project-readme
+     :desc "all targets"   "a" #'org-refile
+     :desc "visible"       "v" (lambda! (progn (require 'avy) (avy-org-refile-as-child)))
+     :desc "journal"       "j" (lambda!
+                                (aj/org-refile-to-datetree
+                                 (ivy-read "Choose file: " (directory-files org-directory t ".org"))))
+     :desc "project"       "p" #'aj/refile-to-project-readme
+     :desc "file top level"      "t" (lambda!
+                                      (aj/org-refile-to-file-custom
+                                       (ivy-read "Choose file: " (directory-files-recursively org-directory ".org"))))
      )
 
    "e" nil
@@ -311,11 +316,15 @@
      :m         "s"     #'org-agenda-schedule
 
      (:prefix ("r" . "refile")
-       :desc "targets"        :m "t"  #'org-agenda-refile
-       :desc "journal"        :m "j"  (λ! (aj/org-agenda-refile-to-datetree +JOURNAL))
-       :desc "file top level"            :m "F"  (λ! (aj/org-agenda-refile-to-file-custom nil t))
-       :desc "file and headline"         :m "f"  (λ! (aj/org-agenda-refile-to-file-custom nil nil))
-       :desc "project readme"            :m "p"  (λ! (aj/org-agenda-refile-to-file-custom nil nil t))
+       :desc "file"          "f" #'aj/refile-to-file-in
+       :desc "all targets"   "a" #'org-agenda-refile
+       :desc "journal"       "j" (lambda!
+                                  (aj/org-refile-to-datetree
+                                   (ivy-read "Choose file: " (directory-files org-directory t ".org"))))
+       :desc "project"       "p" #'aj/refile-to-project-readme
+       :desc "file top level"      "t" (lambda!
+                                        (aj/org-refile-to-file-custom
+                                         (ivy-read "Choose file: " (directory-files-recursively org-directory ".org"))))
        )
      )
    )
