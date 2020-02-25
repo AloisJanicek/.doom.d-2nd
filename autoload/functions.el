@@ -1710,28 +1710,11 @@ If run from org-agenda, it uses `org-agenda-refile' instead."
       (org-refile nil nil (list nil file nil pos)))))
 
 ;;;###autoload
-(defun aj/refile-to-file-in (&optional arg)
-  "Ask for file and offer refile locations.
-With prefix ARG initiate refile into current file.
-If run from org-agenda, it uses `org-agenda-refile' instead."
+(defun aj/org-refile-to-file (file)
+  "Refile to file `FILE'.
+If executed from agenda, use `org-agenda-refile' instead"
   (interactive "P")
   (let* ((org-refile-target-verify-function nil)
-         (file (if arg
-                   (buffer-file-name (current-buffer))
-                 (ivy-read "Choose file: " (directory-files-recursively org-directory "org"))))
-         (org-refile-targets `((,file :maxlevel . 9))))
-    (if (eq major-mode 'org-agenda-mode)
-        (org-agenda-refile)
-      (org-refile))))
-
-;;;###autoload
-(defun aj/refile-to-project-readme ()
-  "Refile into README files in registered projects.
-If run from org-agenda, it uses `org-agenda-refile' instead."
-  (interactive)
-  (let* ((org-refile-target-verify-function nil)
-         (file (ivy-read "File: " (get-all-projectile-README-org-files)
-                         :action (lambda (x) x)))
          (org-refile-targets `((,file :maxlevel . 9))))
     (if (eq major-mode 'org-agenda-mode)
         (org-agenda-refile)

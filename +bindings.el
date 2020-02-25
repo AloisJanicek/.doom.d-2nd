@@ -160,15 +160,21 @@
    :desc "Wiki"                "w" #'aj/org-menu-and-goto
 
    (:prefix ("r" . "refile")
-     :desc "file"          "f" #'aj/refile-to-file-in
+     :desc "file"          "f" (lambda! (aj/org-refile-to-file
+                                         (ivy-read "Choose file: " (directory-files-recursively org-directory "org"))))
      :desc "visible"       "v" (lambda! (progn (require 'avy) (avy-org-refile-as-child)))
      :desc "journal"       "j" (lambda!
                                 (aj/org-refile-to-datetree
                                  (ivy-read "Choose file: " (directory-files org-directory t ".org"))))
-     :desc "project"       "p" #'aj/refile-to-project-readme
      :desc "file top level"  "t" (lambda!
                                   (aj/org-refile-to-file-custom
                                    (ivy-read "Choose file: " (directory-files-recursively org-directory ".org"))))
+     :desc "project"       "p" (lambda! (aj/org-refile-to-file
+                                         (ivy-read "File: " (get-all-projectile-README-org-files)
+                                                   :action (lambda (x) x))))
+     :desc "project Journal"       "P" (lambda! (aj/org-refile-to-datetree
+                                                 (ivy-read "File: " (get-all-projectile-README-org-files)
+                                                           :action (lambda (x) x))))
      )
 
    "e" nil
@@ -315,15 +321,22 @@
      :m         "s"     #'org-agenda-schedule
 
      (:prefix ("r" . "refile")
-       :desc "file"          "f" #'aj/refile-to-file-in
+       :desc "file"          "f" (lambda! (aj/org-refile-to-file
+                                           (ivy-read "Choose file: " (directory-files-recursively org-directory "org"))))
        :desc "all targets"   "r" #'org-agenda-refile
        :desc "journal"       "j" (lambda!
                                   (aj/org-refile-to-datetree
                                    (ivy-read "Choose file: " (directory-files org-directory t ".org"))))
-       :desc "project"       "p" #'aj/refile-to-project-readme
        :desc "file top level"      "t" (lambda!
                                         (aj/org-refile-to-file-custom
                                          (ivy-read "Choose file: " (directory-files-recursively org-directory ".org"))))
+
+       :desc "project"       "p" (lambda! (aj/org-refile-to-file
+                                           (ivy-read "File: " (get-all-projectile-README-org-files)
+                                                     :action (lambda (x) x))))
+       :desc "project Journal"       "P" (lambda! (aj/org-refile-to-datetree
+                                                   (ivy-read "File: " (get-all-projectile-README-org-files)
+                                                             :action (lambda (x) x))))
        )
      )
    )
