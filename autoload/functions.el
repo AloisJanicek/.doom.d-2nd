@@ -1855,3 +1855,19 @@ Functions is intended as a replacement for `ob-javascript--node-path'.
                (cl-third
                 (org-babel-get-src-block-info))))
          (org-hide-block-toggle))))))
+
+;;;###autoload
+(defun aj/agenda-refile-to-file-custom (file &optional headline)
+  "Move current headline as a top level headline at top of specified file `FILE'.
+If headline `HEADLINE' is provided, use it as refile target instead.
+"
+  (let ((pos (save-excursion
+               (find-file-noselect file)
+               (with-current-buffer (find-buffer-visiting file)
+                 (if headline
+                     (org-find-exact-headline-in-buffer headline)
+                   (progn
+                     (goto-char (point-min))
+                     (forward-line)))))))
+    (org-agenda-refile nil (list headline file nil pos))))
+
