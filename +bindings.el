@@ -640,9 +640,9 @@
 
       (:prefix ("f" . "file")
         :desc "grep"              "g" (lambda ()
-                                          (interactive)
-                                          (let ((hydra-hint-display-type 'message))
-                                            (+default/search-cwd)))
+                                        (interactive)
+                                        (let ((hydra-hint-display-type 'message))
+                                          (+default/search-cwd)))
         :desc "file"                     "f" #'counsel-find-file
         :desc "jump org"                 "o" #'aj/jump-to-org-dir
         :desc "jump file"                "j" #'counsel-file-jump
