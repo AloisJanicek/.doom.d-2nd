@@ -15,33 +15,6 @@
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
 ;;;###autoload
-(defun aj/org-refile-to-file-as-top-level (filename)
-  "Move current headline as a top level headline at top of specified file
-https://www.reddit.com/r/emacs/comments/74i8sy/how_to_copy_an_org_item_to_a_specific_headerfile/
-"
-  (let ((pos (save-excursion
-               (find-file filename)
-               (goto-char (point-min))
-               (forward-line))))
-    (org-refile nil nil (list nil filename nil pos)))
-  (switch-to-buffer (current-buffer)))
-
-;;;###autoload
-(defun my/refile (file headline &optional arg)
-  "Refile to a specific location.
-With a 'C-u' ARG argument, we jump to that location (see
-`org-refile').
-Use `org-agenda-refile' in `org-agenda' mode."
-  (let* ((pos (with-current-buffer (or (get-buffer file)	;Is the file open in a buffer already?
-                                       (find-file-noselect file)) ;Otherwise, try to find the file by name (Note, default-directory matters here if it isn't absolute)
-                (or (org-find-exact-headline-in-buffer headline)
-                    (error "Can't find headline `%s'" headline))))
-         (filepath (buffer-file-name (marker-buffer pos)));If we're given a relative name, find absolute path
-         (rfloc (list headline filepath nil pos)))
-    (if (and (eq major-mode 'org-agenda-mode) (not (and arg (listp arg)))) ;Don't use org-agenda-refile if we're just jumping
-        (org-agenda-refile nil rfloc)
-      (org-refile arg nil rfloc))))
-;;;###autoload
 (defun my-org-agenda-skip-all-siblings-but-first ()
   "Skip all but the first non-done entry."
   (let (should-skip-entry)
@@ -150,24 +123,6 @@ Use `org-agenda-refile' in `org-agenda' mode."
   (org-insert-link)
   ;; (evil-org-open-below 1)
   )
-;;;###autoload
-(defun josh/org-capture-refile-but-with-args (file headline &optional arg)
-  "Copied from `org-capture-refile' since it doesn't allow passing arguments. This does."
-  (unless (eq (org-capture-get :type 'local) 'entry)
-    (error
-     "Refiling from a capture buffer makes only sense for `entry'-type templates"))
-  (let ((pos (point))
-        (base (buffer-base-buffer (current-buffer)))
-        (org-capture-is-refiling t)
-        (kill-buffer (org-capture-get :kill-buffer 'local)))
-    (org-capture-put :kill-buffer nil)
-    (org-capture-finalize)
-    (save-window-excursion
-      (with-current-buffer (or base (current-buffer))
-        (org-with-wide-buffer
-         (goto-char pos)
-         (my/refile file headline arg))))
-    (when kill-buffer (kill-buffer base))))
 
 ;;;###autoload
 (defun aj/my-org-faces ()
@@ -451,23 +406,6 @@ of text segment of current headline.
     (org-cycle)
     (evil-open-below 1)))
 
-;;;###autoload
-(defun aj/refile-to-file-headline (file headline &optional arg)
-  "Refile to HEADLINE in FILE. Clean up org-capture if it's activated.
-
-With a `C-u` ARG, just jump to the headline."
-  (interactive "P")
-  (let ((is-capturing (and (boundp 'org-capture-mode) org-capture-mode)))
-    (cond
-     ((and arg (listp arg))	    ;Are we jumping?
-      (my/refile file headline arg))
-     ;; Are we in org-capture-mode?
-     (is-capturing      	;Minor mode variable that's defined when capturing
-      (josh/org-capture-refile-but-with-args file headline arg))
-     (t
-      (my/refile file headline arg)))
-    (when (or arg is-capturing)
-      (setq hydra-deactivate t))))
 ;;;###autoload
 (defun my/org-pomodoro-text-time ()
   "Return status info about org-pomodoro and if org-pomodoro is not running, try to print info about org-clock.
@@ -975,13 +913,6 @@ imenu-list sidbar so it doesn't get closed in any other way then from inside of 
     (require 'imenu-list)
     (remove-hook '+popup-buffer-mode-hook '+imenu|cleanup-on-popup-close)
     (imenu-list-smart-toggle)))
-;;;###autoload
-(defun aj/verify-headlines-for-refile ()
-  (if (and
-       (not (string= (org-get-heading) "LINKS"))
-       (not (member (buffer-name) +refile-targets-with-headlines))
-       )
-      nil t))
 
 ;;;###autoload
 (defun counsel-x-path-walker ()
@@ -1234,28 +1165,6 @@ Buffers are cheap.
     (aj/open-file-switch-create-indirect-buffer-per-persp path t)
     )
   )
-
-;;;###autoload
-(defun aj/refile-to-file-in (path &optional arg)
-  "Ask for file and offer refile locations.
-With prefix ARG initiate refile into current file."
-  (interactive "P")
-  (let* ((org-refile-target-verify-function nil)
-         (file (if arg
-                   (buffer-file-name (current-buffer))
-                 (ivy-read "Choose file: " (directory-files-recursively org-directory "org"))))
-         (org-refile-targets `((,file :maxlevel . 9))))
-    (org-refile)))
-
-;;;###autoload
-(defun aj/refile-to-project-readme ()
-  "Refile into README files in registered projects"
-  (interactive)
-  (let* ((org-refile-target-verify-function nil)
-         (file (ivy-read "File: " (get-all-projectile-README-org-files)
-                         :action (lambda (x) x)))
-         (org-refile-targets `((,file :maxlevel . 9))))
-    (org-refile)))
 
 ;;;###autoload
 ;; https://emacs.stackexchange.com/questions/17622/how-can-i-walk-an-org-mode-tree
@@ -1542,29 +1451,6 @@ so it can be used later."
           (progn (org-end-of-subtree)  (point)))))
 
 ;;;###autoload
-(defun org-refile-directly (file-dest)
-  "Move the current subtree to the end of FILE-DEST.
-If SHOW-AFTER is non-nil, show the destination window,
-otherwise, this destination buffer is not shown."
-  (interactive "fDestination: ")
-
-  (defun dump-it (file contents)
-    (find-file-other-window file-dest)
-    (goto-char (point-max))
-    (insert "\n" contents)
-    (save-buffer))
-
-  (save-excursion
-    (let* ((region (org-subtree-region))
-           (contents (buffer-substring (first region) (second region))))
-      (apply 'kill-region region)
-      (save-buffer)
-      (if org-refile-directly-show-after
-          (save-current-buffer (dump-it file-dest contents))
-        (save-window-excursion (dump-it file-dest contents)))))
-  (call-interactively 'org-next-visible-heading ))
-
-;;;###autoload
 (defun org-rename-header (label)
   "Rename the current section's header to LABEL, and moves the
 point to the end of the line."
@@ -1822,3 +1708,26 @@ If run from org-agenda, it uses `org-agenda-refile' instead."
     (if (eq major-mode 'org-agenda-mode)
         (org-agenda-refile nil (list nil file nil pos))
       (org-refile nil nil (list nil file nil pos)))))
+
+;;;###autoload
+(defun aj/refile-to-file-in (path &optional arg)
+  "Ask for file and offer refile locations.
+With prefix ARG initiate refile into current file."
+  (interactive "P")
+  (let* ((org-refile-target-verify-function nil)
+         (file (if arg
+                   (buffer-file-name (current-buffer))
+                 (ivy-read "Choose file: " (directory-files-recursively org-directory "org"))))
+         (org-refile-targets `((,file :maxlevel . 9))))
+    (org-refile)))
+
+;;;###autoload
+(defun aj/refile-to-project-readme ()
+  "Refile into README files in registered projects"
+  (interactive)
+  (let* ((org-refile-target-verify-function nil)
+         (file (ivy-read "File: " (get-all-projectile-README-org-files)
+                         :action (lambda (x) x)))
+         (org-refile-targets `((,file :maxlevel . 9))))
+    (org-refile)))
+
