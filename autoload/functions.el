@@ -1115,74 +1115,6 @@ and me being in CET"
                              +aj/time-blocks)))))
 
 ;;;###autoload
-(defun org-refile-to-datetree (&optional file)
-  "Refile a subtree to a datetree corresponding to it's timestamp.
-
-The current time is used if the entry has no timestamp. If FILE
-is nil, refile in the current file."
-  (interactive "f")
-  (let* ((datetree-date (or (org-entry-get nil "TIMESTAMP" t)
-                            (org-read-date t nil "now")))
-         (date (org-date-to-gregorian datetree-date))
-         )
-    (save-excursion
-      (with-current-buffer (current-buffer)
-        (org-cut-subtree)
-        (save-buffer)
-        (if file (find-file file))
-        ;; assuming first asterix in file coresponds to first heading...
-        (goto-char (point-min))
-        (goto-char (search-forward "\*"))
-        (org-decrypt-entry)
-        (org-datetree-find-iso-week-create date) ;; for week-based datatree
-        ;; (org-datetree-find-date-create date)  ;; for month-based datatree
-        (org-narrow-to-subtree)
-        (outline-show-subtree)
-        (org-end-of-subtree t)
-        (newline)
-        (goto-char (point-max))
-        (org-paste-subtree 4)
-        (widen)
-        (save-buffer)
-        (persp-remove-buffer (current-buffer))
-        ))))
-
-;;;###autoload
-(defun aj/org-agenda-refile-to-datetree (file)
-  ""
-  (interactive "P")
-  (let* ((buffer-orig (buffer-name))
-         (marker (or (org-get-at-bol 'org-hd-marker)
-                     (org-agenda-error)))
-         (buffer (marker-buffer marker))
-         (datetree-date (or (org-entry-get nil "TIMESTAMP" t)
-                            (org-read-date t nil "now")))
-         (date (org-date-to-gregorian datetree-date)))
-    (with-current-buffer buffer
-      (org-with-wide-buffer
-       (goto-char marker)
-       (org-cut-subtree)
-       (if file (find-file file))
-       ;; assuming first asterix in file coresponds to first heading...
-       (goto-char (point-min))
-       (goto-char (search-forward "\*"))
-       (org-datetree-find-iso-week-create date) ;; for week-based datatree
-       ;; (org-datetree-find-date-create date)  ;; for month-based datatree
-       (org-narrow-to-subtree)
-       (outline-show-subtree)
-       (org-end-of-subtree t)
-       (newline)
-       (goto-char (point-max))
-       (org-paste-subtree 4)
-       (widen)
-       (save-buffer)
-       (delete-window)
-       (select-window (get-buffer-window "*Org Agenda*"))
-       (org-agenda-redo)
-       ))
-    ))
-
-;;;###autoload
 (defun aj/complete-all-tags-for-org ()
   "Sets buffer-local variable which allows to complete all tags from org-agenda files"
   (setq-local org-complete-tags-always-offer-all-agenda-tags t))
@@ -1871,3 +1803,32 @@ If headline `HEADLINE' is provided, use it as refile target instead.
                      (forward-line)))))))
     (org-agenda-refile nil (list headline file nil pos))))
 
+;;;###autoload
+(defun aj/org-agenda-refile-to-datetree (file &optional week)
+  "Refile into file `FILE' under datetree. `WEEK' for ISO week format."
+  (let* ((datetree-date (or (org-entry-get nil "TIMESTAMP" t)
+                            (org-read-date t nil "now")))
+         (date (org-date-to-gregorian datetree-date))
+         (pos (save-excursion
+                (find-file-noselect file)
+                (with-current-buffer (find-buffer-visiting file)
+                  (if week
+                      (org-datetree-find-iso-week-create date)
+                    (org-datetree-find-date-create date))
+                  (point)))))
+         (org-agenda-refile nil (list nil file nil pos))))
+
+;;;###autoload
+(defun aj/org-refile-to-datetree (file &optional week)
+  "Refile into file `FILE' under datetree. `WEEK' for ISO week format."
+  (let* ((datetree-date (or (org-entry-get nil "TIMESTAMP" t)
+                            (org-read-date t nil "now")))
+         (date (org-date-to-gregorian datetree-date))
+         (pos (save-excursion
+                (find-file-noselect file)
+                (with-current-buffer (find-buffer-visiting file)
+                  (if week
+                      (org-datetree-find-iso-week-create date)
+                    (org-datetree-find-date-create date))
+                  (point)))))
+    (org-refile nil nil (list nil file nil pos))))
