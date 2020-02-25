@@ -1561,60 +1561,6 @@ Epub files offten has very poor quality."
            (message "Invalid template")))
     ))
 
-;;;###autoload
-(defun aj/org-agenda-refile-to-file-custom (&optional file-name top-level readme)
-  "Refile to `FILE' from org-agenda buffers.
-If `FILE' is nil, user is prompt for file.
-If `TOP-LEVEL' is nil, user is also prompt for headline to refile under.
-If `TOP-LEVEL' is non-nil, refile as top level headline.
-If `README' is t, ask user for projectile project instead of file.
-"
-  (interactive)
-  (let* ((buffer-orig (buffer-name))
-         (marker (or (org-get-at-bol 'org-hd-marker)
-                     (org-agenda-error)))
-         (buffer (marker-buffer marker))
-         (file (if (and (not file-name) (not readme))
-                   (read-file-name "Choose file to refile into: " +TECHNICAL)
-                 (if (and (not file-name) readme)
-                     (ivy-read "File: " (get-all-projectile-README-org-files)
-                               :action (lambda (x) x))
-                   file-name)))
-         (counsel-outline-display-style 'title)
-         (counsel-org-headline-display-tags t)
-         (counsel-org-headline-display-todo t)
-         )
-
-    (with-current-buffer buffer
-      (org-with-wide-buffer
-       (goto-char marker)
-       (org-cut-subtree)
-       (find-file file)
-       (widen)
-
-       (if (not top-level)
-           (ivy-read "Choose headline: " (counsel-outline-candidates (cdr (assq major-mode counsel-outline-settings)))
-                     :action (lambda (x)
-                               (goto-char (cdr x))))
-         (goto-char (point-max)))
-
-       (let ((level (if (not top-level)
-                        (org-element-property :level (org-element-at-point)) 0)))
-         (org-narrow-to-subtree)
-         (outline-show-subtree)
-         (org-end-of-subtree t)
-         (newline)
-         (goto-char (point-max))
-         (org-paste-subtree (+ level 1))
-         )
-       (widen)
-       (save-buffer)
-       (delete-window)
-       (select-window (get-buffer-window "*Org Agenda*"))
-       (org-agenda-redo)
-       ))
-    )
-  )
 
 ;;;###autoload
 (defun aj/org-brain-entry-at-pt ()
