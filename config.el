@@ -41,11 +41,6 @@ if running under WSL")
 (defvar hydra-stack nil
   "Holds names of hydras for display when nesting them.")
 
-(defvar org-refile-directly-show-after nil
-  "When refiling directly (using the `org-refile-directly'
-function), show the destination buffer afterwards if this is set
-to `t', otherwise, just do everything in the background.")
-
 (defvar +org-projectile-per-project-filepath "README.org"
   "Org file in every project which can be used to contribute into agenda")
 
@@ -691,7 +686,6 @@ to `t', otherwise, just do everything in the background.")
                         :maxlevel . 1))
    org-refile-use-outline-path 'file
    org-outline-path-complete-in-steps nil
-   ;; org-refile-target-verify-function 'aj/verify-headlines-for-refile
 
    org-use-property-inheritance t
 
