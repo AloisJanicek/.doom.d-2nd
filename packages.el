@@ -9,6 +9,8 @@
 
 (package! apache-mode)
 
+(package! company-posframe)
+
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock"))
 

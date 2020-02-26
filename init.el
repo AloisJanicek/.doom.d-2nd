@@ -12,7 +12,8 @@
 
        :completion
        (company
-        +childframe)
+        ;; +childframe
+        )
        ;; (helm
        ;;  +childframe)
        ;;ido

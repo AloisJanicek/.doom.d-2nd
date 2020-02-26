@@ -94,6 +94,14 @@ if running under WSL")
          ("access\\.conf\\'" . apache-mode)
          ("sites-\\(available\\|enabled\\)/" . apache-mode)))
 
+(use-package! company-posframe
+  :after company
+  :config
+  (company-posframe-mode 1)
+  (setq company-posframe-quickhelp-delay nil
+        )
+  )
+
 (use-package! counsel-org-clock
   :commands (counsel-org-clock-context counsel-org-clock-history)
   :config
