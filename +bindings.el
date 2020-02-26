@@ -140,6 +140,11 @@
      )
 
    :localleader
+   "p"  nil
+   (:prefix ("p" . "private")
+     :desc "private" "p" (lambda ()
+                           (interactive)
+                           (let ((hydra-hint-display-type 'message)) (aj/private-refile/body))))
    "d" nil
 
    (:prefix ("d" . "decrypt")
@@ -319,6 +324,9 @@
    "d" nil
    (:prefix ("d" . "do")
      :m         "s"     #'org-agenda-schedule
+     :desc "private" "p" (lambda ()
+                           (interactive)
+                           (let ((hydra-hint-display-type 'message)) (aj/private-refile/body)))
 
      (:prefix ("r" . "refile")
        :desc "file"          "f" (lambda! (aj/org-refile-to-file
