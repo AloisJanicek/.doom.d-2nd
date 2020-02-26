@@ -7,17 +7,18 @@
   "Refile as new top level heading in specified file `FILE'.
 If headline `HEADLINE' is provided, use it as a refile target instead.
 If run from org-agenda use `org-agenda-refile' instead."
-  (let ((pos (save-excursion
-               (find-file-noselect file)
-               (with-current-buffer (find-buffer-visiting file)
-                 (if headline
-                     (org-find-exact-headline-in-buffer headline)
-                   (progn
-                     (goto-char (point-min))
-                     (forward-line)))))))
+  (let* ((pos (save-excursion
+                (find-file-noselect file)
+                (with-current-buffer (find-buffer-visiting file)
+                  (if headline
+                      (org-find-exact-headline-in-buffer headline)
+                    (progn
+                      (goto-char (point-min))
+                      (forward-line))))))
+         (rfloc (list headline file nil pos)))
     (if (eq major-mode 'org-agenda-mode)
-        (org-agenda-refile nil (list headline file nil pos))
-      (org-refile nil nil (list headline file nil pos)))))
+        (org-agenda-refile nil rfloc)
+      (org-refile nil nil rfloc))))
 
 ;;;###autoload
 (defun aj/org-refile-to-datetree (file &optional week)
@@ -32,10 +33,11 @@ If run from org-agenda, it uses `org-agenda-refile' instead."
                   (if week
                       (org-datetree-find-iso-week-create date)
                     (org-datetree-find-date-create date))
-                  (point)))))
+                  (point))))
+         (rfloc (list nil file nil pos)))
     (if (eq major-mode 'org-agenda-mode)
-        (org-agenda-refile nil (list nil file nil pos))
-      (org-refile nil nil (list nil file nil pos)))))
+        (org-agenda-refile nil rfloc)
+      (org-refile nil nil rfloc))))
 
 ;;;###autoload
 (defun aj/org-refile-to-file (file)
