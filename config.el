@@ -69,6 +69,7 @@ if running under WSL")
 (setq-default tab-width 2)
 
 (load! "+bindings")
+(load! "+local")
 
 (set-popup-rule! "*backtrace\*" :size 0.5 :side 'bottom :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)

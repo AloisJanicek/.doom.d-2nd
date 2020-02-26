@@ -1,2 +1,3 @@
 flycheck*
 *.elc
++local.el
