@@ -283,6 +283,7 @@ if running under WSL")
   :config
   ;; because I don't want to hear about empty org file
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
+  (advice-add #'org-ql-view--format-element :override #'aj/org-ql-view--format-element)
   )
 
 (use-package! org-ql-agenda
