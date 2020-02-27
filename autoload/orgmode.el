@@ -619,7 +619,9 @@ This function is meant to be used as advice for `org-agenda-filter-apply'"
 ;;;###autoload
 (defun aj/save-and-refresh-agenda (&optional arg)
   (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
-  (org-agenda-redo))
+  (org-agenda-redo)
+  (if (featurep 'org-ql-view)
+      (org-ql-view-refresh)))
 
 ;;;###autoload
 (defun aj/open-file-the-right-way-from-agenda (orig-fun &rest args)
