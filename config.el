@@ -281,8 +281,8 @@ if running under WSL")
   :after org
   :commands org-ql-search
   :config
-  ;; because I don't want to hear about empty org file
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
+  (advice-add #'org-ql-view-refresh :around #'doom-shut-up-a)
   (advice-add #'org-ql-view--format-element :override #'aj/org-ql-view--format-element)
   )
 
@@ -630,8 +630,6 @@ if running under WSL")
   (advice-add #'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
   (remove-hook 'org-mode-hook #'auto-fill-mode)
-  ;;(advice-add #'aj/has-children-p :after #'aj/take-care-of-org-buffers)
-  ;;(advice-add #'aj/has-children-p :after #'winner-undo)
 
   ;; clock persistence
   (org-clock-persistence-insinuate)
@@ -718,15 +716,11 @@ if running under WSL")
         '("◉")))
 
 (after! org-agenda
-  ;; (add-hook 'org-agenda-after-show-hook #'org-narrow-to-subtree)
   (add-hook 'org-agenda-mode-hook #'aj/complete-all-tags-for-org)
   (add-hook 'org-agenda-mode-hook #'hide-mode-line-mode)
   (add-hook 'org-agenda-finalize-hook (lambda ()
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
-  (advice-add #'aj/org-agenda-refile-to-datetree :after #'aj/take-care-of-org-buffers)
-  (advice-add #'aj/org-agenda-refile-to-file :after #'aj/take-care-of-org-buffers)
-  (advice-add #'aj/org-agenda-refile-to-project-readme :after #'aj/take-care-of-org-buffers)
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-deadline :before #'my-set-org-agenda-type)
@@ -735,14 +729,12 @@ if running under WSL")
   (advice-add #'org-agenda-filter-apply :after #'aj/copy-set-agenda-filter)
   (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
   (advice-add #'org-agenda-refile :after #'aj/take-care-of-org-buffers)
-  (advice-add #'org-agenda-refile :after #'org-agenda-redo)
+  (advice-add #'org-agenda-refile :after (lambda (&rest _) (org-agenda-redo) (org-ql-view-refresh)))
   (advice-add #'org-agenda-schedule :before #'my-set-org-agenda-type)
   (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-switch-to :around #'aj/open-file-the-right-way-from-agenda)
   (advice-add #'org-agenda-todo :after #'aj/save-and-refresh-agenda)
   (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
-  ;; (advice-add #'org-agenda-switch-to :after #'turn-off-solaire-mode)
-  ;; (add-hook #'org-after-todo-statistics-hook #'org-summary-todo)
 
   (setq
    org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
