@@ -16,35 +16,37 @@
 ;;;###autoload (autoload 'gtd-agenda/body "autoload/hydras" nil t)
 (defhydra gtd-agenda (:color blue
                              :body-pre
-                             (if (aj/has-heading-p +INBOX)
-                                 (org-ql-search `(,+INBOX) "*"
-                                   :sort '(date))
+                             (cond
+                              ;; show inbox if it is not empty
+                              ((org-ql-query
+                                 :select #'org-get-heading
+                                 :from +INBOX)
+                               (org-ql-search `(,+INBOX) "*"
+                                 :sort '(date)))
+                              ;; show all stucked "PROJECT" if any
+                              ((org-ql-query
+                                 :select #'org-get-heading
+                                 :from (org-agenda-files)
+                                 :where
+                                 '(and (todo)
+                                       (children)
+                                       (not (descendants (todo "NEXT")))))
                                (org-ql-search (org-agenda-files)
-                                 '(todo "NEXT")
-                                 :sort '(date priority todo)
-                                 :super-groups '((:auto-category t))))
-                             )
+                                 '(and (todo)
+                                       (children)
+                                       (not (descendants (todo "NEXT"))))
+                                 :super-groups '((:auto-category t))
+                                 :title "Stucked Projects"))
+                              ;; otherwise default to showing "NEXT" task
+                              (t (org-ql-search (org-agenda-files)
+                                   '(todo "NEXT")
+                                   :sort '(date priority todo)
+                                   :super-groups '((:auto-category t))))))
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
 
-  ("p" (org-ql-search (org-agenda-files)
-         '(and (todo)
-               (children)
-               (not (descendants (todo "NEXT"))))
-         :super-groups '((:auto-category t))
-         :title "Stucked Projects") "projects")
-
-  ("t" (org-ql-search (org-agenda-files)
-         '(and (todo "TODO")
-               (not (children)))
-         :super-groups '((:auto-category t ))
-         :title "Plain Todos") "tasks")
-
-  ("T" (org-ql-search (org-agenda-files)
-         '(todo)
-         :sort '(date priority todo)
-         :super-groups '((:auto-category t))
-         :title "All Todos") "ALL Todos")
+  ("i" (org-ql-search `(,+INBOX) "*"
+         :sort '(date)) "inbox")
 
   ("n" (org-ql-search (org-agenda-files)
          '(todo "NEXT")
@@ -52,23 +54,31 @@
          :super-groups '((:auto-category t))
          :title "Next Action") "Next")
 
+  ("t" (org-ql-search (org-agenda-files)
+         '(and (todo "TODO")
+               (not (children))
+               (not (parent (todo "PROJECT"))))
+         :super-groups '((:auto-category t ))
+         :title "Plain Todos") "tasks")
+
+  ("p" (org-ql-search (org-agenda-files)
+         '(todo "PROJECT")
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "Projects") "projects")
+
+  ("s" (org-ql-search (org-agenda-files)
+         '(and (todo)
+               (children)
+               (not (descendants (todo "NEXT"))))
+         :super-groups '((:auto-category t))
+         :title "Stucked Projects") "stucked projects")
+
   ("w" (org-ql-search (org-agenda-files)
          '(todo "WAIT")
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
          :title "WAITING") "Wait")
-
-  ("s" (org-ql-search (org-agenda-files)
-         '(todo "SOMEDAY")
-         :sort '(date priority todo)
-         :super-groups '((:auto-category t))
-         :title "Someday") "Someday")
-
-  ("m" (org-ql-search (org-agenda-files)
-         '(todo "MAYBE")
-         :sort '(date priority todo)
-         :super-groups '((:auto-category t))
-         :title "Maybe") "Maybe")
 
   ("c" (org-ql-search (org-agenda-files)
          '(todo "CANCELLED")
@@ -87,8 +97,24 @@
          :sort '(date priority todo)
          :super-groups '((:auto-ts t))) "recent")
 
-  ("i" (org-ql-search `(,+INBOX) "*"
-         :sort '(date)) "inbox")
+  ("T" (org-ql-search (org-agenda-files)
+         '(todo)
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "All Todos") "ALL Todos")
+
+
+  ("S" (org-ql-search (org-agenda-files)
+         '(todo "SOMEDAY")
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "Someday") "Someday")
+
+  ("M" (org-ql-search (org-agenda-files)
+         '(todo "MAYBE")
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "Maybe") "Maybe")
   )
 
 ;;;###autoload (autoload 'aj/agenda-hydra/body "autoload/hydras" nil t)
