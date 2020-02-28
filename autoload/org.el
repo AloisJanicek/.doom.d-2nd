@@ -558,6 +558,19 @@ and me being in CET"
 This function is meant to be used as advice for `org-agenda-filter-apply'"
   (setq aj/agenda-filter string))
 
+;;;###autoload
+(defun aj/clear-filter-refresh-view ()
+  "Clear org-agenda persistent filter option stored in `aj/agenda-filter'.
+Also remove agenda filter using built-in `org-agenda-filter-show-all-tag'.
+On top of this refresh view.
+"
+  (interactive)
+  (progn
+    (org-agenda-filter-show-all-tag)
+    (setq aj/agenda-filter nil)
+    (if (string-match "Org QL" (buffer-name))
+        (org-ql-view-refresh)
+      (org-agenda-redo))))
 
 ;;;###autoload
 (defun aj/save-and-refresh-agenda (&optional arg)
