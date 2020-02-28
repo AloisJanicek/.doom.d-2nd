@@ -734,6 +734,7 @@ if running under WSL")
   (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-switch-to :around #'aj/open-file-the-right-way-from-agenda)
   (advice-add #'org-agenda-todo :after #'aj/save-and-refresh-agenda)
+  (advice-add #'org-agenda-kill :after #'aj/save-and-refresh-agenda)
   (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
 
   (setq
