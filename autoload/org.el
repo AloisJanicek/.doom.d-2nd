@@ -601,26 +601,6 @@ with my heavily customized alternative `aj/open-file-switch-create-indirect-buff
     (apply orig-fun args)))
 
 ;;;###autoload
-(defun aj/has-heading-p (file)
-  "Return t if the file `FILE' has heading. Otherwise nil"
-  (save-excursion
-    (find-file file)
-    (let ((buffer (current-buffer))
-          (was-buffer-last? (if (< (length (persp-buffer-list)) 2) t)))
-      (goto-char (point-min))
-      (if (search-forward "*" nil t)
-          (progn
-            (progn
-              (persp-remove-buffer buffer)
-              (if was-buffer-last?
-                  (switch-to-buffer "*doom*"))) t)
-        (progn
-          (progn
-            (persp-remove-buffer buffer)
-            (if was-buffer-last?
-                (switch-to-buffer "*doom*"))) nil)))))
-
-;;;###autoload
 (defun aj/time-from-h-m (hm)
   "Takes HM which is a string representing time in format \"%H:%M\"
 and returns that weird time number which Emacs understands."
