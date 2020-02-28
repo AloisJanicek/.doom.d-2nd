@@ -526,36 +526,6 @@ open agenda for Saturday or Sunday instead."
   )
 
 ;;;###autoload
-(defun aj/has-children-p (file headline)
-  "Checks if HEADLINE under FILE has children and return t. Otherwise nil"
-  (save-excursion
-    (find-file file)
-    ;; get position of headline
-    ;; t for returning just position
-    (let ((position (save-excursion (org-find-exact-headline-in-buffer headline (current-buffer) t)))
-          (persp-autokill-buffer-on-remove nil)
-          )
-      (goto-char position)
-      (forward-line 1)
-      (widen)
-      (org-end-of-subtree t)
-      ;; do one search for the heading
-      (let ((sresult (re-search-backward "^\*+ " position t 1)))
-        ;; if search result doesn't equal position, we can confirm that heading has children heading
-        (if (equal position sresult)
-            (progn
-              (persp-remove-buffer +persp-blacklist)
-              (delete-window)
-              nil
-              )
-          (progn
-            (persp-remove-buffer +persp-blacklist)
-            (delete-window)
-            t
-            )
-          )))))
-
-;;;###autoload
 (defun aj/remaining-block-time ()
   "TODO: Returns remaining time to the end of current time block. Due to flaw in my understanding
 of time in emacs, it adds one hour... This probably comes from `date-to-time' which assumes GTM time zone
