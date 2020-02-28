@@ -35,7 +35,7 @@ if running under WSL")
 (defvar +PRIVATE (concat org-directory "/private")
   "Directory of private notes.")
 
-(defvar aj/org-agenda nil
+(defvar aj/agenda-filter nil
   "Variable for preserving filter choice between agenda views.")
 
 (defvar hydra-stack nil
