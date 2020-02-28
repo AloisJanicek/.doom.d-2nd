@@ -310,7 +310,8 @@
                                                    (org-global-tags-completion-table
                                                     (org-agenda-files)))))
                            'tag))
-   :m         "F"     (λ! (org-agenda-filter-show-all-tag))
+
+   :m         "F"    #'aj/clear-filter-refresh-view
 
    (:prefix ("s" . "set")
      :m         "f"     (λ! (org-agenda-filter-apply aj/agenda-filter 'tag))
@@ -450,9 +451,18 @@
    :desc "clock-OUT"    "o" #'org-clock-out
    )
 
- (:after org-ql-agenda
+ (:after org-ql-view
    :map org-ql-view-map
-   :m "r" #'org-ql-search-refresh
+   :m "r" #'org-ql-view-refresh
+   :m         "f"     (λ! (org-agenda-filter-apply
+                           (list (concat "+"
+                                         (substring-no-properties
+                                          (ivy-read "Select tag: "
+                                                    (org-global-tags-completion-table
+                                                     (org-agenda-files))))
+                                         ))
+                           'tag))
+   :m         "F"    #'aj/clear-filter-refresh-view
    )
 
  (:after org-ql

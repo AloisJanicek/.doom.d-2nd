@@ -553,38 +553,11 @@ and me being in CET"
     ))
 
 ;;;###autoload
-(defun aj/fix-evil-org-agenda-keys ()
-  "Remap some keys in advice after `evil-org-agenda-set-keys'"
-  (evil-define-key 'motion org-agenda-mode-map
-    "ct" 'counsel-org-tag-agenda
-    "j"   'org-agenda-next-item
-    "k"   'org-agenda-previous-item
-    (kbd "C-j") 'org-agenda-next-line
-    (kbd "C-k") 'org-agenda-previous-line
-    ))
-
-;;;###autoload
-(defun aj/copy-agenda-filter (orig-fn &rest args)
-  "Copy value of `org-agenda-filter' into custom variable,
-so it can be used later."
-  (apply orig-fn args)
-  (when (not (equal nil org-agenda-filter))
-    (setq aj/agenda-filter org-agenda-filter)))
-
-;;;###autoload
-(defun return-target-date-for-deadline-agenda ()
-  "Return date representing end of the current month, use it for org-agendas."
-  (-let* (((sec minute hour day month year dow dst utcoff) (decode-time))
-          (last-day-of-month (calendar-last-day-of-month month year)))
-    ;; A hack that seems to work fine.  Yay, Postel!
-    (format "%d-%02d-%02d" year month (1+ last-day-of-month))
-    ))
-
-;;;###autoload
 (defun aj/copy-set-agenda-filter (string type &optional expand)
-  "Set first argument passed to this function as a value of `org-agenda-tag-filter-preset'.
+  "Set first argument passed to this function as a value of `aj/agenda-filter'.
 This function is meant to be used as advice for `org-agenda-filter-apply'"
-  (setq org-agenda-tag-filter-preset  string))
+  (setq aj/agenda-filter string))
+
 
 ;;;###autoload
 (defun aj/save-and-refresh-agenda (&optional arg)
