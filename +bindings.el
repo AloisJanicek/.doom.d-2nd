@@ -132,6 +132,11 @@
    :n   "J"     #'outline-next-visible-heading
    :n   "K"     #'outline-previous-visible-heading
 
+   :ni "C-k" nil
+   :ni "C-j" nil
+   :ni "C-h" nil
+   :ni "C-l" nil
+
    (:prefix "g"
      :n "h" #'org-up-element
      :n "j" #'org-forward-element
@@ -140,6 +145,19 @@
      )
 
    :localleader
+   "B"  nil
+   (:prefix ("B" . "babel")
+     :desc "item" "t" #'org-babel-tangle
+     :desc "item" "e" #'org-babel-execute-maybe
+     )
+
+   "T"  nil
+   (:prefix ("T" . "toggle")
+     :desc "item" "i" #'org-toggle-item
+     )
+
+   :desc "Sort" "^" #'org-sort
+
    "p"  nil
    (:prefix ("p" . "private")
      :desc "private" "p" (lambda ()
