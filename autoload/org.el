@@ -1,4 +1,4 @@
-;;; ~/.doom.d/autoload/orgmode.el -*- lexical-binding: t; -*-
+;;; ~/.doom.d/autoload/org.el -*- lexical-binding: t; -*-
 
 ;; REFILE
 
