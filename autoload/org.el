@@ -473,9 +473,9 @@ On top of this refresh view.
 ;;;###autoload
 (defun aj/save-and-refresh-agenda (&optional arg)
   (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
-  (org-agenda-redo)
-  (if (featurep 'org-ql-view)
-      (org-ql-view-refresh)))
+  (if (string-match "Org QL" (buffer-name))
+    (org-ql-view-refresh)
+    (org-agenda-redo)))
 
 ;;;###autoload
 (defun aj/open-file-the-right-way-from-agenda (orig-fun &rest args)
