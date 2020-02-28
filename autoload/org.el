@@ -427,20 +427,6 @@ This works also with indirect buffers
 ;; ORG-AGENDA
 
 ;;;###autoload
-(defun my-org-agenda-skip-all-siblings-but-first ()
-  "Skip all but the first non-done entry."
-  (let (should-skip-entry)
-    (unless (org-current-is-todo)
-      (setq should-skip-entry t))
-    (save-excursion
-      (while (and (not should-skip-entry) (org-goto-sibling t))
-        (when (org-current-is-todo)
-          (setq should-skip-entry t))))
-    (when should-skip-entry
-      (or (outline-next-heading)
-          (goto-char (point-max))))))
-
-;;;###autoload
 (defun my-icalendar-agenda-export()
   "Export org agenda into ical file when saving GTD org file. Useful when in after-save-hook"
   (if (string= (expand-file-name +GTD) (buffer-file-name))
@@ -452,94 +438,6 @@ This works also with indirect buffers
   (interactive)
   (let ((org-agenda-files (list (buffer-file-name))))
     (org-agenda-list)))
-
-;;;###autoload
-(defun aj/open-agenda-time-dependent ()
-  "Open `org-agenda' depending on current time. If it is weekend
-open agenda for Saturday or Sunday instead."
-  (interactive)
-  (if (string-equal "Sat" (format-time-string "%a"))
-      (org-agenda nil "1")
-    (if (string-equal "Sun" (format-time-string "%a"))
-        (org-agenda nil "2")
-      ;; else assume workday and open agenda for given clock time
-      (mapcar (lambda (element)
-                (let ((hm (car element))
-                      (agenda-key (cdr element)))
-                  (if (not (time-less-p (current-time) (aj/time-from-h-m hm)))
-                      (org-agenda nil agenda-key))))
-              +aj/time-blocks))))
-
-;;;###autoload
-(defun aj/org-agenda-clever ()
-  "Launch the right agenda at the right time"
-  (interactive)
-  (progn
-    ;; (if (not (get-buffer "GTD.org"))
-    ;;     (pop-to-buffer (find-file-noselect +GTD)))
-    (if (aj/has-children-p (expand-file-name "GTD.org" org-directory) "INBOX")
-        (org-agenda nil "i")
-      (if (string-equal "Sat" (format-time-string "%a"))
-          (let ((org-agenda-tag-filter-preset '("+SATURDAY")))
-            (org-agenda nil "R"))
-        (if (string-equal "Sun" (format-time-string "%a"))
-            (let ((org-agenda-tag-filter-preset '("+SUNDAY")))
-              (org-agenda nil "R"))
-          (mapcar (lambda (element)
-                    (let* ((hm (elt element 0))
-                           (org-agenda-tag-filter-preset (list (concat "+"  (elt element 2))))
-                           (org-agenda-time-grid `((daily today remove-match)
-                                                   ,(elt element 1) "" ""))
-                           (org-agenda-hide-tags-regexp (elt element 2)))
-                      (if (not (time-less-p (current-time) (aj/time-from-h-m hm)))
-                          (org-agenda nil "R"))))
-                  +aj/time-blocks))))
-    )
-  )
-
-;;;###autoload
-(defun aj/clever-agenda-filter ()
-  (interactive)
-  (let (tag)
-    (if (string-equal "Sat" (format-time-string "%a"))
-        (let ((org-agenda-tag-filter-preset '("+SATURDAY")))
-          (org-agenda-filter-apply (list "+SATURDAY") 'tag)
-          )
-      (if (string-equal "Sun" (format-time-string "%a"))
-          (let ((org-agenda-tag-filter-preset '("+SUNDAY")))
-            (org-agenda-filter-apply (list "+SUNDAY") 'tag))
-        (mapcar (lambda (element)
-                  (let* ((hm (elt element 0))
-                         (tag (list (concat "+" (elt element 2)))))
-                    (if (not (time-less-p (current-time) (aj/time-from-h-m hm)))
-                        (setq tag-to-narrow tag))))
-                +aj/time-blocks)
-        (org-agenda-filter-apply tag-to-narrow 'tag)))))
-
-;;;###autoload
-(defun aj/show-clever-agenda-and-filter ()
-  (interactive)
-  (progn
-    (org-agenda nil "c")
-    ;; (aj/clever-agenda-filter)
-    )
-  )
-
-;;;###autoload
-(defun aj/remaining-block-time ()
-  "TODO: Returns remaining time to the end of current time block. Due to flaw in my understanding
-of time in emacs, it adds one hour... This probably comes from `date-to-time' which assumes GTM time zone
-and me being in CET"
-  (let ((day-string (format-time-string "%a")))
-    (if (not (or (string-equal "Sat" day-string) (string-equal "Sun" day-string)))
-        (catch 'back (mapcar (lambda (element)
-                               (let* ((hm (elt element 0))
-                                      (time (aj/time-from-h-m hm)))
-                                 (if (time-less-p (current-time) time)
-                                     (throw 'back
-                                            (concat "Remaining time: "
-                                                    (format-time-string "%H:%M" (time-subtract time (current-time))))))))
-                             +aj/time-blocks)))))
 
 ;;;###autoload
 (defun aj/fix-evil-org-agenda-keys ()
@@ -585,16 +483,6 @@ On top of this refresh view.
 with my heavily customized alternative `aj/open-file-switch-create-indirect-buffer-per-persp'"
   (cl-letf (((symbol-function 'pop-to-buffer-same-window) #'aj/open-file-switch-create-indirect-buffer-per-persp))
     (apply orig-fun args)))
-
-;;;###autoload
-(defun aj/time-from-h-m (hm)
-  "Takes HM which is a string representing time in format \"%H:%M\"
-and returns that weird time number which Emacs understands."
-  (let ((year (format-time-string "%Y" (current-time)))
-        (space " ")
-        (seconds ":00"))
-    (date-to-time (concat (format-time-string "%a %b %d " (current-time))
-                          hm seconds space year))))
 
 ;;;###autoload
 (defun my-set-org-agenda-type (&rest args)
