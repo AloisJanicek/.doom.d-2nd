@@ -971,3 +971,5 @@ if running under WSL")
   (setq yas-wrap-around-region t
         yas-triggers-in-field t
         ))
+
+(toggle-frame-maximized)
