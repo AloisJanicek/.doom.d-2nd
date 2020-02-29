@@ -721,6 +721,10 @@ if running under WSL")
   (add-hook 'org-agenda-finalize-hook (lambda ()
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
+  (advice-add 'org-agenda-switch-to :after
+              (lambda (&rest args)
+                (org-narrow-to-subtree)
+                (org-show-children)))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-deadline :before #'my-set-org-agenda-type)
