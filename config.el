@@ -500,7 +500,7 @@ if running under WSL")
   (set-popup-rule! "*Ibuffer\*"                     :size 0.4 :side 'left :select t))
 
 (after! info
-  (advice-add #'info :before #'aj/set-info-popup-width))
+  (set-popup-rule! "*info*"                         :size 80 :side 'left :select t :transient nil :quit nil))
 
 (after! ispell
   (setq ispell-program-name "aspell")
