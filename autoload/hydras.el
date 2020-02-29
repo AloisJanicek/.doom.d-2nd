@@ -40,7 +40,8 @@
                               ;; otherwise default to showing "NEXT" task
                               (t (let ((org-agenda-tag-filter aj/agenda-filter))
                                    (org-ql-search (org-agenda-files)
-                                     '(todo "NEXT")
+                                     '(and (todo "NEXT")
+                                           (not (ts-active)))
                                      :sort '(date priority todo)
                                      :super-groups '((:auto-category t)))))))
   "agenda"
@@ -51,7 +52,8 @@
 
   ("n" (let ((org-agenda-tag-filter aj/agenda-filter))
          (org-ql-search (org-agenda-files)
-           '(todo "NEXT")
+           '(and (todo "NEXT")
+                 (not (ts-active)))
            :sort '(date priority todo)
            :super-groups '((:auto-category t))
            :title "Next Action")) "Next")
@@ -59,6 +61,7 @@
   ("t" (let ((org-agenda-tag-filter aj/agenda-filter))
          (org-ql-search (org-agenda-files)
            '(and (todo "TODO")
+                 (not (ts-active))
                  (not (children (todo)))
                  (not (parent (todo))))
            :super-groups '((:auto-category t ))

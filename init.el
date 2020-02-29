@@ -108,13 +108,13 @@
        :lang
        ;;agda
        ;;assembly
-       (cc +lsp)
+       ; (cc +lsp)
        ;;clojure
-       common-lisp
+       ; common-lisp
        ;;coq
        ;;crystal
-       (csharp +lsp)
-       data
+       ; (csharp +lsp)
+       ; data
        ;;elixir
        ;;elm
        emacs-lisp
@@ -122,11 +122,11 @@
        ;;ess
        ;;faust
        ;;fsharp
-       (go +lsp)
-       (haskell +lsp)
+       ; (go +lsp)
+       ; (haskell +lsp)
        ;;hy
        ;;idris
-       (java +lsp)
+       ; (java +lsp)
        (javascript +lsp)
        ;;julia
        ;;kotlin
@@ -141,18 +141,18 @@
        ;;ocaml
        (org +dragndrop +pandoc +hugo +pomodoro)
        ;;perl
-       (php +lsp)
+       ; (php +lsp)
        ;;plantuml
        ;;purescript
        (python +lsp)
        ;;qt
-       racket
-       rest
+       ; racket
+       ; rest
        ;;rst
-       (ruby +lsp)
-       (rust +lsp)
+       ; (ruby +lsp)
+       ; (rust +lsp)
        ;;scala
-       scheme
+       ; scheme
        (sh +lsp)
        ;;solidity
        ;;swift
