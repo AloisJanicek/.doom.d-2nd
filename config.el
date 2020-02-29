@@ -656,19 +656,12 @@ if running under WSL")
    )
 
   (setq
-   ;; org-modules '(org-protocol)
    org-crypt-tag-matcher "+crypt-nocrypt"
    ;; settings for export to ical file
    ;; org-M-RET-may-split-line '((default . nil))
    org-complete-tags-always-offer-all-agenda-tags t
    org-tags-match-list-sublevels 'true
    org-tags-exclude-from-inheritance '("crypt" "exclude")
-   org-show-context-detail '((agenda . lineage)
-                             ;; (org-agenda-goto &optional HIGHLIGHT)
-                             (bookmark-jump . lineage)
-                             (isearch . lineage)
-                             (default . lineage)
-                             )
    org-link-frame-setup '((vm . vm-visit-folder-other-frame)
                           (vm-imap . vm-visit-imap-folder-other-frame)
                           (gnus . org-gnus-no-new-news)
