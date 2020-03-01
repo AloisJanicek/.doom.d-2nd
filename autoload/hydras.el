@@ -13,6 +13,16 @@
   ("p" (howdoyou-previous-link) "previos")
   ("r" (howdoyou-reload-link) "refresh"))
 
+;;;###autoload
+(defun aj/org-ql-simple-search-for-task (task)
+  "Serch for task `TASK' via org-ql."
+  (let ((org-agenda-tag-filter aj/agenda-filter))
+    (org-ql-search (org-agenda-files)
+      `(todo ,task)
+      :sort '(date priority todo)
+      :super-groups '((:auto-category t))
+      :title task)))
+
 ;;;###autoload (autoload 'gtd-agenda/body "autoload/hydras" nil t)
 (defhydra gtd-agenda (:color blue
                              :body-pre
@@ -83,26 +93,11 @@
            :super-groups '((:auto-category t))
            :title "Stucked Projects")) "stucked projects")
 
-  ("w" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
-           '(todo "WAIT")
-           :sort '(date priority todo)
-           :super-groups '((:auto-category t))
-           :title "WAITING")) "Wait")
+  ("w" (aj/org-ql-simple-search-for-task "WAIT") "Wait")
 
-  ("c" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
-           '(todo "CANCELLED")
-           :sort '(date priority todo)
-           :super-groups '((:auto-category t))
-           :title "Cancelled")) "Cancelled")
+  ("c" (aj/org-ql-simple-search-for-task "CANCELLED") "Cancelled")
 
-  ("d" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
-           '(todo "DONE")
-           :sort '(date priority todo)
-           :super-groups '((:auto-category t))
-           :title "Done")) "Done")
+  ("d" (aj/org-ql-simple-search-for-task "DONE") "Done")
 
   ("r" (let ((org-agenda-tag-filter aj/agenda-filter))
          (org-ql-search (org-agenda-files)
@@ -116,20 +111,9 @@
          :super-groups '((:auto-category t))
          :title "All Todos") "ALL Todos")
 
+  ("S" (aj/org-ql-simple-search-for-task "SOMEDAY") "Someday")
 
-  ("S" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
-           '(todo "SOMEDAY")
-           :sort '(date priority todo)
-           :super-groups '((:auto-category t))
-           :title "Someday")) "Someday")
-
-  ("M" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
-           '(todo "MAYBE")
-           :sort '(date priority todo)
-           :super-groups '((:auto-category t))
-           :title "Maybe")) "Maybe")
+  ("M" (aj/org-ql-simple-search-for-task "MAYBE") "Maybe")
   )
 
 ;;;###autoload (autoload 'aj/agenda-hydra/body "autoload/hydras" nil t)
