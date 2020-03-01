@@ -579,6 +579,7 @@ if running under WSL")
   (setq magit-repository-directories `((,+Repos . 1))
         magit-clone-default-directory `,+Repos
         )
+  (magit-todos-mode)
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (after! man
