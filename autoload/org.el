@@ -684,3 +684,29 @@ If either org-pomodoro or org-clock aren't active, print \"No Active Task \" "
 (defun my-yank-org-link (text)
   (string-match org-bracket-link-regexp text)
   (insert (substring text (match-beginning 1) (match-end 1))))
+
+;; ORG LINKS
+;;;###autoload
+(defun org-pdfview-calibre-open (link)
+  "Open calibre LINK in pdf-view-mode."
+  (if (string-match "\\(.*\\)::\\([0-9]+\\)$"  link)
+      (let* ((path (concat +Reference (match-string 1 link)))
+             (page (string-to-number (match-string 2 link))))
+        (org-open-file path 1)
+        (pdf-view-goto-page page))
+    (org-open-file link 1)))
+
+;;;###autoload
+(defun org-pdfview-calibre-store-link ()
+  "Store a link to a pdfview buffer representing pdf file from Calibre library."
+  (when (and (eq major-mode 'pdf-view-mode)
+             (string-match "/Libraries" buffer-file-name))
+    (let* ((calibre (string-match "/Libraries" buffer-file-name))
+           (path (substring buffer-file-name calibre (length buffer-file-name)))
+           (page (pdf-view-current-page))
+           (type "calibre")
+           (link (concat type ":" path "::" (number-to-string page))))
+      (org-store-link-props
+       :type type
+       :link link
+       :description path))))

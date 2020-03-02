@@ -584,8 +584,8 @@ if running under WSL")
 
 (after! man
   (custom-set-faces!
-     `(Man-overstrike :inherit 'bold :foreground ,(doom-lighten 'red 0.2))
-     `(Man-underline :inherit 'underline :foreground ,(doom-lighten 'green 0.2)))
+    `(Man-overstrike :inherit 'bold :foreground ,(doom-lighten 'red 0.2))
+    `(Man-underline :inherit 'underline :foreground ,(doom-lighten 'green 0.2)))
   (set-popup-rule! "*Man\*"                         :size 0.4 :side 'left :select t)
   (set-popup-rule! "*man\*"                         :size 0.6 :side 'left :select t))
 
@@ -634,10 +634,6 @@ if running under WSL")
   ;; clock persistence
   (org-clock-persistence-insinuate)
 
-  ;; open all pdf links with org-pfdview
-  ;; (add-to-list 'org-file-apps
-  ;;              '("\\.pdf\\'" . (lambda (file link)
-  ;;                                (org-pdfview-open link))))
   (quiet!
    ;; register pdfview link type (copied from org-pdfview.el so I can lazy load)
    (org-link-set-parameters "pdfview"
@@ -653,6 +649,25 @@ if running under WSL")
                             :store #'org-ebook-store-link)
    (org-add-link-type "ebook" 'org-ebook-open)
    (add-hook 'org-store-link-functions #'org-ebook-store-link)
+
+   ;; ... and custom calibre link
+   (org-link-set-parameters "calibre"
+                            :follow #'org-pdfview-calibre-open
+                            :store #'org-pdfview-calibre-store-link)
+   (org-add-link-type "calibre" 'org-pdfview-calibre-open)
+   (add-hook 'org-store-link-functions #'org-pdfview-calibre-store-link)
+
+   (add-to-list 'org-file-apps '("\\.pdf\\'" . (lambda (_file link)
+                                                 (if (string-match "Libraries" link)
+                                                     (org-pdfview-calibre-open link)
+                                                   (org-pdfview-open link)))))
+   (add-to-list 'org-file-apps '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (_file link)
+                                                                     (if (string-match "Libraries" link)
+                                                                         (org-pdfview-calibre-open link)
+                                                                       (org-pdfview-open link)))))
+   ;; adjust `org-file-apps' but preserve old functionality
+   (delete '("\\.pdf\\'" . (lambda (_file link) (org-pdfview-open link))) org-file-apps)
+   (delete '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (_file link) (org-pdfview-open link))) org-file-apps)
    )
 
   (setq
@@ -687,8 +702,8 @@ if running under WSL")
    org-imenu-depth 9
 
    org-refile-targets `((,(directory-files-recursively
-                         org-directory org-agenda-file-regexp)
-                        :maxlevel . 1))
+                           org-directory org-agenda-file-regexp)
+                         :maxlevel . 1))
    org-refile-use-outline-path 'file
    org-outline-path-complete-in-steps nil
 
@@ -728,7 +743,7 @@ if running under WSL")
   (advice-add #'org-agenda-refile :after #'aj/take-care-of-org-buffers)
   (advice-add #'org-agenda-refile :after (lambda (&rest _)
                                            (if (string-match "Org QL" (buffer-name))
-                                             (org-ql-view-refresh)
+                                               (org-ql-view-refresh)
                                              (org-agenda-redo))))
   (advice-add #'org-agenda-schedule :before #'my-set-org-agenda-type)
   (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
