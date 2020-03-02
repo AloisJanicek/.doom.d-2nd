@@ -490,7 +490,7 @@ with my heavily customized alternative `aj/open-file-switch-create-indirect-buff
              (eq major-mode 'org-agenda-mode))
     (set (make-local-variable 'org-agenda-type) 'agenda)))
 
-;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE HACKS
+;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
 
 ;;;###autoload
 (defun aj/take-care-of-org-buffers (&rest _)
