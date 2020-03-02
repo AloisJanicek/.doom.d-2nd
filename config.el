@@ -635,9 +635,9 @@ if running under WSL")
   (org-clock-persistence-insinuate)
 
   ;; open all pdf links with org-pfdview
-  (add-to-list 'org-file-apps
-               '("\\.pdf\\'" . (lambda (file link)
-                                 (org-pdfview-open link))))
+  ;; (add-to-list 'org-file-apps
+  ;;              '("\\.pdf\\'" . (lambda (file link)
+  ;;                                (org-pdfview-open link))))
   (quiet!
    ;; register pdfview link type (copied from org-pdfview.el so I can lazy load)
    (org-link-set-parameters "pdfview"
