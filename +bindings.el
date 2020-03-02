@@ -590,7 +590,7 @@
         :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
         :desc "visual-line-mode"         "v" #'visual-line-mode
         :desc "whitespace-mode"         "w" #'whitespace-mode
-        :desc "center"                  "c" #'+write-mode
+        :desc "re-builder"                  "R" #'regexp-builder
         )
 
       (:prefix ("y" . "yankpad")
