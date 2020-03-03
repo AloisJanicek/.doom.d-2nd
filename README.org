@@ -1,4 +1,5 @@
 #+TITLE: README
+#+CATEGORY: .doom.d
 
 * 2nd generation of my .doom.d
 This is my private module for [[https://github.com/hlissner/doom-emacs][doom-emacs]].
