@@ -671,8 +671,10 @@ if running under WSL")
    )
 
   (setq
-   ;; settings for export to ical file
    ;; org-M-RET-may-split-line '((default . nil))
+   ;; settings for export to ical file
+   org-icalendar-combined-agenda-file (expand-file-name "agenda.ics" org-directory)
+   org-icalendar-include-todo '(all)
    org-complete-tags-always-offer-all-agenda-tags t
    org-tags-exclude-from-inheritance '("crypt" "exclude")
    org-link-frame-setup '((vm . vm-visit-folder-other-frame)
@@ -837,14 +839,6 @@ if running under WSL")
 
 ;; (after! org-protocol
 ;;   (load! "local/org-protocol-capture-html/org-protocol-capture-html.el"))
-
-(after! ox-icalendar
-  org-icalendar-store-UID t
-  org-icalendar-combined-agenda-file (expand-file-name "agenda.ics" org-directory)
-  org-icalendar-include-todo '(all)
-  org-icalendar-use-scheduled '(event-if-todo event-if-not-todo)
-  org-icalendar-use-deadline '(event-if-todo event-if-not-todo)
-  )
 
 (after! pdf-view
   (setq pdf-view-midnight-colors `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))
