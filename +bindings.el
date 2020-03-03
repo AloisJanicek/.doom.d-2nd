@@ -99,6 +99,7 @@
  (:after info
    :map Info-mode-map
    :nemv     "o"      #'ace-link-info
+   :nemv     "q"      #'quit-window
    )
 
  (:after magit
