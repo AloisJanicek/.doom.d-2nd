@@ -1,6 +1,6 @@
 ;;; ~/.doom.d/autoload/org.el -*- lexical-binding: t; -*-
 
-;; REFILE
+;; ORG-REFILE
 
 ;;;###autoload
 (defun aj/org-refile-to-file-custom (file &optional headline)
@@ -136,8 +136,8 @@ is non-nil then don't ask user for the project.
 "
   (interactive)
   (let* ((project (if current
-                     (projectile-project-root)
-                   (ivy-read "Project: " projectile-known-projects)))
+                      (projectile-project-root)
+                    (ivy-read "Project: " projectile-known-projects)))
          (template (ivy-read "Template: " '("journal" "task")))
          (file (concat (expand-file-name project) "README.org"))
 
@@ -524,7 +524,7 @@ On top of this refresh view.
 (defun aj/save-and-refresh-agenda (&optional arg)
   (save-some-buffers t (lambda () (string= buffer-file-name (car org-agenda-contributing-files))))
   (if (string-match "Org QL" (buffer-name))
-    (org-ql-view-refresh)
+      (org-ql-view-refresh)
     (org-agenda-redo)))
 
 ;;;###autoload
@@ -768,3 +768,11 @@ If either org-pomodoro or org-clock aren't active, print \"No Active Task \" "
   (org-id-update-id-locations
    (directory-files-recursively org-directory ".org"))
   (org-brain-update-id-locations))
+
+;; MISC
+;;;###autoload
+(defun aj/get-all-org-files ()
+  "Return all org files but without archived files."
+  (seq-filter (lambda (elt)
+                (not (string-match "org_archive" elt)))
+              (directory-files-recursively org-directory "org")))
