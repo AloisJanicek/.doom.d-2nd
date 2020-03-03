@@ -229,61 +229,6 @@ virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
   )
 
 ;;;###autoload
-(defun aj/org-brain-per-project ()
-  "Opens org-brain-visualize for current projectile project."
-  (interactive)
-  (let ((org-brain-path (projectile-project-root)))
-    (org-brain-visualize (aj/return-plain-string-project-org-file))))
-
-;;;###autoload
-(defun my/org-brain-goto (&optional entry goto-file-func)
-  "Goto buffer and position of org-brain ENTRY.
-If ENTRY isn't specified, ask for the ENTRY.
-Unless GOTO-FILE-FUNC is nil, use `pop-to-buffer-same-window' for opening the entry."
-  (interactive)
-  (when (not (featurep 'org-brain))
-    (require 'org-brain))
-  (let ((buffer (current-buffer))
-        (window (selected-window)))
-    (with-current-buffer buffer
-      (save-excursion
-        (org-brain-stop-wandering)
-        (unless entry (setq entry (org-brain-choose-entry "Entry: " 'all nil t)))
-        (let ((marker (org-brain-entry-marker entry)))
-          (apply (or goto-file-func #'pop-to-buffer-same-window)
-                 (list (marker-buffer marker)))
-          (widen)
-          (org-set-visibility-according-to-property)
-          (goto-char (marker-position marker))
-
-          (if (string-match "*" (thing-at-point 'line t))
-              (progn
-                (outline-show-branches)
-                (org-narrow-to-subtree))))
-        entry))
-    (select-window window)))
-
-;;;###autoload
-(defun my/org-brain-goto-current (&optional same-window)
-  "Use `org-brain-goto' on `org-brain-entry-at-pt', in other window..
-If run with `\\[universal-argument]', or SAME-WINDOW as t, use current window."
-  (interactive "P")
-  (require 'org-brain)
-  (if same-window
-      (my/org-brain-goto (org-brain-entry-at-pt))
-    (my/org-brain-goto (org-brain-entry-at-pt) (lambda (x)
-                                                 (aj/open-file-switch-create-indirect-buffer-per-persp x t))
-                       )))
-
-;;;###autoload
-(defun aj/org-brain-visualize-entry-at-pt ()
-  "Helper function for direct visualizing of entry at point"
-  (interactive)
-  (require 'org-brain)
-  (progn
-    (org-brain-visualize (org-brain-entry-at-pt))))
-
-;;;###autoload
 (defun aj/clock-menu ()
   "Present recent clocked tasks"
   (interactive)
