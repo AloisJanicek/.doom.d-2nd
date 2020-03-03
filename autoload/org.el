@@ -53,13 +53,6 @@ If executed from agenda, use `org-agenda-refile' instead"
 ;; CAPTURE
 
 ;;;###autoload
-(defun aj/org-projectile-capture-for-current-project ()
-  "Call standard capture template for current org-projectile file"
-  (interactive)
-  (org-capture nil "h")
-  )
-
-;;;###autoload
 (defun my/org-capture-get-src-block-string (major-mode)
   "Given a major mode symbol, return the associated org-src block
     string that will enable syntax highlighting for that language
@@ -137,27 +130,29 @@ In ~%s~:
     (org-capture nil "c")))
 
 ;;;###autoload
-(defun aj/capture-into-project ()
-  "Ask for the project and for the tempate - journal or task."
+(defun aj/capture-into-project (&optional current)
+  "Capture into projectile project. If optional argument `CURRENT'
+is non-nil then don't ask user for the project.
+"
   (interactive)
-  (let* ((project (ivy-read "Project: " projectile-known-projects))
+  (let* ((project (if current
+                     (projectile-project-root)
+                   (ivy-read "Project: " projectile-known-projects)))
          (template (ivy-read "Template: " '("journal" "task")))
          (file (concat (expand-file-name project) "README.org"))
 
          (org-capture-templates `(
                                   ("P" "Project task" entry (file+headline ,file "TASKS")
-                                   "* [ ] %?" :prepend t)
+                                   ,(concat "* TO" "DO %?") :prepend t)
 
                                   ("J" "Project journal" entry (file+olp+datetree ,file "JOURNAL")
-                                   "**** %?" :tree-type week)))
-         )
+                                   "**** %? \n%U" :tree-type week))))
     (cond ((string= template "journal")
            (org-capture nil "J"))
           ((string= template "task")
            (org-capture nil "P"))
           ((t)
-           (message "Invalid template")))
-    ))
+           (message "Invalid template")))))
 
 ;; ORG-MODE
 

@@ -193,10 +193,10 @@
                                   (aj/org-refile-to-file-custom
                                    (ivy-read "Choose file: " (directory-files-recursively org-directory ".org"))))
      :desc "project"       "p" (lambda! (aj/org-refile-to-file
-                                         (ivy-read "File: " (get-all-projectile-README-org-files)
+                                         (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
                                                    :action (lambda (x) x))))
      :desc "project Journal"       "P" (lambda! (aj/org-refile-to-datetree
-                                                 (ivy-read "File: " (get-all-projectile-README-org-files)
+                                                 (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
                                                            :action (lambda (x) x))))
      )
 
@@ -359,10 +359,10 @@
                                          (ivy-read "Choose file: " (directory-files-recursively org-directory ".org"))))
 
        :desc "project"       "p" (lambda! (aj/org-refile-to-file
-                                           (ivy-read "File: " (get-all-projectile-README-org-files)
+                                           (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
                                                      :action (lambda (x) x))))
        :desc "project Journal"       "P" (lambda! (aj/org-refile-to-datetree
-                                                   (ivy-read "File: " (get-all-projectile-README-org-files)
+                                                   (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
                                                              :action (lambda (x) x))))
        )
      )
@@ -629,16 +629,19 @@
         )
 
       (:prefix ("p" . "project")
-        :desc "Agenda"                   "a" #'aj/project
+        :desc "Agenda"                   "a" #'aj/agenda-project
+        :desc "Agenda All"               "A" #'aj/agenda-project-all
         :desc "bootstrap"                "B" #'aj/project-bootstrap
         :desc "directories"              "d" #'counsel-projectile-find-dir
         :desc "files"                    "f" #'counsel-projectile-find-file
         :desc "buffer"                   "b" #'counsel-projectile-switch-to-buffer
-        :desc "Capture"                  "x" #'aj/org-projectile-capture-for-current-project
+        :desc "Kill project buffers"     "x" #'projectile-kill-buffers
+        :desc "Capture current"          "k" (λ! (aj/capture-into-project t))
+        :desc "Capture ALL "             "K" (λ! (aj/capture-into-project))
         :desc "invalidate cache"         "i" #'projectile-invalidate-cache
         :desc "P README"                 "p" #'aj/better-open-current-projectile-org-file
         :desc "Switch"                   "s" #'counsel-projectile-switch-project
-        :desc "Add"                      "A" #'aj/projectile-add-known-project-and-save
+        :desc "add to known Projects"    "P" #'aj/projectile-add-known-project-and-save
         :desc "Services"                 "t" #'prodigy
         :desc "set variable"             "v" #'projectile-edit-dir-locals
         :desc "Remove"                   "R" #'projectile-remove-known-project

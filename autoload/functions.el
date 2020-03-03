@@ -36,7 +36,7 @@
 ;;;###autoload
 (defun aj/return-short-project-name ()
   "Returns short project name - based on projectile"
-  (format "Project: %s"
+  (format "%s"
           (replace-regexp-in-string "/proj/\\(.*?\\)/.*"
                                     "\\1"
                                     (projectile-project-name))))
@@ -186,9 +186,10 @@ virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
 
 ;;;###autoload
 (defun aj/return-project-org-file ()
-  "Returns project org file"
+  "Returns list of path poiting to README.org in current projectile project."
   (interactive)
-  (list (concat (projectile-project-root) "README.org")))
+  (let ((file (concat (projectile-project-root) "README.org")))
+    (if (file-exists-p file) file nil)))
 
 ;;;###autoload
 (defun aj/return-plain-string-project-org-file ()
@@ -245,14 +246,32 @@ virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
       (pop-to-buffer (find-file-noselect (concat (projectile-project-root) "README.org"))))))
 
 ;;;###autoload
-(defun aj/project ()
-  "Shows project agenda"
+(defun aj/agenda-project ()
+  "Shows agenda for current projectile project."
   (interactive)
   (org-ql-search (aj/return-project-org-file)
     '(todo)
     :sort '(date priority todo)
     :super-groups '((:auto-category t))
-    :title (concat (aj/return-short-project-name) " tasks")))
+    :title (concat (aj/return-short-project-name) " project tasks")))
+
+(defun aj/agenda-project-all ()
+  "Shows agenda for all projectile projects."
+  (interactive)
+  (let* ((readmes (aj/get-all-projectile-README-org-files t))
+         (projects (aj/get-all-projectile-README-org-files))
+         (readmes-n (length readmes))
+         (projects-n (length projects))
+         (without-readme (- projects-n readmes-n)))
+    (org-ql-search readmes
+      '(todo)
+      :sort '(date priority todo)
+      :super-groups '((:auto-dir-name t))
+      :title (concat "Tasks from "
+                     (number-to-string readmes-n)
+                     (when without-readme
+                       (concat " out of the " (number-to-string projects-n)))
+                     " projects"))))
 
 ;;;###autoload
 (defun aj-mpdel-playlist-open (&optional playlist)
@@ -565,8 +584,12 @@ imenu-list sidbar so it doesn't get closed in any other way then from inside of 
      (file-name-as-directory project-path) relative-filepath)))
 
 ;;;###autoload
-(defun get-all-projectile-README-org-files ()
-  (mapcar 'org-projectile-get-project-todo-file projectile-known-projects))
+(defun aj/get-all-projectile-README-org-files (&optional existing)
+  "Return list of existing projectile projects' README.org files.
+When optional argument `EXISTING' is suplied, it returns only actual existing files."
+  (let ((files (mapcar 'org-projectile-get-project-todo-file projectile-known-projects)))
+    (if existing
+        (seq-filter 'file-exists-p files) files)))
 
 ;;;###autoload
 (defun buffer-mode (buffer-or-string)

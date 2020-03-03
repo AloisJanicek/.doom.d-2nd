@@ -17,7 +17,8 @@
 (defun aj/org-ql-simple-search-for-task (task)
   "Serch for task `TASK' via org-ql."
   (let ((org-agenda-tag-filter aj/agenda-filter))
-    (org-ql-search (org-agenda-files)
+    (org-ql-search (append (org-agenda-files)
+                           (aj/get-all-projectile-README-org-files t))
       `(todo ,task)
       :sort '(date priority todo)
       :super-groups '((:auto-category t))
@@ -61,7 +62,8 @@
          :sort '(date)) "inbox")
 
   ("n" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
            '(and (todo "NEXT")
                  (not (ts-active)))
            :sort '(date priority todo)
@@ -69,7 +71,8 @@
            :title "Next Action")) "Next")
 
   ("t" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
            '(and (todo "TODO")
                  (not (ts-active))
                  (not (children (todo)))
@@ -78,7 +81,8 @@
            :title "Plain Todos")) "tasks")
 
   ("p" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
            '(and (todo)
                  (children (todo)))
            :sort '(date priority todo)
@@ -86,7 +90,8 @@
            :title "Projects")) "projects")
 
   ("s" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
            '(and (todo)
                  (children (todo))
                  (not (descendants (todo "NEXT"))))
@@ -100,12 +105,14 @@
   ("d" (aj/org-ql-simple-search-for-task "DONE") "Done")
 
   ("r" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (org-agenda-files)
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
            '(ts :from -7 :to today)
            :sort '(date priority todo)
            :super-groups '((:auto-ts t)))) "recent")
 
-  ("T" (org-ql-search (org-agenda-files)
+  ("T" (org-ql-search (append (org-agenda-files)
+                              (aj/get-all-projectile-README-org-files t))
          '(todo)
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
