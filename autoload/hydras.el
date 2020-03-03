@@ -118,12 +118,24 @@
            :sort '(date priority todo)
            :super-groups '((:auto-ts t)))) "recent")
 
+  ("R" (let ((org-agenda-tag-filter aj/agenda-filter))
+         (org-ql-search (aj/get-all-archived-org-files)
+           '(ts :from -21 :to today)
+           :sort '(date priority todo)
+           :super-groups '((:auto-ts t)))) "Archived Recent")
+
   ("T" (org-ql-search (append (org-agenda-files)
                               (aj/get-all-projectile-README-org-files t))
          '(todo)
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
          :title "All Todos") "ALL Todos")
+
+  ("A" (org-ql-search (aj/get-all-archived-org-files)
+         '(todo "DONE")
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "ARCHIVED") "Archived")
 
   ("S" (aj/org-ql-simple-search-for-task "SOMEDAY") "Someday")
 
