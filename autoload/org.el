@@ -710,3 +710,11 @@ If either org-pomodoro or org-clock aren't active, print \"No Active Task \" "
        :type type
        :link link
        :description path))))
+
+;;;###autoload
+(defun aj/org-update-org-ids-recursively ()
+  "Get all files in `org-directory' recursively and update org IDs"
+  (interactive)
+  (org-id-update-id-locations
+   (directory-files-recursively org-directory ".org"))
+  (org-brain-update-id-locations))
