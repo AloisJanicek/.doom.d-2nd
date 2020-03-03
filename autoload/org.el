@@ -361,22 +361,6 @@ point to the end of the line."
   (org-back-to-heading)
   (replace-string (org-get-heading t t t t) label))
 
-;;;###autoload
-;;; TODO Review this whole thing
-(defun aj/org-attach-id-folder-format-and-create (id)
-  "Translate an ID into a folder-path, then create id-specific folder
-if doesn't exits, and return that directory.
-Original function is `org-attach-id-folder-format'."
-  (let* ((id-str
-          (format "%s" id))
-         (id-base-dir
-          (file-name-directory (gethash id-str org-id-locations)))
-         (full-path (expand-file-name id-str (expand-file-name org-attach-id-dir id-base-dir))))
-
-    (if (not (file-directory-p full-path))
-        (make-directory full-path t))
-    id-str))
-
 ;; ORG-BRAIN
 
 ;;;###autoload

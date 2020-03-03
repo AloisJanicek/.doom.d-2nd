@@ -258,9 +258,9 @@ if running under WSL")
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
         org-brain-path +TECHNICAL
-        org-brain-data-file (expand-file-name ".org-brain-data.el" org-brain-path)
-        org-brain-include-file-entries nil
-        org-brain-file-entries-use-title nil
+        org-brain-data-file (expand-file-name ".org-brain-data.el" (concat user-emacs-directory ".local/cache"))
+        org-brain-include-file-entries t
+        org-brain-file-entries-use-title t
         )
   )
 
@@ -671,11 +671,9 @@ if running under WSL")
    )
 
   (setq
-   org-crypt-tag-matcher "+crypt-nocrypt"
    ;; settings for export to ical file
    ;; org-M-RET-may-split-line '((default . nil))
    org-complete-tags-always-offer-all-agenda-tags t
-   org-tags-match-list-sublevels 'true
    org-tags-exclude-from-inheritance '("crypt" "exclude")
    org-link-frame-setup '((vm . vm-visit-folder-other-frame)
                           (vm-imap . vm-visit-imap-folder-other-frame)
@@ -704,8 +702,6 @@ if running under WSL")
    org-refile-targets `((,(directory-files-recursively
                            org-directory org-agenda-file-regexp)
                          :maxlevel . 1))
-   org-refile-use-outline-path 'file
-   org-outline-path-complete-in-steps nil
 
    org-use-property-inheritance t
 
@@ -715,13 +711,8 @@ if running under WSL")
    org-log-into-drawer "LOGBOOK"
 
    org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA"
-   org-drawers (quote ("PROPERTIES" "LOGBOOK"))
    )
   )
-
-(after! org-bullets
-  (setq org-bullets-bullet-list
-        '("◉")))
 
 (after! org-agenda
   (add-hook 'org-agenda-mode-hook #'aj/complete-all-tags-for-org)
@@ -760,14 +751,9 @@ if running under WSL")
                               (search    . "%l")
                               )
    org-agenda-tags-column 68
-   org-agenda-category-icon-alist
-   `(("GTD" ,(list (all-the-icons-faicon "cogs")) nil nil :ascent center))
    org-agenda-todo-list-sublevels t
    org-agenda-log-mode-items '(closed clock state)
-   org-agenda-span 10
-   org-agenda-start-on-weekday nil
    org-agenda-start-with-log-mode nil
-   org-agenda-start-day "1d"
    org-agenda-compact-blocks t
    org-agenda-dim-blocked-tasks t
    org-agenda-use-time-grid nil
@@ -777,8 +763,6 @@ if running under WSL")
      (todo   priority-up category-keep todo-state-up)
      (tags   priority-down category-keep)
      (search category-keep))
-   org-agenda-custom-commands
-   `()
    )
   )
 
@@ -787,6 +771,10 @@ if running under WSL")
   (advice-add #'org-archive-subtree-default :after #'org-save-all-org-buffers)
   (setq org-archive-location "./archive/%s_archive::")
   )
+
+(after! org-bullets
+  (setq org-bullets-bullet-list
+        '("◉")))
 
 (after! org-capture
   (set-popup-rule! "^\\*Calendar.*\\*$" :side 'bottom :slot 3 :select t :modeline nil :quit t)
@@ -834,18 +822,14 @@ if running under WSL")
 
   )
 
-
-(after! org-attach
-  (setq
-   org-attach-dir-relative nil
-   org-attach-directory "attach/"
-   org-attach-id-dir "attach/"
-   org-attach-id-to-path-function #'aj/org-attach-id-folder-format-and-create
-   ))
+(after! org-crypt
+  org-crypt-tag-matcher "+crypt-nocrypt"
+  )
 
 (after! org-id
-  (setq org-id-track-globally t
-        org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)))
+  (setq
+   ;; org-id-track-globally t
+   org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)))
 
 (after! org-list
   (setq
