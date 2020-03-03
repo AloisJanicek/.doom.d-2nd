@@ -785,6 +785,7 @@ if running under WSL")
 (after! org-archive
   (advice-add #'org-archive-subtree :after #'org-save-all-org-buffers)
   (advice-add #'org-archive-subtree-default :after #'org-save-all-org-buffers)
+  (setq org-archive-location "./archive/%s_archive::")
   )
 
 (after! org-capture
