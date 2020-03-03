@@ -147,8 +147,8 @@
    :localleader
    "B"  nil
    (:prefix ("B" . "babel")
-     :desc "item" "t" #'org-babel-tangle
-     :desc "item" "e" #'org-babel-execute-maybe
+     :desc "tangle" "t" #'org-babel-tangle
+     :desc "execute" "e" #'org-babel-execute-maybe
      )
 
    "T"  nil
@@ -776,6 +776,7 @@
         :desc "brain-goto"   "b" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
         :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
         :desc "IDs"        "I" #'aj/org-update-org-ids-recursively
+        :desc "PRVT"        "P" #'aj/private-refile/body
         :desc "query"        "q" #'org-ql-search
         )
 
