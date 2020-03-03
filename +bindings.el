@@ -781,6 +781,7 @@
         :desc "IDs"        "I" #'aj/org-update-org-ids-recursively
         :desc "PRVT"        "P" #'aj/private-refile/body
         :desc "query"        "q" #'org-ql-search
+        :desc "restore"        "z" #'+popup/restore
         )
 
       ;; "m" is localleader

@@ -31,18 +31,23 @@
                               ;; show inbox if it is not empty
                               ((org-ql-query
                                  :select #'org-get-heading
-                                 :from +INBOX)
-                               (org-ql-search `(,+INBOX) "*"
+                                 :from +INBOX
+                                 :where '(level 1)
+                                 )
+                               (org-ql-search `(,+INBOX)
+                                 '(level 1)
                                  :sort '(date)))
                               ;; show all stucked "PROJECT" if any
                               ((org-ql-query
                                  :select #'org-get-heading
-                                 :from (org-agenda-files)
+                                 :from (append (org-agenda-files)
+                                               (aj/get-all-projectile-README-org-files t))
                                  :where
                                  '(and (todo)
                                        (children (todo))
                                        (not (descendants (todo "NEXT")))))
-                               (org-ql-search (org-agenda-files)
+                               (org-ql-search (append (org-agenda-files)
+                                                      (aj/get-all-projectile-README-org-files t))
                                  '(and (todo)
                                        (children (todo))
                                        (not (descendants (todo "NEXT"))))
@@ -50,7 +55,8 @@
                                  :title "Stucked Projects"))
                               ;; otherwise default to showing "NEXT" task
                               (t (let ((org-agenda-tag-filter aj/agenda-filter))
-                                   (org-ql-search (org-agenda-files)
+                                   (org-ql-search (append (org-agenda-files)
+                                                          (aj/get-all-projectile-README-org-files t))
                                      '(and (todo "NEXT")
                                            (not (ts-active)))
                                      :sort '(date priority todo)
@@ -58,8 +64,9 @@
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
 
-  ("i" (org-ql-search `(,+INBOX) "*"
-         :sort '(date)) "inbox")
+  ("i" (org-ql-search `(,+INBOX)
+         '(level 1)
+         :sort '(date)))
 
   ("n" (let ((org-agenda-tag-filter aj/agenda-filter))
          (org-ql-search (append (org-agenda-files)
