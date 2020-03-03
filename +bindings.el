@@ -775,7 +775,7 @@
         :desc "visualize"    "v" #'org-brain-visualize
         :desc "brain-goto"   "b" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
         :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
-        :desc "wikipedia"    "w" #'helm-wikipedia-suggest
+        :desc "IDs"        "I" #'aj/org-update-org-ids-recursively
         :desc "query"        "q" #'org-ql-search
         )
 
