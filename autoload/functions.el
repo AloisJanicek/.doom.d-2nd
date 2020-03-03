@@ -246,13 +246,13 @@ virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
 
 ;;;###autoload
 (defun aj/project ()
-  (interactive)
   "Shows project agenda"
-  (progn
-    (projectile-project-root)
-    (projectile-project-name)
-    (org-agenda nil "C"))
-  )
+  (interactive)
+  (org-ql-search (aj/return-project-org-file)
+    '(todo)
+    :sort '(date priority todo)
+    :super-groups '((:auto-category t))
+    :title (concat (aj/return-short-project-name) " tasks")))
 
 ;;;###autoload
 (defun aj-mpdel-playlist-open (&optional playlist)
