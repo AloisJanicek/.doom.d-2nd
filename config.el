@@ -70,7 +70,7 @@ if running under WSL")
 (load! "+bindings")
 (load! "+local")
 
-(set-popup-rule! "*backtrace\*" :size 0.5 :side 'bottom :select t)
+(set-popup-rule! "*backtrace\*"                  :size 0.5  :side 'bottom :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
 
 (use-package! ace-link)
@@ -146,7 +146,7 @@ if running under WSL")
   :config
   (setq google-translate-default-source-language "cs"
         google-translate-default-target-language "en")
-  (set-popup-rule! "*Google Translate\*"            :size 0.4 :side 'top :select t))
+  (set-popup-rule! "*Google Translate\*"        :size 0.4  :side 'top :select t))
 
 (use-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now))
@@ -161,7 +161,7 @@ if running under WSL")
 (use-package! howdoyou
   :commands (howdoyou-query aj/howdoyou/body)
   :config
-  (set-popup-rule! "*How Do You*" :size 80 :side 'left :select t :ttl nil)
+  (set-popup-rule! "*How Do You*"      :vslot 1 :size 0.4  :side 'left :select t :ttl nil)
   )
 
 (use-package! indium
@@ -307,7 +307,7 @@ if running under WSL")
 (use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)
   :config
-  (set-popup-rule! "*SDCV\*" :size 0.4 :side 'top :select t))
+  (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t))
 
 (use-package! systemd
   :commands (systemd-mode))
@@ -351,13 +351,13 @@ if running under WSL")
                                     (expand-file-name "notify-wsl" "~/.local/bin")
                                   "/usr/bin/notify-send")))
 (after! ansible-doc
-  (set-popup-rule! "*ansible-doc " :size 0.32 :side 'left :select t :ttl t)
+  (set-popup-rule! "*ansible-doc "     :vslot 2 :size 0.32 :side 'left :select t :ttl t)
   (add-hook 'ansible-doc-module-mode-hook #'evil-normal-state)
   (add-hook 'ansible-doc-module-mode-hook #'visual-line-mode))
 
 (after! apropos
-  (set-popup-rule! "*apropos\*"                     :size 0.4 :side 'left :select t)
-  (set-popup-rule! "*Apropos\*"                     :size 0.4 :side 'left :select t))
+  (set-popup-rule! "*apropos\*"        :vslot 1 :size 0.4  :side 'left :select t)
+  (set-popup-rule! "*Apropos\*"        :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! auth-source
   (setq auth-sources '("~/.authinfo.gpg"))
@@ -377,7 +377,7 @@ if running under WSL")
     ["Sass" (memq major-mode '(scss-mode))]))
 
 (after! cus-edit
-  (set-popup-rule! "*Customize\*"                   :size 0.4 :side 'left :select t :transient nil))
+  (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t :transient nil))
 
 (after! company
   (setq company-idle-delay nil)
@@ -391,7 +391,7 @@ if running under WSL")
         counsel-org-headline-display-todo nil
         counsel-org-tags t
         )
-  (set-popup-rule! "^\\*ivy-occur" :size 0.70 :ttl 0 :quit nil)
+  (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
   (advice-add #'ivy-rich--ivy-switch-buffer-transformer :override #'+ivy-combined-buffer-transformer)
   (advice-add #'counsel-org-goto-bookmarks :after #'aj/take-care-of-org-buffers)
   )
@@ -449,7 +449,7 @@ if running under WSL")
   (defadvice emmet-preview-accept (after emmet-after activate) (aj/indent-if-not-webmode)))
 
 (after! eww
-  (set-popup-rule! "*eww\*"                         :size 0.4 :side 'left :select t)
+  (set-popup-rule! "*eww\*"            :vslot 1 :size 0.4  :side 'left :select t)
   (add-hook 'eww-mode-hook #'visual-line-mode))
 
 (after! faces
@@ -483,18 +483,18 @@ if running under WSL")
   (helm-mode -1))
 
 (after! help
-  (set-popup-rule! "*help\*"               :vslot 1         :size 76 :side 'left :select t))
+  (set-popup-rule! "*help\*"           :vslot 2 :size 0.32 :side 'left :select t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"              :vslot 1       :size 76 :side 'left :select t)
+  (set-popup-rule! "*helpful\*"        :vslot 2 :size 0.32 :side 'left :select t)
   (add-hook 'helpful-mode-hook #'visual-line-mode)
   )
 
 (after! ibuffer
-  (set-popup-rule! "*Ibuffer\*"                     :size 0.4 :side 'left :select t))
+  (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! info
-  (set-popup-rule! "*info*"                         :size 80 :side 'left :select t :transient nil :quit nil))
+  (set-popup-rule! "*info*"            :vslot 2 :size 0.32 :side 'left :select t :transient nil :quit nil))
 
 (after! ispell
   (setq ispell-program-name "aspell")
@@ -581,8 +581,8 @@ if running under WSL")
   (custom-set-faces!
     `(Man-overstrike :inherit 'bold :foreground ,(doom-lighten 'red 0.2))
     `(Man-underline :inherit 'underline :foreground ,(doom-lighten 'green 0.2)))
-  (set-popup-rule! "*Man\*"                         :size 0.4 :side 'left :select t)
-  (set-popup-rule! "*man\*"                         :size 0.6 :side 'left :select t))
+  (set-popup-rule! "*Man\*"            :vslot 1 :size 0.4  :side 'left :select t)
+  (set-popup-rule! "*man\*"            :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! nav-flash
   (add-to-list '+nav-flash-exclude-commands 'find-file-noselect))
@@ -601,13 +601,13 @@ if running under WSL")
   )
 
 (after! org
-  (set-popup-rule! "^\\*org-brain\\*$"    :size 50 :side 'left  :vslot 1 :select t :quit nil :ttl nil               :autosave t)
-  (set-popup-rule! "^CAPTURE.*\\.org$"    :size 0.4  :side 'bottom          :select t                                  :autosave t)
-  (set-popup-rule! "^\\*Org Src"          :size 80  :side 'right           :select t :quit t                          :autosave t)
-  (set-popup-rule! "^\\*Org Agenda.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
-  (set-popup-rule! "^\\*Org QL Search.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
-  (set-popup-rule! "^\\*Org QL View.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
-  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*org-brain\\*$" :vslot 3 :size 0.22 :side 'left :select t :quit nil :ttl nil :autosave t)
+  (set-popup-rule! "^CAPTURE.*\\.org$"          :size 0.4  :side 'bottom          :select t                                  :autosave t)
+  (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 80   :side 'right :select t :quit t                          :autosave t)
+  (set-popup-rule! "^\\*Org Agenda.*\\*$"    :vslot 1 :size 80   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*Org QL Search.*\\*$" :vslot 1 :size 80   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*Org QL View.*\\*$"   :vslot 1 :size 80   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :vslot 1 :size 80   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
 
   (add-hook 'doom-load-theme-hook #'aj/my-org-faces)
   (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
@@ -777,7 +777,6 @@ if running under WSL")
         '("◉")))
 
 (after! org-capture
-  (set-popup-rule! "^\\*Calendar.*\\*$" :side 'bottom :slot 3 :select t :modeline nil :quit t)
   (add-hook 'org-capture-mode-hook #'aj/complete-all-tags-for-org)
   ;; (advice-add #'org-capture-finalize :after #'aj/take-care-of-org-buffers)
   (setq
@@ -867,7 +866,7 @@ if running under WSL")
   )
 
 (after! profiler
-  (set-popup-rule! "^.*-Profiler-Report.*$"         :size 0.4 :side 'right :select t))
+  (set-popup-rule! "^.*-Profiler-Report.*$"  :vslot 2 :size 0.4  :side 'right :select t))
 
 (after! projectile
   (advice-add #'projectile-cleanup-known-projects :around #'doom-shut-up-a)
@@ -895,7 +894,7 @@ if running under WSL")
   (set-docsets! 'python-mode "Python 3"))
 
 (after! racket-mode
-  (set-popup-rule! "^\\*Racket REPL" :size 10 :select t :quit nil))
+  (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil))
 
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
@@ -904,10 +903,10 @@ if running under WSL")
   )
 
 (after! scheme
-  (set-popup-rule! "^\\* Guile REPL *" :size 10 :select t :quit nil))
+  (set-popup-rule! "^\\* Guile REPL *"          :size 10 :select t :quit nil))
 
 (after! synosaurus
-  (set-popup-rule! "*Synonyms List\*"               :size 0.4 :side 'top :select t))
+  (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t))
 
 (after! term
   (add-hook! 'term-mode-hook #'hide-mode-line-mode)
@@ -957,7 +956,7 @@ if running under WSL")
         which-key-allow-evil-operators 1))
 
 (after! wordnut
-  (set-popup-rule! "*WordNut\*"                     :size 0.4 :side 'top :select t))
+  (set-popup-rule! "*WordNut\*"                 :size 0.4  :side 'top :select t))
 
 (after! yasnippet
   (setq yas-wrap-around-region t
@@ -967,9 +966,9 @@ if running under WSL")
 (toggle-frame-maximized)
 
 (add-hook! '(imenu-after-jump-hook
-              better-jumper-post-jump-hook
-              counsel-grep-post-action-hook
-              dumb-jump-after-jump-hook
-              counsel-projectile-mode-hook
-              )
-  #'recenter-top-bottom)
+             better-jumper-post-jump-hook
+             counsel-grep-post-action-hook
+             dumb-jump-after-jump-hook
+             counsel-projectile-mode-hook
+             )
+           #'recenter-top-bottom)
