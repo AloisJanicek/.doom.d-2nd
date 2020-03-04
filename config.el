@@ -483,10 +483,10 @@ if running under WSL")
   (helm-mode -1))
 
 (after! help
-  (set-popup-rule! "*help\*"                        :size 76 :side 'left :select t))
+  (set-popup-rule! "*help\*"               :vslot 1         :size 76 :side 'left :select t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"                     :size 76 :side 'left :select t)
+  (set-popup-rule! "*helpful\*"              :vslot 1       :size 76 :side 'left :select t)
   (add-hook 'helpful-mode-hook #'visual-line-mode)
   )
 
@@ -601,7 +601,7 @@ if running under WSL")
   )
 
 (after! org
-  (set-popup-rule! "^\\*org-brain\\*$"    :size 50 :side 'left  :vslot -2 :select t :quit nil :ttl nil               :autosave t)
+  (set-popup-rule! "^\\*org-brain\\*$"    :size 50 :side 'left  :vslot 1 :select t :quit nil :ttl nil               :autosave t)
   (set-popup-rule! "^CAPTURE.*\\.org$"    :size 0.4  :side 'bottom          :select t                                  :autosave t)
   (set-popup-rule! "^\\*Org Src"          :size 80  :side 'right           :select t :quit t                          :autosave t)
   (set-popup-rule! "^\\*Org Agenda.*\\*$" :size 80 :side 'right :vslot 1  :select t :quit t   :ttl nil :modeline nil :autosave t)
