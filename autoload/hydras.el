@@ -64,6 +64,12 @@
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
 
+  ("l" (let ((org-agenda-start-with-log-mode t)
+             (org-agenda-span 1)
+             (org-agenda-start-day nil)
+             )
+         (org-agenda nil "a")) "log")
+
   ("i" (org-ql-search `(,+INBOX)
          '(level 1)
          :sort '(date)))
@@ -155,6 +161,7 @@
   ("c" (aj/clock-menu) "clock" )
   ("p" (org-pomodoro) "pomodoro" )
   ("s" (org-clock-out) "stop clock")
+  ("g" (counsel-org-clock-goto) "goto clock")
   ("k" (counsel-org-clock-context) "context")
   ("h" (counsel-org-clock-history) "history")
   )

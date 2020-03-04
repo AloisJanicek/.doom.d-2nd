@@ -461,12 +461,6 @@ This works also with indirect buffers
 ;; ORG-AGENDA
 
 ;;;###autoload
-(defun my-icalendar-agenda-export()
-  "Export org agenda into ical file when saving GTD org file. Useful when in after-save-hook"
-  (if (string= (expand-file-name +GTD) (buffer-file-name))
-      (org-icalendar-combine-agenda-files)))
-
-;;;###autoload
 (defun aj/org-agenda-current-file ()
   "Show org agenda list for current file only"
   (interactive)
@@ -652,6 +646,12 @@ Buffers are cheap.
   )
 
 ;; ORG-CLOCK AND ORG-POMODORO
+
+;;;###autoload
+(defun aj/org-clock-goto-respect-me (orig-fn &rest args)
+  "Please do what I want you to do. Thank you."
+  (cl-letf (((symbol-function 'pop-to-buffer-same-window) #'aj/open-file-switch-create-indirect-buffer-per-persp))
+    (apply orig-fn args)))
 
 ;;;###autoload
 (defun aj/update-org-clock-heading ()

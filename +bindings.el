@@ -611,7 +611,10 @@
         )
 
       (:prefix ("o" . "open")
-        (:prefix ("c" . "calibre")
+        :desc "clock"              "c" (lambda ()
+                                         (interactive)
+                                         (let ((hydra-hint-display-type 'message)) (aj/clocking/body)))
+        (:prefix ("C" . "calibre")
           :desc "technical"                     "c" (lambda! (aj/open-calibre-book (concat +Libraries "/Technical/")))
           :desc "personal"                      "p" (lambda! (aj/open-calibre-book (concat +Libraries "/Personal/")))
           )
@@ -648,9 +651,6 @@
 
       ;; previous               "["
       ;; next                   "]"
-      :desc "clock"              "\\" (lambda ()
-                                        (interactive)
-                                        (let ((hydra-hint-display-type 'message)) (aj/clocking/body)))
       :desc "agenda"              "a" (lambda ()
                                         (interactive)
                                         (let ((hydra-hint-display-type 'message)) (gtd-agenda/body)))

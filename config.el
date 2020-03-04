@@ -100,9 +100,12 @@ if running under WSL")
   )
 
 (use-package! counsel-org-clock
-  :commands (counsel-org-clock-context counsel-org-clock-history)
+  :commands (counsel-org-clock-context
+             counsel-org-clock-history
+             counsel-org-clock-goto
+             )
   :config
-  (setq counsel-org-clock-history-limit 15)
+  (setq counsel-org-clock-history-limit 20)
   )
 
 (use-package! counsel-tramp
@@ -620,9 +623,6 @@ if running under WSL")
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
   (remove-hook 'org-mode-hook #'auto-fill-mode)
 
-  ;; clock persistence
-  (org-clock-persistence-insinuate)
-
   (quiet!
    ;; register pdfview link type (copied from org-pdfview.el so I can lazy load)
    (org-link-set-parameters "pdfview"
@@ -800,15 +800,12 @@ if running under WSL")
   (advice-add #'org-clock-in :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add #'org-clock-out :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
+  (advice-add #'org-clock-goto :around #'aj/org-clock-goto-respect-me)
 
   (setq
-   org-clock-auto-clock-resolution (quote when-no-clock-is-running)
    org-clock-report-include-clocking-task t
    org-clock-out-remove-zero-time-clocks t
-   org-clock-persist-query-resume nil
-   org-clock-history-length 23
-   org-clock-out-when-done t
-   org-clock-into-drawer t
+   org-clock-history-length 20
    org-clock-in-resume t
    org-clock-persist t
    )
@@ -821,7 +818,6 @@ if running under WSL")
 
 (after! org-id
   (setq
-   ;; org-id-track-globally t
    org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)))
 
 (after! org-list
