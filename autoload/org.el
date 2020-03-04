@@ -593,7 +593,7 @@ so you can kill it as usual without affecting rest of the workflow.
         (if (not (get-buffer new-buffer))
             (make-indirect-buffer (get-buffer source-buffer) new-buffer t))
         (persp-add-buffer (get-buffer new-buffer))
-        (aj/find-me-org-buffer new-buffer)
+        (aj/find-me-window-for-org-buffer new-buffer)
         ;; (if (not select)
         ;;     (select-window win)
         ;;   )
@@ -605,30 +605,40 @@ so you can kill it as usual without affecting rest of the workflow.
   )
 
 ;;;###autoload
-(defun aj/find-me-org-buffer (buffer)
-  "Takes BUFFER and tries to find suitable window for it.
+(defun aj/find-me-window-for-org-buffer (buffer)
+  "Takes `BUFFER' and tries to find suitable window for it.
 First looks for org-mode buffers. If there isn't one, selects fist window
 which isn't current window. If there is only one window, it splits current window
-to the right and displays buffer there."
-  (let ((window (catch 'org-window
-                  (mapcar (lambda (x)
-                            (let* ((mode (buffer-mode (window-buffer x))))
-                              (if (eq 'org-mode mode)
-                                  (throw 'org-window x))))
-                          (window-list)))))
+and displays `BUFFER' on the left."
+  (let* ((window (catch 'org-window
+                   (mapcar (lambda (x)
+                             (let* ((mode (buffer-mode (window-buffer x))))
+                               (if (eq 'org-mode mode)
+                                 (throw 'org-window x))))
+                     (window-list))))
+          (start-win (selected-window))
+          (start-win-name (prin1-to-string start-win))
+          (just-one (= (length (window-list)) 1))
+          (from-brain (string-match "*org-brain*" start-win-name))
+          (from-agenda (string-match "*Org QL View\\|*Org Agenda*" start-win-name))
+          (too-small (< (frame-width) 120)))
     (if (windowp window)
-        (progn
-          (select-window window t)
-          (switch-to-buffer buffer))
       (progn
-        (if (and (= (length (window-list)) 1)
-                 (> (window-width) 120))
-            (progn
-              (split-window (selected-window) (/ (window-total-width) 2) 'left)
-              (select-window (some-window (lambda (x)
-                                            (not (eq x (selected-window))))))))
-        (select-window (selected-window))
-        (switch-to-buffer buffer)))))
+        (select-window window t)
+        (switch-to-buffer buffer))
+      (progn
+        (when (and (or just-one from-brain) (not too-small))
+          (if from-brain
+            (split-window (other-window 1) (floor (/ (window-width (other-window 1)) 1.6)) 'left)
+            (split-window start-win (floor (/ (window-width start-win) 2.4)) 'right)))
+        (if (or from-brain
+              (and too-small
+                (not from-agenda)
+                (not just-one)))
+          (select-window (some-window (lambda (x)
+                                        (not (eq x start-win)))))
+          (select-window start-win)))
+      (switch-to-buffer buffer))))
 
 ;;;###autoload
 (defun aj/choose-note-to-indirect-action (x)
