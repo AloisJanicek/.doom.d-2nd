@@ -72,7 +72,7 @@
 
   ("i" (org-ql-search `(,+INBOX)
          '(level 1)
-         :sort '(date)))
+         :sort '(date)) "inbox")
 
   ("n" (let ((org-agenda-tag-filter aj/agenda-filter))
          (org-ql-search (append (org-agenda-files)
