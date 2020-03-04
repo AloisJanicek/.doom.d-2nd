@@ -967,3 +967,11 @@ if running under WSL")
         ))
 
 (toggle-frame-maximized)
+
+(add-hook! '(imenu-after-jump-hook
+              better-jumper-post-jump-hook
+              counsel-grep-post-action-hook
+              dumb-jump-after-jump-hook
+              counsel-projectile-mode-hook
+              )
+  #'recenter-top-bottom)
