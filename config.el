@@ -513,11 +513,10 @@ if running under WSL")
 (after! ivy-posframe
   (setf (alist-get t ivy-posframe-display-functions-alist)
         #'ivy-posframe-display-at-frame-top-center)
-  (setq ivy-posframe-size-function (lambda () (list :height 30
-                                                    :width (round (* (frame-width) 0.62))
-                                                    :min-height 30
-                                                    :min-width 80)))
-  )
+  (setq ivy-posframe-size-function (lambda () (list :height 20
+                                                         :width (round (* (frame-width) 0.8))
+                                                         :min-height 20
+                                                         :min-width (round (* (frame-width) 0.8))))))
 
 (after! (:any js2-mode rjsx-mode web-mode)
   (set-docsets! '(js2-mode rjsx-mode)
