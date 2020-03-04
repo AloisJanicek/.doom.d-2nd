@@ -285,11 +285,6 @@ if running under WSL")
   (advice-add #'org-ql-view--format-element :override #'aj/org-ql-view--format-element)
   )
 
-(use-package! org-ql-agenda
-  :after org
-  :commands org-ql-agenda
-  )
-
 (use-package! org-sidebar
   :commands (org-sidebar org-sidebar-tree org-sidebar-ql)
   )
@@ -523,9 +518,9 @@ if running under WSL")
 (after! ivy-posframe
   (setf (alist-get t ivy-posframe-display-functions-alist)
         #'ivy-posframe-display-at-frame-top-center)
-  (setq ivy-posframe-size-function (lambda () (list :height 20
+  (setq ivy-posframe-size-function (lambda () (list :height 30
                                                     :width (round (* (frame-width) 0.62))
-                                                    :min-height 20
+                                                    :min-height 30
                                                     :min-width 80)))
   )
 
@@ -674,7 +669,10 @@ if running under WSL")
    ;; org-M-RET-may-split-line '((default . nil))
    ;; settings for export to ical file
    org-icalendar-combined-agenda-file (expand-file-name "agenda.ics" org-directory)
-   org-icalendar-include-todo '(all)
+   org-icalendar-combined-name "OrgAgenda"
+   org-icalendar-combined-description "export from Org Mode"
+   org-icalendar-with-timestamps t
+   org-icalendar-include-todo 'all
    org-complete-tags-always-offer-all-agenda-tags t
    org-tags-exclude-from-inheritance '("crypt" "exclude")
    org-link-frame-setup '((vm . vm-visit-folder-other-frame)

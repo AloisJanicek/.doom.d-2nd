@@ -779,6 +779,7 @@
         :desc "IDs"        "I" #'aj/org-update-org-ids-recursively
         :desc "PRVT"        "P" #'aj/private-refile/body
         :desc "query"        "q" #'org-ql-search
+        :desc "t"        "t" #'org-ql-sparse-tree
         :desc "restore"        "z" #'+popup/restore
         )
 
