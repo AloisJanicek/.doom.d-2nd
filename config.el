@@ -87,12 +87,7 @@ if running under WSL")
 
 (use-package! apache-mode
   :commands apache-mode
-  :mode (("apache\\.conf\\'" . apache-mode)
-         ("\\.htaccess\\'" . apache-mode)
-         ("httpd\\.conf\\'" . apache-mode)
-         ("srm\\.conf\\'"    . apache-mode)
-         ("access\\.conf\\'" . apache-mode)
-         ("sites-\\(available\\|enabled\\)/" . apache-mode)))
+  )
 
 (use-package! company-posframe
   :after company
