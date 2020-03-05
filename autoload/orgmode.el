@@ -121,6 +121,15 @@ If `HEADLINE' is `nil', capture at top level at `FILE'.
            (require 'yankpad))
          (aj/capture-code yankpad-file (prin1-to-string major-mode)
                           (ivy-read "Choose title: " nil))) "yankpad" )
+  ("Y" (progn
+         (when (not (featurep 'yankpad))
+           (require 'yankpad))
+         (aj/capture-code yankpad-file
+                          (ivy-read "Under heading"
+                                    (org-get-header-list
+                                     (get-buffer
+                                      (file-name-nondirectory yankpad-file))))
+                          (ivy-read "Choose title: " nil))) "yankpad" )
   ("q" nil "exit")
   )
 
