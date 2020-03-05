@@ -92,41 +92,36 @@ In ~%s~:
                                                 (get-buffer (file-name-nondirectory file)))))
          (org-capture-templates `(
                                   ("s" "code snippet" entry (file+headline ,file ,heading)
-                                   "* %?\n %(my/org-capture-code-snippet \"%F\")")))
-         )
+                                   "* %?\n %(my/org-capture-code-snippet \"%F\")"))))
     (org-capture nil "s")))
 
 ;;;###autoload
 (defun aj/capture-code-but-ask-first-for-name ()
   "Ask for headline, then capture."
   (interactive)
-  (let* ((file +GTD)
-         (heading "INBOX")
-         (title (ivy-read "Choose title: " " "))
+  (let* ((file +INBOX)
+         (title (ivy-read "Choose title: " nil))
          (line (concat "* " title "\n %(my/org-capture-code-snippet \"%F\")"))
          (org-capture-templates `(
-                                  ("s" "code snippet" entry (file+headline ,file ,heading)
-                                   ,line :immediate-finish t)))
-         )
+                                  ("s" "code snippet" entry (file ,file)
+                                   ,line :immediate-finish t))))
     (org-capture nil "s")))
 
 ;;;###autoload
-(defun aj/calendar-the-right-way ()
-  "Ask for file and headline, then capture."
+(defun aj/capture-calendar-the-right-way ()
+  "Ask for file, date, heading title, tag and then capture."
   (interactive)
-  (let* ((file +GTD)
-         (heading "CALENDAR")
+  (let* ((file (ivy-read "File: " org-agenda-files))
          (date (org-read-date))
          (title (ivy-completing-read "Title " nil))
          (tag (ivy-completing-read "Tag: " nil))
          (org-capture-templates `(
-                                  ("c" "calendar" entry (file+headline ,file ,heading)
+                                  ("c" "calendar" entry (file ,file)
                                    ,(concat "** "
                                             title " "
                                             tag "\n"
                                             "<" date ">" "\n %?")
-                                   :immediate-finish t )))
-         )
+                                   :immediate-finish t ))))
     (org-capture nil "c")))
 
 ;;;###autoload

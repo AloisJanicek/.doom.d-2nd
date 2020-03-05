@@ -171,13 +171,16 @@
   "Code:"
   ("a" (aj/capture-code-but-ask-first-where) "ask where:" )
   ("c" (aj/capture-code-but-ask-first-for-name) "code of name:" )
+  ("q" nil "exit")
   )
 
 ;;;###autoload (autoload 'aj/capture/body "autoload/hydras" nil t)
 (defhydra aj/capture ()
   "Capture:"
-  ;; ("i" (org-capture nil "i") "issue" :exit t)
-  ;; ("c" (aj/capture-code/body) "code:" :exit t)
+  ("d" (aj/capture-calendar-the-right-way) "calendar date" :exit t)
+  ("c" (let ((hydra-hint-display-type 'message))
+         (aj/capture-code/body)) "code:" :exit t)
   ("k" (org-capture nil "c") "inbox" :exit t)
   ("t" (org-capture nil "t") "task" :exit t)
+  ("q" nil "exit")
   )
