@@ -448,7 +448,9 @@ if running under WSL")
 
 (after! eww
   (set-popup-rule! "*eww\*"            :vslot 1 :size 0.4  :side 'left :select t)
-  (add-hook 'eww-mode-hook #'visual-line-mode))
+  (add-hook 'eww-mode-hook #'visual-line-mode)
+  (add-hook 'eww-after-render-hook #'eww-readable)
+  )
 
 (after! faces
   (set-face-attribute 'fixed-pitch-serif nil :family "Iosevka Slab")
