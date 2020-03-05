@@ -738,6 +738,10 @@ if running under WSL")
   (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
 
   (setq
+   org-agenda-files (seq-filter
+                     (lambda (file)
+                       (not (string-match "yankpad.org" file)))
+                     (directory-files org-directory t ".org"))
    org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
                               (timeline  . "  %-6t %6e ")
                               (todo      . "  %-6t %6e ")
