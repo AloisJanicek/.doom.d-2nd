@@ -12,7 +12,7 @@
                                                       (setf (buffer-string) "")
                                                       (find-buffer-visiting file)))
       (epa-encrypt-region (point-min) (point-max)	 (epa-select-keys (epg-make-context epa-protocol)
-                                                                    "Select recipients for encryption.")
+                                                                      "Select recipients for encryption.")
                           nil nil))
     (save-buffer)))
 
@@ -812,7 +812,7 @@ return an empty string."
                        (org-element-property :raw-value it)
                        (org-link-display-format it)))
            (todo-keyword (-some--> (org-element-property :todo-keyword element)
-                                   (org-ql-view--add-todo-face it)))
+                           (org-ql-view--add-todo-face it)))
            (tag-list (if org-use-tag-inheritance
                          (if-let ((marker (or (org-element-property :org-hd-marker element)
                                               (org-element-property :org-marker element))))
@@ -830,9 +830,9 @@ return an empty string."
                               (org-add-props it nil 'face 'org-tag))))
            ;;  (category (org-element-property :category element))
            (priority-string (-some->> (org-element-property :priority element)
-                                      (char-to-string)
-                                      (format "[#%s]")
-                                      (org-ql-view--add-priority-face)))
+                              (char-to-string)
+                              (format "[#%s]")
+                              (org-ql-view--add-priority-face)))
            (effort (org-element-property :EFFORT element))
            (habit-property (org-with-point-at (org-element-property :begin element)
                              (when (org-is-habit-p)
@@ -856,3 +856,15 @@ return an empty string."
              'tags tag-list
              'org-habit-p habit-property)))))
 
+;;;###autoload (autoload 'aj/howdoyou/body "autoload/hydras" nil t)
+(defhydra aj/howdoyou (:color blue
+                              :body-pre
+                              (when (get-buffer "*How Do You*")
+                                (pop-to-buffer "*How Do You*")))
+  "How do you:"
+  ("q" (call-interactively #'howdoyou-query) "query" :exit t)
+  ("s" (call-interactively #'aj/counsel-howdoyou) "search" :exit t)
+  ("f" (howdoyou-go-back-to-first-link) "first")
+  ("n" (howdoyou-next-link) "next")
+  ("p" (howdoyou-previous-link) "previos")
+  ("r" (howdoyou-reload-link) "refresh"))

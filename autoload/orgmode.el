@@ -50,7 +50,7 @@ If executed from agenda, use `org-agenda-refile' instead"
         (org-agenda-refile)
       (org-refile))))
 
-;; CAPTURE
+;; ORG-CAPTURE
 
 ;;;###autoload
 (defun my/org-capture-get-src-block-string (major-mode)
@@ -89,15 +89,15 @@ in ~%s~
   "Ask for file, headline and title of captured item."
   (interactive)
   (let* ((file (read-file-name "In file: " org-directory))
-          (headline (ivy-read "Under heading: " (org-get-header-list
-                                                  (get-buffer (file-name-nondirectory file)))))
-          (title (ivy-read "Choose title: " nil))
-          (line (concat "* " title " :src:"
-                  "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
-                  "\n%(my/org-capture-code-snippet \"%F\")"))
-          (org-capture-templates
-            `(("s" "code snippet" entry (file+headline ,file ,headline)
-                ,line :immediate-finish t))))
+         (headline (ivy-read "Under heading: " (org-get-header-list
+                                                (get-buffer (file-name-nondirectory file)))))
+         (title (ivy-read "Choose title: " nil))
+         (line (concat "* " title " :src:"
+                       "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+                       "\n%(my/org-capture-code-snippet \"%F\")"))
+         (org-capture-templates
+          `(("s" "code snippet" entry (file+headline ,file ,headline)
+             ,line :immediate-finish t))))
     (org-capture nil "s")))
 
 ;;;###autoload
@@ -109,17 +109,17 @@ under level 1 headline called after (and representing) current `major-mode'."
   (when (not (featurep 'yankpad))
     (require 'yankpad))
   (let* ((file (if yankpad yankpad-file +INBOX))
-          (headline (when yankpad
-                      (prin1-to-string major-mode)))
-          (title (ivy-read "Choose title: " nil))
-          (line (concat "* " title " :src:"
-                  "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
-                  "\n%(my/org-capture-code-snippet \"%F\")"))
-          (org-capture-templates (if yankpad
-                                   `(("s" "code snippet" entry (file+headline ,file ,headline)
+         (headline (when yankpad
+                     (prin1-to-string major-mode)))
+         (title (ivy-read "Choose title: " nil))
+         (line (concat "* " title " :src:"
+                       "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+                       "\n%(my/org-capture-code-snippet \"%F\")"))
+         (org-capture-templates (if yankpad
+                                    `(("s" "code snippet" entry (file+headline ,file ,headline)
                                        ,line :immediate-finish t))
-                                   `(("s" "code snippet" entry (file ,file)
-                                       ,line :immediate-finish t)))))
+                                  `(("s" "code snippet" entry (file ,file)
+                                     ,line :immediate-finish t)))))
     (org-capture nil "s")))
 
 ;;;###autoload
@@ -131,12 +131,12 @@ under level 1 headline called after (and representing) current `major-mode'."
          (title (ivy-read "Title: " nil))
          (tag (ivy-read "Tag: " nil))
          (org-capture-templates `(("c" "calendar" entry (file ,file)
-                                    ,(concat "** " title " "
-                                       (when (not (seq-empty-p tag))
-                                         (concat ":" tag ":"))
-                                       "\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n"
-                                       "<" date ">" "\n %?")
-                                    :immediate-finish t :prepend t))))
+                                   ,(concat "** " title " "
+                                            (when (not (seq-empty-p tag))
+                                              (concat ":" tag ":"))
+                                            "\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n"
+                                            "<" date ">" "\n %?")
+                                   :immediate-finish t :prepend t))))
     (org-capture nil "c")))
 
 ;;;###autoload
@@ -163,6 +163,27 @@ is non-nil then don't ask user for the project.
            (org-capture nil "P"))
           ((t)
            (message "Invalid template")))))
+
+;;;###autoload (autoload 'aj/capture-code/body "autoload/hydras" nil t)
+(defhydra aj/capture-code (:color blue)
+  "Code:"
+  ("a" (aj/capture-code-ask-where) "ask where:" )
+  ("c" (aj/capture-code-ask-title) "inbox, ask title:" )
+  ("y" (aj/capture-code-ask-title t) "yankpad auto" )
+  ("q" nil "exit")
+  )
+
+;;;###autoload (autoload 'aj/capture/body "autoload/hydras" nil t)
+(defhydra aj/capture ()
+  "Capture:"
+  ("d" (aj/capture-calendar-the-right-way) "calendar date" :exit t)
+  ("c" (let ((hydra-hint-display-type 'message))
+         (aj/capture-code/body)) "code:" :exit t)
+  ("k" (org-capture nil "c") "inbox" :exit t)
+  ("t" (org-capture nil "t") "task" :exit t)
+  ("q" nil "exit")
+  )
+
 
 ;; ORG-MODE
 
@@ -528,6 +549,141 @@ with my heavily customized alternative `aj/open-file-switch-create-indirect-buff
              (eq major-mode 'org-agenda-mode))
     (set (make-local-variable 'org-agenda-type) 'agenda)))
 
+;;;###autoload
+(defun aj/org-ql-simple-search-for-task (task)
+  "Serch for task `TASK' via org-ql."
+  (let ((org-agenda-tag-filter aj/agenda-filter))
+    (org-ql-search (append (org-agenda-files)
+                           (aj/get-all-projectile-README-org-files t))
+      `(todo ,task)
+      :sort '(date priority todo)
+      :super-groups '((:auto-category t))
+      :title task)))
+
+;;;###autoload (autoload 'gtd-agenda/body "autoload/hydras" nil t)
+(defhydra gtd-agenda (:color blue
+                             :body-pre
+                             (cond
+                              ;; show inbox if it is not empty
+                              ((org-ql-query
+                                 :select #'org-get-heading
+                                 :from +INBOX
+                                 :where '(level 1)
+                                 )
+                               (org-ql-search `(,+INBOX)
+                                 '(level 1)
+                                 :sort '(date)))
+                              ;; show all stucked "PROJECT" if any
+                              ((org-ql-query
+                                 :select #'org-get-heading
+                                 :from (append (org-agenda-files)
+                                               (aj/get-all-projectile-README-org-files t))
+                                 :where
+                                 '(and (todo)
+                                       (children (todo))
+                                       (not (descendants (todo "NEXT")))))
+                               (org-ql-search (append (org-agenda-files)
+                                                      (aj/get-all-projectile-README-org-files t))
+                                 '(and (todo)
+                                       (children (todo))
+                                       (not (descendants (todo "NEXT"))))
+                                 :super-groups '((:auto-category t))
+                                 :title "Stucked Projects"))
+                              ;; otherwise default to showing "NEXT" task
+                              (t (let ((org-agenda-tag-filter aj/agenda-filter))
+                                   (org-ql-search (append (org-agenda-files)
+                                                          (aj/get-all-projectile-README-org-files t))
+                                     '(and (todo "NEXT")
+                                           (not (ts-active)))
+                                     :sort '(date priority todo)
+                                     :super-groups '((:auto-category t)))))))
+  "agenda"
+  ("a" (org-agenda nil "a") "agenda")
+
+  ("l" (let ((org-agenda-start-with-log-mode t)
+             (org-agenda-span 1)
+             (org-agenda-start-day nil)
+             )
+         (org-agenda nil "a")) "log")
+
+  ("i" (org-ql-search `(,+INBOX)
+         '(level 1)
+         :sort '(date)) "inbox")
+
+  ("n" (let ((org-agenda-tag-filter aj/agenda-filter))
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
+           '(and (todo "NEXT")
+                 (not (ts-active)))
+           :sort '(date priority todo)
+           :super-groups '((:auto-category t))
+           :title "Next Action")) "Next")
+
+  ("t" (let ((org-agenda-tag-filter aj/agenda-filter))
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
+           '(and (todo "TODO")
+                 (not (ts-active))
+                 (not (children (todo)))
+                 (not (parent (todo))))
+           :super-groups '((:auto-category t ))
+           :title "Plain Todos")) "tasks")
+
+  ("p" (let ((org-agenda-tag-filter aj/agenda-filter))
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
+           '(and (todo)
+                 (children (todo)))
+           :sort '(date priority todo)
+           :super-groups '((:auto-category t))
+           :title "Projects")) "projects")
+
+  ("s" (let ((org-agenda-tag-filter aj/agenda-filter))
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
+           '(and (todo)
+                 (children (todo))
+                 (not (descendants (todo "NEXT"))))
+           :super-groups '((:auto-category t))
+           :title "Stucked Projects")) "stucked projects")
+
+  ("w" (aj/org-ql-simple-search-for-task "WAIT") "Wait")
+
+  ("c" (aj/org-ql-simple-search-for-task "CANCELLED") "Cancelled")
+
+  ("d" (aj/org-ql-simple-search-for-task "DONE") "Done")
+
+  ("r" (let ((org-agenda-tag-filter aj/agenda-filter))
+         (org-ql-search (append (org-agenda-files)
+                                (aj/get-all-projectile-README-org-files t))
+           '(ts :from -7 :to today)
+           :sort '(date priority todo)
+           :super-groups '((:auto-ts t)))) "recent")
+
+  ("R" (let ((org-agenda-tag-filter aj/agenda-filter))
+         (org-ql-search (aj/get-all-archived-org-files)
+           '(ts :from -21 :to today)
+           :sort '(date priority todo)
+           :super-groups '((:auto-ts t)))) "Archived Recent")
+
+  ("T" (org-ql-search (append (org-agenda-files)
+                              (aj/get-all-projectile-README-org-files t))
+         '(todo)
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "All Todos") "ALL Todos")
+
+  ("A" (org-ql-search (aj/get-all-archived-org-files)
+         '(todo "DONE")
+         :sort '(date priority todo)
+         :super-groups '((:auto-category t))
+         :title "ARCHIVED") "Archived")
+
+  ("S" (aj/org-ql-simple-search-for-task "SOMEDAY") "Someday")
+
+  ("M" (aj/org-ql-simple-search-for-task "MAYBE") "Maybe")
+  )
+
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
 
 ;;;###autoload
@@ -656,6 +812,17 @@ Buffers are cheap.
   )
 
 ;; ORG-CLOCK AND ORG-POMODORO
+
+;;;###autoload (autoload 'aj/clocking/body "autoload/hydras" nil t)
+(defhydra aj/clocking (:color blue)
+  "Clock:"
+  ("c" (aj/clock-menu) "clock" )
+  ("p" (org-pomodoro) "pomodoro" )
+  ("s" (org-clock-out) "stop clock")
+  ("g" (counsel-org-clock-goto) "goto clock")
+  ("k" (counsel-org-clock-context) "context")
+  ("h" (counsel-org-clock-history) "history")
+  )
 
 ;;;###autoload
 (defun aj/org-clock-goto-respect-me (orig-fn &rest args)
