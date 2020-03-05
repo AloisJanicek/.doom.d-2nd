@@ -91,36 +91,49 @@ in ~%s~
   (let* ((file (read-file-name "In file: " org-directory))
          (headline (ivy-read "Under heading: " (org-get-header-list
                                                 (get-buffer (file-name-nondirectory file)))))
-         (title (ivy-read "Choose title: " nil))
-         (line (concat "* " title " :src:"
-                       "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
-                       "\n%(my/org-capture-code-snippet \"%F\")"))
-         (org-capture-templates
-          `(("s" "code snippet" entry (file+headline ,file ,headline)
-             ,line :immediate-finish t))))
-    (org-capture nil "s")))
+         (title (ivy-read "Choose title: " nil)))
+    (aj/capture-code file headline title)))
 
 ;;;###autoload
-(defun aj/capture-code-ask-title (&optional yankpad)
-  "Ask for title then capture into `+INBOX' as top level.
-If optional argument `YANKPAD' is non-nil, then capture into `yankpad-file'
-under level 1 headline called after (and representing) current `major-mode'."
+(defun aj/capture-code (&optional file headline title)
+  "Capture code snippet.
+If `HEADLINE' is `nil', capture at top level at `FILE'.
+"
   (interactive)
-  (when (not (featurep 'yankpad))
-    (require 'yankpad))
-  (let* ((file (if yankpad yankpad-file +INBOX))
-         (headline (when yankpad
-                     (prin1-to-string major-mode)))
-         (title (ivy-read "Choose title: " nil))
-         (line (concat "* " title " :src:"
+  (let* ((line (concat "* " title " :src:"
                        "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
                        "\n%(my/org-capture-code-snippet \"%F\")"))
-         (org-capture-templates (if yankpad
+         (org-capture-templates (if headline
                                     `(("s" "code snippet" entry (file+headline ,file ,headline)
                                        ,line :immediate-finish t))
                                   `(("s" "code snippet" entry (file ,file)
                                      ,line :immediate-finish t)))))
     (org-capture nil "s")))
+
+;;;###autoload (autoload 'aj/capture-code/body "autoload/hydras" nil t)
+(defhydra aj/capture-code-hydra (:color blue)
+  "Code:"
+  ("a" (aj/capture-code-ask-where) "ask" )
+  ("c" (aj/capture-code +INBOX nil
+                        (ivy-read "Choose title: " nil)) "inbox" )
+  ("y" (progn
+         (when (not (featurep 'yankpad))
+           (require 'yankpad))
+         (aj/capture-code yankpad-file (prin1-to-string major-mode)
+                          (ivy-read "Choose title: " nil))) "yankpad" )
+  ("q" nil "exit")
+  )
+
+;;;###autoload (autoload 'aj/capture/body "autoload/hydras" nil t)
+(defhydra aj/capture ()
+  "Capture:"
+  ("d" (aj/capture-calendar-the-right-way) "calendar date" :exit t)
+  ("c" (let ((hydra-hint-display-type 'message))
+         (aj/capture-code-hydra/body)) "code:" :exit t)
+  ("k" (org-capture nil "c") "inbox" :exit t)
+  ("t" (org-capture nil "t") "task" :exit t)
+  ("q" nil "exit")
+  )
 
 ;;;###autoload
 (defun aj/capture-calendar-the-right-way ()
@@ -163,27 +176,6 @@ is non-nil then don't ask user for the project.
            (org-capture nil "P"))
           ((t)
            (message "Invalid template")))))
-
-;;;###autoload (autoload 'aj/capture-code/body "autoload/hydras" nil t)
-(defhydra aj/capture-code (:color blue)
-  "Code:"
-  ("a" (aj/capture-code-ask-where) "ask where:" )
-  ("c" (aj/capture-code-ask-title) "inbox, ask title:" )
-  ("y" (aj/capture-code-ask-title t) "yankpad auto" )
-  ("q" nil "exit")
-  )
-
-;;;###autoload (autoload 'aj/capture/body "autoload/hydras" nil t)
-(defhydra aj/capture ()
-  "Capture:"
-  ("d" (aj/capture-calendar-the-right-way) "calendar date" :exit t)
-  ("c" (let ((hydra-hint-display-type 'message))
-         (aj/capture-code/body)) "code:" :exit t)
-  ("k" (org-capture nil "c") "inbox" :exit t)
-  ("t" (org-capture nil "t") "task" :exit t)
-  ("q" nil "exit")
-  )
-
 
 ;; ORG-MODE
 
