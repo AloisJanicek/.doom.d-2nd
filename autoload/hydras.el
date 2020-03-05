@@ -169,8 +169,9 @@
 ;;;###autoload (autoload 'aj/capture-code/body "autoload/hydras" nil t)
 (defhydra aj/capture-code (:color blue)
   "Code:"
-  ("a" (aj/capture-code-but-ask-first-where) "ask where:" )
-  ("c" (aj/capture-code-but-ask-first-for-name) "code of name:" )
+  ("a" (aj/capture-code-ask-where) "ask where:" )
+  ("c" (aj/capture-code-ask-title) "inbox, ask title:" )
+  ("y" (aj/capture-code-ask-title t) "yankpad auto" )
   ("q" nil "exit")
   )
 

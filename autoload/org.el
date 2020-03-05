@@ -72,8 +72,9 @@ If executed from agenda, use `org-agenda-refile' instead"
           (line-number (line-number-at-pos (region-beginning)))
           (org-src-mode (my/org-capture-get-src-block-string major-mode)))
       (format
-       "file:%s::%s
-In ~%s~:
+       "from file:%s::%s
+in ~%s~
+\n
 #+BEGIN_SRC %s
 %s
 #+END_SRC"
@@ -84,27 +85,41 @@ In ~%s~:
        code-snippet))))
 
 ;;;###autoload
-(defun aj/capture-code-but-ask-first-where ()
-  "Ask for file and headline, then capture."
+(defun aj/capture-code-ask-where ()
+  "Ask for file, headline and title of captured item."
   (interactive)
-  (let* ((file (read-file-name "File: " org-directory))
-         (heading (ivy-read "Choose heading: " (org-get-header-list
-                                                (get-buffer (file-name-nondirectory file)))))
-         (org-capture-templates `(
-                                  ("s" "code snippet" entry (file+headline ,file ,heading)
-                                   "* %?\n %(my/org-capture-code-snippet \"%F\")"))))
+  (let* ((file (read-file-name "In file: " org-directory))
+          (headline (ivy-read "Under heading: " (org-get-header-list
+                                                  (get-buffer (file-name-nondirectory file)))))
+          (title (ivy-read "Choose title: " nil))
+          (line (concat "* " title " :src:"
+                  "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+                  "\n%(my/org-capture-code-snippet \"%F\")"))
+          (org-capture-templates
+            `(("s" "code snippet" entry (file+headline ,file ,headline)
+                ,line :immediate-finish t))))
     (org-capture nil "s")))
 
 ;;;###autoload
-(defun aj/capture-code-but-ask-first-for-name ()
-  "Ask for headline, then capture."
+(defun aj/capture-code-ask-title (&optional yankpad)
+  "Ask for title then capture into `+INBOX' as top level.
+If optional argument `YANKPAD' is non-nil, then capture into `yankpad-file'
+under level 1 headline called after (and representing) current `major-mode'."
   (interactive)
-  (let* ((file +INBOX)
-         (title (ivy-read "Choose title: " nil))
-         (line (concat "* " title "\n %(my/org-capture-code-snippet \"%F\")"))
-         (org-capture-templates `(
-                                  ("s" "code snippet" entry (file ,file)
-                                   ,line :immediate-finish t))))
+  (when (not (featurep 'yankpad))
+    (require 'yankpad))
+  (let* ((file (if yankpad yankpad-file +INBOX))
+          (headline (when yankpad
+                      (prin1-to-string major-mode)))
+          (title (ivy-read "Choose title: " nil))
+          (line (concat "* " title " :src:"
+                  "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+                  "\n%(my/org-capture-code-snippet \"%F\")"))
+          (org-capture-templates (if yankpad
+                                   `(("s" "code snippet" entry (file+headline ,file ,headline)
+                                       ,line :immediate-finish t))
+                                   `(("s" "code snippet" entry (file ,file)
+                                       ,line :immediate-finish t)))))
     (org-capture nil "s")))
 
 ;;;###autoload
@@ -113,15 +128,15 @@ In ~%s~:
   (interactive)
   (let* ((file (ivy-read "File: " org-agenda-files))
          (date (org-read-date))
-         (title (ivy-completing-read "Title " nil))
-         (tag (ivy-completing-read "Tag: " nil))
-         (org-capture-templates `(
-                                  ("c" "calendar" entry (file ,file)
-                                   ,(concat "** "
-                                            title " "
-                                            tag "\n"
-                                            "<" date ">" "\n %?")
-                                   :immediate-finish t ))))
+         (title (ivy-read "Title: " nil))
+         (tag (ivy-read "Tag: " nil))
+         (org-capture-templates `(("c" "calendar" entry (file ,file)
+                                    ,(concat "** " title " "
+                                       (when (not (seq-empty-p tag))
+                                         (concat ":" tag ":"))
+                                       "\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n"
+                                       "<" date ">" "\n %?")
+                                    :immediate-finish t :prepend t))))
     (org-capture nil "c")))
 
 ;;;###autoload
