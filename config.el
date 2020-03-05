@@ -930,7 +930,7 @@ if running under WSL")
 
 (after! web-mode
   (set-docsets! 'web-mode "HTML" "CSS" "WordPress")
-  (add-hook 'web-mode-hook #'my-web-mode-hook)
+  (add-hook 'web-mode-hook #'aj/my-web-mode-hook)
   (add-hook 'web-mode-hook #'er/add-web-mode-expansions)
   (add-hook 'web-mode-hook 'flycheck-mode)
   (setq web-mode-enable-current-element-highlight t

@@ -27,7 +27,7 @@
  "M-a"       #'mark-whole-buffer
  "M-q"       #'evil-quit-all
  "M-p"       #'ivy-yasnippet
- "M-f"       #'aj/my-swiper
+ "M-f"       #'swiper
  "M-F"       #'swiper-all
  "M-s"       #'save-buffer
  "C-s"       #'ispell-word
@@ -558,11 +558,6 @@
 (map! :leader
       :desc "ivy-resume"                      "=" #'ivy-resume
 
-      (:prefix ("TAB")
-        :desc "Save session as"                 "S" #'aj/save-session-as
-        :desc "Save session"                    "a" #'+workspace/save-session
-        )
-
       (:prefix ("q" . "quit")
         :desc "Ask to save and quit"     "a" #'evil-quit-all
         )
@@ -579,12 +574,11 @@
         )
 
       (:prefix ("t" . "toggle")
-        :desc "light/dark theme"         "t" #'aj/toggle-doom-theme
+        :desc "light/dark theme"         "t" (λ! (aj/toggle-two-doom-themes 'doom-one 'doom-solarized-light))
         :desc "Themes"                   "T" #'counsel-load-theme
         :desc "Modeline"                 "m" #'hide-mode-line-mode
         :desc "Flyspell"                 "s" #'aj/enable-flyspell-check-if-prog
-        ;; :desc "Swap dictionaries"        "S" (λ! (aj/swap-two-ispell-dicts "english" "czech"))
-        :desc "Swap dictionaries"        "S" (λ! (ispell-change-dictionary "czech"))
+        :desc "Swap dictionaries"        "S" (λ! (aj/swap-two-ispell-dicts "english" "czech"))
         :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
         :desc "visual-line-mode"         "v" #'visual-line-mode
         :desc "whitespace-mode"         "w" #'whitespace-mode
@@ -630,6 +624,7 @@
         )
 
       (:prefix ("p" . "project")
+        :desc "bookmark"                 "RET" #'counsel-projectile-bookmark
         :desc "Agenda"                   "a" #'aj/agenda-project
         :desc "Agenda All"               "A" #'aj/agenda-project-all
         :desc "bootstrap"                "B" #'aj/project-bootstrap
@@ -681,7 +676,6 @@
                                         (let ((hydra-hint-display-type 'message))
                                           (+default/search-cwd)))
         :desc "file"                     "f" #'counsel-find-file
-        :desc "jump org"                 "o" #'aj/jump-to-org-dir
         :desc "jump file"                "j" #'counsel-file-jump
         :desc "jump dir"                 "k" #'counsel-dired-jump
         :desc "recent"                   "r" #'counsel-recentf
@@ -715,7 +709,6 @@
 
       (:prefix ("j" . "jump")
         :desc "file"                     "f" #'counsel-file-jump
-        :desc "session"                  "S" #'+workspace/load-session
         :desc "workspace"                "i" #'+workspace/switch-to
         :desc "window"                   "o" #'ace-select-window
         :desc "shell-buffer"             "s" #'counsel-switch-to-shell-buffer
@@ -788,6 +781,5 @@
       :desc "Switch buffer"            "," #'persp-switch-to-buffer
       ;; find file              ","
       (:prefix ("/" . "search")
-        :desc "Swiper"                   "/" #'aj/my-swiper
         )
       )

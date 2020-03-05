@@ -34,24 +34,6 @@
         (aj/decrypt-encrypt-private t i)))))
 
 ;;;###autoload
-(defun aj/return-short-project-name ()
-  "Returns short project name - based on projectile"
-  (format "%s"
-          (replace-regexp-in-string "/proj/\\(.*?\\)/.*"
-                                    "\\1"
-                                    (projectile-project-name))))
-
-;;;###autoload
-(defun message-off-advice (oldfun &rest args)
-  "Quiet down messages in adviced OLDFUN."
-  (let ((message-off (make-symbol "message-off")))
-    (unwind-protect
-        (progn
-          (advice-add #'message :around #'ignore (list 'name message-off))
-          (apply oldfun args))
-      (advice-remove #'message message-off))))
-
-;;;###autoload
 (defun aj/indent-if-not-webmode ()
   (if (equal 'web-mode major-mode) nil
     (newline-and-indent)))
@@ -77,7 +59,7 @@
    "M-r" #'emmet-preview-accept))
 
 ;;;###autoload
-(defun my-web-mode-hook ()
+(defun aj/my-web-mode-hook ()
   "Hooks for Web mode."
   (setq web-mode-markup-indent-offset 2
         web-mode-css-indent-offset 2
@@ -85,65 +67,6 @@
         web-mode-attr-indent-offset 2
         css-indent-offset 2
         )
-  )
-
-;;;###autoload
-(defun aj/projectile-add-known-project-and-save (project-root)
-  "Add PROJECT-ROOT to the list of known projects and save it to the list of known projects."
-  (interactive (list (read-directory-name "Add to known projects: " +Repos)))
-  (unless (projectile-ignored-project-p project-root)
-    (setq projectile-known-projects
-          (delete-dups
-           (cons (file-name-as-directory (abbreviate-file-name project-root))
-                 projectile-known-projects))))
-  (projectile-save-known-projects))
-
-;;;###autoload
-(defun +ivy-projectile-find-file-combined-transformer (str)
-  "Highlight entries that have been visited. This is the opposite of
-`counsel-projectile-find-file'. And apply all-the-icons"
-  (let ((s (format "%s\t%s"
-                   (propertize "\t" 'display (all-the-icons-icon-for-file str))
-                   str)))
-    (cond ((get-file-buffer (projectile-expand-root str))
-           (propertize s 'face '(:weight ultra-bold :slant italic)))
-          (t s))))
-
-;;;###autoload
-(defun +ivy-recentf-combined-transformer (str)
-  "Dim recentf entries that are not in the current project of the buffer you
-started `counsel-recentf' from. Also uses `abbreviate-file-name'. And apply all-the-icons"
-  (let* ((s (abbreviate-file-name str))
-         (s (format "%s\t%s"
-                    (propertize "\t" 'display (all-the-icons-icon-for-file str))
-                    str))
-         )
-    (if (file-in-directory-p str (doom-project-root))
-        s
-      (propertize s 'face 'ivy-virtual))))
-
-;;;###autoload
-(defun +ivy-combined-buffer-transformer (str)
-  "Dim special buffers, buffers whose file aren't in the current buffer, and
-virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
-  (let* ((buf (get-buffer str))
-         (mode (buffer-local-value 'major-mode buf))
-         (s (format "%s\t%s"
-                    (propertize "\t" 'display (or
-                                               (all-the-icons-ivy--icon-for-mode mode)
-                                               (all-the-icons-ivy--icon-for-mode (get mode 'derived-mode-parent))))
-                    (all-the-icons-ivy--buffer-propertize buf str)))
-         )
-    ;; (require 'ivy-rich)
-    ;; (cond (buf (ivy-rich-switch-buffer-transformer s))
-    ;;       ((and (eq ivy-virtual-abbreviate 'full)
-    ;;             ivy-rich-switch-buffer-align-virtual-buffer)
-    ;;        (ivy-rich-switch-buffer-virtual-buffer s))
-    ;;       ((eq ivy-virtual-abbreviate 'full)
-    ;;        (propertize (abbreviate-file-name str) 's 'ivy-virtual))
-    ;;       (t (propertize s 'face 'ivy-virtual)))
-    (propertize s 'face 'ivy-virtual)
-    )
   )
 
 ;;;###autoload
@@ -161,14 +84,13 @@ virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
 (defun aj/swap-two-ispell-dicts (dict1 dict2)
   "If dict1 is active switch to dict2 or do it backwards"
   (interactive)
-  (if (string= dict1 ispell-local-dictionary)
-      (progn
-        (ispell-change-dictionary dict2)
-        (flyspell-mode 1))
+  (let ((target-dict
+         (if (string= dict1 ispell-local-dictionary)
+             dict2 dict1)))
     (progn
-      (ispell-change-dictionary dict1)
-      (flyspell-mode 1))
-    ))
+      (ispell-change-dictionary target-dict)
+      (flyspell-mode 1)
+      (flyspell-buffer))))
 
 ;;;###autoload
 (defun my-imenu-list-hl-line ()
@@ -185,125 +107,14 @@ virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
    "~/.emacs.d/init.example.el"))
 
 ;;;###autoload
-(defun aj/return-project-org-file ()
-  "Returns list of path poiting to README.org in current projectile project."
+(defun aj/toggle-two-doom-themes (theme1 theme2)
+  "Toggle between two doom themes."
   (interactive)
-  (let ((file (concat (projectile-project-root) "README.org")))
-    (if (file-exists-p file) file nil)))
-
-;;;###autoload
-(defun aj/return-plain-string-project-org-file ()
-  "Returns project org file"
-  (interactive)
-  (concat (projectile-project-root) "README.org"))
-
-;;;###autoload
-(defun aj/find-and-open-org-projectile-file ()
-  "Find and open org-projectile file"
-  (interactive)
-  (find-file (concat (projectile-project-root) "README.org"))
-  (goto-char (org-find-exact-headline-in-buffer "TASKS"))
-  )
-
-;;;###autoload
-(defun aj/goto-current-org-projectile-file ()
-  "Go to the current org-projectile-file"
-  (interactive)
-  (save-excursion
-    (find-file (concat (projectile-project-root) "README.org"))
-    (aj/org-menu-and-goto)
-    ))
-
-;;;###autoload
-(defun aj/org-menu-and-goto ()
-  (interactive)
-  (progn
-    (widen)
-    (search-forward "*")
-    (org-set-visibility-according-to-property)
-    (outline-show-branches)
-    (counsel-outline)
-    (outline-show-branches)
-    (outline-show-entry)
-    (org-narrow-to-subtree)
-    )
-  )
-
-;;;###autoload
-(defun aj/clock-menu ()
-  "Present recent clocked tasks"
-  (interactive)
-  (setq current-prefix-arg '(4))
-  (call-interactively 'org-clock-in-last))
-
-;;;###autoload
-(defun aj/better-open-current-projectile-org-file ()
-  "Opens current project org file as popup buffer to quickly peak into"
-  (interactive)
-  (let ((my-buffer (concat (projectile-project-name) "/README.org")))
-    (if (get-file-buffer my-buffer)
-        (pop-to-buffer my-buffer)
-      (pop-to-buffer (find-file-noselect (concat (projectile-project-root) "README.org"))))))
-
-;;;###autoload
-(defun aj/agenda-project ()
-  "Shows agenda for current projectile project."
-  (interactive)
-  (org-ql-search (aj/return-project-org-file)
-    '(todo)
-    :sort '(date priority todo)
-    :super-groups '((:auto-category t))
-    :title (concat (aj/return-short-project-name) " project tasks")))
-
-(defun aj/agenda-project-all ()
-  "Shows agenda for all projectile projects."
-  (interactive)
-  (let* ((readmes (aj/get-all-projectile-README-org-files t))
-         (projects (aj/get-all-projectile-README-org-files))
-         (readmes-n (length readmes))
-         (projects-n (length projects))
-         (without-readme (- projects-n readmes-n)))
-    (org-ql-search readmes
-      '(todo)
-      :sort '(date priority todo)
-      :super-groups '((:auto-dir-name t))
-      :title (concat "Tasks from "
-                     (number-to-string readmes-n)
-                     (when without-readme
-                       (concat " out of the " (number-to-string projects-n)))
-                     " projects"))))
-
-;;;###autoload
-(defun aj-mpdel-playlist-open (&optional playlist)
-  "Open a buffer to popup with PLAYLIST, current playlist if nil."
-  (interactive)
-  (let* ((playlist (or playlist (libmpdel-current-playlist)))
-         (buffer (mpdel-playlist--buffer playlist)))
-    (with-current-buffer buffer
-      (mpdel-playlist-mode)
-      (setq mpdel-playlist-playlist playlist)
-      (mpdel-playlist-refresh buffer))
-    (pop-to-buffer buffer)
-    (mpdel-playlist--register-to-hooks buffer)))
-
-;;;###autoload
-(defun aj/toggle-doom-theme ()
-  "Toggle between light and dark theme"
-  (interactive)
-  (if (equal 'doom-one doom-theme)
-      (progn
-        (setq doom-theme 'doom-solarized-light)
-        (doom/reload-theme))
+  (let ((target-theme (if (equal theme1 doom-theme)
+                          theme2 theme1)))
     (progn
-      (setq doom-theme 'doom-one)
+      (setq doom-theme target-theme)
       (doom/reload-theme))))
-
-;;;###autoload
-(defun aj/my-swiper ()
-  "Launch swiper with different ivi-height (12)"
-  (interactive)
-  (let ((ivy-height 15))
-    (counsel-grep-or-swiper)))
 
 ;;;###autoload
 (defun aj/mark-region-and-preview-emmet ()
@@ -371,13 +182,6 @@ virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
   )
 
 ;;;###autoload
-(defun aj/save-session-as ()
-  "Save current session and ask for the name, because you calling it with C-U prefix"
-  (interactive)
-  (setq current-prefix-arg '(4)) ; C-u
-  (call-interactively '+workspace/save-session))
-
-;;;###autoload
 (defun beautify-html-file-and-revert ()
   "Beautify file with html-beautify and only if major mode is web-mode"
   (interactive)
@@ -414,28 +218,6 @@ virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
       (message "%s => kill-ring" val))))
 
 ;;;###autoload
-(defun aj/insert-file-octals-identify-into-src-block-header ()
-  "For file under the point it inserts its file permission in octal format at the end of the current line"
-  (interactive)
-  (let* (($inputStr (if (use-region-p)
-                        (buffer-substring-no-properties (region-beginning) (region-end))))
-         ($path
-          (replace-regexp-in-string
-           "^sudo::" "" $inputStr)))
-    (progn
-      (end-of-line)
-      (if (file-exists-p $path)
-          (insert (concat " :tangle-mode (identity #o" (replace-regexp-in-string "\n" ""(shell-command-to-string (concat "stat -c %a " $path))) ")" ))
-        (print "file doesn't exists")))))
-
-;;;###autoload
-(defun aj/go-to-per-project-bookmark()
-  "First it updates bookmark file location to project-specific and then calls counsel on it"
-  (interactive)
-  (let ((bookmark-default-file (concat (projectile-project-name) "/bookmarks")))
-    (counsel-bookmark)))
-
-;;;###autoload
 (defun gk-browse-url (&rest args)
   "Prompt for whether or not to browse with EWW, if no browse
 with external browser."
@@ -444,53 +226,6 @@ with external browser."
        'eww-browse-url
      #'browse-url-xdg-open)
    args))
-
-;;;###autoload
-(defun aj/jump-to-org-dir ()
-  "Jumps to org directory"
-  (interactive)
-  (let ((default-directory org-directory))
-    (counsel-find-file)))
-
-;;;###autoload
-(defun counsel-projectile-bookmark ()
-  "Forward to `bookmark-jump' or `bookmark-set' if bookmark doesn't exist."
-  (interactive)
-  (require 'bookmark)
-  (let ((projectile-bookmarks (projectile-bookmarks)))
-    (ivy-read "Create or jump to bookmark: "
-              projectile-bookmarks
-              :action (lambda (x)
-                        (cond ((and counsel-bookmark-avoid-dired
-                                    (member x projectile-bookmarks)
-                                    (file-directory-p (bookmark-location x)))
-                               (with-ivy-window
-                                 (let ((default-directory (bookmark-location x)))
-                                   (counsel-find-file))))
-                              ((member x projectile-bookmarks)
-                               (with-ivy-window
-                                 (bookmark-jump x)))
-                              (t
-                               (bookmark-set x))))
-              :caller 'counsel-projectile-bookmark)))
-
-;;;###autoload
-(defun projectile-bookmarks ()
-  (let ((bmarks (bookmark-all-names)))
-    (cl-remove-if-not #'workspace-bookmark-p bmarks)))
-
-;;;###autoload
-(defun workspace-bookmark-p (bmark)
-  (let ((bmark-path (expand-file-name (bookmark-location bmark))))
-    (string-prefix-p (bmacs-project-root) bmark-path)))
-
-;;;###autoload
-(defun bmacs-project-root ()
-  "Get the path to the root of your project.
-If STRICT-P, return nil if no project was found, otherwise return
-`default-directory'."
-  (let (projectile-require-project-root)
-    (projectile-project-root)))
 
 ;;;###autoload
 (defun browse-webster-at-point ()
@@ -514,49 +249,6 @@ If STRICT-P, return nil if no project was found, otherwise return
    nil 0 500))
 
 ;;;###autoload
-(defun aj/new-project-init-and-register (fp gitlab project)
-  (call-process-shell-command (concat "cd " fp " && " "git init"))
-  (if (string-equal "yes" gitlab)
-      (progn
-        (call-process-shell-command (concat "lab project create " project))
-        (call-process-shell-command (concat "cd " fp " && " "git remote rename origin old-origin"))
-        (call-process-shell-command (concat "cd " fp " && " "git remote add origin git@gitlab.com:AloisJanicek/" project ".git"))
-        (call-process-shell-command (concat "cd " fp " && " "git push -u origin --all"))
-        (call-process-shell-command (concat "cd " fp " && " "git push -u origin --tags"))))
-  (aj/projectile-add-known-project-and-save fp)
-  (projectile-switch-project-by-name fp))
-
-;;;###autoload
-(defun aj/project-bootstrap ()
-  (interactive)
-  (let* ((project (read-string "New project name: "))
-         (directory (read-directory-name "Directory: " +Repos))
-         (template (ivy-read "Template: " '("web-starter-kit" "other")))
-         (gitlab (ivy-read "Gitlab?:" '("yes" "no")))
-         (full-path (concat directory project))
-         )
-    ;; create directory
-    (make-directory full-path)
-
-    (if (string-equal template "web-starter-kit")
-        (progn
-          (call-process-shell-command (concat "git clone git@gitlab.com:AloisJanicek/web-starter-kit.git " full-path))
-          (delete-directory (concat full-path "/.git/") t)
-          (aj/new-project-init-and-register full-path gitlab project)
-          )
-      (aj/new-project-init-and-register full-path gitlab project))))
-
-;;;###autoload
-(defun aj/open-imenu-sidebar ()
-  "Remove `+imenu|clean-on-popup-close' form `+popup-buffer-mode-hook' and open
-imenu-list sidbar so it doesn't get closed in any other way then from inside of it"
-  (interactive)
-  (progn
-    (require 'imenu-list)
-    (remove-hook '+popup-buffer-mode-hook '+imenu|cleanup-on-popup-close)
-    (imenu-list-smart-toggle)))
-
-;;;###autoload
 (defun counsel-x-path-walker ()
   "Goto JSON or XML node"
   (interactive)
@@ -573,23 +265,6 @@ imenu-list sidbar so it doesn't get closed in any other way then from inside of 
     (ivy-read "Goto: " cands
               :action 'x-path-walker-jump-path
               :caller 'counsel-x-path-walker)))
-
-;;;###autoload
-(defun org-projectile-get-project-todo-file (project-path)
-  (let ((relative-filepath
-         (if (stringp +org-projectile-per-project-filepath)
-             +org-projectile-per-project-filepath
-           (funcall org-projectile-per-project-filepath project-path))))
-    (concat
-     (file-name-as-directory project-path) relative-filepath)))
-
-;;;###autoload
-(defun aj/get-all-projectile-README-org-files (&optional existing)
-  "Return list of existing projectile projects' README.org files.
-When optional argument `EXISTING' is suplied, it returns only actual existing files."
-  (let ((files (mapcar 'org-projectile-get-project-todo-file projectile-known-projects)))
-    (if existing
-        (seq-filter 'file-exists-p files) files)))
 
 ;;;###autoload
 (defun buffer-mode (buffer-or-string)
@@ -627,38 +302,6 @@ and returns string representing path to the chosen book file."
     (concat base path "/" name format)))
 
 ;;;###autoload
-(defun brds/pdf-set-last-viewed-bookmark ()
-  (interactive)
-  (when (eq major-mode 'pdf-view-mode)
-    (bookmark-set (brds/pdf-generate-bookmark-name))))
-
-;;;###autoload
-(defun brds/pdf-jump-last-viewed-bookmark ()
-  (when
-      (brds/pdf-has-last-viewed-bookmark)
-    (bookmark-jump (brds/pdf-generate-bookmark-name))))
-
-;;;###autoload
-(defun brds/pdf-has-last-viewed-bookmark ()
-  (member (brds/pdf-generate-bookmark-name) (bookmark-all-names)))
-
-;;;###autoload
-(defun brds/pdf-generate-bookmark-name ()
-  (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
-
-;;;###autoload
-(defun brds/pdf-set-all-last-viewed-bookmarks ()
-  (dolist (buf (buffer-list))
-    (with-current-buffer buf
-      (brds/pdf-set-last-viewed-bookmark))))
-
-;;;###autoload
-(defun ivy-pages-transformer-clear-string (header)
-  "Return HEADER without start point. And without properties, images and other noise...
-Epub files offten has very poor quality."
-  (substring-no-properties (replace-regexp-in-string ":[0-9]+$" "" header)))
-
-;;;###autoload
 (defun +javascript*sort-imenu-index-by-position (orig-fn)
   (let ((tide-imenu-flatten t))
     (cl-sort (funcall orig-fn) #'< :key #'cdr)))
@@ -679,17 +322,14 @@ Epub files offten has very poor quality."
   "Remove global-mode-string (misc-info) from doom-modeline"
   (doom-modeline-def-modeline 'main
     '(bar window-number matches buffer-info remote-host buffer-position selection-info)
-    ;; '(objed-state misc-info persp-name irc mu4e github debug input-method buffer-encoding lsp major-mode process vcs checker))
     '(objed-state persp-name irc mu4e github debug input-method buffer-encoding lsp major-mode process vcs checker))
 
   (doom-modeline-def-modeline 'special
     '(bar window-number matches buffer-info-simple buffer-position selection-info)
-    ;; '(objed-state misc-info persp-name debug input-method irc-buffers buffer-encoding lsp major-mode process checker))
     '(objed-state persp-name debug input-method  buffer-encoding lsp major-mode process checker))
 
   (doom-modeline-def-modeline 'project
     '(bar window-number buffer-default-directory)
-    ;; '(misc-info mu4e github debug fancy-battery " " major-mode process))
     '(mu4e github debug " " major-mode process))
   )
 
@@ -761,38 +401,6 @@ Functions is intended as a replacement for `ob-javascript--node-path'.
         (format "%s:%s:node_modules" node-path (file-truename node-modules))
       node-path)))
 
-;; https://github.com/thanhvg/emacs-howdoyou/issues/2
-;;;###autoload
-(defun helm-howdoyou--transform-candidate (candidate)
-  (if-let* ((title-with-dashes
-             (s-with (s-match "questions/[0-9]+/\\([-a-z]+\\)" candidate) cadr)))
-      (s-replace "-" " " title-with-dashes)
-    ""))
-
-;;;###autoload
-(defun helm-howdoyou--transform-candidates (candidates)
-  (-zip-pair
-   (mapcar #'helm-howdoyou--transform-candidate candidates)
-   candidates))
-
-;;;###autoload
-(defun helm-howdoyou--print-link (link)
-  (promise-chain (howdoyou--promise-dom link)
-    (then #'howdoyou--promise-so-answer)
-    (then #'howdoyou--print-answer)
-    (promise-catch (lambda (reason)
-                     (message "catch error in n-link: %s" reason)))))
-
-;;;###autoload
-(defun aj/counsel-howdoyou ()
-  "howdoyou"
-  (interactive)
-  (ivy-read "Choose links: "
-            (helm-howdoyou--transform-candidates howdoyou--links)
-            :action (lambda (x)
-                      (helm-howdoyou--print-link (cdr x)))
-            :caller 'aj/counsel-howdoto))
-
 ;;;###autoload
 (defun aj/org-ql-view--format-element (element)
   ;; This essentially needs to do what `org-agenda-format-item' does,
@@ -855,6 +463,239 @@ return an empty string."
              'todo-state todo-keyword
              'tags tag-list
              'org-habit-p habit-property)))))
+
+;; PROJECTILE & PROJECTS
+
+;;;###autoload
+(defun aj/return-project-org-file ()
+  "Returns list of path poiting to README.org in current projectile project."
+  (interactive)
+  (let ((file (concat (projectile-project-root) "README.org")))
+    (if (file-exists-p file) file nil)))
+
+;;;###autoload
+(defun aj/agenda-project ()
+  "Shows agenda for current projectile project."
+  (interactive)
+  (org-ql-search (aj/return-project-org-file)
+    '(todo)
+    :sort '(date priority todo)
+    :super-groups '((:auto-category t))
+    :title (concat (projectile-project-name) " project tasks")))
+
+(defun aj/agenda-project-all ()
+  "Shows agenda for all projectile projects."
+  (interactive)
+  (let* ((readmes (aj/get-all-projectile-README-org-files t))
+         (projects (aj/get-all-projectile-README-org-files))
+         (readmes-n (length readmes))
+         (projects-n (length projects))
+         (without-readme (- projects-n readmes-n)))
+    (org-ql-search readmes
+      '(todo)
+      :sort '(date priority todo)
+      :super-groups '((:auto-dir-name t))
+      :title (concat "Tasks from "
+                     (number-to-string readmes-n)
+                     (when without-readme
+                       (concat " out of the " (number-to-string projects-n)))
+                     " projects"))))
+
+;;;###autoload
+(defun aj/projectile-add-known-project-and-save (project-root)
+  "Add PROJECT-ROOT to the list of known projects and save it to the list of known projects."
+  (interactive (list (read-directory-name "Add to known projects: " +Repos)))
+  (unless (projectile-ignored-project-p project-root)
+    (setq projectile-known-projects
+          (delete-dups
+           (cons (file-name-as-directory (abbreviate-file-name project-root))
+                 projectile-known-projects))))
+  (projectile-save-known-projects))
+
+;;;###autoload
+(defun counsel-projectile-bookmark ()
+  "Forward to `bookmark-jump' or `bookmark-set' if bookmark doesn't exist."
+  (interactive)
+  (require 'bookmark)
+  (let ((projectile-bookmarks (projectile-bookmarks)))
+    (ivy-read "Create or jump to bookmark: "
+              projectile-bookmarks
+              :action (lambda (x)
+                        (cond ((and counsel-bookmark-avoid-dired
+                                    (member x projectile-bookmarks)
+                                    (file-directory-p (bookmark-location x)))
+                               (with-ivy-window
+                                 (let ((default-directory (bookmark-location x)))
+                                   (counsel-find-file))))
+                              ((member x projectile-bookmarks)
+                               (with-ivy-window
+                                 (bookmark-jump x)))
+                              (t
+                               (bookmark-set x))))
+              :caller 'counsel-projectile-bookmark)))
+
+;;;###autoload
+(defun projectile-bookmarks ()
+  (let ((bmarks (bookmark-all-names)))
+    (cl-remove-if-not #'workspace-bookmark-p bmarks)))
+
+;;;###autoload
+(defun workspace-bookmark-p (bmark)
+  (let ((bmark-path (expand-file-name (bookmark-location bmark))))
+    (string-prefix-p (bmacs-project-root) bmark-path)))
+
+;;;###autoload
+(defun bmacs-project-root ()
+  "Get the path to the root of your project.
+If STRICT-P, return nil if no project was found, otherwise return
+`default-directory'."
+  (let (projectile-require-project-root)
+    (projectile-project-root)))
+
+;;;###autoload
+(defun aj/new-project-init-and-register (fp gitlab project)
+  (call-process-shell-command (concat "cd " fp " && " "git init"))
+  (if (string-equal "yes" gitlab)
+      (progn
+        (call-process-shell-command (concat "lab project create " project))
+        (call-process-shell-command (concat "cd " fp " && " "git remote rename origin old-origin"))
+        (call-process-shell-command (concat "cd " fp " && " "git remote add origin git@gitlab.com:AloisJanicek/" project ".git"))
+        (call-process-shell-command (concat "cd " fp " && " "git push -u origin --all"))
+        (call-process-shell-command (concat "cd " fp " && " "git push -u origin --tags"))))
+  (aj/projectile-add-known-project-and-save fp)
+  (projectile-switch-project-by-name fp))
+
+;;;###autoload
+(defun aj/project-bootstrap ()
+  (interactive)
+  (let* ((project (read-string "New project name: "))
+         (directory (read-directory-name "Directory: " +Repos))
+         (template (ivy-read "Template: " '("web-starter-kit" "other")))
+         (gitlab (ivy-read "Gitlab?:" '("yes" "no")))
+         (full-path (concat directory project))
+         )
+    ;; create directory
+    (make-directory full-path)
+
+    (if (string-equal template "web-starter-kit")
+        (progn
+          (call-process-shell-command (concat "git clone git@gitlab.com:AloisJanicek/web-starter-kit.git " full-path))
+          (delete-directory (concat full-path "/.git/") t)
+          (aj/new-project-init-and-register full-path gitlab project)
+          )
+      (aj/new-project-init-and-register full-path gitlab project))))
+
+;;;###autoload
+(defun org-projectile-get-project-todo-file (project-path)
+  (let ((relative-filepath
+         (if (stringp +org-projectile-per-project-filepath)
+             +org-projectile-per-project-filepath
+           (funcall org-projectile-per-project-filepath project-path))))
+    (concat
+     (file-name-as-directory project-path) relative-filepath)))
+
+;;;###autoload
+(defun aj/get-all-projectile-README-org-files (&optional existing)
+  "Return list of existing projectile projects' README.org files.
+When optional argument `EXISTING' is suplied, it returns only actual existing files."
+  (let ((files (mapcar 'org-projectile-get-project-todo-file projectile-known-projects)))
+    (if existing
+        (seq-filter 'file-exists-p files) files)))
+
+;; PDF BOOKMARS
+
+;;;###autoload
+(defun brds/pdf-set-last-viewed-bookmark ()
+  (interactive)
+  (when (eq major-mode 'pdf-view-mode)
+    (bookmark-set (brds/pdf-generate-bookmark-name))))
+
+;;;###autoload
+(defun brds/pdf-jump-last-viewed-bookmark ()
+  (when
+      (brds/pdf-has-last-viewed-bookmark)
+    (bookmark-jump (brds/pdf-generate-bookmark-name))))
+
+;;;###autoload
+(defun brds/pdf-has-last-viewed-bookmark ()
+  (member (brds/pdf-generate-bookmark-name) (bookmark-all-names)))
+
+;;;###autoload
+(defun brds/pdf-generate-bookmark-name ()
+  (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
+
+;;;###autoload
+(defun brds/pdf-set-all-last-viewed-bookmarks ()
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (brds/pdf-set-last-viewed-bookmark))))
+
+;; IVY TWEAKS
+
+;;;###autoload
+(defun +ivy-projectile-find-file-combined-transformer (str)
+  "Highlight entries that have been visited. This is the opposite of
+`counsel-projectile-find-file'. And apply all-the-icons"
+  (let ((s (format "%s\t%s"
+                   (propertize "\t" 'display (all-the-icons-icon-for-file str))
+                   str)))
+    (cond ((get-file-buffer (projectile-expand-root str))
+           (propertize s 'face '(:weight ultra-bold :slant italic)))
+          (t s))))
+
+;;;###autoload
+(defun +ivy-combined-buffer-transformer (str)
+  "Dim special buffers, buffers whose file aren't in the current buffer, and
+virtual buffers. Uses `ivy-rich' under the hood. And apply all-the-icons"
+  (let* ((buf (get-buffer str))
+         (mode (buffer-local-value 'major-mode buf))
+         (s (format "%s\t%s"
+                    (propertize "\t" 'display (or
+                                               (all-the-icons-ivy--icon-for-mode mode)
+                                               (all-the-icons-ivy--icon-for-mode (get mode 'derived-mode-parent))))
+                    (all-the-icons-ivy--buffer-propertize buf str))))
+    (propertize s 'face 'ivy-virtual)))
+
+;;;###autoload
+(defun ivy-pages-transformer-clear-string (header)
+  "Return HEADER without start point. And without properties, images and other noise...
+Epub files offten has very poor quality."
+  (substring-no-properties (replace-regexp-in-string ":[0-9]+$" "" header)))
+
+
+;; HOWDOYOUDO
+
+;; https://github.com/thanhvg/emacs-howdoyou/issues/2
+;;;###autoload
+(defun helm-howdoyou--transform-candidate (candidate)
+  (if-let* ((title-with-dashes
+             (s-with (s-match "questions/[0-9]+/\\([-a-z]+\\)" candidate) cadr)))
+      (s-replace "-" " " title-with-dashes)
+    ""))
+
+;;;###autoload
+(defun helm-howdoyou--transform-candidates (candidates)
+  (-zip-pair
+   (mapcar #'helm-howdoyou--transform-candidate candidates)
+   candidates))
+
+;;;###autoload
+(defun helm-howdoyou--print-link (link)
+  (promise-chain (howdoyou--promise-dom link)
+    (then #'howdoyou--promise-so-answer)
+    (then #'howdoyou--print-answer)
+    (promise-catch (lambda (reason)
+                     (message "catch error in n-link: %s" reason)))))
+
+;;;###autoload
+(defun aj/counsel-howdoyou ()
+  "howdoyou"
+  (interactive)
+  (ivy-read "Choose links: "
+            (helm-howdoyou--transform-candidates howdoyou--links)
+            :action (lambda (x)
+                      (helm-howdoyou--print-link (cdr x)))
+            :caller 'aj/counsel-howdoto))
 
 ;;;###autoload (autoload 'aj/howdoyou/body "autoload/hydras" nil t)
 (defhydra aj/howdoyou (:color blue

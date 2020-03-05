@@ -188,6 +188,36 @@ is non-nil then don't ask user for the project.
 ;; ORG-MODE
 
 ;;;###autoload
+(defun aj/insert-file-octals-identify-into-src-block-header ()
+  "For file under the point it inserts its file permission in octal format at the end of the current line"
+  (interactive)
+  (let* (($inputStr (if (use-region-p)
+                        (buffer-substring-no-properties (region-beginning) (region-end))))
+         ($path
+          (replace-regexp-in-string
+           "^sudo::" "" $inputStr)))
+    (progn
+      (end-of-line)
+      (if (file-exists-p $path)
+          (insert (concat " :tangle-mode (identity #o" (replace-regexp-in-string "\n" ""(shell-command-to-string (concat "stat -c %a " $path))) ")" ))
+        (print "file doesn't exists")))))
+
+;;;###autoload
+(defun aj/org-menu-and-goto ()
+  (interactive)
+  (progn
+    (widen)
+    (search-forward "*")
+    (org-set-visibility-according-to-property)
+    (outline-show-branches)
+    (counsel-outline)
+    (outline-show-branches)
+    (outline-show-entry)
+    (org-narrow-to-subtree)
+    )
+  )
+
+;;;###autoload
 (defun transform-square-brackets-to-round-ones(string-to-transform)
   "Transforms [ into ( and ] into ), other chars left unchanged."
   (concat
@@ -399,7 +429,8 @@ point to the end of the line."
   "Opens org-brain-visualize for current projectile project."
   (interactive)
   (let ((org-brain-path (projectile-project-root)))
-    (org-brain-visualize (aj/return-plain-string-project-org-file))))
+    (org-brain-visualize
+     (expand-file-name "README.org" (projectile-project-root)))))
 
 ;;;###autoload
 (defun my/org-brain-goto (&optional entry goto-file-func)
@@ -812,6 +843,13 @@ Buffers are cheap.
   )
 
 ;; ORG-CLOCK AND ORG-POMODORO
+
+;;;###autoload
+(defun aj/clock-menu ()
+  "Present recent clocked tasks"
+  (interactive)
+  (setq current-prefix-arg '(4))
+  (call-interactively 'org-clock-in-last))
 
 ;;;###autoload (autoload 'aj/clocking/body "autoload/hydras" nil t)
 (defhydra aj/clocking (:color blue)
