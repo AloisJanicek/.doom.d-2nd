@@ -110,7 +110,7 @@ If `HEADLINE' is `nil', capture at top level at `FILE'.
                                      ,line :immediate-finish t)))))
     (org-capture nil "s")))
 
-;;;###autoload (autoload 'aj/capture-code/body "autoload/hydras" nil t)
+;;;###autoload (autoload 'aj/capture-code/body "autoload/orgmode" nil t)
 (defhydra aj/capture-code-hydra (:color blue)
   "Code:"
   ("a" (aj/capture-code-ask-where) "ask" )
@@ -133,7 +133,7 @@ If `HEADLINE' is `nil', capture at top level at `FILE'.
   ("q" nil "exit")
   )
 
-;;;###autoload (autoload 'aj/capture/body "autoload/hydras" nil t)
+;;;###autoload (autoload 'aj/capture/body "autoload/orgmode" nil t)
 (defhydra aj/capture ()
   "Capture:"
   ("d" (aj/capture-calendar-the-right-way) "calendar date" :exit t)
@@ -611,7 +611,7 @@ with my heavily customized alternative `aj/open-file-switch-create-indirect-buff
       :super-groups '((:auto-category t))
       :title task)))
 
-;;;###autoload (autoload 'gtd-agenda/body "autoload/hydras" nil t)
+;;;###autoload (autoload 'gtd-agenda/body "autoload/orgmode" nil t)
 (defhydra gtd-agenda (:color blue
                              :body-pre
                              (cond
@@ -871,7 +871,7 @@ Buffers are cheap.
   (setq current-prefix-arg '(4))
   (call-interactively 'org-clock-in-last))
 
-;;;###autoload (autoload 'aj/clocking/body "autoload/hydras" nil t)
+;;;###autoload (autoload 'aj/clocking/body "autoload/orgmode" nil t)
 (defhydra aj/clocking (:color blue)
   "Clock:"
   ("c" (aj/clock-menu) "clock" )

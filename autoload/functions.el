@@ -697,7 +697,7 @@ Epub files offten has very poor quality."
                       (helm-howdoyou--print-link (cdr x)))
             :caller 'aj/counsel-howdoto))
 
-;;;###autoload (autoload 'aj/howdoyou/body "autoload/hydras" nil t)
+;;;###autoload (autoload 'aj/howdoyou/body "autoload/functions" nil t)
 (defhydra aj/howdoyou (:color blue
                               :body-pre
                               (when (get-buffer "*How Do You*")
