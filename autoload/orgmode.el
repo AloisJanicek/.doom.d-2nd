@@ -185,24 +185,34 @@ Optional argumetn `WEEk' for ISO week based date tree.
                                    :prepend t))))
     (cond ((string= template "journal")
            (if week
-               (aj/capture-into-journal-in file week)
-             (aj/capture-into-journal-in file)))
+              (aj/capture-into-journal-in file "JOURNAL" t)
+             (aj/capture-into-journal-in file "JOURNAL")))
           ((string= template "task")
            (org-capture nil "P"))
           ((t)
            (message "Invalid template")))))
 
 ;;;###autoload
-(defun aj/capture-into-journal-in (file &optional week)
-  "Capture into journal in `FILE'.
-  `WEEK' for ISO week format."
+(defun aj/capture-into-journal-in (file &optional headline week)
+  "Capture into journal in `FILE'. Optionally into date-tree under `HEADLINE'.
+  Use optional argument `WEEK' for ISO week format."
   (interactive)
   (let* ((org-capture-templates
-          (if week
-              `(("J" "Project journal" entry (file+olp+datetree ,file)
-                 "**** %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n%?" :tree-type week))
-            `(("J" "Project journal" entry (file+olp+datetree ,file )
-               "**** %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n%?")))))
+           `(("J" "Project journal" entry
+               ,(if headline
+                    `(file+olp+datetree ,file ,headline)
+                  `(file+olp+datetree ,file))
+               "**** %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n%?" :tree-type ,(if week 'week nil)))))
+    (with-current-buffer (find-buffer-visiting file)
+      (if (and headline
+            (not (org-ql-query
+                   :select #'org-get-heading
+                   :from file
+                   :where headline
+                   )))
+        (progn
+          (goto-char (point-max))
+          (insert (format "* %s\n" headline)))))
     (org-capture nil "J")))
 
 ;; ORG-MODE
