@@ -626,27 +626,17 @@ if running under WSL")
   (remove-hook 'org-mode-hook #'auto-fill-mode)
 
   (quiet!
-   ;; register pdfview link type (copied from org-pdfview.el so I can lazy load)
    (org-link-set-parameters "pdfview"
                             :follow #'org-pdfview-open
-                            :complete #'org-pdfview-complete-link
-                            :store #'org-pdfview-store-link)
+                            :complete #'org-pdfview-complete-link)
    (org-add-link-type "pdfview" 'org-pdfview-open)
-   (add-hook 'org-store-link-functions #'org-pdfview-store-link)
-
-   ;; ...and same thing for org-ebook
-   (org-link-set-parameters "ebook"
-                            :follow #'org-ebook-open
-                            :store #'org-ebook-store-link)
-   (org-add-link-type "ebook" 'org-ebook-open)
-   (add-hook 'org-store-link-functions #'org-ebook-store-link)
 
    ;; ... and custom calibre link
    (org-link-set-parameters "calibre"
                             :follow #'org-pdfview-calibre-open
-                            :store #'org-pdfview-calibre-store-link)
+                            :store #'aj/pdf-store-link-dispatch)
    (org-add-link-type "calibre" 'org-pdfview-calibre-open)
-   (add-hook 'org-store-link-functions #'org-pdfview-calibre-store-link)
+   (add-hook 'org-store-link-functions #'aj/pdf-store-link-dispatch)
 
    (add-to-list 'org-file-apps '("\\.pdf\\'" . (lambda (_file link)
                                                  (if (string-match "Libraries" link)
@@ -659,6 +649,13 @@ if running under WSL")
    ;; adjust `org-file-apps' but preserve old functionality
    (delete '("\\.pdf\\'" . (lambda (_file link) (org-pdfview-open link))) org-file-apps)
    (delete '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (_file link) (org-pdfview-open link))) org-file-apps)
+
+   ;; ...and same thing for org-ebook
+   (org-link-set-parameters "ebook"
+                            :follow #'org-ebook-open
+                            :store #'org-ebook-store-link)
+   (org-add-link-type "ebook" 'org-ebook-open)
+   (add-hook 'org-store-link-functions #'org-ebook-store-link)
    )
 
   (setq

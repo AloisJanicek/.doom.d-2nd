@@ -992,6 +992,13 @@ If either org-pomodoro or org-clock aren't active, print \"No Active Task \" "
        :description path))))
 
 ;;;###autoload
+(defun aj/pdf-store-link-dispatch ()
+  "Automatically decide what store link function to use based on file path."
+  (if (string-match "/Libraries" buffer-file-name)
+      (org-pdfview-calibre-store-link)
+    (org-pdfview-store-link)))
+
+;;;###autoload
 (defun aj/org-update-org-ids-recursively ()
   "Get all files in `org-directory' recursively and update org IDs"
   (interactive)
