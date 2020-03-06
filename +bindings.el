@@ -635,7 +635,9 @@
         :desc "Capture current"          "k" (λ! (aj/capture-into-project t))
         :desc "Capture ALL "             "K" (λ! (aj/capture-into-project))
         :desc "invalidate cache"         "i" #'projectile-invalidate-cache
-        :desc "P README"                 "p" #'aj/better-open-current-projectile-org-file
+        :desc "P README"                 "p" (lambda () (interactive)
+                                               (aj/open-file-switch-create-indirect-buffer-per-persp
+                                                 (expand-file-name "README.org" (projectile-project-root))))
         :desc "Switch"                   "s" #'counsel-projectile-switch-project
         :desc "add to known Projects"    "P" #'aj/projectile-add-known-project-and-save
         :desc "Services"                 "t" #'prodigy
