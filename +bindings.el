@@ -170,7 +170,7 @@
      :desc "encrypt entry"     "e" #'org-encrypt-entry
      :desc "Encrytp entries"     "E" #'org-encrypt-entries
      :desc "decrypt entry"       "d" #'org-decrypt-entry
-     :desc "Decrypt entries"       "D" #'org-decrypt-entry
+     :desc "Decrypt entries"       "D" #'org-decrypt-entries
      )
 
    :desc "Open"         "o" #'ace-link
