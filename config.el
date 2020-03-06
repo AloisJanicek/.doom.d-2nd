@@ -792,11 +792,11 @@ if running under WSL")
                             "* %c :website:\n\n%U %?\n\n%:initial" :immediate-finish t :prepend t)
 
                            ("c" "Capture" entry (file ,+INBOX)
-                            "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n"
+                            "* %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n%?"
                             :empty-lines 1 :prepend t)
 
                            ("t" "Task" entry (file ,+INBOX)
-                            ,(concat "* TO" "DO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n")
+                            ,(concat "* TO" "DO %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n%?")
                             :empty-lines 1 :prepend t)
                            )
    )

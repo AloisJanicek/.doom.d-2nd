@@ -141,6 +141,12 @@ If `HEADLINE' is `nil', capture at top level at `FILE'.
          (aj/capture-code-hydra/body)) "code:" :exit t)
   ("k" (org-capture nil "c") "inbox" :exit t)
   ("t" (org-capture nil "t") "task" :exit t)
+  ("j" (aj/capture-into-journal-in
+        (ivy-read "Choose file: "
+                  (seq-filter
+                   (lambda (file)
+                     (not (string-match "inbox" file)))
+                   org-agenda-files))) "journal" :exit t)
   ("q" nil "exit")
   )
 
@@ -162,9 +168,10 @@ If `HEADLINE' is `nil', capture at top level at `FILE'.
     (org-capture nil "c")))
 
 ;;;###autoload
-(defun aj/capture-into-project (&optional current)
+(defun aj/capture-into-project (&optional current week)
   "Capture into projectile project. If optional argument `CURRENT'
 is non-nil then don't ask user for the project.
+Optional argumetn `WEEk' for ISO week based date tree.
 "
   (interactive)
   (let* ((project (if current
@@ -173,18 +180,30 @@ is non-nil then don't ask user for the project.
          (template (ivy-read "Template: " '("journal" "task")))
          (file (concat (expand-file-name project) "README.org"))
 
-         (org-capture-templates `(
-                                  ("P" "Project task" entry (file+headline ,file "TASKS")
-                                   ,(concat "* TO" "DO %?") :prepend t)
-
-                                  ("J" "Project journal" entry (file+olp+datetree ,file "JOURNAL")
-                                   "**** %? \n%U" :tree-type week))))
+         (org-capture-templates `(("P" "Project task" entry (file+headline ,file "TASKS")
+                                   ,(concat "* TO" "DO %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n%?")
+                                   :prepend t))))
     (cond ((string= template "journal")
-           (org-capture nil "J"))
+           (if week
+               (aj/capture-into-journal-in file week)
+             (aj/capture-into-journal-in file)))
           ((string= template "task")
            (org-capture nil "P"))
           ((t)
            (message "Invalid template")))))
+
+;;;###autoload
+(defun aj/capture-into-journal-in (file &optional week)
+  "Capture into journal in `FILE'.
+  `WEEK' for ISO week format."
+  (interactive)
+  (let* ((org-capture-templates
+          (if week
+              `(("J" "Project journal" entry (file+olp+datetree ,file)
+                 "**** %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n%?" :tree-type week))
+            `(("J" "Project journal" entry (file+olp+datetree ,file )
+               "**** %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n%?")))))
+    (org-capture nil "J")))
 
 ;; ORG-MODE
 
