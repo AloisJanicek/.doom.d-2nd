@@ -41,7 +41,7 @@ if running under WSL")
 (defvar hydra-stack nil
   "Holds names of hydras for display when nesting them.")
 
-(defvar +org-projectile-per-project-filepath "README.org"
+(defvar aj/project-readme-task-file "README.org"
   "Org file in every project which can be used to contribute into agenda")
 
 (defvar +persp-blacklist nil
@@ -186,7 +186,10 @@ if running under WSL")
   (set-face-attribute 'imenu-list-entry-face-3 nil
                       :foreground `,(doom-lighten 'blue 0.25))
   ;; Finally, the hook
-  (add-hook 'imenu-list-major-mode-hook #'my-imenu-list-hl-line)
+  (add-hook 'imenu-list-major-mode-hook (lambda ()
+                                          (set (make-local-variable 'hl-line-face)
+                                               'hl-line-imenu-list-face)
+                                          (hl-line-mode)))
   (add-hook 'imenu-list-major-mode-hook #'variable-pitch-mode)
   )
 

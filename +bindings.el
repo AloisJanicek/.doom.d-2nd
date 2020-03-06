@@ -661,7 +661,10 @@
         :desc "input/stardict"           "i" #'sdcv-search-input
         :desc "online"                   "o" #'define-word
         :desc "online/point"             "p" #'define-word-at-point
-        :desc "webster"                  "w" #'browse-webster-at-point
+        :desc "webster"                  "w" (λ! (aj/add-thing-at-point-to-url
+                                                  "https://www.merriam-webster.com/dictionary/"))
+        :desc "dictionary"               "d" (λ! (aj/add-thing-at-point-to-url
+                                                  "https://dictionary.com/browse/"))
         :desc "powerthesaurus synonym"   "j" #'powerthesaurus-lookup-word
         :desc "wordnet synonym"          "J" #'synosaurus-lookup
         :desc "powerthesaurus replace"   "r" #'powerthesaurus-lookup-word-dwim
@@ -669,7 +672,6 @@
         :desc "wordnut"                  "k" #'wordnut-lookup-current-word
         :desc "google at point"          "g" #'google-translate-at-point
         :desc "google at point reverse:" "G" #'google-translate-at-point-reverse
-        :desc "dictionary"               "d" #'browse-dictionary-at-point
         )
 
       (:prefix ("f" . "file")
