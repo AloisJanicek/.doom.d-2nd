@@ -203,7 +203,7 @@ Optional argumetn `WEEk' for ISO week based date tree.
                     `(file+olp+datetree ,file ,headline)
                   `(file+olp+datetree ,file))
                "**** %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n%?" :tree-type ,(if week 'week nil)))))
-    (with-current-buffer (find-buffer-visiting file)
+    (with-current-buffer (find-file-noselect file)
       (if (and headline
             (not (org-ql-query
                    :select #'org-get-heading
