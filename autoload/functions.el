@@ -646,6 +646,15 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
     (with-current-buffer buf
       (brds/pdf-set-last-viewed-bookmark))))
 
+;;;###autoload
+(defun my/bookmark-all-names-without-pdfs ()
+  "Return a list of all current bookmark names."
+  (bookmark-maybe-load-default-file)
+  (seq-filter
+   (lambda (bookmark)
+     (not (string-match "PDF-LAST-VIEWED" bookmark)))
+   (mapcar 'bookmark-name-from-full-record bookmark-alist)))
+
 ;; IVY TWEAKS
 
 ;;;###autoload

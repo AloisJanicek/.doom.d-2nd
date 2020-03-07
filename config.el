@@ -370,6 +370,9 @@ if running under WSL")
 (after! calendar
   (setq calendar-week-start-day 1))
 
+(after! bookmark
+  (fset 'bookmark-all-names 'my/bookmark-all-names-without-pdfs))
+
 (after! css-mode
   (custom-set-faces!
     `(css-selector :foreground ,(doom-lighten 'red 0.1)))
