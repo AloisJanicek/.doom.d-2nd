@@ -13,7 +13,10 @@
   (interactive)
   (find-file-noselect file)
   (with-current-buffer (find-buffer-visiting file)
-    (mark-whole-buffer)
+    (progn
+      (set-mark (point-min))
+      (goto-char (point-max))
+      (activate-mark))
     (if encrypt
         (epa-decrypt-region (point-min) (point-max) (lambda ()
                                                       (setf (buffer-string) "")
