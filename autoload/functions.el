@@ -595,21 +595,12 @@ Optionally create associated repository on `gitlab'."
       (aj/new-project-init-and-register full-path project t))))
 
 ;;;###autoload
-(defun aj/get-project-readme-task-file (project-path)
-  "Return README task file of project at `PROJECT-PATH'."
-  (let ((relative-filepath
-         (if (stringp aj/project-readme-task-file)
-             aj/project-readme-task-file
-           ;; TODO what is this
-           (funcall org-projectile-per-project-filepath project-path))))
-    (concat
-     (file-name-as-directory project-path) relative-filepath)))
-
-;;;###autoload
 (defun aj/get-all-projectile-README-org-files (&optional existing)
   "Return list of existing projectile projects' README.org files.
 When optional argument `EXISTING' is supplied, it returns only actual existing files."
-  (let ((files (mapcar 'aj/get-project-readme-task-file projectile-known-projects)))
+  (let ((files (mapcar (lambda (project-path)
+                         (expand-file-name aj/project-readme-task-file project-path))
+                 projectile-known-projects)))
     (if existing
         (seq-filter 'file-exists-p files) files)))
 
