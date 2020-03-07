@@ -442,7 +442,8 @@ Then moves the point to the end of the line."
                 (read-string "Header: "
                              (substring-no-properties (org-get-heading t t t t)))))
   (org-back-to-heading)
-  (replace-string (org-get-heading t t t t) label))
+  (search-forward (org-get-heading t t t t))
+  (replace-match  label))
 
 ;; ORG-BRAIN
 

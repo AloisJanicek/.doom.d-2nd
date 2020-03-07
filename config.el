@@ -416,9 +416,6 @@ if running under WSL")
 (after! epg
   (setq epg-pinentry-mode 'ask))
 
-(after! epa
-  (setq epa-pinentry-mode 'ask))
-
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
             (lambda ()
@@ -731,7 +728,7 @@ if running under WSL")
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
   (advice-add 'org-agenda-switch-to :after
-              (lambda (&rest args)
+              (lambda (&rest _)
                 (org-narrow-to-subtree)
                 (org-show-children)))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
