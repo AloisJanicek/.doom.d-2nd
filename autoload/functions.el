@@ -8,27 +8,42 @@
 
 ;;; Code:
 
-(defun aj/decrypt-encrypt-private (encrypt file)
-  "Encrypt `FILE' if `ENCRYPT' is t, otherwise do decryption."
+(defun aj/decrypt-encrypt-private (file &optional encrypt)
+  "Decrypt or encrypt whole content of a file FILE.
+Which operation will be executed depends on value of ENCRYPT."
   (interactive)
-  (find-file-noselect file)
-  (with-current-buffer (find-buffer-visiting file)
-    (progn
-      (set-mark (point-min))
-      (goto-char (point-max))
-      (activate-mark))
-    (if encrypt
-        (epa-decrypt-region (point-min) (point-max) (lambda ()
-                                                      (setf (buffer-string) "")
-                                                      (find-buffer-visiting file)))
-      (epa-encrypt-region (point-min) (point-max)	 (epa-select-keys (epg-make-context epa-protocol)
-                                                                      "Select recipients for encryption.")
-                          nil nil))
-    (save-buffer)))
+  (with-current-buffer (find-file-noselect file)
+    (let* ((start (point-min))
+            (end (point-max))
+            (context (epg-make-context epa-protocol))
+            (coding (select-safe-coding-system start end))
+            (operation (if (not encrypt) "Decrypting" "Encrypting"))
+            (decoded (when (not encrypt)
+                       (decode-coding-string
+                         (epg-decrypt-string
+                           context
+                           (buffer-substring-no-properties start end))
+                         'utf-8)))
+            cipher)
+      (when encrypt
+        (setf (epg-context-armor context) t)
+        (setf (epg-context-textmode context) t)
+        (setq cipher (epg-encrypt-string context
+                       (encode-coding-string
+                         (buffer-substring start end) coding)
+                       (epa-select-keys (epg-make-context epa-protocol) "Select") nil)))
+      (delete-region start end)
+      (goto-char end)
+      (if (not encrypt)
+        (insert decoded)
+      (insert cipher))
+      (save-buffer)
+      (message "%s ...done" operation))))
 
 ;;;###autoload
-(defun aj/private-decrypt-encrypt-all (directory encrypt)
-  "Decrypt or encrypt according to `ENCRYPT' all files in directory `DIRECTORY'."
+(defun aj/private-decrypt-encrypt-all (directory &optional encrypt)
+  "Decrypt or encrypt files in directory DIRECTORY.
+Which operation will be executed depends on value of ENCRYPT."
   (let ((files (directory-files directory t ".org"))
         (encrypted '())
         (decrypted '()))
@@ -39,9 +54,9 @@
         (add-to-list 'decrypted i)))
     (if encrypt
         (dolist (i decrypted)
-          (aj/decrypt-encrypt-private nil i))
+          (aj/decrypt-encrypt-private i t))
       (dolist (i encrypted)
-        (aj/decrypt-encrypt-private t i)))))
+        (aj/decrypt-encrypt-private i)))))
 
 ;;;###autoload
 (defun aj/indent-if-not-webmode ()
