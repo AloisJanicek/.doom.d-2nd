@@ -192,7 +192,7 @@ Optional argument `WEEK' for ISO week based date tree."
              (aj/capture-into-journal-in file "JOURNAL")))
           ((string= template "task")
            (org-capture nil "P"))
-          ((t)
+          (t
            (message "Invalid template")))))
 
 ;;;###autoload
