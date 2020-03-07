@@ -647,18 +647,30 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
       (brds/pdf-set-last-viewed-bookmark))))
 
 ;;;###autoload
-(defun my/bookmark-all-names-without-pdfs ()
-  "Return a list of all current bookmark names."
-  (bookmark-maybe-load-default-file)
-  (seq-filter
-   (lambda (bookmark)
-     (not (string-match "PDF-LAST-VIEWED" bookmark)))
-   (mapcar 'bookmark-name-from-full-record bookmark-alist)))
-
-(defun aj/bookmarks-without-pdfs (orig-fun &rest _)
-  "Override definition of `bookmark-all-names' for ORIG-FUN."
-  (cl-letf (((symbol-function 'bookmark-all-names) #'my/bookmark-all-names-without-pdfs))
-    (apply orig-fun _)))
+(defun my/counsel-bookmark-without-pdfs ()
+  "Forward to `bookmark-jump' or `bookmark-set' if bookmark doesn't exist."
+  (interactive)
+  (require 'bookmark)
+  (ivy-read "Create or jump to bookmark: "
+            (seq-filter
+             (lambda (bookmark)
+               (not (string-match "PDF-LAST-VIEWED" bookmark)))
+             (bookmark-all-names))
+            :history 'bookmark-history
+            :action (lambda (x)
+                      (cond ((and counsel-bookmark-avoid-dired
+                                  (member x (bookmark-all-names))
+                                  (file-directory-p (bookmark-location x)))
+                             (with-ivy-window
+                               (let ((default-directory (bookmark-location x)))
+                                 (counsel-find-file))))
+                            ((member x
+                                     (bookmark-all-names))
+                             (with-ivy-window
+                               (bookmark-jump x)))
+                            (t
+                             (bookmark-set x))))
+            :caller 'counsel-bookmark))
 
 ;; IVY TWEAKS
 

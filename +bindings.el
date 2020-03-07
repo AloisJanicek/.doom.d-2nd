@@ -790,4 +790,5 @@
       ;; find file              ","
       (:prefix ("/" . "search")
         )
+      :desc "Bookmarks"                 "RET" #'my/counsel-bookmark-without-pdfs
       )
