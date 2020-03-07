@@ -50,6 +50,8 @@ if running under WSL")
 (defvar +refile-targets-with-headlines t
   "List of org files which should be allowed offer refile under headlines")
 
+(make-variable-buffer-local 'er/try-expand-list)
+
 (setq user-mail-address "janicek.dev@gmail.com"
       user-full-name    "Alois Janíček"
       +refile-targets-with-headlines nil

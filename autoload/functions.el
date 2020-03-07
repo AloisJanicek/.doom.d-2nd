@@ -68,7 +68,6 @@ Which operation will be executed depends on value of ENCRYPT."
 (defun er/add-web-mode-expansions ()
   "Set some settings for `web-mode'."
   (require 'html-mode-expansions)
-  (make-variable-buffer-local 'er/try-expand-list)
   (setq er/try-expand-list (append
                             er/try-expand-list
                             '(
