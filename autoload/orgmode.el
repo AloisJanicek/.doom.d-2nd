@@ -68,9 +68,9 @@ If executed from agenda, use `org-agenda-refile' instead"
 
 ;;;###autoload
 ;; https://www.reddit.com/r/emacs/comments/8fg34h/capture_code_snippet_using_org_capture_template/
-(defun my/org-capture-code-snippet (file)
+(defun my/org-capture-code-snippet (file source-buffer)
   "Build `org-mode' source block with code selected in `FILE'."
-  (with-current-buffer (find-buffer-visiting file)
+  (with-current-buffer source-buffer
     (let ((code-snippet (buffer-substring-no-properties (mark) (point)))
           (func-name (which-function))
           (file-name (buffer-file-name))
@@ -104,9 +104,10 @@ in ~%s~
   "Capture code snippet.
 If `HEADLINE' is nil, capture at top level at `FILE'."
   (interactive)
-  (let* ((line (concat "* " title " :src:"
+  (let* ((source-buffer (current-buffer))
+          (line (concat "* " title " :src:"
                        "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
-                       "\n%(my/org-capture-code-snippet \"%F\")"))
+                       "\n%(my/org-capture-code-snippet \"%F\" source-buffer)"))
          (org-capture-templates (if headline
                                     `(("s" "code snippet" entry (file+headline ,file ,headline)
                                        ,line :immediate-finish t))
