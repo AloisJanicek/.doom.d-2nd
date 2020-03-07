@@ -370,9 +370,6 @@ if running under WSL")
 (after! calendar
   (setq calendar-week-start-day 1))
 
-(after! bookmark
-  (fset 'bookmark-all-names 'my/bookmark-all-names-without-pdfs))
-
 (after! css-mode
   (custom-set-faces!
     `(css-selector :foreground ,(doom-lighten 'red 0.1)))
@@ -398,6 +395,7 @@ if running under WSL")
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
   (advice-add #'ivy-rich--ivy-switch-buffer-transformer :override #'+ivy-combined-buffer-transformer)
   (advice-add #'counsel-org-goto-bookmarks :after #'aj/take-care-of-org-buffers)
+  (advice-add #'counsel-bookmark :around #'aj/bookmarks-without-pdfs)
   )
 
 (after! counsel-dash

@@ -655,6 +655,11 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
      (not (string-match "PDF-LAST-VIEWED" bookmark)))
    (mapcar 'bookmark-name-from-full-record bookmark-alist)))
 
+(defun aj/bookmarks-without-pdfs (orig-fun &rest _)
+  "Override definition of `bookmark-all-names' for ORIG-FUN."
+  (cl-letf (((symbol-function 'bookmark-all-names) #'my/bookmark-all-names-without-pdfs))
+    (apply orig-fun _)))
+
 ;; IVY TWEAKS
 
 ;;;###autoload
