@@ -30,7 +30,7 @@
 
 (package! highlight-blocks)
 
-(package! hungry-delete)
+(package! hungry-delete :pin "0434458d3f6b2b585f332271feaa054bf4ec96d7")
 
 (package! howdoyou
   :recipe (:host github :repo "thanhvg/emacs-howdoyou"))
