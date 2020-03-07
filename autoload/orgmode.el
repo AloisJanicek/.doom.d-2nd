@@ -110,9 +110,9 @@ If `HEADLINE' is nil, capture at top level at `FILE'."
                        "\n%(my/org-capture-code-snippet \"%F\" source-buffer)"))
          (org-capture-templates (if headline
                                     `(("s" "code snippet" entry (file+headline ,file ,headline)
-                                       ,line :immediate-finish t))
+                                       ,line :immediate-finish t :empty-lines 1))
                                   `(("s" "code snippet" entry (file ,file)
-                                     ,line :immediate-finish t)))))
+                                     ,line :immediate-finish t :empty-lines 1)))))
     (org-capture nil "s")))
 
 ;;;###autoload (autoload 'aj/capture-code/body "autoload/orgmode" nil t)
