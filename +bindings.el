@@ -750,8 +750,8 @@
         :desc "eval-last-sexp"           "s" #'eval-last-sexp
         :desc "macro-expand"             "m" #'macrostep-expand
         :desc "imenu-outline"            "o" #'counsel-imenu
-        ;;          :desc "Help in Dashdocs"      "h" #'counsel-dash
-        :desc "Help in Dashdocs"         "h" (lambda! (progn (require 'helm-dash) (counsel-dash)))
+        :desc "Howdoyou this error"      "h" (lambda () (interactive) (aj/flycheck-error-search t))
+        :desc "Google this error"        "H" #'aj/flycheck-error-search
         :desc "Info about error"         "i" #'flycheck-explain-error-at-point
         )
 

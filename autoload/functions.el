@@ -763,8 +763,24 @@ Epub files often has very poor quality."
   ("s" (call-interactively #'aj/counsel-howdoyou) "search" :exit t)
   ("f" (howdoyou-go-back-to-first-link) "first")
   ("n" (howdoyou-next-link) "next")
-  ("p" (howdoyou-previous-link) "previos")
+  ("p" (howdoyou-previous-link) "previous")
   ("r" (howdoyou-reload-link) "refresh"))
+
+;;;###autoload
+(defun aj/flycheck-error-search (&optional howdoyou)
+  "Search current flychek error message on web.
+By default search on Google. When optional argument HOWDOYOU is
+present, then search Stack Overflow with `howdoyou-query'.
+"
+  (interactive)
+  (let* ((google-base "https://www.google.com/search?q=")
+          (error-message (flycheck-error-message
+                           (car (flycheck-overlay-errors-at (point)))))
+          (lang (my/org-capture-get-src-block-string major-mode))
+          (query (concat lang " " error-message)))
+    (if howdoyou
+      (howdoyou-query (concat lang " " error-message))
+      (browse-url (concat google-base (replace-regexp-in-string " " "+" query))))))
 
 (provide 'functions)
 
