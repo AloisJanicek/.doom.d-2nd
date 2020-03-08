@@ -65,6 +65,7 @@ if running under WSL")
       doom-theme 'doom-one
       all-the-icons-scale-factor 1
       +doom-quit-messages '("")
+      epg-pinentry-mode 'ask
       )
 
 (setq-default tab-width 2)
@@ -413,9 +414,6 @@ if running under WSL")
   ;; Remove global-mode-string (misc-info) from doom-modeline
   (aj/remove-global-mode-string-from-modeline)
   )
-
-(after! epg
-  (setq epg-pinentry-mode 'ask))
 
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
