@@ -159,11 +159,6 @@
 
    :desc "Sort" "^" #'org-sort
 
-   "p"  nil
-   (:prefix ("p" . "private")
-     :desc "private" "p" (lambda ()
-                           (interactive)
-                           (let ((hydra-hint-display-type 'message)) (aj/private-refile/body))))
    "d" nil
 
    (:prefix ("d" . "decrypt")
@@ -182,25 +177,8 @@
      )
 
    :desc "Wiki"                "w" #'aj/org-menu-and-goto
-
-   (:prefix ("r" . "refile")
-     :desc "file"                     "f" (lambda! (aj/org-refile-to-file
-                                                    (ivy-read "File: " (aj/get-all-org-files))))
-     :desc "visible"                  "v" (lambda! (progn
-                                                     (when (not (featurep 'avy))
-                                                       (require 'avy))
-                                                     (avy-org-refile-as-child)))
-     :desc "journal"                  "j" (lambda! (aj/org-refile-to-datetree
-                                                    (ivy-read "Choose file: " (directory-files org-directory t ".org"))))
-     :desc "file top level"           "t" (lambda! (aj/org-refile-to-file-custom
-                                                    (ivy-read "File: " (aj/get-all-org-files))))
-     :desc "project"                  "p" (lambda! (aj/org-refile-to-file
-                                                    (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
-                                                              :action (lambda (x) x))))
-     :desc "project Journal"         "P" (lambda! (aj/org-refile-to-datetree
-                                                   (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
-                                                             :action (lambda (x) x))))
-     )
+   "r" nil
+   :desc "Refile"              "r" #'aj/refile/body
 
    "e" nil
    (:prefix ("e" . "export")
@@ -239,11 +217,6 @@
        :desc "active"               "a" #'org-time-stamp
        :desc "inactive"             "i" #'org-time-stamp-inactive
        )
-     )
-
-   "h" nil
-   (:prefix ("h" . "hydra")
-     :desc "refile"            "r" nil
      )
 
    (:prefix ("m" . "mind")
@@ -328,6 +301,9 @@
      :m         "m"     #'aj/clock-menu
      :m         "l"     #'visual-line-mode
      )
+
+   :localleader
+   :desc "Refile"              "r" #'aj/refile/body
    )
 
  (:after org-agenda
@@ -345,25 +321,11 @@
    "d" nil
    (:prefix ("d" . "do")
      :m              "s"     #'org-agenda-schedule
-     :desc "private" "p" (lambda ()
-                           (interactive)
-                           (let ((hydra-hint-display-type 'message)) (aj/private-refile/body)))
-     (:prefix ("r" . "refile")
-       :desc "file"                               "f" (lambda! (aj/org-refile-to-file
-                                                                (ivy-read "File: " (aj/get-all-org-files))))
-       :desc "all targets"                        "r" #'org-agenda-refile
-       :desc "journal"                            "j" (lambda! (aj/org-refile-to-datetree
-                                                                (ivy-read "File: " (directory-files org-directory t ".org"))))
-       :desc "file top level"                     "t" (lambda! (aj/org-refile-to-file-custom
-                                                                (ivy-read "File: " (aj/get-all-org-files))))
-       :desc "project"                            "p" (lambda! (aj/org-refile-to-file
-                                                                (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
-                                                                          :action (lambda (x) x))))
-       :desc "project Journal"                    "P" (lambda! (aj/org-refile-to-datetree
-                                                                (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
-                                                                          :action (lambda (x) x))))
-       )
+     :m              "r"     #'aj/refile/body
      )
+
+   :localleader
+   :desc "Refile"              "r" #'aj/refile/body
    )
 
  (:after org-brain
@@ -461,6 +423,9 @@
                                          ))
                            'tag))
    :m         "F"    #'aj/clear-filter-refresh-view
+
+   :localleader
+   :desc "Refile"              "r" #'aj/refile/body
    )
 
  (:after org-ql

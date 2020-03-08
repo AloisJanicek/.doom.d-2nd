@@ -147,6 +147,57 @@ Works also in `org-agenda'."
         (call-interactively #'org-agenda-refile)
       (call-interactively #'org-refile))))
 
+(defhydra aj/refile (:color blue
+                            :hint nil
+                            :idle which-key-idle-delay
+                            )
+  "
+_r_efile targets            _t_op level
+_f_ile                      _o_ther window
+_v_isible heading           _O_ther buffer
+_._this file                _j_ournal
+_l_ast location             _p_roject
+_c_lock                     _P_roject journal      _x_private
+"
+  ("r" (lambda (arg)
+         (interactive "P")
+         (if (eq major-mode 'org-agenda-mode)
+             (call-interactively #'org-agenda-refile)
+           (call-interactively #'org-refile))))
+  ("f" (lambda ()
+         (interactive)
+         (aj/org-refile-to-file
+          (ivy-read "File: "
+                    (aj/get-all-org-files)))))
+  ("v" #'+org/refile-to-visible)
+  ("j" (lambda ()
+         (interactive)
+         (aj/org-refile-to-datetree
+          (ivy-read "Choose file: "
+                    (directory-files org-directory t ".org")))))
+  ("t" (lambda ()
+         (interactive)
+         (aj/org-refile-to-file-custom
+          (ivy-read "File: " (aj/get-all-org-files)))))
+  ("p" (lambda ()
+         (interactive)
+         (aj/org-refile-to-file
+          (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
+                    :action (lambda (x) x)))))
+  ("P" (lambda ()
+         (interactive)
+         (aj/org-refile-to-datetree
+          (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
+                    :action (lambda (x) x)))))
+  ("x" (lambda ()
+         (interactive)
+         (let ((hydra-hint-display-type 'message)) (aj/private-refile/body))))
+  ("o" #'+org/refile-to-other-window)
+  ("O" #'+org/refile-to-other-buffer)
+  ("." #'+org/refile-to-current-file)
+  ("c" #'+org/refile-to-running-clock)
+  ("l" #'+org/refile-to-last-location)
+  )
 ;; ORG-CAPTURE
 
 ;;;###autoload
