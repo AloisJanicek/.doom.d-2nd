@@ -617,7 +617,7 @@
         :desc "Agenda"                   "A" #'org-agenda
         :desc "agenda"              "a" (lambda ()
                                           (interactive)
-                                          (let ((hydra-hint-display-type 'message)) (gtd-agenda/body)))
+                                          (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
         ;; :desc "Clock"                    "c" #'aj/clock-menu
         :desc "Imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "Sidebar"                   "s" #'+treemacs/toggle
@@ -650,7 +650,7 @@
       ;; next                   "]"
       :desc "agenda"              "a" (lambda ()
                                         (interactive)
-                                        (let ((hydra-hint-display-type 'message)) (gtd-agenda/body)))
+                                        (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
 
       (:prefix ("s" . "snippet")
         :desc "Preview"                  "p" #'ivy-yasnippet

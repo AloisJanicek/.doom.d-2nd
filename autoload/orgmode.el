@@ -675,8 +675,8 @@ Ensure I can run all `org-agenda' commands"
       :super-groups '((:auto-category t))
       :title task)))
 
-;;;###autoload (autoload 'gtd-agenda/body "autoload/orgmode" nil t)
-(defhydra gtd-agenda (:color blue
+;;;###autoload (autoload 'aj/gtd-agenda/body "autoload/orgmode" nil t)
+(defhydra aj/gtd-agenda (:color blue
                              :body-pre
                              (cond
                               ;; show inbox if it is not empty
