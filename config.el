@@ -469,7 +469,9 @@ if running under WSL")
 (after! flycheck
   (flycheck-add-mode 'html-tidy 'web-mode)
   (setq flycheck-tidyrc "~/.tidyrc"
-        flycheck-javascript-eslint-executable "eslint_d")
+        flycheck-javascript-eslint-executable "eslint_d"
+        flycheck-global-modes '(not org-mode)
+        )
   (setq-default flycheck-disabled-checkers '(css-csslint scss sass/scss-sass-lint))
   )
 
