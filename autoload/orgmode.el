@@ -58,6 +58,96 @@ If executed from agenda, use `org-agenda-refile' instead"
         (org-agenda-refile)
       (org-refile))))
 
+;;;###autoload
+(defun +org/refile-to-current-file (arg &optional file)
+  "Refile to current file.
+ With a `\\[universal-argument]' ARG, do copy instead.
+Works also in `org-agenda'."
+  (interactive "P")
+  (let ((org-refile-targets `((,file :maxlevel . 10)))
+        (org-refile-use-outline-path nil)
+        (org-refile-keep arg)
+        current-prefix-arg)
+    (if (eq major-mode 'org-agenda-mode)
+        (call-interactively #'org-agenda-refile)
+      (call-interactively #'org-refile))))
+
+;;;###autoload
+(defun +org/refile-to-last-location (arg)
+  "Refile to last stored location.
+ With a `\\[universal-argument]' ARG, do copy instead.
+Works also in `org-agenda'."
+  (interactive "P")
+  (or (assoc (plist-get org-bookmark-names-plist :last-refile)
+             bookmark-alist)
+      (user-error "No saved location to refile to"))
+  (let ((org-refile-keep arg)
+        (completing-read-function
+         (lambda (_p _coll _pred _rm _ii _h default &rest _)
+           default)))
+    (if (eq major-mode 'org-agenda-mode)
+        (org-agenda-refile)
+      (org-refile))))
+
+;;;###autoload
+(defun +org/refile-to-running-clock (arg)
+  "Refile under running clock.
+ With a `\\[universal-argument]' ARG, do copy instead.
+Works also in `org-agenda'."
+  (interactive "P")
+  (unless (bound-and-true-p org-clock-current-task)
+    (user-error "No active clock to refile to"))
+  (let ((org-refile-keep arg))
+    (if (eq major-mode 'org-agenda-mode)
+        (org-agenda-refile 2)
+      (org-refile 2))))
+
+;;;###autoload
+(defun +org/refile-to-other-window (arg)
+  "Refile into other window.
+Accounts for indirect buffers too.
+With a `\\[universal-argument]' ARG, do copy instead.
+Works also in `org-agenda'."
+  (interactive "P")
+  (let ((org-refile-keep arg)
+        org-refile-targets
+        current-prefix-arg)
+    (dolist (win (delq (selected-window) (window-list)))
+      (with-selected-window win
+        (and (eq major-mode 'org-mode)
+             (or (buffer-file-name (buffer-base-buffer))
+                 buffer-file-name)
+             (cl-pushnew (cons (or (buffer-file-name (buffer-base-buffer))
+                                   buffer-file-name)
+                               (cons :maxlevel 10))
+                         org-refile-targets))))
+    (if (eq major-mode 'org-agenda-mode)
+        (call-interactively #'org-agenda-refile)
+      (call-interactively #'org-refile))))
+
+;;;###autoload
+(defun +org/refile-to-other-buffer (arg)
+  "Refile into other window.
+Accounts for indirect buffers too.
+With a `\\[universal-argument]' ARG, do copy instead.
+Works also in `org-agenda'."
+  (interactive "P")
+  (let ((org-refile-keep arg)
+        org-refile-targets
+        current-prefix-arg)
+    (dolist (buf (delq (current-buffer) (doom-buffers-in-mode 'org-mode)))
+      (with-current-buffer buf
+        (and (or (buffer-file-name (buffer-base-buffer))
+                 buffer-file-name)
+             (cl-pushnew (cons
+                          (or (buffer-file-name (buffer-base-buffer))
+                              buffer-file-name)
+                          (cons :maxlevel 10))
+                         org-refile-targets))))
+    (if (eq major-mode 'org-agenda-mode)
+        (call-interactively #'org-agenda-refile)
+      (call-interactively #'org-refile))))
+
 ;; ORG-CAPTURE
 
 ;;;###autoload
@@ -105,7 +195,7 @@ in ~%s~
 If `HEADLINE' is nil, capture at top level at `FILE'."
   (interactive)
   (let* ((source-buffer (current-buffer))
-          (line (concat "* " title " :src:"
+         (line (concat "* " title " :src:"
                        "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
                        "\n%(my/org-capture-code-snippet \"%F\" source-buffer)"))
          (org-capture-templates (if headline

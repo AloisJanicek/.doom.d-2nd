@@ -396,7 +396,6 @@ if running under WSL")
         )
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
   (advice-add #'ivy-rich--ivy-switch-buffer-transformer :override #'+ivy-combined-buffer-transformer)
-  (advice-add #'counsel-org-goto-bookmarks :after #'aj/take-care-of-org-buffers)
   )
 
 (after! counsel-dash
