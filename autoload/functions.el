@@ -10,7 +10,6 @@
 (defun aj/decrypt-encrypt-private (file &optional encrypt)
   "Decrypt or encrypt whole content of a file FILE.
 Which operation will be executed depends on value of ENCRYPT."
-  (interactive)
   (with-current-buffer (find-file-noselect file)
     (let* ((start (point-min))
             (end (point-max))
@@ -25,8 +24,10 @@ Which operation will be executed depends on value of ENCRYPT."
                          'utf-8)))
             cipher)
       (when encrypt
-        (setf (epg-context-armor context) t)
-        (setf (epg-context-textmode context) t)
+        ;; (setf (epg-context-armor context) t)
+        (setf (aref context 4) t)
+        ;; (setf (epg-context-textmode context) t)
+        (setf (aref context 5) t)
         (setq cipher (epg-encrypt-string context
                        (encode-coding-string
                          (buffer-substring start end) coding)
