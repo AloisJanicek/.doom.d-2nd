@@ -623,22 +623,14 @@ if running under WSL")
   (set-popup-rule! "^\\*Org QL View.*\\*$"   :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
   (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
 
-  (add-hook 'doom-load-theme-hook #'aj/my-org-faces)
   (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
   (add-hook 'org-capture-mode-hook #'flyspell-mode)
-  ;; (add-hook 'org-mode-hook #'visual-line-mode)
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
-  (add-hook! org-mode-hook :append #'aj/my-org-faces)
-  (add-hook 'org-mode-hook (function individual-visibility-source-blocks))
-  (advice-add #'aj/bookmarks :after #'aj/take-care-of-org-buffers)
-  (advice-add #'aj/refile-to-file :after #'aj/take-care-of-org-buffers)
-  (advice-add #'aj/refile-to-project-readme :after #'aj/take-care-of-org-buffers)
+  (add-hook 'org-mode-hook #'visual-line-mode)
   (advice-add #'org-refile :after #'aj/take-care-of-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _) (when (eq major-mode 'org-mode) (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
-  (advice-add #'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
-  (remove-hook 'org-mode-hook #'auto-fill-mode)
 
   (quiet!
    (org-link-set-parameters "pdfview"
@@ -724,7 +716,7 @@ if running under WSL")
 
 (after! org-agenda
   (add-hook 'org-agenda-mode-hook #'aj/complete-all-tags-for-org)
-  (add-hook 'org-agenda-mode-hook #'hide-mode-line-mode)
+  ;; (add-hook 'org-agenda-mode-hook #'hide-mode-line-mode)
   (add-hook 'org-agenda-finalize-hook (lambda ()
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
@@ -736,20 +728,18 @@ if running under WSL")
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-deadline :before #'my-set-org-agenda-type)
   (advice-add #'org-agenda-exit :after #'aj/take-care-of-org-buffers)
-  (advice-add #'org-agenda-exit :before #'org-save-all-org-buffers)
   (advice-add #'org-agenda-filter-apply :after #'aj/copy-set-agenda-filter)
-  (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
   (advice-add #'org-agenda-refile :after #'aj/take-care-of-org-buffers)
   (advice-add #'org-agenda-refile :after (lambda (&rest _)
                                            (if (string-match "Org QL" (buffer-name))
                                                (org-ql-view-refresh)
                                              (org-agenda-redo))))
+  (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
   (advice-add #'org-agenda-schedule :before #'my-set-org-agenda-type)
   (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-switch-to :around #'aj/open-file-the-right-way-from-agenda)
   (advice-add #'org-agenda-todo :after #'aj/save-and-refresh-agenda)
   (advice-add #'org-agenda-kill :after #'aj/save-and-refresh-agenda)
-  (advice-add #'org-copy :after #'aj/take-care-of-org-buffers)
 
   (setq
    org-agenda-files (seq-filter
@@ -790,7 +780,6 @@ if running under WSL")
 
 (after! org-capture
   (add-hook 'org-capture-mode-hook #'aj/complete-all-tags-for-org)
-  ;; (advice-add #'org-capture-finalize :after #'aj/take-care-of-org-buffers)
   (setq
    org-capture-templates `(("p" "Protocol" entry (file ,+INBOX)
                             "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n"

@@ -355,24 +355,6 @@ Argument STRING-TO-TRANSFORM represents string to manipulate."
    (mapcar (lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform)))
 
 ;;;###autoload
-(defun aj/my-org-faces ()
-  "Set org faces how I like them."
-  (set-face-attribute     'org-level-1 nil                :height 1.0 :background nil)
-  (set-face-attribute     'outline-1   nil                :height 1.0)
-  (set-face-attribute     'outline-2   nil                :height 1.0)
-  (set-face-attribute     'outline-3   nil                :height 1.0)
-  (set-face-attribute     'outline-4   nil                :height 1.0)
-  (set-face-attribute     'org-level-2 nil                :height 1.0)
-  (set-face-attribute     'org-level-3 nil                :height 1.0)
-  (set-face-attribute     'org-level-4 nil                :height 1.0)
-  (set-face-attribute     'org-agenda-date nil            :height 1.0)
-  (set-face-attribute     'org-agenda-date-today    nil   :height 1.0)
-  (set-face-attribute     'org-agenda-date-weekend  nil   :height 1.0)
-  (set-face-attribute     'org-agenda-structure     nil   :height 1.0)
-  (setq org-fontify-whole-heading-line nil)
-  )
-
-;;;###autoload
 (defun aj-strike-through-org-headline ()
   "Strikes through headline in org mode."
   (interactive)
@@ -424,24 +406,6 @@ Argument X represents title of the new heading."
   (save-excursion
     (org-back-to-heading t)
     (org-set-tags-to nil)))
-
-;;;###autoload
-(defun individual-visibility-source-blocks ()
-  "Fold some blocks in the current buffer."
-  (interactive)
-  (org-show-block-all)
-  (org-block-map
-   (lambda ()
-     (let ((case-fold-search t))
-       (when (and
-              (save-excursion
-                (beginning-of-line 1)
-                (looking-at org-block-regexp))
-              (cl-assoc
-               ':hidden
-               (cl-third
-                (org-babel-get-src-block-info))))
-         (org-hide-block-toggle))))))
 
 ;;;###autoload
 (defun aj/insert-link-into-org-heading ()
@@ -678,9 +642,7 @@ On top of this refresh view."
 Only org files contributing to `org-agenda' are saved.
 Refreshed are `org-agenda' org `org-ql-view', depending on
 which one is currently active."
-  (save-some-buffers t (lambda ()
-                         (string= buffer-file-name
-                                  (car org-agenda-contributing-files))))
+  (org-save-all-org-buffers)
   (if (string-match "Org QL" (buffer-name))
       (org-ql-view-refresh)
     (org-agenda-redo)))
