@@ -496,7 +496,9 @@ if running under WSL")
   (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! info
-  (set-popup-rule! "*info*"            :vslot 2 :size 0.32 :side 'left :select t :transient nil :quit nil))
+  (set-popup-rule! "*info*"            :vslot 2 :size 0.32 :side 'left :select t :transient nil :quit nil)
+  (require 'ol-info)
+  )
 
 (after! ispell
   (setq ispell-program-name "aspell")
