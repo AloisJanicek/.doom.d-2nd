@@ -1,13 +1,12 @@
 ;;; functions.el --- Various functions for my emacs configuration
 ;;; ~/.doom.d/autoload/functions.el -*- lexical-binding: t; -*-
 
-;;;###autoload
-
 ;;; Commentary:
 ;; Various functions for my Emacs configuration
 
 ;;; Code:
 
+;;;###autoload
 (defun aj/decrypt-encrypt-private (file &optional encrypt)
   "Decrypt or encrypt whole content of a file FILE.
 Which operation will be executed depends on value of ENCRYPT."

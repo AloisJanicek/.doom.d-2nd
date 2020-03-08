@@ -1,9 +1,6 @@
 ;;; orgmode.el --- Functions I need for org-mode to work
 ;;; ~/.doom.d/autoload/org.el -*- lexical-binding: t; -*-
 
-;; ORG-REFILE
-
-;;;###autoload
 
 ;;; Commentary:
 ;; File represents loose collection of functions related to my
@@ -11,6 +8,8 @@
 
 ;;; Code:
 
+;; ORG-REFILE
+;;;###autoload
 (defun aj/org-refile-to-file-custom (file &optional headline)
   "Refile as new top level heading in specified file `FILE'.
 If headline `HEADLINE' is provided, use it as a refile target instead.
