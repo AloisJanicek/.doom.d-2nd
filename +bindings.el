@@ -22,7 +22,6 @@
  :ni "C-l" #'evil-window-right
  :i     "C-'"       #'forward-char
  :i     "C-;"       #'backward-char
- :i     "M-y"       #'counsel-yank-pop
  "M-s"       #'save-buffer
  "M-a"       #'mark-whole-buffer
  "M-q"       #'evil-quit-all
