@@ -1093,9 +1093,10 @@ Argument TEXT represents string being investigated."
 ;;;###autoload
 (defun aj/pdf-store-link-dispatch ()
   "Automatically decide what store link function to use based on file path."
-  (if (string-match "/Libraries" buffer-file-name)
-      (org-pdfview-calibre-store-link)
-    (org-pdfview-store-link)))
+  (when (eq major-mode 'pdf-view-mode)
+    (if (string-match "/Libraries" buffer-file-name)
+        (org-pdfview-calibre-store-link)
+      (org-pdfview-store-link))))
 
 ;;;###autoload
 (defun aj/org-update-org-ids-recursively ()
