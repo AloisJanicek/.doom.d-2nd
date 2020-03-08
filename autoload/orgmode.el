@@ -147,6 +147,7 @@ Works also in `org-agenda'."
         (call-interactively #'org-agenda-refile)
       (call-interactively #'org-refile))))
 
+;;;###autoload (autoload 'aj/refile/body "autoload/orgmode" nil t)
 (defhydra aj/refile (:color blue
                             :hint nil
                             :idle which-key-idle-delay
