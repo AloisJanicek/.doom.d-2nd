@@ -539,6 +539,7 @@
         )
 
       (:prefix ("t" . "toggle")
+        :desc "Undo-tree"                "u" #'undo-tree-visualize
         :desc "light/dark theme"         "t" (λ! (aj/toggle-two-doom-themes 'doom-one 'doom-solarized-light))
         :desc "Themes"                   "T" #'counsel-load-theme
         :desc "Modeline"                 "m" #'hide-mode-line-mode
