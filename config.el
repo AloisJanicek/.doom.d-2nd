@@ -286,6 +286,7 @@ if running under WSL")
   :config
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
   (advice-add #'org-ql-view-refresh :around #'doom-shut-up-a)
+  (advice-add #'org-ql-view-refresh :after (lambda (&rest _) (org-agenda-filter-apply aj/agenda-filter 'tag)))
   (advice-add #'org-ql-view--format-element :override #'aj/org-ql-view--format-element)
   )
 
