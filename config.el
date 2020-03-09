@@ -52,6 +52,15 @@ if running under WSL")
 
 (make-variable-buffer-local 'er/try-expand-list)
 
+(defvar aj/org-languages
+  '("awk" "C" "C++" "clojure" "css" "ditaa" "calc" "elisp" "eshell" "html" "php" "go" "rust"
+    "fortran" "gnuplot" "screen" "dot" "haskell" "java" "js" "latex" "ledger" "racket" "haskell"
+    "lilypond" "lisp" "lua" "matlab" "ocaml" "octave" "org" "oz" "perl" "plantuml"
+    "processing" "python" "R" "ruby" "sass" "scheme" "sed" "sh" "sql" "sqlite" "vala")
+  "List of Org mode code block language identifiers.
+ Useful when capturing code snippets.")
+
+(add-to-list 'org-modules 'ol-info)
 (setq user-mail-address "janicek.dev@gmail.com"
       user-full-name    "Alois Janíček"
       +refile-targets-with-headlines nil
@@ -604,7 +613,6 @@ if running under WSL")
   )
 
 (after! org
-
   ;; autoload missing encrypt / decrypt commands
   (unless
     (fboundp 'org-decrypt-entries)

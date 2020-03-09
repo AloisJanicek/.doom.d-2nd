@@ -212,20 +212,27 @@ _c_lock                     _P_roject journal      _x_private
 (defun my/org-capture-code-snippet (file source-buffer)
   "Build `org-mode' source block with code selected in `FILE'."
   (with-current-buffer source-buffer
-    (let ((code-snippet (buffer-substring-no-properties (mark) (point)))
-          (func-name (which-function))
-          (file-name (buffer-file-name))
-          (line-number (line-number-at-pos (region-beginning)))
-          (org-src-mode (my/org-capture-get-src-block-string major-mode)))
+    (let* ((code-snippet (or (when (eq major-mode 'pdf-view-mode)
+                               (pdf-view-active-region-text))
+                             (buffer-substring-no-properties (mark) (point))))
+           (func-name (which-function))
+           (file-name (or (buffer-file-name)
+                          (buffer-base-buffer (buffer-base-buffer))
+                          (buffer-name)
+                          ))
+           (line-number (line-number-at-pos (region-beginning)))
+           (isprogmode (cl-member
+                        (my/org-capture-get-src-block-string major-mode)
+                        aj/org-languages :test #'string-match-p))
+           (org-src-mode (if isprogmode
+                             (my/org-capture-get-src-block-string major-mode)
+                           (ivy-read "Chose language:" aj/org-languages))))
       (format
-       "from file:%s::%s
-in ~%s~
-\n
+       "\n
+in =%s=
 #+BEGIN_SRC %s
 %s
 #+END_SRC"
-       file-name
-       line-number
        func-name
        org-src-mode
        code-snippet))))
@@ -235,8 +242,13 @@ in ~%s~
   "Ask for file, headline and title of captured item."
   (interactive)
   (let* ((file (read-file-name "In file: " org-directory))
-         (headline (ivy-read "Under heading: " (org-get-header-list
-                                                (get-buffer (file-name-nondirectory file)))))
+         (headline
+          (substring-no-properties
+           (ivy-read "Under heading: "
+                     (org-ql-query
+                       :select '(org-get-heading t t t t)
+                       :from file
+                       :where '(level 1)))))
          (title (ivy-read "Choose title: " nil)))
     (aj/capture-code file headline title)))
 
@@ -248,6 +260,7 @@ If `HEADLINE' is nil, capture at top level at `FILE'."
   (let* ((source-buffer (current-buffer))
          (line (concat "* " title " :src:"
                        "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+                       "from: %a"
                        "\n%(my/org-capture-code-snippet \"%F\" source-buffer)"))
          (org-capture-templates (if headline
                                     `(("s" "code snippet" entry (file+headline ,file ,headline)
@@ -265,16 +278,26 @@ If `HEADLINE' is nil, capture at top level at `FILE'."
   ("y" (progn
          (when (not (featurep 'yankpad))
            (require 'yankpad))
-         (aj/capture-code yankpad-file (prin1-to-string major-mode)
+         (aj/capture-code yankpad-file
+                          (or (when (or (eq major-mode 'pdf-view-mode)
+                                        (eq major-mode 'ereader-mode))
+                                (ivy-read "Under heading: "
+                                          (org-ql-query
+                                            :select '(org-get-heading t t t t)
+                                            :from yankpad-file
+                                            :where '(level 1))))
+                              (prin1-to-string major-mode))
                           (ivy-read "Choose title: " nil))) "yankpad" )
   ("Y" (progn
          (when (not (featurep 'yankpad))
            (require 'yankpad))
          (aj/capture-code yankpad-file
-                          (ivy-read "Under heading"
-                                    (org-get-header-list
-                                     (get-buffer
-                                      (file-name-nondirectory yankpad-file))))
+                          (substring-no-properties
+                           (ivy-read "Under heading: "
+                                     (org-ql-query
+                                       :select '(org-get-heading t t t t)
+                                       :from yankpad-file
+                                       :where '(level 1))))
                           (ivy-read "Choose title: " nil))) "yankpad" )
   ("q" nil "exit")
   )
