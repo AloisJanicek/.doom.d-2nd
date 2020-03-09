@@ -74,7 +74,6 @@ if running under WSL")
       doom-theme 'doom-one
       all-the-icons-scale-factor 1
       +doom-quit-messages '("")
-      epg-pinentry-mode 'ask
       )
 
 (setq-default tab-width 2)
@@ -242,6 +241,9 @@ if running under WSL")
 (after! evil-snipe
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
   )
+
+(after! epg
+  (setq epg-pinentry-mode 'ask))
 
 (use-package! org-brain
   ;; :after org
