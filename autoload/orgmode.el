@@ -310,7 +310,7 @@ If HEADLINE, capture under it instead of top level."
                                        :select '(org-get-heading t t t t)
                                        :from yankpad-file
                                        :where '(level 1)))))) "Yankpad" )
-  ("k" (org-capture nil "c") "inbox")
+  ("k" (org-capture nil "k") "inbox")
   ("t" (org-capture nil "t") "task")
   ("j" (aj/capture-into-journal-in
         (ivy-read "Choose file: "

@@ -551,7 +551,7 @@ if running under WSL")
                            ("w" "Website" entry (file ,+INBOX)
                             "* %c :website:\n\n%U %?\n\n%:initial" :immediate-finish t :prepend t)
 
-                           ("c" "Capture" entry (file ,+INBOX)
+                           ("k" "Capture" entry (file ,+INBOX)
                             "* %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n%?"
                             :empty-lines 1 :prepend t)
 
