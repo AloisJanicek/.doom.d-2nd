@@ -770,6 +770,7 @@ Ensure I can run all `org-agenda' commands"
                                     )
                                   (org-ql-search `(,+INBOX)
                                     '(level 1)
+                                    :title "Inbox"
                                     :sort '(date)))
                                  ;; show all stucked "PROJECT" if any
                                  ((org-ql-query
@@ -806,6 +807,7 @@ Ensure I can run all `org-agenda' commands"
 
   ("i" (org-ql-search `(,+INBOX)
          '(level 1)
+         :title "Inbox"
          :sort '(date)) "inbox")
 
   ("n" (let ((org-agenda-tag-filter aj/agenda-filter))
@@ -836,14 +838,13 @@ Ensure I can run all `org-agenda' commands"
            :super-groups '((:auto-category t))
            :title "Projects")) "projects")
 
-  ("s" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (append (org-agenda-files)
-                                (aj/get-all-projectile-README-org-files t))
-           '(and (todo)
-                 (children (todo))
-                 (not (descendants (todo "NEXT"))))
-           :super-groups '((:auto-category t))
-           :title "Stucked Projects")) "stucked projects")
+  ("s" (org-ql-search (append (org-agenda-files)
+                              (aj/get-all-projectile-README-org-files t))
+         '(and (todo)
+               (children (todo))
+               (not (descendants (todo "NEXT"))))
+         :super-groups '((:auto-category t))
+         :title "Stucked Projects") "stucked projects")
 
   ("w" (aj/org-ql-simple-search-for-task "WAIT") "Wait")
 
