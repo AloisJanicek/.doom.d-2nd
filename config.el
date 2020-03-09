@@ -670,7 +670,7 @@ if running under WSL")
   (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t))
 
 (after! term
-  (add-hook! 'term-mode-hook #'hide-mode-line-mode)
+  (add-hook 'term-mode-hook #'hide-mode-line-mode)
   ;; remap keys for terminal with Evil
   (add-hook! term-mode :append #'aj/set-term-keys)
   (add-hook 'term-mode-hook (lambda () (interactive)(setq left-fringe-width 0
@@ -691,7 +691,7 @@ if running under WSL")
   )
 
 (after! vterm
-  (add-hook! 'vterm-mode-hook #'hide-mode-line-mode)
+  (add-hook 'vterm-mode-hook #'hide-mode-line-mode)
   (add-hook 'vterm-mode-hook (lambda () (interactive)(setq left-fringe-width 0
                                                            right-ringe-width 0))))
 
