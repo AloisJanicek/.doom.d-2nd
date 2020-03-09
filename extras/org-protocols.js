@@ -199,7 +199,7 @@
           //                                            + escapeIt(window.getSelection().toString()));
 
           // org-protocol://capture?template=X?url=URL?title=TITLE?body=BODY
-          openedWindow = window.open('org-protocol://capture?template=c&url='
+          openedWindow = window.open('org-protocol://capture?template=s&url='
                                      + getLocation()
                                      + '&title='
                                      + getTitle()

@@ -594,7 +594,7 @@ if running under WSL")
                               )
                             :immediate-finish t :empty-lines 1)
 
-                           ("c" "Code snippet" entry (file ,+INBOX)
+                           ("s" "Snippet" entry (file ,+INBOX)
                             ,(concat
                               "* %^{PROMPT} :src: \n"
                               ":PROPERTIES:\n"
