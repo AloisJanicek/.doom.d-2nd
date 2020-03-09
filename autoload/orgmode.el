@@ -59,8 +59,8 @@ If executed from agenda, use `org-agenda-refile' instead"
 
 ;;;###autoload
 (defun +org/refile-to-current-file (arg &optional file)
-  "Refile to current file.
- With a `\\[universal-argument]' ARG, do copy instead.
+  "Refile to current FILE.
+With a `\\[universal-argument]' ARG, do copy instead.
 Works also in `org-agenda'."
   (interactive "P")
   (let ((org-refile-targets `((,file :maxlevel . 10)))
@@ -74,7 +74,7 @@ Works also in `org-agenda'."
 ;;;###autoload
 (defun +org/refile-to-last-location (arg)
   "Refile to last stored location.
- With a `\\[universal-argument]' ARG, do copy instead.
+With a `\\[universal-argument]' ARG, do copy instead.
 Works also in `org-agenda'."
   (interactive "P")
   (or (assoc (plist-get org-bookmark-names-plist :last-refile)
@@ -91,7 +91,7 @@ Works also in `org-agenda'."
 ;;;###autoload
 (defun +org/refile-to-running-clock (arg)
   "Refile under running clock.
- With a `\\[universal-argument]' ARG, do copy instead.
+With a `\\[universal-argument]' ARG, do copy instead.
 Works also in `org-agenda'."
   (interactive "P")
   (unless (bound-and-true-p org-clock-current-task)
