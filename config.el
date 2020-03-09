@@ -989,3 +989,4 @@ if running under WSL")
              counsel-projectile-mode-hook
              )
            #'recenter-top-bottom)
+(remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)

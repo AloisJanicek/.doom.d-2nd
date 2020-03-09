@@ -547,6 +547,7 @@
         :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
         :desc "visual-line-mode"         "v" #'visual-line-mode
         :desc "whitespace-mode"         "w" #'whitespace-mode
+        :desc "writegood-mode"         "W" #'writegood-mode
         :desc "re-builder"                  "R" #'regexp-builder
         )
 
