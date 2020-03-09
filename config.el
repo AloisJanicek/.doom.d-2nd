@@ -899,8 +899,9 @@ if running under WSL")
     :kill-process-buffer-on-stop t))
 
 (after! prog-mode
-  (add-hook! 'prog-mode-hook #'goto-address-mode)
-  (add-hook! 'prog-mode-hook #'which-function-mode)
+  (add-hook 'prog-mode-hook #'goto-address-mode)
+  (add-hook 'prog-mode-hook #'which-function-mode)
+  (add-hook 'prog-mode-hook #'hs-hide-all)
   )
 
 (after! python
