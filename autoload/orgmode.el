@@ -228,16 +228,10 @@ Argument SOURCE-BUFFER is buffer visiting FILE."
            (org-src-mode (if isprogmode
                              (my/org-capture-get-src-block-string major-mode)
                            (ivy-read "Chose language:" aj/org-languages))))
-      (format
-       "
-in =%s=
-
-#+BEGIN_SRC %s
-%s
-#+END_SRC"
-       func-name
-       org-src-mode
-       code-snippet))))
+      (format "\nin =%s=\n\n#+BEGIN_SRC %s\n%s\n#+END_SRC"
+              func-name
+              org-src-mode
+              code-snippet))))
 
 ;;;###autoload
 (defun aj/capture-code-ask-where ()
