@@ -245,6 +245,9 @@ if running under WSL")
 (after! epg
   (setq epg-pinentry-mode 'ask))
 
+(after! geiser
+  (setq geiser-default-implementation 'guile))
+
 (use-package! org-brain
   ;; :after org
   :commands
