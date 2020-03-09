@@ -548,7 +548,9 @@ if running under WSL")
                               "%i\n"
                               "#+END_QUOTE\n"
                               )
-                            :immediate-finish t :prepend t)
+                            :immediate-finish t
+                            :prepend t
+                            )
 
                            ("L" "Protocol Link" entry (file ,+INBOX)
                             ,(concat
@@ -557,7 +559,9 @@ if running under WSL")
                               ":CREATED: %U\n"
                               ":END:\n\n"
                               )
-                            :immediate-finish t :prepend t)
+                            :immediate-finish t
+                            :prepend t
+                            )
 
                            ("w" "Website" entry (file ,+INBOX)
                             ,(concat
@@ -568,7 +572,9 @@ if running under WSL")
                               "%?\n\n"
                               "%:initial\n\n"
                               )
-                            :immediate-finish t :prepend t)
+                            :immediate-finish t
+                            :prepend t
+                            )
 
                            ("k" "Capture" entry (file ,+INBOX)
                             ,(concat
@@ -579,7 +585,9 @@ if running under WSL")
                               "%i\n"
                               "%?"
                               )
-                            :empty-lines 1 :prepend t)
+                            :empty-lines 1
+                            :prepend t
+                            )
 
                            ("y" "Yankpad" entry (file+function ,yankpad-file aj/org-get-yankpad-target)
                             ,(concat
@@ -592,7 +600,9 @@ if running under WSL")
                               "%i\n"
                               "#+END_SRC\n"
                               )
-                            :immediate-finish t :empty-lines 1)
+                            :immediate-finish t
+                            :empty-lines 1
+                            )
 
                            ("s" "Snippet" entry (file ,+INBOX)
                             ,(concat
@@ -605,7 +615,9 @@ if running under WSL")
                               "%i\n"
                               "#+END_SRC\n"
                               )
-                            :immediate-finish t :empty-lines 1)
+                            :immediate-finish t
+                            :empty-lines 1
+                            )
 
                            ("t" "Task" entry (file ,+INBOX)
                             ,(concat
@@ -644,7 +656,6 @@ if running under WSL")
                               "\n%^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
                            )
    )
-
   )
 
 (after! org-clock
