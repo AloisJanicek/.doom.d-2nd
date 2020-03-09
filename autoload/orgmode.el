@@ -275,6 +275,15 @@ If `HEADLINE' is nil, capture at top level at `FILE'."
   ("a" (aj/capture-code-ask-where) "ask" )
   ("c" (aj/capture-code +INBOX nil
                         (ivy-read "Choose title: " nil)) "inbox" )
+  ("q" nil "exit")
+  )
+
+;;;###autoload (autoload 'aj/capture/body "autoload/orgmode" nil t)
+(defhydra aj/capture (:color blue)
+  "Capture:"
+  ("d" (aj/capture-calendar-the-right-way) "calendar date")
+  ("c" (let ((hydra-hint-display-type 'message))
+         (aj/capture-code-hydra/body)) "code:")
   ("y" (progn
          (when (not (featurep 'yankpad))
            (require 'yankpad))
@@ -288,6 +297,7 @@ If `HEADLINE' is nil, capture at top level at `FILE'."
                                             :where '(level 1))))
                               (prin1-to-string major-mode))
                           (ivy-read "Choose title: " nil))) "yankpad" )
+
   ("Y" (progn
          (when (not (featurep 'yankpad))
            (require 'yankpad))
@@ -298,24 +308,15 @@ If `HEADLINE' is nil, capture at top level at `FILE'."
                                        :select '(org-get-heading t t t t)
                                        :from yankpad-file
                                        :where '(level 1))))
-                          (ivy-read "Choose title: " nil))) "yankpad" )
-  ("q" nil "exit")
-  )
-
-;;;###autoload (autoload 'aj/capture/body "autoload/orgmode" nil t)
-(defhydra aj/capture ()
-  "Capture:"
-  ("d" (aj/capture-calendar-the-right-way) "calendar date" :exit t)
-  ("c" (let ((hydra-hint-display-type 'message))
-         (aj/capture-code-hydra/body)) "code:" :exit t)
-  ("k" (org-capture nil "c") "inbox" :exit t)
-  ("t" (org-capture nil "t") "task" :exit t)
+                          (ivy-read "Choose title: " nil))) "Yankpad" )
+  ("k" (org-capture nil "c") "inbox")
+  ("t" (org-capture nil "t") "task")
   ("j" (aj/capture-into-journal-in
         (ivy-read "Choose file: "
                   (seq-filter
                    (lambda (file)
                      (not (string-match "inbox" file)))
-                   org-agenda-files))) "journal" :exit t)
+                   org-agenda-files))) "journal")
   ("q" nil "exit")
   )
 
