@@ -172,6 +172,9 @@ if running under WSL")
 (after! epg
   (setq epg-pinentry-mode 'ask))
 
+(after! epa
+  (setq epa-pinentry-mode 'ask))
+
 (after! evil
   (setq evil-move-cursor-back nil))
 
