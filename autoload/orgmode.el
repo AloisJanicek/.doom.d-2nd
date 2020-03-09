@@ -1144,9 +1144,10 @@ Argument TEXT represents string being investigated."
 ;;;###autoload
 (defun aj/get-all-org-files ()
   "Return all org files but without archived files."
-  (seq-filter (lambda (elt)
-                (not (string-match "org_archive" elt)))
-              (directory-files-recursively org-directory "org")))
+  (mapcar 'file-name-nondirectory
+          (seq-filter (lambda (elt)
+                        (not (string-match "org_archive" elt)))
+                      (directory-files-recursively org-directory "org"))))
 
 ;;;###autoload
 (defun aj/get-all-archived-org-files ()
