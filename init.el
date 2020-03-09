@@ -22,6 +22,7 @@
        doom-quit
        ;;fill-column
        hl-todo
+       ;;hydra
        ;;indent-guides
        modeline
        nav-flash
@@ -38,6 +39,7 @@
        vi-tilde-fringe
        window-select
        workspaces
+       zen
 
        :editor
        (evil +everywhere)
@@ -166,7 +168,6 @@
        ;;irc
        ;;(rss +org)
        ;;twitter
-       ;; (write +wordnut +langtool)
 
        :config
        ;;literate
