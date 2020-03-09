@@ -752,41 +752,41 @@ Ensure I can run all `org-agenda' commands"
 
 ;;;###autoload (autoload 'aj/gtd-agenda/body "autoload/orgmode" nil t)
 (defhydra aj/gtd-agenda (:color blue
-                             :body-pre
-                             (cond
-                              ;; show inbox if it is not empty
-                              ((org-ql-query
-                                 :select #'org-get-heading
-                                 :from +INBOX
-                                 :where '(level 1)
-                                 )
-                               (org-ql-search `(,+INBOX)
-                                 '(level 1)
-                                 :sort '(date)))
-                              ;; show all stucked "PROJECT" if any
-                              ((org-ql-query
-                                 :select #'org-get-heading
-                                 :from (append (org-agenda-files)
-                                               (aj/get-all-projectile-README-org-files t))
-                                 :where
-                                 '(and (todo)
-                                       (children (todo))
-                                       (not (descendants (todo "NEXT")))))
-                               (org-ql-search (append (org-agenda-files)
-                                                      (aj/get-all-projectile-README-org-files t))
-                                 '(and (todo)
-                                       (children (todo))
-                                       (not (descendants (todo "NEXT"))))
-                                 :super-groups '((:auto-category t))
-                                 :title "Stucked Projects"))
-                              ;; otherwise default to showing "NEXT" task
-                              (t (let ((org-agenda-tag-filter aj/agenda-filter))
-                                   (org-ql-search (append (org-agenda-files)
-                                                          (aj/get-all-projectile-README-org-files t))
-                                     '(and (todo "NEXT")
-                                           (not (ts-active)))
-                                     :sort '(date priority todo)
-                                     :super-groups '((:auto-category t)))))))
+                                :body-pre
+                                (cond
+                                 ;; show inbox if it is not empty
+                                 ((org-ql-query
+                                    :select #'org-get-heading
+                                    :from +INBOX
+                                    :where '(level 1)
+                                    )
+                                  (org-ql-search `(,+INBOX)
+                                    '(level 1)
+                                    :sort '(date)))
+                                 ;; show all stucked "PROJECT" if any
+                                 ((org-ql-query
+                                    :select #'org-get-heading
+                                    :from (append (org-agenda-files)
+                                                  (aj/get-all-projectile-README-org-files t))
+                                    :where
+                                    '(and (todo)
+                                          (children (todo))
+                                          (not (descendants (todo "NEXT")))))
+                                  (org-ql-search (append (org-agenda-files)
+                                                         (aj/get-all-projectile-README-org-files t))
+                                    '(and (todo)
+                                          (children (todo))
+                                          (not (descendants (todo "NEXT"))))
+                                    :super-groups '((:auto-category t))
+                                    :title "Stucked Projects"))
+                                 ;; otherwise default to showing "NEXT" task
+                                 (t (let ((org-agenda-tag-filter aj/agenda-filter))
+                                      (org-ql-search (append (org-agenda-files)
+                                                             (aj/get-all-projectile-README-org-files t))
+                                        '(and (todo "NEXT")
+                                              (not (ts-active)))
+                                        :sort '(date priority todo)
+                                        :super-groups '((:auto-category t)))))))
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
 
