@@ -740,14 +740,6 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
     (apply orig-fun args)))
 
 ;;;###autoload
-(defun my-set-org-agenda-type (&rest _)
-  "Temporarily hack for `org-ql-view'.
-Ensure I can run all `org-agenda' commands"
-  (when (and (not org-agenda-type)
-             (eq major-mode 'org-agenda-mode))
-    (set (make-local-variable 'org-agenda-type) 'agenda)))
-
-;;;###autoload
 (defun aj/org-ql-simple-search-for-task (task)
   "Search for task `TASK' via `org-ql'."
   (let ((org-agenda-tag-filter aj/agenda-filter))
