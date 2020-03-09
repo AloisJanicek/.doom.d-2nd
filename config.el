@@ -538,28 +538,79 @@ if running under WSL")
         '("◉")))
 
 (after! org-capture
+  (require 'yankpad)
   (add-hook 'org-capture-mode-hook #'aj/complete-all-tags-for-org)
   (setq
    org-capture-templates `(("p" "Protocol" entry (file ,+INBOX)
-                            "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE\n"
+                            ,(concat
+                              "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n\n"
+                              "#+BEGIN_QUOTE\n"
+                              "%i\n"
+                              "#+END_QUOTE\n"
+                              )
                             :immediate-finish t :prepend t)
 
                            ("L" "Protocol Link" entry (file ,+INBOX)
-                            "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n%u"
+                            ,(concat
+                              "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n\n"
+                              )
                             :immediate-finish t :prepend t)
 
                            ("w" "Website" entry (file ,+INBOX)
-                            "* %c :website:\n\n%U %?\n\n%:initial" :immediate-finish t :prepend t)
+                            ,(concat
+                              "* %c :website:\n\n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n\n"
+                              "%?\n\n"
+                              "%:initial\n\n"
+                              )
+                            :immediate-finish t :prepend t)
 
                            ("k" "Capture" entry (file ,+INBOX)
-                            "* %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n%?"
+                            ,(concat
+                              "* %^{PROMPT} \n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n\n"
+                              "%i\n"
+                              "%?"
+                              )
                             :empty-lines 1 :prepend t)
 
+                           ("c" "Code snippet" entry (file+function ,yankpad-file aj/org-get-yankpad-target)
+                            ,(concat
+                              "** %^{PROMPT} :src: \n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n\n"
+                              "from %a\n\n"
+                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
+                              "%i\n"
+                              "#+END_SRC\n\n"
+                              "%?"
+                              )
+                            :immediate-finish t :empty-lines 1)
+
                            ("t" "Task" entry (file ,+INBOX)
-                            ,(concat "* TO" "DO %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n%?")
+                            ,(concat
+                              "* TO" "DO %^{PROMPT} \n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n\n"
+                              "%i\n"
+                              "%?"
+                              )
                             :empty-lines 1 :prepend t)
                            )
    )
+
   )
 
 (after! org-clock

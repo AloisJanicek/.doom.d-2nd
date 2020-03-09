@@ -227,8 +227,12 @@ Argument SOURCE-BUFFER is buffer visiting FILE."
                         aj/org-languages :test #'string-match-p))
            (org-src-mode (if isprogmode
                              (my/org-capture-get-src-block-string major-mode)
-                           (ivy-read "Chose language:" aj/org-languages))))
-      (format "\nin =%s=\n\n#+BEGIN_SRC %s\n%s\n#+END_SRC"
+                           (ivy-read "Choose language:" aj/org-languages))))
+      (format (concat "in =%s=\n\n"
+                      "#+BEGIN_SRC %s\n"
+                      "%s"
+                      "#+END_SRC"
+                      )
               func-name
               org-src-mode
               code-snippet))))
@@ -254,10 +258,12 @@ Argument SOURCE-BUFFER is buffer visiting FILE."
 If HEADLINE, capture under it instead of top level."
   (interactive)
   (let* ((source-buffer (current-buffer))
-         (line (concat "* " title " :src:"
-                       "\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n"
-                       "from: %a"
-                       "\n%(my/org-capture-code-snippet \"%F\" source-buffer)"))
+         (line (concat "* " title " :src:\n"
+                       ":PROPERTIES:\n"
+                       ":CREATED: %U\n"
+                       ":END:\n\n"
+                       "from: %a\n\n"
+                       "%(my/org-capture-code-snippet \"%F\" source-buffer)"))
          (org-capture-templates (if headline
                                     `(("s" "code snippet" entry (file+headline ,file ,headline)
                                        ,line :immediate-finish t :empty-lines 1))
@@ -378,6 +384,20 @@ Use optional argument `WEEK' for ISO week format."
             (goto-char (point-max))
             (insert (format "* %s\n" headline)))))
     (org-capture nil "J")))
+
+;;;###autoload
+(defun aj/org-get-yankpad-target ()
+  "Find yankpad category to capture into."
+  (require 'yankpad)
+  (with-current-buffer (find-file-noselect yankpad-file)
+    (goto-char
+     (org-find-exact-headline-in-buffer
+      (ivy-read "Under heading: "
+                (org-ql-query
+                  :select '(org-get-heading t t t t)
+                  :from yankpad-file
+                  :where '(level 1)))
+      (find-buffer-visiting yankpad-file) t))))
 
 ;; ORG-MODE
 
