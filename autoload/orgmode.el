@@ -216,25 +216,17 @@ Argument SOURCE-BUFFER is buffer visiting FILE."
     (let* ((code-snippet (or (when (eq major-mode 'pdf-view-mode)
                                (pdf-view-active-region-text))
                              (buffer-substring-no-properties (mark) (point))))
-           (func-name (which-function))
-           (file-name (or (buffer-file-name)
-                          (buffer-base-buffer (buffer-base-buffer))
-                          (buffer-name)
-                          ))
-           (line-number (line-number-at-pos (region-beginning)))
            (isprogmode (cl-member
                         (my/org-capture-get-src-block-string major-mode)
                         aj/org-languages :test #'string-match-p))
-           (org-src-mode (if isprogmode
-                             (my/org-capture-get-src-block-string major-mode)
-                           (ivy-read "Choose language:" aj/org-languages))))
-      (format (concat "in =%s=\n\n"
-                      "#+BEGIN_SRC %s\n"
+           (src-identifier (if isprogmode
+                               (my/org-capture-get-src-block-string major-mode)
+                             (ivy-read "Choose language:" aj/org-languages))))
+      (format (concat "#+BEGIN_SRC %s\n"
                       "%s"
                       "#+END_SRC"
                       )
-              func-name
-              org-src-mode
+              src-identifier
               code-snippet))))
 
 ;;;###autoload
