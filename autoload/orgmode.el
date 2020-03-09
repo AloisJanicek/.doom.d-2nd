@@ -317,10 +317,11 @@ If HEADLINE, capture under it instead of top level."
 ;;;###autoload (autoload 'aj/capture-under-clock/body "autoload/orgmode" nil t)
 (defhydra aj/capture-under-clock (:color blue)
   "Code:"
-  ("e" (org-capture nil "ce") "entry" )
+  ("h" (org-capture nil "ce") "heading" )
   ("c" (org-capture nil "cc") "checkitem" )
   ("i" (org-capture nil "ci") "item" )
   ("t" (org-capture nil "ct") "text" )
+  ("s" (org-capture nil "cs") "source" )
   )
 
 ;;;###autoload

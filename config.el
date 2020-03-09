@@ -654,6 +654,21 @@ if running under WSL")
 
                            ("ct" "Text" plain (clock)
                               "\n%^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
+
+                           ("cs" "Snippet" entry (clock)
+                            ,(concat
+                              "* %^{PROMPT} :src: \n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n\n"
+                              "from %a\n\n"
+                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
+                              "%i\n"
+                              "#+END_SRC\n"
+                              )
+                            :immediate-finish t
+                            :empty-lines 1
+                            )
                            )
    )
   )
