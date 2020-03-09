@@ -39,6 +39,9 @@
  ;; "<f4>"      #'which-key-show-minor-mode-keymap
  ;; "<f5>"      #'which-key-show-keymap
  ;; :invme "H-o"       #'other-frame
+ (:prefix "z"
+   :n "A" #'hs-hide-all
+   )
  (:prefix "g"
    :n "2" #'avy-goto-char-2
    :n "h" #'avy-goto-char-timer

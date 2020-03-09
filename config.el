@@ -711,7 +711,7 @@ if running under WSL")
 (after! prog-mode
   (add-hook 'prog-mode-hook #'goto-address-mode)
   (add-hook 'prog-mode-hook #'which-function-mode)
-  (add-hook 'prog-mode-hook #'hs-hide-all)
+  ;; (add-hook 'prog-mode-hook #'hs-hide-all)
   )
 
 (after! python
