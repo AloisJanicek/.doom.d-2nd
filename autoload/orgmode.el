@@ -210,7 +210,8 @@ _c_lock                     _P_roject journal      _x_private
 ;;;###autoload
 ;; https://www.reddit.com/r/emacs/comments/8fg34h/capture_code_snippet_using_org_capture_template/
 (defun my/org-capture-code-snippet (file source-buffer)
-  "Build `org-mode' source block with code selected in `FILE'."
+  "Build `org-mode' source block with code selected in FILE.
+Argument SOURCE-BUFFER is buffer visiting FILE."
   (with-current-buffer source-buffer
     (let* ((code-snippet (or (when (eq major-mode 'pdf-view-mode)
                                (pdf-view-active-region-text))
@@ -228,8 +229,9 @@ _c_lock                     _P_roject journal      _x_private
                              (my/org-capture-get-src-block-string major-mode)
                            (ivy-read "Chose language:" aj/org-languages))))
       (format
-       "\n
+       "
 in =%s=
+
 #+BEGIN_SRC %s
 %s
 #+END_SRC"
@@ -250,16 +252,16 @@ in =%s=
                        :from file
                        :where '(level 1)))))
          (title (ivy-read "Choose title: " nil)))
-    (aj/capture-code file headline title)))
+    (aj/capture-code file title headline)))
 
 ;;;###autoload
-(defun aj/capture-code (&optional file headline title)
-  "Capture code snippet.
-If `HEADLINE' is nil, capture at top level at `FILE'."
+(defun aj/capture-code (file title &optional headline)
+  "Capture code snippet in FILE and called it TITLE.
+If HEADLINE, capture under it instead of top level."
   (interactive)
   (let* ((source-buffer (current-buffer))
          (line (concat "* " title " :src:"
-                       "\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
+                       "\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n"
                        "from: %a"
                        "\n%(my/org-capture-code-snippet \"%F\" source-buffer)"))
          (org-capture-templates (if headline
@@ -273,8 +275,7 @@ If `HEADLINE' is nil, capture at top level at `FILE'."
 (defhydra aj/capture-code-hydra (:color blue)
   "Code:"
   ("a" (aj/capture-code-ask-where) "ask" )
-  ("c" (aj/capture-code +INBOX nil
-                        (ivy-read "Choose title: " nil)) "inbox" )
+  ("c" (aj/capture-code +INBOX (ivy-read "Choose title: " nil) nil) "inbox" )
   ("q" nil "exit")
   )
 
@@ -288,6 +289,7 @@ If `HEADLINE' is nil, capture at top level at `FILE'."
          (when (not (featurep 'yankpad))
            (require 'yankpad))
          (aj/capture-code yankpad-file
+                          (ivy-read "Choose title: " nil)
                           (or (when (or (eq major-mode 'pdf-view-mode)
                                         (eq major-mode 'ereader-mode))
                                 (ivy-read "Under heading: "
@@ -295,20 +297,19 @@ If `HEADLINE' is nil, capture at top level at `FILE'."
                                             :select '(org-get-heading t t t t)
                                             :from yankpad-file
                                             :where '(level 1))))
-                              (prin1-to-string major-mode))
-                          (ivy-read "Choose title: " nil))) "yankpad" )
+                              (prin1-to-string major-mode)))) "yankpad" )
 
   ("Y" (progn
          (when (not (featurep 'yankpad))
            (require 'yankpad))
          (aj/capture-code yankpad-file
+                          (ivy-read "Choose title: " nil)
                           (substring-no-properties
                            (ivy-read "Under heading: "
                                      (org-ql-query
                                        :select '(org-get-heading t t t t)
                                        :from yankpad-file
-                                       :where '(level 1))))
-                          (ivy-read "Choose title: " nil))) "Yankpad" )
+                                       :where '(level 1)))))) "Yankpad" )
   ("k" (org-capture nil "c") "inbox")
   ("t" (org-capture nil "t") "task")
   ("j" (aj/capture-into-journal-in
