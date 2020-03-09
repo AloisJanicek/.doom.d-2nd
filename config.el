@@ -578,13 +578,13 @@ if running under WSL")
                               "* %^{PROMPT} \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
-                              ":END:\n\n"
+                              ":END:\n"
                               "%i\n"
                               "%?"
                               )
                             :empty-lines 1 :prepend t)
 
-                           ("c" "Code snippet" entry (file+function ,yankpad-file aj/org-get-yankpad-target)
+                           ("y" "Yankpad" entry (file+function ,yankpad-file aj/org-get-yankpad-target)
                             ,(concat
                               "** %^{PROMPT} :src: \n"
                               ":PROPERTIES:\n"
@@ -593,8 +593,20 @@ if running under WSL")
                               "from %a\n\n"
                               "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
                               "%i\n"
-                              "#+END_SRC\n\n"
-                              "%?"
+                              "#+END_SRC\n"
+                              )
+                            :immediate-finish t :empty-lines 1)
+
+                           ("c" "Code snippet" entry (file ,+INBOX)
+                            ,(concat
+                              "* %^{PROMPT} :src: \n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n\n"
+                              "from %a\n\n"
+                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
+                              "%i\n"
+                              "#+END_SRC\n"
                               )
                             :immediate-finish t :empty-lines 1)
 
