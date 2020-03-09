@@ -275,8 +275,10 @@ If HEADLINE, capture under it instead of top level."
 (defhydra aj/capture (:color blue)
   "Capture:"
   ("d" (aj/capture-calendar-the-right-way) "calendar date")
-  ("c" (let ((hydra-hint-display-type 'message))
+  ("C" (let ((hydra-hint-display-type 'message))
          (aj/capture-code-hydra/body)) "code:")
+  ("c" (let ((hydra-hint-display-type 'message))
+         (aj/capture-under-clock/body)) "clock:")
   ("y" (progn
          (when (not (featurep 'yankpad))
            (require 'yankpad))
@@ -290,7 +292,6 @@ If HEADLINE, capture under it instead of top level."
                                             :from yankpad-file
                                             :where '(level 1))))
                               (prin1-to-string major-mode)))) "yankpad" )
-
   ("Y" (progn
          (when (not (featurep 'yankpad))
            (require 'yankpad))
@@ -311,6 +312,15 @@ If HEADLINE, capture under it instead of top level."
                      (not (string-match "inbox" file)))
                    org-agenda-files))) "journal")
   ("q" nil "exit")
+  )
+
+;;;###autoload (autoload 'aj/capture-under-clock/body "autoload/orgmode" nil t)
+(defhydra aj/capture-under-clock (:color blue)
+  "Code:"
+  ("e" (org-capture nil "ce") "entry" )
+  ("c" (org-capture nil "cc") "checkitem" )
+  ("i" (org-capture nil "ci") "item" )
+  ("t" (org-capture nil "ct") "text" )
   )
 
 ;;;###autoload

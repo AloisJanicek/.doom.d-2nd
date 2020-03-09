@@ -616,7 +616,32 @@ if running under WSL")
                               "%i\n"
                               "%?"
                               )
-                            :empty-lines 1 :prepend t)
+                            :empty-lines 1
+                            :prepend t
+                            )
+
+                           ("c" "Clock")
+
+                           ("ce" "Entry" entry (clock)
+                            ,(concat
+                              "* %^{PROMPT} \n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n\n"
+                              "%i\n"
+                              "%?"
+                              )
+                            :empty-lines 1
+                            )
+
+                           ("cc" "Checkitem" checkitem (clock)
+                              "- [ ] %^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
+
+                           ("ci" "Item" item (clock)
+                              "- %^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
+
+                           ("ct" "Text" plain (clock)
+                              "\n%^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
                            )
    )
 
