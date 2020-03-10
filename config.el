@@ -142,6 +142,9 @@ if running under WSL")
         )
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
   (advice-add #'ivy-rich--ivy-switch-buffer-transformer :override #'+ivy-combined-buffer-transformer)
+  (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj/open-org-file-the-right-way)
+  (advice-add #'counsel-org-clock--run-context-action :around #'aj/open-org-file-the-right-way)
+  (advice-add #'counsel-org-clock--run-history-action :around #'aj/open-org-file-the-right-way)
   )
 
 (after! counsel-dash
@@ -677,7 +680,7 @@ if running under WSL")
   (advice-add #'org-clock-in :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add #'org-clock-out :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
-  (advice-add #'org-clock-goto :around #'aj/org-clock-goto-respect-me)
+  (advice-add #'org-brain-goto :around #'aj/open-org-file-the-right-way)
 
   (setq
    org-clock-report-include-clocking-task t

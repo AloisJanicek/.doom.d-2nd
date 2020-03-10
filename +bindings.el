@@ -586,11 +586,11 @@
           )
 
         :desc "link"                     "o" #'link-hint-open-link
+        :desc "Agenda headlines"         "h" #'counsel-org-agenda-headlines
         :desc "Agenda"                   "A" #'org-agenda
         :desc "agenda"              "a" (lambda ()
                                           (interactive)
                                           (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
-        ;; :desc "Clock"                    "c" #'aj/clock-menu
         :desc "Imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "Sidebar"                   "s" #'+treemacs/toggle
         )
@@ -744,7 +744,11 @@
         :desc "notes"        "n" (λ! (aj/find-org-file +TECHNICAL))
         :desc "org-dir"      "o" (λ! (aj/find-org-file org-directory))
         :desc "personal"     "p" (λ! (aj/find-org-file +PERSONAL))
-        :desc "grep"         "g" #'+default/org-notes-search
+        :desc "grep"         "g" (λ! (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+                                                #'aj/open-file-switch-create-indirect-buffer-per-persp)
+                                               ((symbol-function 'pop-to-buffer)
+                                                #'aj/open-file-switch-create-indirect-buffer-per-persp))
+                                       (+default/org-notes-search)))
         :desc "visualize"    "v" #'org-brain-visualize
         :desc "brain-goto"   "b" (λ! (org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
         :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))

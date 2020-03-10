@@ -987,14 +987,6 @@ split current window and displays `BUFFER' on the left."
   )
 
 ;;;###autoload
-(defun aj/org-clock-goto-respect-me (orig-fn &rest args)
-  "Please do what I want you to do. Thank you.
-Argument ORIG-FN represents advised function.
-Optional argument ARGS represents arguments of advise function."
-  (cl-letf (((symbol-function 'pop-to-buffer-same-window) #'aj/open-file-switch-create-indirect-buffer-per-persp))
-    (apply orig-fn args)))
-
-;;;###autoload
 (defun aj/update-org-clock-heading ()
   "Update `org-clock-heading'."
   (interactive)
