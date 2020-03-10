@@ -221,7 +221,7 @@ if running under WSL")
   )
 
 (after! format-all
-  (dolist (mode '(css-mode js2-mode scss-mode yaml-mode))
+  (dolist (mode '(css-mode js2-mode scss-mode yaml-mode html-mode web-mode))
     (add-to-list '+format-on-save-enabled-modes mode t)))
 
 (after! flycheck
