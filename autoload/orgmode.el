@@ -1051,37 +1051,69 @@ Argument TEXT represents string being investigated."
 
 ;; ORG LINKS
 ;;;###autoload
-(defun org-pdfview-calibre-open (link)
-  "Open Calibre LINK in `pdf-view-mode'."
-  (if (string-match "\\(.*\\)::\\([0-9]+\\)$"  link)
-      (let* ((path (concat +Reference (match-string 1 link)))
-             (page (string-to-number (match-string 2 link))))
-        (org-open-file path 1)
-        (pdf-view-goto-page page))
-    (org-open-file link 1)))
+(defun aj/org-calibre-follow (link)
+  "Follow \"calibre:\" links.
+Reconstruct full file path first.
+"
+  (let ((path
+         (concat +Reference
+                 (substring
+                  link
+                  (string-match "/Libraries" link)))))
+    (cond ((string-match ".epub" path)
+           (nov-org-link-follow path))
+          ((string-match ".pdf" path)
+           (org-pdfview-open path))
+          (t (message "Not supported file-type.")))))
+
+;;;###autoload
+(defun aj/pdf-epub-org-store-link-custom-dispatch ()
+  "Store link maybe as \"calibre:\".
+Otherwise dispatch default commands.
+"
+  (require 'nov)
+  (let* ((file (or nov-file-name
+                (buffer-file-name)))
+         (epub (string-match ".epub" file))
+         (pdf (string-match ".pdf" file))
+         (calibre (string-match "/Libraries" file)))
+    (cond (epub
+           (if calibre
+               (nov-org-calibre-link-store)
+             (nov-org-link-store)))
+          (pdf
+           (if calibre
+               (org-pdfview-calibre-store-link)
+             (org-pdfview-store-link)))
+          (t nil))))
 
 ;;;###autoload
 (defun org-pdfview-calibre-store-link ()
   "Store a link to a `pdf-view-mode' buffer representing PDF file from Calibre library."
-  (when (and (eq major-mode 'pdf-view-mode)
-             (string-match "/Libraries" buffer-file-name))
+  (when (eq major-mode 'pdf-view-mode)
     (let* ((calibre (string-match "/Libraries" buffer-file-name))
            (path (substring buffer-file-name calibre (length buffer-file-name)))
            (page (pdf-view-current-page))
            (type "calibre")
-           (link (concat type ":" path "::" (number-to-string page))))
+           (link (concat type ":" path "::" (number-to-string page)))
+           (file-name (file-name-base (buffer-file-name))))
       (org-store-link-props
        :type type
        :link link
-       :description path))))
+       :description (format "PDF file from Calibre Library: %s" file-name)))))
 
 ;;;###autoload
-(defun aj/pdf-store-link-dispatch ()
-  "Automatically decide what store link function to use based on file path."
-  (when (eq major-mode 'pdf-view-mode)
-    (if (string-match "/Libraries" buffer-file-name)
-        (org-pdfview-calibre-store-link)
-      (org-pdfview-store-link))))
+(defun nov-org-calibre-link-store ()
+  (when (and (eq major-mode 'nov-mode) nov-file-name)
+    (when (not (integerp nov-documents-index))
+      (setq nov-documents-index 0))
+    (let* ((calibre (string-match "/Libraries" nov-file-name))
+           (path (substring nov-file-name calibre (length nov-file-name)))
+           (file-name (file-name-base nov-file-name)))
+      (org-store-link-props
+       :type "nov"
+       :link (format "calibre:%s::%d:%d" path nov-documents-index (point))
+       :description (format "EPUB file from Calibre Library: %s" file-name)))))
 
 ;;;###autoload
 (defun aj/org-update-org-ids-recursively ()

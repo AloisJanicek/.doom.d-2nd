@@ -387,32 +387,8 @@ if running under WSL")
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
 
-  (quiet!
-   (org-link-set-parameters "pdfview"
-                            :follow #'org-pdfview-open
-                            :complete #'org-pdfview-complete-link)
-   (org-add-link-type "pdfview" 'org-pdfview-open)
-
-   ;; ... and custom calibre link
-   (org-link-set-parameters "calibre"
-                            :follow #'org-pdfview-calibre-open
-                            :store #'aj/pdf-store-link-dispatch)
-   (org-add-link-type "calibre" 'org-pdfview-calibre-open)
-   (add-hook 'org-store-link-functions #'aj/pdf-store-link-dispatch)
-
-   (add-to-list 'org-file-apps '("\\.pdf\\'" . (lambda (_file link)
-                                                 (if (string-match "Libraries" link)
-                                                     (org-pdfview-calibre-open link)
-                                                   (org-pdfview-open link)))))
-   (add-to-list 'org-file-apps '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (_file link)
-                                                                     (if (string-match "Libraries" link)
-                                                                         (org-pdfview-calibre-open link)
-                                                                       (org-pdfview-open link)))))
-   ;; adjust `org-file-apps' but preserve old functionality
-   (delete '("\\.pdf\\'" . (lambda (_file link) (org-pdfview-open link))) org-file-apps)
-   (delete '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (_file link) (org-pdfview-open link))) org-file-apps)
-
-   )
+  (org-link-set-parameters "pdfview" :follow #'org-pdfview-open)
+  (org-link-set-parameters "calibre" :follow #'aj/org-calibre-follow :store #'aj/pdf-epub-org-store-link-custom-dispatch)
 
   (setq
    ;; org-M-RET-may-split-line '((default . nil))
@@ -958,14 +934,19 @@ if running under WSL")
   )
 
 (use-package! nov
-  :mode ("\\.epub\\'" . nov-mode)
+  :after org
   :config
-  ;; (setq nov-text-width 80)
-  (setq nov-text-width t)
-  (setq visual-fill-column-center-text t)
+  (setq nov-text-width t
+        visual-fill-column-center-text t
+        nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
   (add-hook 'nov-mode-hook #'visual-line-mode)
   (add-hook 'nov-mode-hook #'visual-fill-column-mode)
   (add-hook 'nov-mode-hook #'hide-mode-line-mode)
+  (add-hook 'nov-mode-hook (lambda ()
+                             (setq-local doom-real-buffer-p t)))
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  (delete '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters)
+  (org-link-set-parameters "nov" :follow #'nov-org-link-follow)
   )
 
 (use-package! ob-javascript
