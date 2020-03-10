@@ -584,7 +584,8 @@
           )
 
         :desc "link"                     "o" #'link-hint-open-link
-        :desc "Agenda headlines"         "h" #'counsel-org-agenda-headlines
+        :desc "Agenda tasks"             "h" #'aj/org-notes-headlines
+        :desc "NEXT agenda tasks"        "n" (λ! (aj/org-notes-headlines "NEXT "))
         :desc "Agenda"                   "A" #'org-agenda
         :desc "agenda"              "a" (lambda ()
                                           (interactive)
@@ -607,7 +608,7 @@
         :desc "invalidate cache"         "i" #'projectile-invalidate-cache
         :desc "P README"                 "p" (lambda () (interactive)
                                                (aj/open-file-switch-create-indirect-buffer-per-persp
-                                                 (expand-file-name "README.org" (projectile-project-root))))
+                                                (expand-file-name "README.org" (projectile-project-root))))
         :desc "Switch"                   "s" #'counsel-projectile-switch-project
         :desc "add to known Projects"    "P" #'aj/projectile-add-known-project-and-save
         :desc "Services"                 "t" #'prodigy

@@ -1100,3 +1100,7 @@ if running under WSL")
              )
            #'recenter-top-bottom)
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
+
+;; (advice-add #'doom--org-headings :override #'my/doom--org-headings)
+(advice-add #'doom-completing-read-org-headings :override #'aj/doom-completing-read-org-headings)
+(advice-add #'aj/doom-completing-read-org-headings :around #'aj/open-org-file-the-right-way)

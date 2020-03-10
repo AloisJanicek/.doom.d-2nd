@@ -1106,6 +1106,78 @@ Argument TEXT represents string being investigated."
                 (string-match "org_archive" elt))
               (directory-files-recursively org-directory "org")))
 
-(provide 'orgmode)
+;;;###autoload
+(defun my/doom--org-headings (files &optional depth include-files)
+  "Search FILES for headings.
+Only include headings with todo keyword and do not apply
+doom's org buffer magic."
+  (require 'org)
+  (let* ((default-directory doom-docs-dir)
+         (depth (if (integerp depth) depth)))
+    (message "Loading search results...")
+    (unwind-protect
+        (delq
+         nil
+         (org-map-entries
+          (lambda ()
+            (cl-destructuring-bind (level _reduced-level todo _priority text tags)
+                (org-heading-components)
+              (when (and (or (null depth)
+                             (<= level depth))
+                         (or (null tags)
+                             (not (string-match-p ":TOC" tags)))
+                         todo)
+                (let ((path (org-get-outline-path)))
+                  (list
+                   (string-join
+                    (list
+                     (string-join
+                      (append (when include-files
+                                (list
+                                 todo
+                                 (or (+org-get-global-property "TITLE")
+                                     (file-relative-name (buffer-file-name)))))
+                              path
+                              (list
 
+                               (replace-regexp-in-string org-link-any-re "\\4" text)))
+                      " > ")
+                     tags)
+                    " ")
+                   (buffer-file-name)
+                   (point))))))
+          t 'agenda)))))
+
+;;;###autoload
+(defun aj/org-notes-headlines (&optional input)
+  "Jump to an task Org headline in `org-agenda-files'.
+Optionally search with INPUT"
+  (interactive)
+  (aj/doom-completing-read-org-headings
+   "Jump to org headline: " org-agenda-files 6 t input))
+
+;;;###autoload
+(defun aj/doom-completing-read-org-headings (prompt files &optional depth include-files initial-input extra-candidates)
+  "Read PROMPT and visit org-heading filtered from FILES.
+"
+  (let ((alist
+         (append (my/doom--org-headings files depth include-files)
+                 extra-candidates))
+        ivy-sort-functions-alist)
+    (if-let (result (completing-read prompt alist nil nil initial-input))
+        (cl-destructuring-bind (file &optional location)
+            (cdr (assoc result alist))
+          (find-file file)
+          (widen)
+          (cond ((functionp location)
+                 (funcall location))
+                (location
+                 (goto-char location)))
+          (save-excursion
+            (outline-show-subtree)
+            (org-narrow-to-subtree)
+            (outline-previous-visible-heading 1)))
+      (user-error "Aborted"))))
+
+(provide 'orgmode)
 ;;; orgmode.el ends here
