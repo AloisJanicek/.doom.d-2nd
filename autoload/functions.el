@@ -683,37 +683,11 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
 ;; IVY TWEAKS
 
 ;;;###autoload
-(defun +ivy-projectile-find-file-combined-transformer (str)
-  "Highlight entry STR that have been visited.
-This is the opposite of `counsel-projectile-find-file'. And apply all-the-icons"
-  (let ((s (format "%s\t%s"
-                   (propertize "\t" 'display (all-the-icons-icon-for-file str))
-                   str)))
-    (cond ((get-file-buffer (projectile-expand-root str))
-           (propertize s 'face '(:weight ultra-bold :slant italic)))
-          (t s))))
-
-;;;###autoload
-(defun +ivy-combined-buffer-transformer (str)
-  "Dim STR representing buffer if meets some conditions.
-Being special buffer, buffer whose file isn't in the current buffer,
-or being virtual buffer. Uses `ivy-rich' under the hood. And apply all-the-icons"
-  (let* ((buf (get-buffer str))
-         (mode (buffer-local-value 'major-mode buf))
-         (s (format "%s\t%s"
-                    (propertize "\t" 'display (or
-                                               (all-the-icons-ivy--icon-for-mode mode)
-                                               (all-the-icons-ivy--icon-for-mode (get mode 'derived-mode-parent))))
-                    (all-the-icons-ivy--buffer-propertize buf str))))
-    (propertize s 'face 'ivy-virtual)))
-
-;;;###autoload
 (defun ivy-pages-transformer-clear-string (header)
   "Return HEADER without start point.
 And without properties, images and other noise...
 Epub files often has very poor quality."
   (substring-no-properties (replace-regexp-in-string ":[0-9]+$" "" header)))
-
 
 ;; HOWDOYOUDO
 

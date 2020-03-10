@@ -90,12 +90,10 @@ if running under WSL")
                                   "/usr/bin/notify-send")))
 
 (after! all-the-icons-ivy
-  (dolist (cmd '( counsel-find-file
-                  counsel-file-jump
-                  projectile-find-file
-                  counsel-projectile-find-file
-                  counsel-dired-jump counsel-projectile-find-dir
-                  counsel-projectile-switch-project))
+  (dolist (cmd '( counsel-dired-jump
+                  counsel-projectile-find-dir
+                  counsel-projectile-switch-project
+                  ))
     (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
 (after! ansible-doc
@@ -141,7 +139,6 @@ if running under WSL")
         counsel-org-tags t
         )
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
-  (advice-add #'ivy-rich--ivy-switch-buffer-transformer :override #'+ivy-combined-buffer-transformer)
   (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj/open-org-file-the-right-way)
   (advice-add #'counsel-org-clock--run-context-action :around #'aj/open-org-file-the-right-way)
   (advice-add #'counsel-org-clock--run-history-action :around #'aj/open-org-file-the-right-way)
@@ -152,10 +149,6 @@ if running under WSL")
                                       (concat +BASE-HOME "AppData/Local/Zeal/Zeal/docsets")
                                     (concat +BASE-HOME ".local/share/Zeal")))
   (setq counsel-dash-browser-func 'eww)
-  )
-
-(after! counsel-projectile
-  (ivy-set-display-transformer #'counsel-projectile-find-file #'+ivy-projectile-find-file-combined-transformer)
   )
 
 (after! doom-modeline
