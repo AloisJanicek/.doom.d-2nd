@@ -21,9 +21,6 @@
 
 (package! define-word)
 
-(package! emacs-ereader
-  :recipe (:host github :repo "bddean/emacs-ereader" :files ("org-ebook.el" "ereader.el")))
-
 (package! google-translate)
 
 (package! esqlite)
@@ -53,6 +50,8 @@
 (package! ob-javascript
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*")))
 
+(package! nov)
+
 (package! org-brain
   :recipe (:host github :repo "Kungsgeten/org-brain"))
 
@@ -81,8 +80,6 @@
   :recipe (:host github :repo "AloisJanicek/x-path-walker"))
 
 (package! yankpad)
-
-(package! xml+)
 
 (package! zeal-at-point
   :recipe (:host github :repo "jinzhu/zeal-at-point"))

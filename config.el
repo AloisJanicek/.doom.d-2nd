@@ -419,12 +419,6 @@ if running under WSL")
    (delete '("\\.pdf\\'" . (lambda (_file link) (org-pdfview-open link))) org-file-apps)
    (delete '("\\.pdf::\\([[:digit:]]+\\)\\'" . (lambda (_file link) (org-pdfview-open link))) org-file-apps)
 
-   ;; ...and same thing for org-ebook
-   (org-link-set-parameters "ebook"
-                            :follow #'org-ebook-open
-                            :store #'org-ebook-store-link)
-   (org-add-link-type "ebook" 'org-ebook-open)
-   (add-hook 'org-store-link-functions #'org-ebook-store-link)
    )
 
   (setq
@@ -891,15 +885,6 @@ if running under WSL")
 (use-package! define-word
   :commands (define-word  define-word-at-point))
 
-(use-package! ereader
-  :commands (ereader-read-epub ereader-mode)
-  :mode ("\\.epub\\'". ereader-mode)
-  :config
-  (add-hook 'ereader-mode-hook #'hide-mode-line-mode)
-  (add-hook 'ereader-mode-hook #'visual-line-mode)
-  (add-hook 'ereader-mode-hook #'turn-off-solaire-mode)
-  )
-
 (use-package! esqlite
   :commands (esqlite-stream-open esqlite-read))
 
@@ -977,6 +962,17 @@ if running under WSL")
   (setq link-hint-avy-all-windows nil)
   )
 
+(use-package! nov
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  ;; (setq nov-text-width 80)
+  (setq nov-text-width t)
+  (setq visual-fill-column-center-text t)
+  (add-hook 'nov-mode-hook #'visual-line-mode)
+  (add-hook 'nov-mode-hook #'visual-fill-column-mode)
+  (add-hook 'nov-mode-hook #'hide-mode-line-mode)
+  )
+
 (use-package! ob-javascript
   :after ob-core
   :config
@@ -1016,10 +1012,6 @@ if running under WSL")
         org-brain-include-file-entries t
         org-brain-file-entries-use-title t
         )
-  )
-
-(use-package! org-ebook
-  :commands (org-ebook-open org-ebook-store-link)
   )
 
 (use-package! org-pdfview
@@ -1068,10 +1060,6 @@ if running under WSL")
 
 (use-package! systemd
   :commands (systemd-mode))
-
-;; needed for ereader
-(use-package! xml+
-  :commands (xml+-query--generic xml+-query-all xml+-query-first xml+-node-text xml+-node-text--helper))
 
 (use-package! x-path-walker
   :commands (helm-x-path-walker  x-path-get-mode))

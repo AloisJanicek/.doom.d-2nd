@@ -80,13 +80,6 @@
    :i "M-e" #'emmet-expand-line
    )
 
- (:after ereader
-   :map ereader-mode-map
-   :inmev "o" #'ivy-pages
-   :inmev "O" #'ereader-goto-chapter
-   :inmev "q" #'kill-buffer
-   )
-
  (:after flycheck
    :map flycheck-error-list-mode-map
    :ne                                        "j" #'flycheck-error-list-next-error
@@ -123,6 +116,11 @@
    :nm "K" #'Man-previous-section
    :nm "o" #'Man-goto-section
    :nm "f" #'ace-link-woman
+   )
+
+ (:after nov
+   :map nov-mode-map
+   :nm "q" #'kill-this-buffer
    )
 
  (:after org-colview
