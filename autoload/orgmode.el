@@ -179,7 +179,8 @@ _c_lock                     _P_roject journal      _x_private
   ("t" (lambda ()
          (interactive)
          (aj/org-refile-to-file-custom
-          (ivy-read "File: " (aj/get-all-org-files)))))
+          (ivy-read "File: "
+                    (aj/get-all-org-files)))))
   ("p" (lambda ()
          (interactive)
          (aj/org-refile-to-file
@@ -1094,10 +1095,9 @@ Argument TEXT represents string being investigated."
 ;;;###autoload
 (defun aj/get-all-org-files ()
   "Return all org files but without archived files."
-  (mapcar 'file-name-nondirectory
-          (seq-filter (lambda (elt)
-                        (not (string-match "org_archive" elt)))
-                      (directory-files-recursively org-directory "org"))))
+  (seq-filter (lambda (elt)
+                (not (string-match "org_archive" elt)))
+              (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
 (defun aj/get-all-archived-org-files ()
