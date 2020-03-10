@@ -390,8 +390,11 @@
    :m  "j" #'forward-button
    :m  "k" #'backward-button
    ;; :m  "RET" #'org-brain-goto-current
-   :m  "o" #'my/org-brain-goto-current
-   :m  "O" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
+   :m  "o" #'org-brain-goto-current
+   :m  "O" (λ! (org-brain-goto
+                (org-brain-entry-at-pt)
+                (lambda (buffer)
+                  (aj/open-file-switch-create-indirect-buffer-per-persp buffer t))))
    :m  "f" #'link-hint-open-link
    :m  "F" #'link-hint-open-link-and-brain-goto
    :m  "v" #'org-brain-visualize

@@ -493,7 +493,7 @@ if running under WSL")
                                              (org-agenda-redo))))
   (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
   (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
-  (advice-add #'org-agenda-switch-to :around #'aj/open-file-the-right-way-from-agenda)
+  (advice-add #'org-agenda-switch-to :around #'aj/open-org-file-the-right-way)
   (advice-add #'org-agenda-todo :after #'aj/save-and-refresh-agenda)
   (advice-add #'org-agenda-kill :after #'aj/save-and-refresh-agenda)
 
@@ -1004,6 +1004,8 @@ if running under WSL")
   (add-hook 'org-brain-visualize-mode-hook #'visual-line-mode)
   (advice-add #'org-brain-visualize :after #'aj/take-care-of-org-buffers)
   (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt)
+  (advice-add #'org-brain-goto :around #'aj/open-org-file-the-right-way)
+  (advice-add #'org-brain-goto-current :around #'aj/open-org-file-the-right-way)
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
         org-brain-path +TECHNICAL

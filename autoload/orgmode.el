@@ -604,46 +604,6 @@ Then moves the point to the end of the line."
      (expand-file-name "README.org" (projectile-project-root)))))
 
 ;;;###autoload
-(defun my/org-brain-goto (&optional entry goto-file-func)
-  "Go to buffer and position of org-brain ENTRY.
-If ENTRY isn't specified, ask for the ENTRY.
-Unless GOTO-FILE-FUNC is nil, use `pop-to-buffer-same-window' for opening the entry."
-  (interactive)
-  (when (not (featurep 'org-brain))
-    (require 'org-brain))
-  (let ((buffer (current-buffer))
-        (window (selected-window)))
-    (with-current-buffer buffer
-      (save-excursion
-        (org-brain-stop-wandering)
-        (unless entry (setq entry (org-brain-choose-entry "Entry: " 'all nil t)))
-        (let ((marker (org-brain-entry-marker entry)))
-          (apply (or goto-file-func #'pop-to-buffer-same-window)
-                 (list (marker-buffer marker)))
-          (widen)
-          (org-set-visibility-according-to-property)
-          (goto-char (marker-position marker))
-
-          (if (string-match "*" (thing-at-point 'line t))
-              (progn
-                (outline-show-branches)
-                (org-narrow-to-subtree))))
-        entry))
-    (select-window window)))
-
-;;;###autoload
-(defun my/org-brain-goto-current (&optional same-window)
-  "Use `org-brain-goto' on `org-brain-entry-at-pt', in other window..
-If run with `\\[universal-argument]', or SAME-WINDOW as t, use current window."
-  (interactive "P")
-  (require 'org-brain)
-  (if same-window
-      (my/org-brain-goto (org-brain-entry-at-pt))
-    (my/org-brain-goto (org-brain-entry-at-pt) (lambda (x)
-                                                 (aj/open-file-switch-create-indirect-buffer-per-persp x t))
-                       )))
-
-;;;###autoload
 (defun aj/org-brain-visualize-entry-at-pt ()
   "Helper function for direct visualizing of entry at point."
   (interactive)
@@ -667,7 +627,7 @@ If run with `\\[universal-argument]', or SAME-WINDOW as t, use current window."
     (require 'link-hint))
   (avy-with link-hint-open-link
     (link-hint--one :open)
-    (my/org-brain-goto-current)
+    (org-brain-goto-current)
     ))
 
 ;;;###autoload
@@ -741,13 +701,17 @@ which one is currently active."
     (org-agenda-redo)))
 
 ;;;###autoload
-(defun aj/open-file-the-right-way-from-agenda (orig-fun &rest args)
-  "This function is intended as an advice for `org-agenda'.
-It overrides `pop-to-buffer-same-window' with my heavily customized
-alternative `aj/open-file-switch-create-indirect-buffer-per-persp'.
+(defun aj/open-org-file-the-right-way (orig-fun &rest args)
+  "Advice any command opening `org-mode' files.
+For execution of advised command this functions overrides
+`pop-to-buffer-same-window' and `pop-to-buffer' with heavily
+customized alternative `aj/open-file-switch-create-indirect-buffer-per-persp'.
 Argument ORIG-FUN represents advised function.
 Optional argument ARGS are argument passed to `ORIG-FUN'."
-  (cl-letf (((symbol-function 'pop-to-buffer-same-window) #'aj/open-file-switch-create-indirect-buffer-per-persp))
+  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+             #'aj/open-file-switch-create-indirect-buffer-per-persp)
+            ((symbol-function 'pop-to-buffer)
+             #'aj/open-file-switch-create-indirect-buffer-per-persp))
     (apply orig-fun args)))
 
 ;;;###autoload
@@ -913,7 +877,8 @@ Optional argument INITIAL-INPUT is there and I don't why."
   )
 
 ;;;###autoload
-(defun aj/open-file-switch-create-indirect-buffer-per-persp (buffer-or-path)
+(defun aj/open-file-switch-create-indirect-buffer-per-persp (buffer-or-path
+                                                             &optional return-back)
   "Prevent your perspectives from being polluted with `org-mode' buffers.
 
 Argument `BUFFER-OR-PATH' can be either string representing full file path
@@ -928,41 +893,44 @@ This functions also removes source buffer from all perspectives without actually
 Use case: Having opened dozens of org files on background (not associated with any perspective)
 always ready for agenda, capture, refile, and similar stuff and only when you actually need to
 visit this file, bring it to current perspective as indirect buffer,
-so you can kill it as usual without affecting rest of the workflow."
+so you can kill it as usual without affecting rest of the workflow.
+
+When optional argument RETURN-BACK is true, return to original window on starting position."
   (if (and (stringp buffer-or-path)
            (not (get-file-buffer buffer-or-path)))
       (find-file-noselect buffer-or-path))
-  (if (not (eq buffer-or-path nil))
-      (let* ((pos (mark-marker))
-             (win (selected-window))
-             (persp-autokill-buffer-on-remove nil)
-             (file-name (if (stringp buffer-or-path)
-                            (file-name-nondirectory buffer-or-path)
-                          (file-name-nondirectory (buffer-file-name buffer-or-path))
-                          ))
-             (current-persp-name (persp-name (get-current-persp)))
-             (source-buffer (if (stringp buffer-or-path)
-                                file-name
-                              (buffer-name buffer-or-path)))
-             (persp-buffer-is-there (string-match (concat "-" current-persp-name) source-buffer))
-             (new-buffer (if (and (bufferp buffer-or-path) persp-buffer-is-there)
-                             file-name
-                           (concat source-buffer "-" current-persp-name)))
-             (select (if (eq major-mode 'org-agenda-mode) t))
-             )
-        (if (not persp-buffer-is-there)
-            (persp-remove-buffer (get-buffer source-buffer))
-          )
+  (when (not (eq buffer-or-path nil))
+    (let* ((pos (mark-marker))
+           (win (selected-window))
+           (persp-autokill-buffer-on-remove nil)
+           (file-name (if (stringp buffer-or-path)
+                          (file-name-nondirectory buffer-or-path)
+                        (file-name-nondirectory (buffer-file-name buffer-or-path))
+                        ))
+           (current-persp-name (persp-name (get-current-persp)))
+           (source-buffer (if (stringp buffer-or-path)
+                              file-name
+                            (buffer-name buffer-or-path)))
+           (persp-buffer-is-there (string-match (concat "-" current-persp-name) source-buffer))
+           (new-buffer (if (and (bufferp buffer-or-path) persp-buffer-is-there)
+                           file-name
+                         (concat source-buffer "-" current-persp-name)))
+           (select (if (eq major-mode 'org-agenda-mode) t)))
 
-        (if (not (get-buffer new-buffer))
-            (make-indirect-buffer (get-buffer source-buffer) new-buffer t))
-        (persp-add-buffer (get-buffer new-buffer))
-        (aj/find-me-window-for-org-buffer new-buffer)
-        )
+      (when (not persp-buffer-is-there)
+        (persp-remove-buffer (get-buffer source-buffer)))
 
-    (message "%s is not valid buffer" buffer-or-path)
-    )
-  )
+      (when (not (get-buffer new-buffer))
+        (make-indirect-buffer (get-buffer source-buffer) new-buffer t))
+
+      (persp-add-buffer (get-buffer new-buffer))
+      (aj/find-me-window-for-org-buffer new-buffer)
+
+      (when return-back
+        (select-window win)
+        (goto-char pos)))
+
+    (message "%s is not valid buffer" buffer-or-path)))
 
 ;;;###autoload
 (defun aj/find-me-window-for-org-buffer (buffer)
@@ -991,7 +959,7 @@ split current window and displays `BUFFER' on the left."
       (progn
         (when (and (or just-one from-brain) (not too-small))
           (if from-brain
-              (split-window (other-window 1) (floor (/ (window-width (other-window 1)) 1.6)) 'left)
+              (split-window (next-window) (floor (/ (window-width (next-window)) 1.6)) 'left)
             (split-window start-win (floor (/ (window-width start-win) 2.4)) 'right)))
         (if (or from-brain
                 (and too-small
