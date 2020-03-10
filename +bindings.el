@@ -740,19 +740,19 @@
         )
 
       (:prefix ("n" . "notes")
-        :desc "private"      "r" (λ! (aj/choose-note-to-indirect +PRIVATE))
-        :desc "notes"        "n" (λ! (aj/choose-note-to-indirect +TECHNICAL))
-        :desc "org-dir"      "o" (λ! (aj/choose-note-to-indirect org-directory))
-        :desc "personal"        "p" (λ! (aj/choose-note-to-indirect +PERSONAL))
+        :desc "private"      "r" (λ! (aj/find-org-file +PRIVATE))
+        :desc "notes"        "n" (λ! (aj/find-org-file +TECHNICAL))
+        :desc "org-dir"      "o" (λ! (aj/find-org-file org-directory))
+        :desc "personal"     "p" (λ! (aj/find-org-file +PERSONAL))
         :desc "grep"         "g" #'+default/org-notes-search
         :desc "visualize"    "v" #'org-brain-visualize
-        :desc "brain-goto"   "b" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
+        :desc "brain-goto"   "b" (λ! (org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
         :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
-        :desc "IDs"        "I" #'aj/org-update-org-ids-recursively
-        :desc "PRVT"        "P" #'aj/private-refile/body
+        :desc "IDs"          "I" #'aj/org-update-org-ids-recursively
+        :desc "PRVT"         "P" #'aj/private-refile/body
         :desc "query"        "q" #'org-ql-search
-        :desc "t"        "t" #'org-ql-sparse-tree
-        :desc "restore"        "z" #'+popup/restore
+        :desc "t"            "t" #'org-ql-sparse-tree
+        :desc "restore"      "z" #'+popup/restore
         )
 
       ;; "m" is localleader

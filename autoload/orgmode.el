@@ -862,20 +862,15 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
   )
 
 ;;;###autoload
-(defun aj/choose-note-to-indirect (&optional initial-input)
-  "Choose note and open it into indirect buffer.
-Optional argument INITIAL-INPUT is there and I don't why."
+(defun aj/find-org-file (dir)
+  "Find org file in DIR.
+Open it the way I like it."
   (interactive)
-  (ivy-read "Find file: " 'read-file-name-internal
-            :matcher #'counsel--find-file-matcher
-            :initial-input initial-input
-            :action #'aj/choose-note-to-indirect-action
-            :preselect (counsel--preselect-file)
-            :require-match 'confirm-after-completion
-            :history 'file-name-history
-            :keymap counsel-find-file-map
-            :caller 'counsel-find-file)
-  )
+  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+             #'aj/open-file-switch-create-indirect-buffer-per-persp)
+            ((symbol-function 'pop-to-buffer)
+             #'aj/open-file-switch-create-indirect-buffer-per-persp))
+    (counsel-find-file dir)))
 
 ;;;###autoload
 (defun aj/open-file-switch-create-indirect-buffer-per-persp (buffer-or-path
@@ -970,13 +965,6 @@ split current window and displays `BUFFER' on the left."
                                           (not (eq x start-win)))))
           (select-window start-win)))
       (switch-to-buffer buffer))))
-
-;;;###autoload
-(defun aj/choose-note-to-indirect-action (x)
-  "Find file X and open it always into new indirect buffer.
-Buffers are cheap."
-  (let ((path (expand-file-name x ivy--directory)))
-    (aj/open-file-switch-create-indirect-buffer-per-persp path)))
 
 ;; ORG-CLOCK AND ORG-POMODORO
 
