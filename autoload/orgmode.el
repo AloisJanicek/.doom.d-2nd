@@ -635,9 +635,10 @@ Then moves the point to the end of the line."
   "Get current org-brain entry.
 In `org-mode' this is the current headline, or the file.
 In `org-brain-visualize' just return `org-brain--vis-entry'.
-This works also with indirect buffers"
+
+This also works with indirect buffers and symbolic links."
   (cond ((eq major-mode 'org-mode)
-         (unless (string-prefix-p (expand-file-name org-brain-path)
+         (unless (string-prefix-p (file-truename (expand-file-name org-brain-path))
                                   (expand-file-name (buffer-file-name (buffer-base-buffer))))
            (error "Not in a brain file"))
          (if (ignore-errors (org-get-heading))
@@ -899,36 +900,36 @@ When optional argument RETURN-BACK is true, return to original window on startin
   (if (and (stringp buffer-or-path)
            (not (get-file-buffer buffer-or-path)))
       (find-file-noselect buffer-or-path))
-  (when (not (eq buffer-or-path nil))
-    (let* ((pos (mark-marker))
-           (win (selected-window))
-           (persp-autokill-buffer-on-remove nil)
-           (file-name (if (stringp buffer-or-path)
-                          (file-name-nondirectory buffer-or-path)
-                        (file-name-nondirectory (buffer-file-name buffer-or-path))
-                        ))
-           (current-persp-name (persp-name (get-current-persp)))
-           (source-buffer (if (stringp buffer-or-path)
-                              file-name
-                            (buffer-name buffer-or-path)))
-           (persp-buffer-is-there (string-match (concat "-" current-persp-name) source-buffer))
-           (new-buffer (if (and (bufferp buffer-or-path) persp-buffer-is-there)
-                           file-name
-                         (concat source-buffer "-" current-persp-name)))
-           (select (if (eq major-mode 'org-agenda-mode) t)))
+  (if (not (eq buffer-or-path nil))
+      (let* ((pos (mark-marker))
+             (win (selected-window))
+             (persp-autokill-buffer-on-remove nil)
+             (file-name (if (stringp buffer-or-path)
+                            (file-name-nondirectory buffer-or-path)
+                          (file-name-nondirectory (buffer-file-name buffer-or-path))
+                          ))
+             (current-persp-name (persp-name (get-current-persp)))
+             (source-buffer (if (stringp buffer-or-path)
+                                file-name
+                              (buffer-name buffer-or-path)))
+             (persp-buffer-is-there (string-match (concat "-" current-persp-name) source-buffer))
+             (new-buffer (if (and (bufferp buffer-or-path) persp-buffer-is-there)
+                             file-name
+                           (concat source-buffer "-" current-persp-name)))
+             (select (if (eq major-mode 'org-agenda-mode) t)))
 
-      (when (not persp-buffer-is-there)
-        (persp-remove-buffer (get-buffer source-buffer)))
+        (when (not persp-buffer-is-there)
+          (persp-remove-buffer (get-buffer source-buffer)))
 
-      (when (not (get-buffer new-buffer))
-        (make-indirect-buffer (get-buffer source-buffer) new-buffer t))
+        (when (not (get-buffer new-buffer))
+          (make-indirect-buffer (get-buffer source-buffer) new-buffer t))
 
-      (persp-add-buffer (get-buffer new-buffer))
-      (aj/find-me-window-for-org-buffer new-buffer)
+        (persp-add-buffer (get-buffer new-buffer))
+        (aj/find-me-window-for-org-buffer new-buffer)
 
-      (when return-back
-        (select-window win)
-        (goto-char pos)))
+        (when return-back
+          (select-window win)
+          (goto-char pos)))
 
     (message "%s is not valid buffer" buffer-or-path)))
 

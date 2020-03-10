@@ -745,7 +745,6 @@
         :desc "org-dir"      "o" (λ! (aj/choose-note-to-indirect org-directory))
         :desc "personal"        "p" (λ! (aj/choose-note-to-indirect +PERSONAL))
         :desc "grep"         "g" #'+default/org-notes-search
-        ;; :desc "visualize" "v" #'aj/visualize-brain-and-take-care-of-buffers
         :desc "visualize"    "v" #'org-brain-visualize
         :desc "brain-goto"   "b" (λ! (my/org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
         :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
