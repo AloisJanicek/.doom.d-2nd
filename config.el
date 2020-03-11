@@ -939,13 +939,14 @@ if running under WSL")
   (setq nov-text-width t
         visual-fill-column-center-text t
         nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
   (add-hook 'nov-mode-hook #'visual-line-mode)
   (add-hook 'nov-mode-hook #'visual-fill-column-mode)
   (add-hook 'nov-mode-hook #'hide-mode-line-mode)
   (add-hook 'nov-mode-hook #'doom-mark-buffer-as-real-h)
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (delete '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters)
-  (org-link-set-parameters "nov" :follow #'nov-org-link-follow)
+  (add-hook 'nov-mode-hook (lambda ()
+                             (delete '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters)
+                             (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
   )
 
 (use-package! ob-javascript
