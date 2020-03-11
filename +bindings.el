@@ -123,6 +123,7 @@
    :nm "q" #'kill-this-buffer
    :nm "C-j" nil
    :nm "C-k" nil
+   :nm "o" #'aj/nov-menu
    )
 
  (:after org-colview

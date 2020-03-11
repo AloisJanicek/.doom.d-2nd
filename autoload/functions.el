@@ -755,6 +755,74 @@ present, then search Stack Overflow with `howdoyou-query'.
       (howdoyou-query (concat lang " " error-message))
       (browse-url (concat google-base (replace-regexp-in-string " " "+" query))))))
 
+;;;###autoload
+(defun aj/nov-menu ()
+  "Chapter menu for nov-mode.
+After launching for the first time on a TOC page
+returned by `nov-goto-to', save list of all links
+into buffer local variable and make them accessible
+for browsing when subsequently launching this command
+from anywhere in the document after.
+"
+  (interactive)
+  (require 'link-hint)
+  (defvar-local aj/nov-menu-link nil)
+  (unless aj/nov-menu-link
+    (setq-local aj/nov-menu-link
+                (mapcar (lambda (item)
+                          (cdr item)) (aj/collect-all-links))))
+  (ivy-read "Open: " aj/nov-menu-link
+            :action (lambda (x)
+                      (interactive)
+                      (apply 'nov-visit-relative-file
+                             (nov-url-filename-and-target
+                              (plist-get (cdr x) :url)))
+                      (nov-browse-url))))
+
+;;;###autoload
+(defun aj/collect-all-links ()
+  "Collect all links in the current buffer.
+Coppie from `link-hint--collect-visible-links' of `link-hint'.
+"
+  (let (all-link-positions)
+    (dolist (type link-hint-types)
+      (setq all-link-positions
+            (append all-link-positions
+                    (aj/link-hint--collect (point-min) (point-max) type))))
+    (sort (cl-delete-duplicates all-link-positions
+                                :test #'link-hint--equal
+                                :from-end t)
+          #'link-hint--<)))
+
+;;;###autoload
+(defun aj/link-hint--collect (start end type)
+  "Between START and END in the current buffer, collect all links of TYPE.
+If the link TYPE does not satisfy the necessary predicates, return nil.
+Based on `link-hint--collect' from `link-hint'.
+"
+  (when (link-hint--type-valid-p type)
+    (save-excursion
+      (goto-char start)
+      (let ((current-window (get-buffer-window))
+            (next-func (get type :next))
+            (at-point-p (get type :at-point-p))
+            (num 1)
+            (separator " : ")
+            links
+            link-pos)
+        (while (setq link-pos (funcall next-func end))
+          (goto-char link-pos)
+          (push (list
+                 :text (concat (number-to-string num) separator (substring-no-properties (thing-at-point 'line) 0 -1))
+                 :pos link-pos
+                 :win current-window
+                 :args (funcall at-point-p)
+                 :url (get-text-property (point) 'shr-url)
+                 :type type)
+                links)
+          (setq num (+ num 1)))
+        links))))
+
 (provide 'functions)
 
 ;;; functions.el ends here
