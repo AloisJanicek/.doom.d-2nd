@@ -286,7 +286,7 @@ If HEADLINE, capture under it instead of top level."
          (aj/capture-code yankpad-file
                           (ivy-read "Choose title: " nil)
                           (or (when (or (eq major-mode 'pdf-view-mode)
-                                        (eq major-mode 'ereader-mode))
+                                        (eq major-mode 'nov-mode))
                                 (ivy-read "Under heading: "
                                           (org-ql-query
                                             :select '(org-get-heading t t t t)
