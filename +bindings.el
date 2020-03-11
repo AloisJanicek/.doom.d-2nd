@@ -121,6 +121,8 @@
  (:after nov
    :map nov-mode-map
    :nm "q" #'kill-this-buffer
+   :nm "C-j" nil
+   :nm "C-k" nil
    )
 
  (:after org-colview
