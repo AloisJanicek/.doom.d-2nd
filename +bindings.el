@@ -15,30 +15,23 @@
                    '+company/complete)))
 
 (map!
- "M-t"   #'+workspace/new
- :ni "C-k" #'evil-window-up
- :ni "C-j" #'evil-window-down
- :ni "C-h" #'evil-window-left
- :ni "C-l" #'evil-window-right
- :i     "C-'"       #'forward-char
- :i     "C-;"       #'backward-char
- "M-s"       #'save-buffer
+ "C-\\"      #'move-to-window-line-top-bottom
+ "C-s"       #'ispell-word
+ :i  "C-;"       #'backward-char
+ :i  "C-'"       #'forward-char
+ :ni "C-h"       #'evil-window-left
+ :ni "C-j"       #'evil-window-down
+ :ni "C-k"       #'evil-window-up
+ :ni "C-l"       #'evil-window-right
+ :ni "C-="       #'recenter-top-bottom
  "M-a"       #'mark-whole-buffer
- "M-q"       #'evil-quit-all
- "M-p"       #'ivy-yasnippet
  "M-f"       #'swiper
  "M-F"       #'swiper-all
+ "M-p"       #'ivy-yasnippet
+ "M-q"       #'evil-quit-all
  "M-s"       #'save-buffer
- "C-s"       #'ispell-word
- :in "C-="       #'recenter-top-bottom
- "C-\\"      #'move-to-window-line-top-bottom
- "C-<right>" #'next-buffer
- "C-<left>"  #'previous-buffer
- ;; "<f2>"      #'which-key-show-top-level
- ;; "<f3>"      #'which-key-show-major-mode
- ;; "<f4>"      #'which-key-show-minor-mode-keymap
- ;; "<f5>"      #'which-key-show-keymap
- ;; :invme "H-o"       #'other-frame
+ "M-s"       #'save-buffer
+ "M-t"       #'+workspace/new
  (:prefix "z"
    :n "A" #'hs-hide-all
    )
@@ -61,7 +54,7 @@
  (:after css-mode
    :map css-mode-map
    :localleader
-   :desc "Colors"        "c" #'counsel-colors-web
+   :desc "colors"        "c" #'counsel-colors-web
    )
 
  (:after counsel
@@ -82,8 +75,8 @@
 
  (:after flycheck
    :map flycheck-error-list-mode-map
-   :ne                                        "j" #'flycheck-error-list-next-error
-   :ne                                        "k" #'flycheck-error-list-previous-error
+   :ne "j" #'flycheck-error-list-next-error
+   :ne "k" #'flycheck-error-list-previous-error
    )
 
  (:after inferior-python
@@ -93,37 +86,34 @@
 
  (:after info
    :map Info-mode-map
-   :nemv     "o"      #'ace-link-info
-   :nemv     "q"      #'quit-window
+   :nemv "o"      #'ace-link-info
+   :nemv "q"      #'quit-window
    )
 
  (:after magit
    :map git-commit-mode-map
    :localleader
-   :desc "Finalize"        "f" #'with-editor-finish
-   :desc "Finalize"        "k" #'with-editor-cancel
+   :desc "finalize"        "f" #'with-editor-finish
+   :desc "cancel"          "k" #'with-editor-cancel
 
    :map magit-mode-map
    :iemnv "C-k" #'evil-window-up
-   ;; :iemnv "C-j" #'evil-window-down
-   ;; :iemnv "C-h" #'evil-window-left
-   ;; :iemnv "C-l" #'evil-window-right
    )
 
  (:after man
    :map Man-mode-map
+   :nm "f" #'ace-link-woman
    :nm "J" #'Man-next-section
    :nm "K" #'Man-previous-section
    :nm "o" #'Man-goto-section
-   :nm "f" #'ace-link-woman
    )
 
  (:after nov
    :map nov-mode-map
+   :nm "o" #'aj/nov-menu
    :nm "q" #'kill-this-buffer
    :nm "C-j" nil
    :nm "C-k" nil
-   :nm "o" #'aj/nov-menu
    )
 
  (:after org-colview
@@ -136,9 +126,9 @@
    :n   "J"     #'outline-next-visible-heading
    :n   "K"     #'outline-previous-visible-heading
 
-   :ni "C-k" nil
-   :ni "C-j" nil
    :ni "C-h" nil
+   :ni "C-j" nil
+   :ni "C-k" nil
    :ni "C-l" nil
 
    (:prefix "g"
@@ -151,7 +141,7 @@
    :localleader
    "B"  nil
    (:prefix ("B" . "babel")
-     :desc "tangle" "t" #'org-babel-tangle
+     :desc "tangle"  "t" #'org-babel-tangle
      :desc "execute" "e" #'org-babel-execute-maybe
      )
 
@@ -160,50 +150,50 @@
      :desc "item" "i" #'org-toggle-item
      )
 
-   :desc "Sort" "^" #'org-sort
+   :desc "sort" "^" #'org-sort
 
    "d" nil
 
    (:prefix ("d" . "decrypt")
      :desc "encrypt entry"     "e" #'org-encrypt-entry
-     :desc "Encrytp entries"     "E" #'org-encrypt-entries
-     :desc "decrypt entry"       "d" #'org-decrypt-entry
-     :desc "Decrypt entries"       "D" #'org-decrypt-entries
+     :desc "encrypt entries"   "E" #'org-encrypt-entries
+     :desc "decrypt entry"     "d" #'org-decrypt-entry
+     :desc "decrypt entries"   "D" #'org-decrypt-entries
      )
 
    :desc "Open"         "o" #'ace-link
 
    (:prefix ("g" . "tags")
-     :desc "Tags"           "g" #'counsel-org-tag
-     :desc "Search"         "s" #'org-tags-view
-     :desc "Region"         "r" #'org-change-tag-in-region
+     :desc "tags"           "g" #'counsel-org-tag
+     :desc "region"         "r" #'org-change-tag-in-region
+     :desc "search"         "s" #'org-tags-view
      )
 
-   :desc "Wiki"                "w" #'aj/org-menu-and-goto
+   :desc "wiki"                "w" #'aj/org-menu-and-goto
    "r" nil
-   :desc "Refile"              "r" #'aj/refile/body
+   :desc "refile"              "r" #'aj/refile/body
 
    "e" nil
    (:prefix ("e" . "export")
      :desc "dispatch"    "d" #'org-export-dispatch
 
      (:prefix ("i" . "ical")
-       :desc "current buffer"    "c" #'org-icalendar-export-to-ics
        :desc "agenda files"    "a" #'org-icalendar-combine-agenda-files
+       :desc "current buffer"  "c" #'org-icalendar-export-to-ics
        )
      )
 
    (:prefix ("c" . "clock")
-     :desc "Pomodoro"     "p" #'org-pomodoro
+     :desc "pomodoro"     "p" #'org-pomodoro
      )
 
    "l" nil
    (:prefix ("l" . "link")
-     :desc "store"            "s" #'org-store-link
-     :desc "insert"           "i" #'org-insert-link
      :desc "headline"         "h" #'aj/insert-link-into-org-heading
+     :desc "insert"           "i" #'org-insert-link
      :desc "list"             "l" #'aj/insert-link-into-org-list-item
      :desc "open"             "o" #'org-open-at-point
+     :desc "store"            "s" #'org-store-link
      )
 
    "f" nil
@@ -213,8 +203,8 @@
 
    "i" nil
    (:prefix ("i" . "insert")
-     :desc "id"                 "i" #'org-id-get-create
      :desc "drawer"             "d" #'org-insert-drawer
+     :desc "id"                 "i" #'org-id-get-create
 
      (:desc "timestamp:"          :prefix "t"
        :desc "active"               "a" #'org-time-stamp
@@ -223,61 +213,61 @@
      )
 
    (:prefix ("m" . "mind")
-     :desc "Visualize"    "v" #'aj/org-brain-visualize-entry-at-pt
+     :desc "visualize"    "v" #'aj/org-brain-visualize-entry-at-pt
 
      (:prefix ("a" . "add")
-       :desc "Parent"     "p" #'org-brain-add-parent
-       :desc "Child"      "c" #'org-brain-add-child
-       :desc "Friend"     "f" #'org-brain-add-friendship
-       :desc "Relationship"     "R" #'org-brain-add-relationship
-       :desc "Resource"     "r" #'org-brain-add-resource
+       :desc "child"        "c" #'org-brain-add-child
+       :desc "friend"       "f" #'org-brain-add-friendship
+       :desc "parent"       "p" #'org-brain-add-parent
+       :desc "relationship" "R" #'org-brain-add-relationship
+       :desc "resource"     "r" #'org-brain-add-resource
        )
 
      (:prefix ("g" . "goto")
-       :desc "Parent"     "p" #'org-brain-goto-parent
-       :desc "Child"      "c" #'org-brain-goto-child
-       :desc "Friend"     "f" #'org-brain-goto-friend
-       :desc "Current"     "C" #'org-brain-goto-current
-       :desc "End"     "e" #'org-brain-goto-end
-       :desc "Other window"     "o" #'org-brain-goto-other-window
+       :desc "child"        "c" #'org-brain-goto-child
+       :desc "current"      "C" #'org-brain-goto-current
+       :desc "end"          "e" #'org-brain-goto-end
+       :desc "friend"       "f" #'org-brain-goto-friend
+       :desc "other window" "o" #'org-brain-goto-other-window
+       :desc "parent"       "p" #'org-brain-goto-parent
        )
 
      (:prefix ("r" . "remove")
-       :desc "Child"     "c" #'org-brain-remove-child
-       :desc "Friendship"      "f" #'org-brain-remove-friendship
-       :desc "Parent"     "p" #'org-brain-remove-parent
+       :desc "child"      "c" #'org-brain-remove-child
+       :desc "friendship" "f" #'org-brain-remove-friendship
+       :desc "parent"     "p" #'org-brain-remove-parent
        )
      )
 
    (:prefix ("v" . "view")
-     :desc "Columns"          "c" #'org-columns
-     :desc "Widen"            "w" #'widen
-     :desc "Element"          "e" #'org-narrow-to-element
-     :desc "Block"            "b" #'org-narrow-to-block
-     :desc "Subtree"          "s" #'org-narrow-to-subtree
-     :desc "Sparse tree"      "p" #'org-sparse-tree
+     :desc "block"            "b" #'org-narrow-to-block
+     :desc "columns"          "c" #'org-columns
+     :desc "element"          "e" #'org-narrow-to-element
+     :desc "sparse tree"      "p" #'org-sparse-tree
+     :desc "subtree"          "s" #'org-narrow-to-subtree
+     :desc "widen"            "w" #'widen
      )
 
    :map evil-org-mode-map
    :localleader
    "d" nil
    (:prefix ("d" . "decrypt")
-     :desc "encrypt entry"     "e" #'org-encrypt-entry
-     :desc "Encrytp entries"     "E" #'org-encrypt-entries
-     :desc "decrypt entry"       "d" #'org-decrypt-entry
-     :desc "Decrypt entries"       "D" #'org-decrypt-entry
+     :desc "decrypt entries" "D" #'org-decrypt-entry
+     :desc "decrypt entry"   "d" #'org-decrypt-entry
+     :desc "encrypt entry"   "e" #'org-encrypt-entry
+     :desc "encrytp entries" "E" #'org-encrypt-entries
      )
 
    "c" nil
    (:prefix ("c" . "clock")
-     :desc "IN"           "i" #'org-clock-in
-     :desc "OUT"          "o" #'org-clock-out
-     :desc "Goto"         "g" #'org-clock-goto
-     :desc "Pomodoro"     "p" #'org-pomodoro
+     :desc "in"           "i" #'org-clock-in
+     :desc "out"          "o" #'org-clock-out
+     :desc "pomodoro"     "p" #'org-pomodoro
+     :desc "goto"         "g" #'org-clock-goto
      )
 
-   :desc "Todo"         "t" #'org-todo
-   :desc "Schedule"     "s" #'org-schedule
+   :desc "todo"         "t" #'org-todo
+   :desc "schedule"     "s" #'org-schedule
    )
 
  (:after evil-org-agenda
@@ -297,52 +287,45 @@
      )
 
    (:prefix ("c" . "clock")
-     :m         "t"     #'counsel-org-tag-agenda
      :m         "i"     #'org-agenda-clock-in
+     :m         "l"     #'visual-line-mode
+     :m         "m"     #'aj/clock-menu
      :m         "o"     #'org-agenda-clock-out
      :m         "p"     #'org-pomodoro
-     :m         "m"     #'aj/clock-menu
-     :m         "l"     #'visual-line-mode
+     :m         "t"     #'counsel-org-tag-agenda
      )
 
    :localleader
-   :desc "Refile"              "r" #'aj/refile/body
+   :desc "refile"              "r" #'aj/refile/body
    )
 
  (:after org-agenda
    :map org-agenda-mode-map
-   :mn                                      "t"     #'org-agenda-todo
-   :mn                                      "j"     #'org-agenda-next-item
-   :mn                                      "k"     #'org-agenda-previous-item
-   :mn                                      "z"     #'org-agenda-view-mode-dispatch
-   :mn                                      "o"     #'org-agenda-open-link
-   :iemnv "C-k" #'evil-window-up
-   :iemnv "C-j" #'evil-window-down
    :iemnv "C-h" #'evil-window-left
+   :iemnv "C-j" #'evil-window-down
+   :iemnv "C-k" #'evil-window-up
    :iemnv "C-l" #'evil-window-right
+   :mn    "j"   #'org-agenda-next-item
+   :mn    "k"   #'org-agenda-previous-item
+   :mn    "o"   #'org-agenda-open-link
+   :mn    "t"   #'org-agenda-todo
+   :mn    "z"   #'org-agenda-view-mode-dispatch
 
    "d" nil
    (:prefix ("d" . "do")
-     :m              "s"     #'org-agenda-schedule
      :m              "r"     #'aj/refile/body
+     :m              "s"     #'org-agenda-schedule
      )
 
    :localleader
-   :desc "Refile"              "r" #'aj/refile/body
+   :desc "refile"              "r" #'aj/refile/body
    )
 
  (:after org-brain
    :map org-brain-visualize-mode-map
-   ;; #'org-brain-rename-file
-   ;; #'org-brain-switch-brain
-   ;; #'org-brain-headline-to-file
-   ;; #'org-brain-update-id-locations
-   ;; #'org-brain-insert-relationships
-   ;; #'org-brain-create-relationships-from-links
-
-   :m "C-k" #'evil-window-up
-   :m "C-j" #'evil-window-down
    :m "C-h" #'evil-window-left
+   :m "C-j" #'evil-window-down
+   :m "C-k" #'evil-window-up
    :m "C-l" #'evil-window-right
    :m  "-" (λ! ()
                (org-brain-visualize-remove-grandparent)
@@ -352,52 +335,52 @@
                (org-brain-visualize-add-grandchild))
 
    (:prefix ("a" . "add")
-     :m  "p" #'org-brain-add-parent
      :m  "c" #'org-brain-add-child
      :m  "f" #'org-brain-add-friendship
+     :m  "p" #'org-brain-add-parent
      :m  "r" #'org-brain-add-resource
      )
 
    (:prefix ("s" . "set")
      :m  "a" #'org-brain-visualize-attach
-     :m  "T" #'org-brain-set-title
      :m  "t" #'org-brain-set-tags
+     :m  "T" #'org-brain-set-title
      )
 
    :m "p" #'org-brain-visualize-paste-resource
    :m "R" (λ! (org-brain-stop-wandering) (revert-buffer))
 
    (:prefix ("r" . "remove")
-     :m  "p" #'org-brain-remove-paren
      :m  "c" #'org-brain-remove-child
      :m  "f" #'org-brain-remove-friendship
+     :m  "p" #'org-brain-remove-paren
      )
 
    (:prefix ("d" . "do")
+     :m  "a" #'org-brain-archive
      :m  "d" #'org-brain-delete-entry
      :m  "p" #'org-brain-pin
-     :m  "a" #'org-brain-archive
      )
 
    :m  "N" #'org-brain-new-child
 
    (:prefix ("z" . "view")
-     :m  "m" #'org-brain-visualize-mind-map
      :m  "b" #'org-brain-visualize-back
+     :m  "m" #'org-brain-visualize-mind-map
      :m  "r" #'org-brain-visualize-random
      :m  "w" #'org-brain-visualize-wander
      )
 
+   ;; :m  "RET" #'org-brain-goto-current
+   :m  "f" #'link-hint-open-link
+   :m  "F" #'link-hint-open-link-and-brain-goto
    :m  "j" #'forward-button
    :m  "k" #'backward-button
-   ;; :m  "RET" #'org-brain-goto-current
    :m  "o" #'org-brain-goto-current
    :m  "O" (λ! (org-brain-goto
                 (org-brain-entry-at-pt)
                 (lambda (buffer)
                   (aj/open-file-switch-create-indirect-buffer-per-persp buffer t))))
-   :m  "f" #'link-hint-open-link
-   :m  "F" #'link-hint-open-link-and-brain-goto
    :m  "v" #'org-brain-visualize
    :m  "q" #'org-brain-visualize-quit
    )
@@ -406,15 +389,16 @@
    :map org-capture-mode-map
    :inve [escape]       #'org-capture-finalize
    :localleader
-   :desc "Schedule"     "s" #'org-schedule
-   :desc "Todo"         "t" #'org-todo
-   :desc "View-columns" "v" #'org-columns
-   :desc "Finalize"     "f" #'org-capture-finalize
-   :desc "Kill"         "k" #'org-capture-kill
-   :desc "Refile"       "r" #'org-capture-refile
-   :desc "Clock"        :prefix           "c"
-   :desc "clock-IN"     "i" #'org-clock-in
-   :desc "clock-OUT"    "o" #'org-clock-out
+   :desc "finalize"     "f" #'org-capture-finalize
+   :desc "kill"         "k" #'org-capture-kill
+   :desc "refile"       "r" #'org-capture-refile
+   :desc "schedule"     "s" #'org-schedule
+   :desc "todo"         "t" #'org-todo
+   :desc "view-columns" "v" #'org-columns
+   (:prefix ("c" . "clock")
+     :desc "in"     "i" #'org-clock-in
+     :desc "out"    "o" #'org-clock-out
+     )
    )
 
  (:after org-ql-view
@@ -431,7 +415,7 @@
    :m         "F"    #'aj/clear-filter-refresh-view
 
    :localleader
-   :desc "Refile"              "r" #'aj/refile/body
+   :desc "refile"              "r" #'aj/refile/body
    )
 
  (:after org-ql
@@ -450,8 +434,8 @@
    :n "j" #'pdf-view-next-line-or-next-page
    :n "k" #'pdf-view-previous-line-or-previous-page
    :n "l" #'org-store-link
-   :n "O" #'pdf-outline
    :n "o" #'counsel-imenu
+   :n "O" #'pdf-outline
    :n "y" #'pdf-view-kill-ring-save
    :n "q" (λ! (progn (brds/pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
    )
@@ -519,9 +503,9 @@
  (:after yasnippet
    :map snippet-mode-map
    :localleader
-   :desc "tryout"     "t" #'yas-tryout-snippet
-   :desc "load"       "l" #'yas-load-snippet-buffer
    :desc "load&close" "f" #'yas-load-snippet-buffer-and-close
+   :desc "load"       "l" #'yas-load-snippet-buffer
+   :desc "tryout"     "t" #'yas-tryout-snippet
    )
  )
 
@@ -530,137 +514,137 @@
       :desc "ivy-resume"                      "=" #'ivy-resume
 
       (:prefix ("q" . "quit")
-        :desc "Ask to save and quit"     "a" #'evil-quit-all
+        :desc "ask to save and quit"     "a" #'evil-quit-all
         )
 
       (:prefix ("e" . "encrypt")
-        :desc "encrypt region"                   "r" #'epa-encrypt-region
-        :desc "decrypt region"                   "R" #'epa-decrypt-region
-        :desc "encrypt file"                   "f" #'epa-encrypt-file
-        :desc "decrypt file"                   "F" #'epa-decrypt-file
         )
+      :desc "decrypt file"   "F" #'epa-decrypt-file
+      :desc "decrypt region" "R" #'epa-decrypt-region
+      :desc "encrypt file"   "f" #'epa-encrypt-file
+      :desc "encrypt region" "r" #'epa-encrypt-region
 
       (:prefix ("r" . "remote")
         :desc "backup"                   "b" #'aj/my-backup
         )
 
       (:prefix ("t" . "toggle")
-        :desc "Undo-tree"                "u" #'undo-tree-visualize
-        :desc "light/dark theme"         "t" (λ! (aj/toggle-two-doom-themes 'doom-one 'doom-solarized-light))
-        :desc "Themes"                   "T" #'counsel-load-theme
-        :desc "Modeline"                 "m" #'hide-mode-line-mode
-        :desc "Flyspell"                 "s" #'aj/enable-flyspell-check-if-prog
-        :desc "Swap dictionaries"        "S" (λ! (aj/swap-two-ispell-dicts "english" "czech"))
-        :desc "Highlight-blocks"         "B" #'highlight-blocks-mode
-        :desc "visual-line-mode"         "v" #'visual-line-mode
-        :desc "whitespace-mode"         "w" #'whitespace-mode
-        :desc "writegood-mode"         "W" #'writegood-mode
-        :desc "re-builder"                  "R" #'regexp-builder
+        :desc "highlight-blocks"  "B" #'highlight-blocks-mode
+        :desc "modeline"          "m" #'hide-mode-line-mode
+        :desc "re-builder"        "R" #'regexp-builder
+        :desc "flyspell"          "s" #'aj/enable-flyspell-check-if-prog
+        :desc "swap dictionaries" "S" (λ! (aj/swap-two-ispell-dicts "english" "czech"))
+        :desc "light/dark theme"  "t" (λ! (aj/toggle-two-doom-themes 'doom-one 'doom-solarized-light))
+        :desc "themes"            "T" #'counsel-load-theme
+        :desc "undo-tree"         "u" #'undo-tree-visualize
+        :desc "visual-line-mode"  "v" #'visual-line-mode
+        :desc "whitespace-mode"   "w" #'whitespace-mode
+        :desc "writegood-mode"    "W" #'writegood-mode
         )
 
       (:prefix ("y" . "yankpad")
+        :desc "repeat"          "."   #'yankpad-repeat
         :desc "append category" "a"   #'yankpad-append-category
         :desc "capture"         "c"   #'yankpad-capture-snippet
         :desc "edit"            "e"   #'yankpad-edit
-        :desc "expand"          "TAB" #'yankpad-expand
-        :desc "insert"          "y"   #'yankpad-insert
         :desc "map"             "m"   #'yankpad-map
         :desc "reload"          "r"   #'yankpad-reload
-        :desc "repeat"          "."   #'yankpad-repeat
         :desc "set category"    "s"   #'yankpad-set-category
+        :desc "expand"          "TAB" #'yankpad-expand
+        :desc "insert"          "y"   #'yankpad-insert
         )
 
       ;; universal argument     "u"
       (:prefix ("i" . "insert")
         :desc "entity"                   "e" #'counsel-org-entity
-        :desc "unicode"                  "u" #'counsel-unicode-char
         :desc "bash history"             "h" #'counsel-yank-bash-history
+        :desc "unicode"                  "u" #'counsel-unicode-char
         )
 
       (:prefix ("o" . "open")
-        :desc "clock"              "c" (lambda ()
-                                         (interactive)
-                                         (let ((hydra-hint-display-type 'message)) (aj/clocking/body)))
+        :desc "clock"                   "c" (lambda ()
+                                              (interactive)
+                                              (let ((hydra-hint-display-type 'message)) (aj/clocking/body)))
         (:prefix ("C" . "calibre")
-          :desc "technical"                     "c" (lambda! (aj/open-calibre-book (concat +Libraries "/Technical/")))
-          :desc "personal"                      "p" (lambda! (aj/open-calibre-book (concat +Libraries "/Personal/")))
+          :desc "technical"             "c" (lambda! (aj/open-calibre-book (concat +Libraries "/Technical/")))
+          :desc "personal"              "p" (lambda! (aj/open-calibre-book (concat +Libraries "/Personal/")))
           )
 
-        :desc "link"                     "o" #'link-hint-open-link
-        :desc "Agenda tasks"             "h" #'aj/org-notes-headlines
+        :desc "agenda"                   "A" #'org-agenda
+        :desc "agenda"                   "a" (lambda ()
+                                               (interactive)
+                                               (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
+        :desc "agenda tasks"             "h" #'aj/org-notes-headlines
+        :desc "imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "NEXT agenda tasks"        "n" (λ! (aj/org-notes-headlines "NEXT "))
-        :desc "Agenda"                   "A" #'org-agenda
-        :desc "agenda"              "a" (lambda ()
-                                          (interactive)
-                                          (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
-        :desc "Imenu-list"               "i" #'imenu-list-smart-toggle
-        :desc "Sidebar"                   "s" #'+treemacs/toggle
+        :desc "link"                     "o" #'link-hint-open-link
+        :desc "sidebar"                  "s" #'+treemacs/toggle
         )
 
       (:prefix ("p" . "project")
-        :desc "bookmark"                 "RET" #'counsel-projectile-bookmark
-        :desc "Agenda"                   "a" #'aj/agenda-project
-        :desc "Agenda All"               "A" #'aj/agenda-project-all
+        :desc "agenda"                   "a" #'aj/agenda-project
+        :desc "agenda All"               "A" #'aj/agenda-project-all
         :desc "bootstrap"                "B" #'aj/project-bootstrap
+        :desc "buffer"                   "b" #'counsel-projectile-switch-to-buffer
+        :desc "capture ALL "             "K" (λ! (aj/capture-into-project))
+        :desc "capture current"          "k" (λ! (aj/capture-into-project t))
         :desc "directories"              "d" #'counsel-projectile-find-dir
         :desc "files"                    "f" #'counsel-projectile-find-file
-        :desc "buffer"                   "b" #'counsel-projectile-switch-to-buffer
-        :desc "Kill project buffers"     "x" #'projectile-kill-buffers
-        :desc "Capture current"          "k" (λ! (aj/capture-into-project t))
-        :desc "Capture ALL "             "K" (λ! (aj/capture-into-project))
         :desc "invalidate cache"         "i" #'projectile-invalidate-cache
-        :desc "P README"                 "p" (lambda () (interactive)
+        :desc "kill project buffers"     "x" #'projectile-kill-buffers
+        :desc "add to known projects"    "P" #'aj/projectile-add-known-project-and-save
+        :desc "project README"           "p" (lambda () (interactive)
                                                (aj/open-file-switch-create-indirect-buffer-per-persp
                                                 (expand-file-name "README.org" (projectile-project-root))))
-        :desc "Switch"                   "s" #'counsel-projectile-switch-project
-        :desc "add to known Projects"    "P" #'aj/projectile-add-known-project-and-save
-        :desc "Services"                 "t" #'prodigy
-        :desc "set variable"             "v" #'projectile-edit-dir-locals
-        :desc "Remove"                   "R" #'projectile-remove-known-project
         :desc "grep"                     "g" #'+ivy/project-search
+        :desc "remove"                   "R" #'projectile-remove-known-project
+        :desc "services"                 "t" #'prodigy
+        :desc "set variable"             "v" #'projectile-edit-dir-locals
+        :desc "switch"                   "s" #'counsel-projectile-switch-project
+        :desc "bookmark"                 "RET" #'counsel-projectile-bookmark
         )
 
       ;; previous               "["
       ;; next                   "]"
-      :desc "agenda"              "a" (lambda ()
-                                        (interactive)
-                                        (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
+      :desc "agenda"                    "a" (lambda ()
+                                              (interactive)
+                                              (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
 
       (:prefix ("s" . "snippet")
-        :desc "Preview"                  "p" #'ivy-yasnippet
+        :desc "preview"                  "p" #'ivy-yasnippet
         )
 
       (:prefix ("d" . "dict")
-        :desc "word/stardict"            "s" #'sdcv-search-pointer
+        :desc "dictionary"               "d" (λ! (aj/add-thing-at-point-to-url
+                                                  "https://dictionary.com/browse/"))
+        :desc "google at point"          "g" #'google-translate-at-point
+        :desc "google at point reverse:" "G" #'google-translate-at-point-reverse
+        :desc "powerthesaurus synonym"   "j" #'powerthesaurus-lookup-word
+        :desc "wordnet synonym"          "J" #'synosaurus-lookup
+        :desc "wordnut"                  "k" #'wordnut-lookup-current-word
+        :desc "powerthesaurus replace"   "r" #'powerthesaurus-lookup-word-dwim
+        :desc "wordnet synonym replace"  "R" #'synosaurus-choose-and-replace
         :desc "input/stardict"           "i" #'sdcv-search-input
         :desc "online"                   "o" #'define-word
         :desc "online/point"             "p" #'define-word-at-point
+        :desc "word/stardict"            "s" #'sdcv-search-pointer
         :desc "webster"                  "w" (λ! (aj/add-thing-at-point-to-url
                                                   "https://www.merriam-webster.com/dictionary/"))
-        :desc "dictionary"               "d" (λ! (aj/add-thing-at-point-to-url
-                                                  "https://dictionary.com/browse/"))
-        :desc "powerthesaurus synonym"   "j" #'powerthesaurus-lookup-word
-        :desc "wordnet synonym"          "J" #'synosaurus-lookup
-        :desc "powerthesaurus replace"   "r" #'powerthesaurus-lookup-word-dwim
-        :desc "wordnet synonym replace"  "R" #'synosaurus-choose-and-replace
-        :desc "wordnut"                  "k" #'wordnut-lookup-current-word
-        :desc "google at point"          "g" #'google-translate-at-point
-        :desc "google at point reverse:" "G" #'google-translate-at-point-reverse
         )
 
       (:prefix ("f" . "file")
-        :desc "grep"              "g" (lambda ()
-                                        (interactive)
-                                        (let ((hydra-hint-display-type 'message))
-                                          (+default/search-cwd)))
         :desc "file"                     "f" #'counsel-find-file
+        :desc "grep"                     "g" (lambda ()
+                                               (interactive)
+                                               (let ((hydra-hint-display-type 'message))
+                                                 (+default/search-cwd)))
         :desc "jump file"                "j" #'counsel-file-jump
         :desc "jump dir"                 "k" #'counsel-dired-jump
         :desc "recent"                   "r" #'counsel-recentf
         :desc "tramp"                    "t" #'counsel-tramp
         )
 
-      (:desc "Follow"                    "F" #'link-hint-open-link)
+      (:desc "follow"                    "F" #'link-hint-open-link)
 
       (:prefix ("g" . "git")
         :desc "/log"                     "/" #'counsel-git-log
@@ -668,52 +652,51 @@
 
       (:prefix ("h" . "help")
         :desc "helpful-symbol"           "a" #'helpful-symbol
+        :desc "echo"                     "e" #'view-echo-area-messages
+        :desc "info"                     "i" #'info
+        :desc "info on symbol"           "I" #'counsel-info-lookup-symbol
+        :desc "manual"                   "m" #'man
+        :desc "pop on error"             "P" #'toggle-debug-on-error
+        :desc "search Web"               "S" #'counsel-web-search
+        ;; :desc "zeal search"              "s" #'zeal-at-point-search
+        :desc "stack Overflow"           "s" (lambda ()
+                                               (interactive)
+                                               (let ((hydra-hint-display-type 'message)) (aj/howdoyou/body)))
+        :desc "update-diff"              "u" #'obsoke/ediff-dotfile-and-template
+        :desc "zeal set buffer docset"   "Z" #'zeal-at-point-set-docset
+        :desc "zeal at point"            "z" #'zeal-at-point
+        :desc "dash docset"              "/" #'counsel-dash
         :desc "helpful-symbol"           "." (lambda ()
                                                (interactive)
                                                (if (string= (prin1-to-string major-mode) "emacs-lisp-mode")
                                                    (helpful-at-point)
                                                  (counsel-dash-at-point)))
-        :desc "update-diff"              "u" #'obsoke/ediff-dotfile-and-template
-        :desc "Info"                     "i" #'info
-        :desc "Info on symbol"           "I" #'counsel-info-lookup-symbol
-        :desc "Manual"                   "m" #'man
-        :desc "Echo"                     "e" #'view-echo-area-messages
-        :desc "Pop on error"             "P" #'toggle-debug-on-error
-        :desc "Dash docset"              "/" #'counsel-dash
-        :desc "Zeal at point"            "z" #'zeal-at-point
-        ;; :desc "Zeal search"              "s" #'zeal-at-point-search
-        :desc "Stack Overflow"              "s" (lambda ()
-                                                  (interactive)
-                                                  (let ((hydra-hint-display-type 'message)) (aj/howdoyou/body)))
-        :desc "Search Web"              "S" #'counsel-web-search
-        :desc "Zeal set buffer docset"   "Z" #'zeal-at-point-set-docset
         )
 
       (:prefix ("j" . "jump")
-        :desc "file"                     "f" #'counsel-file-jump
-        :desc "workspace"                "i" #'+workspace/switch-to
-        :desc "window"                   "o" #'ace-select-window
-        :desc "shell-buffer"             "s" #'counsel-switch-to-shell-buffer
-        :desc "word"                     "w" #'evil-avy-goto-word-1
-        :desc "Reference"                "r" (λ! (counsel-find-file +Reference))
-        :desc "line"                     "l" #'evil-avy-goto-line
-        :desc "directory"                "d" #'counsel-dired-jump
-        :desc "view"                     "v" #'ivy-switch-view
-        :desc "clock"                    "c" #'org-clock-jump-to-current-clock
         :desc "buffer"                   "b" #'counsel-ibuffer
+        :desc "clock"                    "c" #'org-clock-jump-to-current-clock
+        :desc "directory"                "d" #'counsel-dired-jump
+        :desc "file"                     "f" #'counsel-file-jump
+        :desc "line"                     "l" #'evil-avy-goto-line
         :desc "project bookmark"         "p" #'counsel-projectile-bookmark
+        :desc "shell-buffer"             "s" #'counsel-switch-to-shell-buffer
+        :desc "view"                     "v" #'ivy-switch-view
+        :desc "window"                   "o" #'ace-select-window
+        :desc "word"                     "w" #'evil-avy-goto-word-1
+        :desc "workspace"                "i" #'+workspace/switch-to
         )
 
-      :desc "capture"              "k" (lambda ()
-                                         (interactive)
-                                         (let ((hydra-hint-display-type 'message)) (aj/capture/body)))
+      :desc "capture"                    "k" (lambda ()
+                                               (interactive)
+                                               (let ((hydra-hint-display-type 'message)) (aj/capture/body)))
       (:prefix ("l" . "link")
-        :desc "Org-store-link"           "s" #'org-store-link
-        :desc "Org-copy-link"            "c" #'my-org-retrieve-url-from-point
-        :desc "Open"                     "f" #'link-hint-open-link
-        :desc "Open all links"           "a" #'link-hint-open-all-links
-        :desc "Copy"                     "c" #'link-hint-copy-link
-        :desc "Copy all links"           "C" #'link-hint-copy-all-links
+        :desc "open all links"           "a" #'link-hint-open-all-links
+        :desc "copy"                     "c" #'link-hint-copy-link
+        :desc "org-copy-link"            "c" #'my-org-retrieve-url-from-point
+        :desc "copy all links"           "C" #'link-hint-copy-all-links
+        :desc "open"                     "f" #'link-hint-open-link
+        :desc "org-store-link"           "s" #'org-store-link
         )
 
       ;; evil-ex                ";"
@@ -722,55 +705,56 @@
       ;; scratch-buffer         "x"
       (:prefix ("c" . "code")
         :desc "eval-last-sexp"           "s" #'eval-last-sexp
-        :desc "macro-expand"             "m" #'macrostep-expand
+        :desc "google this error"        "H" #'aj/flycheck-error-search
         :desc "imenu-outline"            "o" #'counsel-imenu
-        :desc "Howdoyou this error"      "h" (lambda () (interactive) (aj/flycheck-error-search t))
-        :desc "Google this error"        "H" #'aj/flycheck-error-search
-        :desc "Info about error"         "i" #'flycheck-explain-error-at-point
+        :desc "info about error"         "i" #'flycheck-explain-error-at-point
+        :desc "macro-expand"             "m" #'macrostep-expand
+        :desc "howdoyou this error"      "h" (lambda () (interactive) (aj/flycheck-error-search t))
         )
 
       (:prefix ("v" . "view")
-        :desc "brain-visualize"          "v" #'org-brain-visualize
         :desc "jump"                     "j" #'ivy-switch-view
-        :desc "save"                     "s" #'ivy-push-view
         :desc "pop"                      "p" #'ivy-pop-view
+        :desc "save"                     "s" #'ivy-push-view
+        :desc "brain-visualize"          "v" #'org-brain-visualize
         )
 
       (:prefix ("b" . "buffer")
-        :desc "List"                     "l" #'ibuffer-list-buffers
-        :desc "Kill buffers"             "K" #'kill-buffer
+        :desc "list"                     "l" #'ibuffer-list-buffers
+        :desc "kill buffers"             "K" #'kill-buffer
         )
 
       (:prefix ("n" . "notes")
-        :desc "private files"      "r" (λ! (aj/find-org-file +PRIVATE))
-        :desc "private headlines"  "R" (λ! (aj/jump-to-headline-at +PRIVATE 3))
+        :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
+        :desc "grep"               "g" (λ! (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+                                                      #'aj/open-file-switch-create-indirect-buffer-per-persp)
+                                                     ((symbol-function 'pop-to-buffer)
+                                                      #'aj/open-file-switch-create-indirect-buffer-per-persp))
+                                             (+default/org-notes-search)))
+        :desc "indirect"           "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
+        :desc "IDs"                "I" #'aj/org-update-org-ids-recursively
         :desc "notes"              "n" (λ! (aj/find-org-file +TECHNICAL))
         :desc "notes headlines"    "N" (λ! (aj/jump-to-headline-at +TECHNICAL 3))
         :desc "org-dir"            "o" (λ! (aj/find-org-file org-directory))
         :desc "personal"           "p" (λ! (aj/find-org-file +PERSONAL))
         :desc "personal headlines" "P" (λ! (aj/jump-to-headline-at +PERSONAL 3))
-        :desc "grep"               "g" (λ! (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-                                                #'aj/open-file-switch-create-indirect-buffer-per-persp)
-                                               ((symbol-function 'pop-to-buffer)
-                                                #'aj/open-file-switch-create-indirect-buffer-per-persp))
-                                       (+default/org-notes-search)))
-        :desc "visualize"          "v" #'org-brain-visualize
-        :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
-        :desc "indirect"           "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
-        :desc "IDs"                "I" #'aj/org-update-org-ids-recursively
-        :desc "PRVT"               "x" #'aj/private-refile/body
         :desc "query"              "q" #'org-ql-search
-        :desc "sparse tree"        "t" #'org-ql-sparse-tree
-        :desc "restore"            "z" #'+popup/restore
+        :desc "private files"      "r" (λ! (aj/find-org-file +PRIVATE))
+        :desc "private headlines"  "R" (λ! (aj/jump-to-headline-at +PRIVATE 3))
         :desc "headlines all"      "s" (λ! (aj/jump-to-headline-at (aj/get-all-org-files) 3))
         :desc "headlines all DEEP" "S" (λ! (aj/jump-to-headline-at (aj/get-all-org-files) 5))
+        :desc "sparse tree"        "t" #'org-ql-sparse-tree
+        :desc "visualize"          "v" #'org-brain-visualize
+        :desc "PRVT"               "x" #'aj/private-refile/body
+        :desc "restore"            "z" #'+popup/restore
         )
 
-      ;; "m" is localleader
+      ;; "m" :localleader
       ;; switch buffer          ","
-      :desc "Switch buffer"            "," #'persp-switch-to-buffer
-      ;; find file              ","
-      (:prefix ("/" . "search")
-        )
-      :desc "Bookmarks"                 "RET" #'my/counsel-bookmark-without-pdfs
+      :desc "switch buffer"            "," #'persp-switch-to-buffer
+      ;; find file              "."
+      ;; "/"
+
+      :desc "bookmarks"                 "RET" #'my/counsel-bookmark-without-pdfs
       )
+

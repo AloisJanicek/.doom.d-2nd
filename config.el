@@ -273,8 +273,9 @@ if running under WSL")
   )
 
 (after! ivy-posframe
-  (setf (alist-get t ivy-posframe-display-functions-alist)
-        #'ivy-posframe-display-at-frame-top-center)
+  (dolist (fn '(swiper-thing-at-point swiper-all swiper-all-thing-at-point t))
+    (setf (alist-get fn ivy-posframe-display-functions-alist)
+          #'ivy-display-function-fallback))
   (setq ivy-posframe-size-function (lambda () (list :height 20
                                                     :width (round (* (frame-width) 0.8))
                                                     :min-height 20
