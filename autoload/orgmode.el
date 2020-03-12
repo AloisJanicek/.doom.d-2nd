@@ -1056,13 +1056,13 @@ Argument TEXT represents string being investigated."
 ;;;###autoload
 (defun aj/org-calibre-follow (link)
   "Follow \"calibre:\" links.
-Reconstruct full file path first.
-"
+Reconstruct full file path first."
   (let ((path
-         (concat +Reference
-                 (substring
-                  link
-                  (string-match "/Libraries" link)))))
+         (file-truename
+          (concat +Reference
+                  (substring
+                   link
+                   (string-match "/Libraries" link))))))
     (cond ((string-match ".epub" path)
            (nov-org-link-follow path))
           ((string-match ".pdf" path)
