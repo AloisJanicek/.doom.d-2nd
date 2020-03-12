@@ -944,29 +944,29 @@ split current window and displays `BUFFER' on the left."
          (just-one (= (length (window-list)) 1))
          (from-brain (string-match "*org-brain*" start-win-name))
          (from-agenda (string-match "*Org QL View\\|*Org Agenda*" start-win-name))
-         (too-small (< (frame-width) 120))
-         (window (catch 'org-window
-                   (mapcar (lambda (x)
-                             (let* ((mode (buffer-mode (window-buffer x))))
-                               (if (eq 'org-mode mode)
-                                   (when (not from-agenda)
-                                     (throw 'org-window x)))))
-                           (window-list)))))
-    (if (windowp window)
+         (too-narrow (< (frame-width) 120))
+         (org-window (catch 'org-window
+                       (mapcar (lambda (win)
+                                 (let* ((mode (buffer-mode (window-buffer win))))
+                                   (if (eq 'org-mode mode)
+                                       (when (not from-agenda)
+                                         (throw 'org-window win)))))
+                               (window-list)))))
+    (if (windowp org-window)
         (progn
-          (select-window window t)
+          (select-window org-window t)
           (switch-to-buffer buffer))
       (progn
-        (when (and (or just-one from-brain) (not too-small))
+        (when (and (or just-one from-brain) (not too-narrow))
           (if from-brain
-              (split-window (next-window) (floor (/ (window-width (next-window)) 1.6)) 'left)
-            (split-window start-win (floor (/ (window-width start-win) 2.4)) 'right)))
+              (split-window (next-window) (floor (/ (frame-width) 1.95)) 'left)
+            (split-window start-win (floor (/ (frame-width) 2.8)) 'right)))
         (if (or from-brain
-                (and too-small
+                (and too-narrow
                      (not from-agenda)
                      (not just-one)))
-            (select-window (some-window (lambda (x)
-                                          (not (eq x start-win)))))
+            (select-window (some-window (lambda (win)
+                                          (not (eq win start-win)))))
           (select-window start-win)))
       (switch-to-buffer buffer))))
 
