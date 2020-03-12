@@ -544,7 +544,7 @@
         :desc "re-builder"        "R" #'regexp-builder
         :desc "flyspell"          "s" #'aj/enable-flyspell-check-if-prog
         :desc "swap dictionaries" "S" (λ! (aj/swap-two-ispell-dicts "english" "czech"))
-        :desc "light/dark theme"  "t" (λ! (aj/toggle-two-doom-themes 'doom-one 'doom-solarized-light))
+        :desc "light/dark theme"  "t" (λ! (aj/toggle-two-doom-themes 'doom-solarized-dark 'doom-solarized-light))
         :desc "themes"            "T" #'counsel-load-theme
         :desc "undo-tree"         "u" #'undo-tree-visualize
         :desc "visual-line-mode"  "v" #'visual-line-mode
