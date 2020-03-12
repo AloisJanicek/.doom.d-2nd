@@ -742,23 +742,28 @@
         )
 
       (:prefix ("n" . "notes")
-        :desc "private"      "r" (λ! (aj/find-org-file +PRIVATE))
-        :desc "notes"        "n" (λ! (aj/find-org-file +TECHNICAL))
-        :desc "org-dir"      "o" (λ! (aj/find-org-file org-directory))
-        :desc "personal"     "p" (λ! (aj/find-org-file +PERSONAL))
-        :desc "grep"         "g" (λ! (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+        :desc "private files"      "r" (λ! (aj/find-org-file +PRIVATE))
+        :desc "private headlines"  "R" (λ! (aj/jump-to-headline-at +PRIVATE 3))
+        :desc "notes"              "n" (λ! (aj/find-org-file +TECHNICAL))
+        :desc "notes headlines"    "N" (λ! (aj/jump-to-headline-at +TECHNICAL 3))
+        :desc "org-dir"            "o" (λ! (aj/find-org-file org-directory))
+        :desc "personal"           "p" (λ! (aj/find-org-file +PERSONAL))
+        :desc "personal headlines" "P" (λ! (aj/jump-to-headline-at +PERSONAL 3))
+        :desc "grep"               "g" (λ! (cl-letf (((symbol-function 'pop-to-buffer-same-window)
                                                 #'aj/open-file-switch-create-indirect-buffer-per-persp)
                                                ((symbol-function 'pop-to-buffer)
                                                 #'aj/open-file-switch-create-indirect-buffer-per-persp))
                                        (+default/org-notes-search)))
-        :desc "visualize"    "v" #'org-brain-visualize
-        :desc "brain-goto"   "b" (λ! (org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
-        :desc "indirect"     "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
-        :desc "IDs"          "I" #'aj/org-update-org-ids-recursively
-        :desc "PRVT"         "P" #'aj/private-refile/body
-        :desc "query"        "q" #'org-ql-search
-        :desc "t"            "t" #'org-ql-sparse-tree
-        :desc "restore"      "z" #'+popup/restore
+        :desc "visualize"          "v" #'org-brain-visualize
+        :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
+        :desc "indirect"           "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
+        :desc "IDs"                "I" #'aj/org-update-org-ids-recursively
+        :desc "PRVT"               "x" #'aj/private-refile/body
+        :desc "query"              "q" #'org-ql-search
+        :desc "sparse tree"        "t" #'org-ql-sparse-tree
+        :desc "restore"            "z" #'+popup/restore
+        :desc "headlines all"      "s" (λ! (aj/jump-to-headline-at (aj/get-all-org-files) 3))
+        :desc "headlines all DEEP" "S" (λ! (aj/jump-to-headline-at (aj/get-all-org-files) 5))
         )
 
       ;; "m" is localleader

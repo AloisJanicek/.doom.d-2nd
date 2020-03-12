@@ -1073,7 +1073,7 @@ Otherwise dispatch default commands.
 "
   (require 'nov)
   (let* ((file (or nov-file-name
-                (buffer-file-name)))
+                   (buffer-file-name)))
          (epub (string-match ".epub" file))
          (pdf (string-match ".pdf" file))
          (calibre (string-match "/Libraries" file)))
@@ -1206,10 +1206,55 @@ Optionally search with INPUT"
                 (location
                  (goto-char location)))
           (save-excursion
-            (outline-show-subtree)
+            (outline-show-branches)
             (org-narrow-to-subtree)
-            (outline-previous-visible-heading 1)))
+            (org-show-entry)))
       (user-error "Aborted"))))
+
+;;;###autoload
+(defun aj/jump-to-headline-at (directory level)
+  "Jump to headline in org files from DIRECTORY.
+Specify depth of the search with LEVEL."
+  (interactive)
+  (aj/doom-completing-read-org-headings
+   "Jump to org headline: " directory level t))
+
+;; Need this autoload
+;;;###autoload
+(defun doom--org-headings (files &optional depth include-files)
+  (require 'org)
+  (let* ((default-directory doom-docs-dir)
+         (org-agenda-files (mapcar #'expand-file-name (doom-enlist files)))
+         (depth (if (integerp depth) depth)))
+    (message "Loading search results...")
+    (unwind-protect
+        (delq
+         nil
+         (org-map-entries
+          (lambda ()
+            (cl-destructuring-bind (level _reduced-level _todo _priority text tags)
+                (org-heading-components)
+              (when (and (or (null depth)
+                             (<= level depth))
+                         (or (null tags)
+                             (not (string-match-p ":TOC" tags))))
+                (let ((path (org-get-outline-path)))
+                  (list (string-join
+                         (list (string-join
+                                (append (when include-files
+                                          (list (or (+org-get-global-property "TITLE")
+                                                    (file-relative-name (buffer-file-name)))))
+                                        path
+                                        (list (replace-regexp-in-string org-link-any-re "\\4" text)))
+                                " > ")
+                               tags)
+                         " ")
+                        (buffer-file-name)
+                        (point))))))
+          t 'agenda))
+      (mapc #'kill-buffer org-agenda-new-buffers)
+      (setq org-agenda-new-buffers nil))))
+
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
