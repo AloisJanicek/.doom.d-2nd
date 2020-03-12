@@ -37,6 +37,9 @@ if running under WSL")
 (defvar aj/agenda-filter nil
   "Variable for preserving filter choice between agenda views.")
 
+(defvar aj/gtd-agenda-no-auto nil
+  "When t, do not evaluate \":body-pre\" in `aj/gtd-agenda/body'.")
+
 (defvar hydra-stack nil
   "Holds names of hydras for display when nesting them.")
 

@@ -271,6 +271,15 @@
    )
 
  (:after evil-org-agenda
+   :map evil-org-agenda-mode-map
+   :m         "."    (lambda ()
+                       (interactive)
+                       (let ((hydra-hint-display-type 'message)
+                             (aj/gtd-agenda-no-auto t))
+                         (aj/gtd-agenda/body)))
+   (:prefix ("g" . "goto")
+     :m         "T"    #'org-agenda-goto-today
+     )
    :map org-agenda-mode-map
    :m         "f"     (λ! (org-agenda-filter-apply
                            (list (concat "+"
