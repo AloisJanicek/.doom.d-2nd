@@ -445,6 +445,7 @@
    :n "l" #'org-store-link
    :n "o" #'counsel-imenu
    :n "O" #'pdf-outline
+   :n "R" (λ! (brds/pdf-jump-last-viewed-bookmark))
    :n "y" #'pdf-view-kill-ring-save
    :n "q" (λ! (progn (brds/pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
    )
