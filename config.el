@@ -273,9 +273,11 @@ if running under WSL")
   )
 
 (after! ivy-posframe
-  (dolist (fn '(swiper-thing-at-point swiper-all swiper-all-thing-at-point t))
+  (dolist (fn '(swiper-thing-at-point swiper-all swiper-all-thing-at-point))
     (setf (alist-get fn ivy-posframe-display-functions-alist)
           #'ivy-display-function-fallback))
+  (setf (alist-get t ivy-posframe-display-functions-alist)
+        #'ivy-posframe-display-at-frame-top-center)
   (setq ivy-posframe-size-function (lambda () (list :height 20
                                                     :width (round (* (frame-width) 0.8))
                                                     :min-height 20
@@ -627,13 +629,13 @@ if running under WSL")
                             )
 
                            ("cc" "Checkitem" checkitem (clock)
-                              "- [ ] %^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
+                            "- [ ] %^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
 
                            ("ci" "Item" item (clock)
-                              "- %^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
+                            "- %^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
 
                            ("ct" "Text" plain (clock)
-                              "\n%^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
+                            "\n%^{PROMPT} \n" :empty-lines 1 :immediate-finish t)
 
                            ("cs" "Snippet" entry (clock)
                             ,(concat

@@ -12,31 +12,31 @@
 Which operation will be executed depends on value of ENCRYPT."
   (with-current-buffer (find-file-noselect file)
     (let* ((start (point-min))
-            (end (point-max))
-            (context (epg-make-context epa-protocol))
-            (coding (select-safe-coding-system start end))
-            (operation (if (not encrypt) "Decrypting" "Encrypting"))
-            (decoded (when (not encrypt)
-                       (decode-coding-string
-                         (epg-decrypt-string
-                           context
-                           (buffer-substring-no-properties start end))
-                         'utf-8)))
-            cipher)
+           (end (point-max))
+           (context (epg-make-context epa-protocol))
+           (coding (select-safe-coding-system start end))
+           (operation (if (not encrypt) "Decrypting" "Encrypting"))
+           (decoded (when (not encrypt)
+                      (decode-coding-string
+                       (epg-decrypt-string
+                        context
+                        (buffer-substring-no-properties start end))
+                       'utf-8)))
+           cipher)
       (when encrypt
         ;; (setf (epg-context-armor context) t)
         (setf (aref context 4) t)
         ;; (setf (epg-context-textmode context) t)
         (setf (aref context 5) t)
         (setq cipher (epg-encrypt-string context
-                       (encode-coding-string
-                         (buffer-substring start end) coding)
-                       (epa-select-keys context "Select") nil)))
+                                         (encode-coding-string
+                                          (buffer-substring start end) coding)
+                                         (epa-select-keys context "Select") nil)))
       (delete-region start end)
       (goto-char end)
       (if (not encrypt)
-        (insert decoded)
-      (insert cipher))
+          (insert decoded)
+        (insert cipher))
       (save-buffer)
       (message "%s ...done" operation))))
 
@@ -617,7 +617,7 @@ Optionally create associated repository on `gitlab'."
 When optional argument `EXISTING' is supplied, it returns only actual existing files."
   (let ((files (mapcar (lambda (project-path)
                          (expand-file-name aj/project-readme-task-file project-path))
-                 projectile-known-projects)))
+                       projectile-known-projects)))
     (if existing
         (seq-filter 'file-exists-p files) files)))
 
@@ -747,12 +747,12 @@ present, then search Stack Overflow with `howdoyou-query'.
 "
   (interactive)
   (let* ((google-base "https://www.google.com/search?q=")
-          (error-message (flycheck-error-message
-                           (car (flycheck-overlay-errors-at (point)))))
-          (lang (my/org-capture-get-src-block-string major-mode))
-          (query (concat lang " " error-message)))
+         (error-message (flycheck-error-message
+                         (car (flycheck-overlay-errors-at (point)))))
+         (lang (my/org-capture-get-src-block-string major-mode))
+         (query (concat lang " " error-message)))
     (if howdoyou
-      (howdoyou-query (concat lang " " error-message))
+        (howdoyou-query (concat lang " " error-message))
       (browse-url (concat google-base (replace-regexp-in-string " " "+" query))))))
 
 ;;;###autoload
@@ -822,6 +822,29 @@ Based on `link-hint--collect' from `link-hint'.
                 links)
           (setq num (+ num 1)))
         links))))
+
+;;;###autoload
+(defun spacemacs/sort-lines-by-column (&optional reverse)
+  "Sort lines by the selected column,
+using a visual block/rectangle selection.
+A non-nil argument sorts in reverse order."
+  (interactive "P")
+  (let* ((beg (region-beginning))
+         (end (progn (goto-char (region-end))  ; move cursor to the regions last line
+                     (move-to-column (1+ (evil-column beg)))
+                     (point))))  ; store point, one column right of regions start column
+    (if (and (or (region-active-p) (evil-visual-state-p)) ; is there an active region
+             (>= (1+ (- (line-number-at-pos end)          ; is the region height,
+                        (line-number-at-pos beg))) 2))    ; 2 or more lines
+        (sort-columns reverse beg end)
+      (error "Sorting by column needs a char/block region on 2 or more lines."))))
+
+;;;###autoload
+(defun spacemacs/sort-lines-by-column-reverse ()
+  "Sort lines by the selected column in reverse order,
+using a visual block/rectangle selection."
+  (interactive)
+  (spacemacs/sort-lines-by-column -1))
 
 (provide 'functions)
 

@@ -507,10 +507,12 @@
    :desc "load"       "l" #'yas-load-snippet-buffer
    :desc "tryout"     "t" #'yas-tryout-snippet
    )
+
  )
 
 ;; leader
 (map! :leader
+
       :desc "ivy-resume"                      "=" #'ivy-resume
 
       (:prefix ("q" . "quit")
@@ -518,15 +520,13 @@
         )
 
       (:prefix ("e" . "encrypt")
+        :desc "decrypt file"   "F" #'epa-decrypt-file
+        :desc "decrypt region" "R" #'epa-decrypt-region
+        :desc "encrypt file"   "f" #'epa-encrypt-file
+        :desc "encrypt region" "r" #'epa-encrypt-region
         )
-      :desc "decrypt file"   "F" #'epa-decrypt-file
-      :desc "decrypt region" "R" #'epa-decrypt-region
-      :desc "encrypt file"   "f" #'epa-encrypt-file
-      :desc "encrypt region" "r" #'epa-encrypt-region
 
-      (:prefix ("r" . "remote")
-        :desc "backup"                   "b" #'aj/my-backup
-        )
+      ;; (:prefix ("r" . "remote") )
 
       (:prefix ("t" . "toggle")
         :desc "highlight-blocks"  "B" #'highlight-blocks-mode
@@ -555,6 +555,7 @@
         )
 
       ;; universal argument     "u"
+
       (:prefix ("i" . "insert")
         :desc "entity"                   "e" #'counsel-org-entity
         :desc "bash history"             "h" #'counsel-yank-bash-history
@@ -605,10 +606,12 @@
         )
 
       ;; previous               "["
+
       ;; next                   "]"
-      :desc "agenda"                    "a" (lambda ()
-                                              (interactive)
-                                              (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
+      
+      :desc "agenda"    "a" (lambda ()
+                              (interactive)
+                              (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
 
       (:prefix ("s" . "snippet")
         :desc "preview"                  "p" #'ivy-yasnippet
@@ -644,7 +647,7 @@
         :desc "tramp"                    "t" #'counsel-tramp
         )
 
-      (:desc "follow"                    "F" #'link-hint-open-link)
+      (:desc "follow"   "F" #'link-hint-open-link)
 
       (:prefix ("g" . "git")
         :desc "/log"                     "/" #'counsel-git-log
@@ -687,9 +690,10 @@
         :desc "workspace"                "i" #'+workspace/switch-to
         )
 
-      :desc "capture"                    "k" (lambda ()
-                                               (interactive)
-                                               (let ((hydra-hint-display-type 'message)) (aj/capture/body)))
+      :desc "capture"   "k" (lambda ()
+                              (interactive)
+                              (let ((hydra-hint-display-type 'message)) (aj/capture/body)))
+
       (:prefix ("l" . "link")
         :desc "open all links"           "a" #'link-hint-open-all-links
         :desc "copy"                     "c" #'link-hint-copy-link
@@ -700,9 +704,13 @@
         )
 
       ;; evil-ex                ";"
+
       :desc "popup"     "'" #'+popup/toggle
-      ;; (:desc "zzzzzzzz" :prefix "z" )
+
+      ;; "z"
+
       ;; scratch-buffer         "x"
+     
       (:prefix ("c" . "code")
         :desc "eval-last-sexp"           "s" #'eval-last-sexp
         :desc "google this error"        "H" #'aj/flycheck-error-search
@@ -750,11 +758,16 @@
         )
 
       ;; "m" :localleader
+
       ;; switch buffer          ","
+
       :desc "switch buffer"            "," #'persp-switch-to-buffer
+
       ;; find file              "."
+     
       ;; "/"
 
       :desc "bookmarks"                 "RET" #'my/counsel-bookmark-without-pdfs
+
       )
 
