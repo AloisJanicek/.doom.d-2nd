@@ -1119,6 +1119,40 @@ Otherwise dispatch default commands.
        :description (format "EPUB file from Calibre Library: %s" file-name)))))
 
 ;;;###autoload
+(defun my/nov--find-file (file index point)
+  "Open FILE(nil means current buffer) in nov-mode and go to the specified INDEX and POSITION.
+Prevent opening same FILE into multiple windows or buffers. Always reuse them if possible."
+  (let ((same-epub-file-window
+         (car (seq-filter
+               (lambda (win)
+                 (with-selected-window win
+                   (if (and (string-match ".epub" (prin1-to-string win))
+                            (string-equal nov-file-name file))
+                       t nil)))
+               (window-list))))
+        (same-epub-file-buffer
+         (car (seq-filter
+               (lambda (buff)
+                 (with-current-buffer buff
+                   (if (and (string-match ".epub" (prin1-to-string buff))
+                            (string-equal nov-file-name file))
+                       t nil)))
+               (buffer-list)))))
+    (if same-epub-file-window
+        (select-window same-epub-file-window)
+      (if same-epub-file-buffer
+          (switch-to-buffer-other-window same-epub-file-buffer)
+        (when file
+          (find-file-other-window file))))
+    (unless (eq major-mode 'nov-mode)
+      (nov-mode))
+    (when (not (nov--index-valid-p nov-documents index))
+      (error "Invalid documents index"))
+    (setq nov-documents-index index)
+    (nov-render-document)
+    (goto-char point)))
+
+;;;###autoload
 (defun aj/org-update-org-ids-recursively ()
   "Get all files in `org-directory' recursively and update org IDs."
   (interactive)

@@ -966,6 +966,7 @@ if running under WSL")
   (add-hook 'nov-mode-hook (lambda ()
                              (delete '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters)
                              (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
+  (advice-add #'nov--find-file :override #'my/nov--find-file)
   )
 
 (use-package! ob-javascript
