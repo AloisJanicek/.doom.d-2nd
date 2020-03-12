@@ -643,7 +643,7 @@ if running under WSL")
   (advice-add #'org-clock-in :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add #'org-clock-out :after (lambda (&rest _) (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
-  (advice-add #'org-brain-goto :around #'aj/open-org-file-the-right-way)
+  (advice-add #'org-clock-goto :around #'aj/open-org-file-the-right-way)
   (advice-add #'org-clock-goto :after (lambda (&rest _) (interactive)
                                         (org-narrow-to-subtree)))
 
