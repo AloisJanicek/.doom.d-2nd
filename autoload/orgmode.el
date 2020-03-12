@@ -224,7 +224,7 @@ Argument SOURCE-BUFFER is buffer visiting FILE."
                                (my/org-capture-get-src-block-string major-mode)
                              (ivy-read "Choose language:" aj/org-languages))))
       (format (concat "#+BEGIN_SRC %s\n"
-                      "%s"
+                      "%s\n"
                       "#+END_SRC"
                       )
               src-identifier
