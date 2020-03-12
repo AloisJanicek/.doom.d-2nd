@@ -709,9 +709,7 @@ if running under WSL")
 
 (after! projectile
   (advice-add #'projectile-cleanup-known-projects :around #'doom-shut-up-a)
-  (setq projectile-globally-ignored-file-suffixes (append (list ".elc"))
-        projectile-globally-ignored-directories (append (list "node_modules"))
-        projectile-track-known-projects-automatically nil
+  (setq projectile-track-known-projects-automatically nil
         counsel-projectile-sort-projects t
         projectile-ignored-projects nil )
   )
