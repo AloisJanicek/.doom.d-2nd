@@ -5,19 +5,19 @@
 if running under WSL")
 
 (setq +BASE-HOME (if (aj/wsl-p)
-                     (concat "/mnt/c/Users/" (aj/return-wsl-user-name) "/")
+                     (expand-file-name (aj/return-wsl-user-name) "/mnt/c/Users/")
                    (setq +BASE-HOME (expand-file-name "~/"))))
 
-(defvar +Reference (concat +BASE-HOME "Documents/MEGAsync")
+(defvar +Reference (expand-file-name "Documents/MEGAsync" +BASE-HOME)
   "Location of Reference folder.")
 
-(defvar +Libraries (concat +Reference "/" "Libraries")
+(defvar +Libraries (expand-file-name "Libraries" +Reference)
   "Location of Calibre libraries.")
 
-(defvar +Repos (concat +BASE-HOME "repos/")
+(defvar +Repos (expand-file-name "repos" +BASE-HOME)
   "Location of Repos folder.")
 
-(setq org-directory (concat +BASE-HOME "Dropbox/org"))
+(setq org-directory (expand-file-name "Dropbox/org" +BASE-HOME))
 
 (defvar +INBOX (expand-file-name "inbox.org" org-directory)
   "File where all stuff goes initially.")
@@ -25,13 +25,13 @@ if running under WSL")
 (defvar +TASKS (expand-file-name "tasks.org" org-directory)
   "File where all stuff goes.")
 
-(defvar +TECHNICAL (concat org-directory "/technical")
+(defvar +TECHNICAL (expand-file-name "technical" org-directory)
   "Directory of technical notes.")
 
-(defvar +PERSONAL (concat org-directory "/personal")
+(defvar +PERSONAL (expand-file-name "personal" org-directory)
   "Directory of personal notes.")
 
-(defvar +PRIVATE (concat org-directory "/private")
+(defvar +PRIVATE (expand-file-name "private" org-directory)
   "Directory of private notes.")
 
 (defvar aj/agenda-filter nil
@@ -86,8 +86,8 @@ if running under WSL")
 (after! alert
   (setq alert-default-style 'libnotify)
   (setq alert-libnotify-command (if (aj/wsl-p)
-                                    (expand-file-name "notify-wsl" "~/.local/bin")
-                                  "/usr/bin/notify-send")))
+                                    (executable-find "notify-wsl")
+                                  (executable-find "notify-send"))))
 
 (after! all-the-icons-ivy
   (dolist (cmd '( counsel-dired-jump
@@ -146,8 +146,8 @@ if running under WSL")
 
 (after! counsel-dash
   (setq counsel-dash-docsets-path (if (aj/wsl-p)
-                                      (concat +BASE-HOME "AppData/Local/Zeal/Zeal/docsets")
-                                    (concat +BASE-HOME ".local/share/Zeal")))
+                                      (expand-file-name  "AppData/Local/Zeal/Zeal/docsets" +BASE-HOME)
+                                    (expand-file-name ".local/share/Zeal" +BASE-HOME)))
   (setq counsel-dash-browser-func 'eww)
   )
 
@@ -219,7 +219,7 @@ if running under WSL")
 
 (after! flycheck
   (flycheck-add-mode 'html-tidy 'web-mode)
-  (setq flycheck-tidyrc "~/.tidyrc"
+  (setq flycheck-tidyrc (expand-file-name "~/.tidyrc")
         flycheck-javascript-eslint-executable "eslint_d"
         flycheck-global-modes '(not org-mode)
         )
@@ -982,7 +982,7 @@ if running under WSL")
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
         org-brain-path +TECHNICAL
-        org-brain-data-file (expand-file-name ".org-brain-data.el" (concat user-emacs-directory ".local/cache"))
+        org-brain-data-file (expand-file-name ".org-brain-data.el" doom-cache-dir)
         org-brain-include-file-entries t
         org-brain-file-entries-use-title t
         )
