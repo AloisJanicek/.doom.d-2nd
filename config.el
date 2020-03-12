@@ -393,7 +393,6 @@ if running under WSL")
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
 
-  (org-link-set-parameters "pdfview" :follow #'org-pdfview-open)
   (org-link-set-parameters "calibre" :follow #'aj/org-calibre-follow :store #'aj/pdf-epub-org-store-link-custom-dispatch)
 
   (setq
@@ -706,12 +705,13 @@ if running under WSL")
                                   (pdf-view-midnight-minor-mode)
                                   (pdf-outline-imenu-enable)
                                   (set (make-local-variable 'evil-normal-state-cursor) (list nil))
+                                  (brds/pdf-jump-last-viewed-bookmark)
+                                  (setq org-link-parameters
+                                        (remove '("pdfview" :follow org-pdfview-open :complete org-pdfview-complete-link :store org-pdfview-store-link)
+                                                org-link-parameters))
+                                  (org-link-set-parameters "pdfview" :follow #'org-pdfview-open)
                                   ))
 
-  ;; workaround for pdf-tools not reopening to last-viewed page of the pdf:
-  ;; https://github.com/politza/pdf-tools/issues/18#issuecomment-269515117
-  ;; https://github.com/politza/pdf-tools/issues/18#issuecomment-532175227
-  (add-hook 'pdf-view-mode-hook #'brds/pdf-jump-last-viewed-bookmark)
   )
 
 (after! persp-mode
@@ -964,7 +964,8 @@ if running under WSL")
   (add-hook 'nov-mode-hook #'hide-mode-line-mode)
   (add-hook 'nov-mode-hook #'doom-mark-buffer-as-real-h)
   (add-hook 'nov-mode-hook (lambda ()
-                             (delete '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters)
+                             (setq org-link-parameters
+                                   (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
                              (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
   (advice-add #'nov--find-file :override #'my/nov--find-file)
   )
