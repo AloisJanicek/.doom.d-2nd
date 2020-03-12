@@ -310,7 +310,7 @@ if running under WSL")
           ))
 
   (when (aj/wsl-p)
-    (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
+    (let ((cmd-exe (executable-find "cmd.exe"))
           (cmd-args '("/c" "start")))
       (setq browse-url-generic-program  cmd-exe
             browse-url-generic-args     cmd-args
@@ -509,12 +509,14 @@ if running under WSL")
                               "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
-                              ":END:\n\n"
+                              ":END:\n"
+                              "\n"
                               "#+BEGIN_QUOTE\n"
                               "%i\n"
                               "#+END_QUOTE\n"
                               )
                             :immediate-finish t
+                            :empty-lines 1
                             :prepend t
                             )
 
@@ -523,22 +525,26 @@ if running under WSL")
                               "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
-                              ":END:\n\n"
+                              ":END:\n"
                               )
                             :immediate-finish t
+                            :empty-lines 1
                             :prepend t
                             )
 
                            ("w" "Website" entry (file ,+INBOX)
                             ,(concat
-                              "* %c :website:\n\n"
+                              "* %c :website:\n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
-                              ":END:\n\n"
-                              "%?\n\n"
-                              "%:initial\n\n"
+                              ":END:\n"
+                              "\n"
+                              "%?\n"
+                              "\n"
+                              "%:initial\n"
                               )
                             :immediate-finish t
+                            :empty-lines 1
                             :prepend t
                             )
 
@@ -548,6 +554,7 @@ if running under WSL")
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
                               ":END:\n"
+                              "\n"
                               "%i\n"
                               "%?"
                               )
@@ -560,8 +567,10 @@ if running under WSL")
                               "** %^{PROMPT} :src: \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
-                              ":END:\n\n"
-                              "from %a\n\n"
+                              ":END:\n"
+                              "\n"
+                              "from %a\n"
+                              "\n"
                               "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
                               "%i\n"
                               "#+END_SRC\n"
@@ -575,8 +584,10 @@ if running under WSL")
                               "* %^{PROMPT} :src: \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
-                              ":END:\n\n"
-                              "from %a\n\n"
+                              ":END:\n"
+                              "\n"
+                              "from %a\n"
+                              "\n"
                               "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
                               "%i\n"
                               "#+END_SRC\n"
@@ -590,7 +601,8 @@ if running under WSL")
                               "* TO" "DO %^{PROMPT} \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
-                              ":END:\n\n"
+                              ":END:\n"
+                              "\n"
                               "%i\n"
                               "%?"
                               )
@@ -605,7 +617,8 @@ if running under WSL")
                               "* %^{PROMPT} \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
-                              ":END:\n\n"
+                              ":END:\n"
+                              "\n"
                               "%i\n"
                               "%?"
                               )
@@ -626,8 +639,10 @@ if running under WSL")
                               "* %^{PROMPT} :src: \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
-                              ":END:\n\n"
-                              "from %a\n\n"
+                              ":END:\n"
+                              "\n"
+                              "from %a\n"
+                              "\n"
                               "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
                               "%i\n"
                               "#+END_SRC\n"
