@@ -13,7 +13,8 @@
        ;;ido
        (ivy
         +icons
-        +childframe)
+        ;; +childframe
+        )
 
        :ui
        ;;deft
@@ -45,7 +46,9 @@
        (evil +everywhere)
        file-templates
        fold
-       (format +onsave)
+       (format
+        ;; +onsave
+        )
        ;;god
        ;;lispy
        multiple-cursors
@@ -106,12 +109,12 @@
        :lang
        ;;agda
        ;;assembly
-       ; (cc +lsp)
+       (cc +lsp)
        ;;clojure
-       ; common-lisp
+       common-lisp
        ;;coq
        ;;crystal
-       ; (csharp +lsp)
+       (csharp +lsp)
        ; data
        ;;elixir
        ;;elm
@@ -119,13 +122,13 @@
        ;;erlang
        ;;ess
        ;;faust
-       ;;fsharp
+       fsharp
        ;;fstar
-       ; (go +lsp)
-       ; (haskell +lsp)
+       (go +lsp)
+       (haskell +lsp)
        ;;hy
        ;;idris
-       ; (java +lsp)
+       (java +lsp)
        (javascript +lsp)
        ;;julia
        ;;kotlin
@@ -133,25 +136,25 @@
        ;;lean
        ;;factor
        ;;ledger
-       ;;lua
+       lua
        markdown
        ;;nim
        ;;nix
        ;;ocaml
        (org +dragndrop +pandoc +hugo +pomodoro)
        ;;perl
-       ; (php +lsp)
+       (php +lsp)
        ;;plantuml
        ;;purescript
        (python +lsp)
        ;;qt
-       ; racket
+       racket
        ; rest
        ;;rst
-       ; (ruby +lsp)
-       ; (rust +lsp)
+       (ruby +lsp)
+       (rust +lsp)
        ;;scala
-       ; scheme
+       scheme
        (sh +lsp)
        ;;solidity
        ;;swift
