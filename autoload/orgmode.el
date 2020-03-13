@@ -212,9 +212,11 @@ _c_lock                     _P_roject journal      _x_private
   "Build `org-mode' source block with code selected in FILE.
 Argument SOURCE-BUFFER is buffer visiting FILE."
   (with-current-buffer source-buffer
-    (let* ((code-snippet (or (when (eq major-mode 'pdf-view-mode)
-                               (pdf-view-active-region-text))
-                             (buffer-substring-no-properties (mark) (point))))
+    (let* ((code-snippet (replace-regexp-in-string
+                          "\*" ","
+                          (or (when (eq major-mode 'pdf-view-mode)
+                                (pdf-view-active-region-text))
+                              (buffer-substring-no-properties (mark) (point)))))
            (isprogmode (cl-member
                         (my/org-capture-get-src-block-string major-mode)
                         aj/org-languages :test #'string-match-p))
