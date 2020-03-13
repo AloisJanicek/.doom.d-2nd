@@ -491,7 +491,7 @@ return an empty string."
 (defun aj/return-project-org-file ()
   "Return list of path pointing to README.org in current projectile project."
   (interactive)
-  (let ((file (concat (projectile-project-root) "README.org")))
+  (let ((file (expand-file-name "README.org" (projectile-project-root))))
     (if (file-exists-p file) file nil)))
 
 ;;;###autoload

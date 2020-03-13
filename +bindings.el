@@ -577,8 +577,8 @@
                                               (interactive)
                                               (let ((hydra-hint-display-type 'message)) (aj/clocking/body)))
         (:prefix ("C" . "calibre")
-          :desc "technical"             "c" (lambda! (aj/open-calibre-book (concat +Libraries "/Technical/")))
-          :desc "personal"              "p" (lambda! (aj/open-calibre-book (concat +Libraries "/Personal/")))
+          :desc "technical"             "c" (lambda! (aj/open-calibre-book (expand-file-name +Libraries "Technical/")))
+          :desc "personal"              "p" (lambda! (aj/open-calibre-book (expand-file-name +Libraries "Personal/")))
           )
 
         :desc "agenda"                   "A" #'org-agenda

@@ -66,8 +66,8 @@ if running under WSL")
 (setq user-mail-address "janicek.dev@gmail.com"
       user-full-name    "Alois Janíček"
       +refile-targets-with-headlines nil
-      +file-templates-dir (concat +Repos "templates")
-      +snippets-dir (concat +Repos "snippets")
+      +file-templates-dir (expand-file-name "templates" +Repos)
+      +snippets-dir (expand-file-name "snippets" +Repos)
       doom-scratch-initial-major-mode 'emacs-lisp-mode
       doom-font                   (font-spec :family "Iosevka SS08" :size 16)
       doom-big-font               (font-spec :family "Iosevka SS08" :size 24)
