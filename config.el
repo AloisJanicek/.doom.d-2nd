@@ -828,6 +828,10 @@ if running under WSL")
   :commands ahk-mode
   )
 
+(use-package all-the-icons-ivy-rich
+  :after ivy-rich
+  :init (all-the-icons-ivy-rich-mode 1))
+
 (use-package! anki-editor
   :commands anki-editor-mode
   :config

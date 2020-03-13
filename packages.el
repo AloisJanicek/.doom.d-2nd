@@ -7,6 +7,10 @@
 
 (package! anki-editor)
 
+(package! all-the-icons-ivy-rich
+          :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
+          )
+
 (package! apache-mode)
 
 (package! company-posframe)
