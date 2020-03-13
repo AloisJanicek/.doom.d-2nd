@@ -603,7 +603,12 @@
         :desc "files"                    "f" #'counsel-projectile-find-file
         :desc "invalidate cache"         "i" #'projectile-invalidate-cache
         :desc "kill project buffers"     "x" #'projectile-kill-buffers
-        :desc "add to known projects"    "P" #'aj/projectile-add-known-project-and-save
+        :desc "all projects README"      "P" (lambda () (interactive)
+                                               (aj/open-file-switch-create-indirect-buffer-per-persp
+                                                (ivy-read
+                                                 "Choose file: "
+                                                 (aj/get-all-projectile-README-org-files t)
+                                                 :caller 'counsel-find-file)))
         :desc "project README"           "p" (lambda () (interactive)
                                                (aj/open-file-switch-create-indirect-buffer-per-persp
                                                 (expand-file-name "README.org" (projectile-project-root))))
