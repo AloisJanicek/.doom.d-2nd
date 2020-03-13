@@ -875,25 +875,21 @@ Open it the way I like it."
     (counsel-find-file dir)))
 
 ;;;###autoload
-(defun aj/open-file-switch-create-indirect-buffer-per-persp (buffer-or-path
-                                                             &optional return-back)
-  "Prevent your perspectives from being polluted with `org-mode' buffers.
+(defun aj/open-file-switch-create-indirect-buffer-per-persp (buffer-or-path &optional return-back)
+  "Opens file from BUFFER-OR-PATH into perspective-specific indirect buffer.
 
-Argument `BUFFER-OR-PATH' can be either string representing full file path
-or buffer satisfying `bufferp'.
+This function is intended for workflow consisting of large number of org files
+always opened at the background ready for all org mode operations like agenda or refile
+but never being associated with current perspective unless explicitly selected
+by user with help of this function.
+In such case this function clones buffer from background into perspective-specific
+indirect buffer.
 
-If there is no buffer representing file, function opens this file and
-makes indirect buffer naming it \"filename-name\", where name represents current
-perspective name.
-Then switches to this new buffer.
-This functions also removes source buffer from all perspectives without actually killing it.
+Designed as an override advice for file opening functions like `pop-to-buffer'.
 
-Use case: Having opened dozens of org files on background (not associated with any perspective)
-always ready for agenda, capture, refile, and similar stuff and only when you actually need to
-visit this file, bring it to current perspective as indirect buffer,
-so you can kill it as usual without affecting rest of the workflow.
-
-When optional argument RETURN-BACK is true, return to original window on starting position."
+Optional argument RETURN-BACK returns cursor into starting position before
+executing this function.
+"
   (if (and (stringp buffer-or-path)
            (not (get-file-buffer buffer-or-path)))
       (find-file-noselect buffer-or-path))
@@ -901,28 +897,25 @@ When optional argument RETURN-BACK is true, return to original window on startin
       (let* ((pos (mark-marker))
              (win (selected-window))
              (persp-autokill-buffer-on-remove nil)
-             (file-name (if (stringp buffer-or-path)
-                            (file-name-nondirectory buffer-or-path)
-                          (file-name-nondirectory (buffer-file-name buffer-or-path))
-                          ))
              (current-persp-name (persp-name (get-current-persp)))
              (source-buffer (if (stringp buffer-or-path)
-                                file-name
-                              (buffer-name buffer-or-path)))
-             (persp-buffer-is-there (string-match (concat "-" current-persp-name) source-buffer))
-             (new-buffer (if (and (bufferp buffer-or-path) persp-buffer-is-there)
-                             file-name
-                           (concat source-buffer "-" current-persp-name)))
-             (select (if (eq major-mode 'org-agenda-mode) t)))
+                                (find-buffer-visiting buffer-or-path)
+                              buffer-or-path))
+             (source-buffer-name (if (stringp buffer-or-path)
+                                     (buffer-name source-buffer)
+                                   (buffer-name buffer-or-path)))
+             (persp-buffer-is-there (string-match (concat "-" current-persp-name) source-buffer-name))
+             (new-buffer-name (concat source-buffer-name "-" current-persp-name)))
 
         (when (not persp-buffer-is-there)
           (persp-remove-buffer (get-buffer source-buffer)))
 
-        (when (not (get-buffer new-buffer))
-          (make-indirect-buffer (get-buffer source-buffer) new-buffer t))
+        (when (not (get-buffer new-buffer-name))
+          (make-indirect-buffer (get-buffer source-buffer) new-buffer-name t))
 
-        (persp-add-buffer (get-buffer new-buffer))
-        (aj/find-me-window-for-org-buffer new-buffer)
+        (persp-add-buffer (get-buffer new-buffer-name))
+
+        (aj/find-me-window-for-org-buffer new-buffer-name)
 
         (when return-back
           (select-window win)
