@@ -600,6 +600,7 @@
         :desc "capture ALL "             "K" (λ! (aj/capture-into-project))
         :desc "capture current"          "k" (λ! (aj/capture-into-project t))
         :desc "directories"              "d" #'counsel-projectile-find-dir
+        :desc "add-known-projet"         "D" #'projectile-add-known-project
         :desc "files"                    "f" #'counsel-projectile-find-file
         :desc "invalidate cache"         "i" #'projectile-invalidate-cache
         :desc "kill project buffers"     "x" #'projectile-kill-buffers

@@ -141,6 +141,7 @@ if running under WSL")
         counsel-org-headline-display-tags t
         counsel-org-headline-display-todo nil
         counsel-org-tags t
+        counsel-projectile-sort-projects t
         )
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
   (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj/open-org-file-the-right-way)
@@ -730,9 +731,9 @@ if running under WSL")
 
 (after! projectile
   (advice-add #'projectile-cleanup-known-projects :around #'doom-shut-up-a)
-  (setq projectile-track-known-projects-automatically nil
-        counsel-projectile-sort-projects t
-        projectile-ignored-projects nil )
+  (setq projectile-track-known-projects-automatically t
+        projectile-project-search-path +Repos
+        )
   )
 
 (after! prodigy
@@ -1070,16 +1071,7 @@ if running under WSL")
   )
 
 (use-package! yankpad
-  :commands
-  (yankpad-append-category
-   yankpad-capture-snippet
-   yankpad-edit
-   yankpad-expand
-   yankpad-insert
-   yankpad-map
-   yankpad-reload
-   yankpad-repeat
-   yankpad-set-category)
+  :after org
   :config
   (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   )
