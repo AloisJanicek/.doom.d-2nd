@@ -168,29 +168,27 @@ _c_lock                     _P_roject journal      _x_private
   ("f" (lambda ()
          (interactive)
          (aj/org-refile-to-file
-          (ivy-read "File: "
-                    (aj/get-all-org-files)))))
+          (aj/choose-file-from
+           (aj/get-all-org-files)))))
   ("v" #'+org/refile-to-visible)
   ("j" (lambda ()
          (interactive)
          (aj/org-refile-to-datetree
-          (ivy-read "Choose file: "
-                    (directory-files org-directory t ".org")))))
+          (aj/choose-file-from
+           (directory-files org-directory t ".org")))))
   ("t" (lambda ()
          (interactive)
          (aj/org-refile-to-file-custom
-          (ivy-read "File: "
-                    (aj/get-all-org-files)))))
+          (aj/choose-file-from
+           (aj/get-all-org-files)))))
   ("p" (lambda ()
          (interactive)
          (aj/org-refile-to-file
-          (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
-                    :action (lambda (x) x)))))
+          (aj/choose-file-from (aj/get-all-projectile-README-org-files t)))))
   ("P" (lambda ()
          (interactive)
          (aj/org-refile-to-datetree
-          (ivy-read "File: " (aj/get-all-projectile-README-org-files t)
-                    :action (lambda (x) x)))))
+          (aj/choose-file-from (aj/get-all-projectile-README-org-files t)))))
   ("x" (lambda ()
          (interactive)
          (let ((hydra-hint-display-type 'message)) (aj/private-refile/body))))
@@ -307,11 +305,11 @@ If HEADLINE, capture under it instead of top level."
   ("k" (org-capture nil "k") "inbox")
   ("t" (org-capture nil "t") "task")
   ("j" (aj/capture-into-journal-in
-        (ivy-read "Choose file: "
-                  (seq-filter
-                   (lambda (file)
-                     (not (string-match "inbox" file)))
-                   org-agenda-files))) "journal")
+        (aj/choose-file-from
+         (seq-filter
+          (lambda (file)
+            (not (string-match "inbox" file)))
+          org-agenda-files))) "journal")
   ("q" nil "exit")
   )
 
@@ -329,7 +327,7 @@ If HEADLINE, capture under it instead of top level."
 (defun aj/capture-calendar-the-right-way ()
   "Ask for file, date, heading title, tag and then capture."
   (interactive)
-  (let* ((file (ivy-read "File: " org-agenda-files))
+  (let* ((file (aj/choose-file-from org-agenda-files))
          (date (org-read-date))
          (title (ivy-read "Title: " nil))
          (tag (ivy-read "Tag: " nil))
@@ -1292,6 +1290,12 @@ Specify depth of the search with LEVEL."
       (mapc #'kill-buffer org-agenda-new-buffers)
       (setq org-agenda-new-buffers nil))))
 
+;;;###autoload
+(defun aj/choose-file-from (dir)
+  "Just choose file from directory DIR."
+  (interactive)
+  (ivy-read "Choose file: " dir
+            :caller 'aj/choose-file-from))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

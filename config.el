@@ -96,6 +96,7 @@ if running under WSL")
   (dolist (cmd '( counsel-dired-jump
                   counsel-projectile-find-dir
                   counsel-projectile-switch-project
+                  aj/choose-file-from
                   ))
     (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
