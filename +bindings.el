@@ -722,8 +722,8 @@
 
       ;; evil-ex                ";"
 
-      :desc "popup"     "'" #'+popup/toggle
-
+      :desc "popup"      "'" #'+popup/toggle
+      :desc "restore"    "\"" #'+popup/restore
       ;; "z"
 
       ;; scratch-buffer         "x"
@@ -771,7 +771,6 @@
         :desc "sparse tree"        "t" #'org-ql-sparse-tree
         :desc "visualize"          "v" #'org-brain-visualize
         :desc "PRVT"               "x" #'aj/private-refile/body
-        :desc "restore"            "z" #'+popup/restore
         )
 
       ;; "m" :localleader

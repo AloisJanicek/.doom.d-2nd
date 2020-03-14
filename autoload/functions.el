@@ -871,10 +871,10 @@ Just one window displaying browser."
   "Pop eaf browser buffers.
 With this popup rules will apply to them."
   (interactive)
-  (ivy-read "Switch to buffer: "
+  (ivy-read "EAF buffer: "
             (mapcar (lambda (buf)
-                      (cons
-                       (prin1-to-string buf) buf))
+                      (with-current-buffer buf
+                        (cons eaf--bookmark-title buf)))
                     (seq-filter
                      (lambda (buf)
                        (with-current-buffer buf
