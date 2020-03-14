@@ -52,6 +52,9 @@ if running under WSL")
 (defvar +refile-targets-with-headlines t
   "List of org files which should be allowed offer refile under headlines")
 
+(defvar aj/agenda-similar-modes '(org-agenda-mode org-ql-view-mode)
+  "List of org-agenda like modes for purpose of running commands from their buffers.")
+
 (make-variable-buffer-local 'er/try-expand-list)
 
 (defvar aj/org-languages

@@ -23,7 +23,7 @@ If run from `org-agenda' use `org-agenda-refile' instead."
                       (goto-char (point-min))
                       (forward-line))))))
          (rfloc (list headline file nil pos)))
-    (if (eq major-mode 'org-agenda-mode)
+    (if (memq major-mode aj/agenda-similar-modes)
         (org-agenda-refile nil rfloc)
       (org-refile nil nil rfloc))))
 
@@ -42,7 +42,7 @@ If run from `org-agenda', it uses `org-agenda-refile' instead."
                     (org-datetree-find-date-create date))
                   (point))))
          (rfloc (list nil file nil pos)))
-    (if (eq major-mode 'org-agenda-mode)
+    (if (memq major-mode aj/agenda-similar-modes)
         (org-agenda-refile nil rfloc)
       (org-refile nil nil rfloc))))
 
@@ -53,7 +53,7 @@ If executed from agenda, use `org-agenda-refile' instead"
   (interactive "P")
   (let* ((org-refile-target-verify-function nil)
          (org-refile-targets `((,file :maxlevel . 9))))
-    (if (eq major-mode 'org-agenda-mode)
+    (if (memq major-mode aj/agenda-similar-modes)
         (org-agenda-refile)
       (org-refile))))
 
@@ -67,7 +67,7 @@ Works also in `org-agenda'."
         (org-refile-use-outline-path nil)
         (org-refile-keep arg)
         current-prefix-arg)
-    (if (eq major-mode 'org-agenda-mode)
+    (if (memq major-mode aj/agenda-similar-modes)
         (call-interactively #'org-agenda-refile)
       (call-interactively #'org-refile))))
 
@@ -84,7 +84,7 @@ Works also in `org-agenda'."
         (completing-read-function
          (lambda (_p _coll _pred _rm _ii _h default &rest _)
            default)))
-    (if (eq major-mode 'org-agenda-mode)
+    (if (memq major-mode aj/agenda-similar-modes)
         (org-agenda-refile)
       (org-refile))))
 
@@ -97,7 +97,7 @@ Works also in `org-agenda'."
   (unless (bound-and-true-p org-clock-current-task)
     (user-error "No active clock to refile to"))
   (let ((org-refile-keep arg))
-    (if (eq major-mode 'org-agenda-mode)
+    (if (memq major-mode aj/agenda-similar-modes)
         (org-agenda-refile 2)
       (org-refile 2))))
 
@@ -120,7 +120,7 @@ Works also in `org-agenda'."
                                    buffer-file-name)
                                (cons :maxlevel 10))
                          org-refile-targets))))
-    (if (eq major-mode 'org-agenda-mode)
+    (if (memq major-mode aj/agenda-similar-modes)
         (call-interactively #'org-agenda-refile)
       (call-interactively #'org-refile))))
 
@@ -143,7 +143,7 @@ Works also in `org-agenda'."
                               buffer-file-name)
                           (cons :maxlevel 10))
                          org-refile-targets))))
-    (if (eq major-mode 'org-agenda-mode)
+    (if (memq major-mode aj/agenda-similar-modes)
         (call-interactively #'org-agenda-refile)
       (call-interactively #'org-refile))))
 
@@ -162,7 +162,7 @@ _c_lock                     _P_roject journal      _x_private
 "
   ("r" (lambda (arg)
          (interactive "P")
-         (if (eq major-mode 'org-agenda-mode)
+         (if (memq major-mode aj/agenda-similar-modes)
              (call-interactively #'org-agenda-refile)
            (call-interactively #'org-refile))))
   ("f" (aj/org-refile-to-file
