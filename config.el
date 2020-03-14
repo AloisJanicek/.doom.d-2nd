@@ -1097,7 +1097,7 @@ if running under WSL")
 (load! "+local")
 
 
-(add-to-list 'load-path "/home/alois/repos/emacs-application-framework")
+(add-to-list 'load-path (expand-file-name "emacs-application-framework" doom-private-dir))
 (require 'eaf)
 
 (after! eaf
