@@ -165,33 +165,21 @@ _c_lock                     _P_roject journal      _x_private
          (if (eq major-mode 'org-agenda-mode)
              (call-interactively #'org-agenda-refile)
            (call-interactively #'org-refile))))
-  ("f" (lambda ()
-         (interactive)
-         (aj/org-refile-to-file
-          (aj/choose-file-from
-           (aj/get-all-org-files)))))
+  ("f" (aj/org-refile-to-file
+        (aj/choose-file-from
+         (aj/get-all-org-files))))
   ("v" #'+org/refile-to-visible)
-  ("j" (lambda ()
-         (interactive)
-         (aj/org-refile-to-datetree
-          (aj/choose-file-from
-           (directory-files org-directory t ".org")))))
-  ("t" (lambda ()
-         (interactive)
-         (aj/org-refile-to-file-custom
-          (aj/choose-file-from
-           (aj/get-all-org-files)))))
-  ("p" (lambda ()
-         (interactive)
-         (aj/org-refile-to-file
-          (aj/choose-file-from (aj/get-all-projectile-README-org-files t)))))
-  ("P" (lambda ()
-         (interactive)
-         (aj/org-refile-to-datetree
-          (aj/choose-file-from (aj/get-all-projectile-README-org-files t)))))
-  ("x" (lambda ()
-         (interactive)
-         (let ((hydra-hint-display-type 'message)) (aj/private-refile/body))))
+  ("j" (aj/org-refile-to-datetree
+        (aj/choose-file-from
+         (directory-files org-directory t ".org"))))
+  ("t" (aj/org-refile-to-file-custom
+        (aj/choose-file-from
+         (aj/get-all-org-files))))
+  ("p" (aj/org-refile-to-file
+        (aj/choose-file-from (aj/get-all-projectile-README-org-files t))))
+  ("P" (aj/org-refile-to-datetree
+        (aj/choose-file-from (aj/get-all-projectile-README-org-files t))))
+  ("x" (let ((hydra-hint-display-type 'message)) (aj/private-refile/body)))
   ("o" #'+org/refile-to-other-window)
   ("O" #'+org/refile-to-other-buffer)
   ("." #'+org/refile-to-current-file)
