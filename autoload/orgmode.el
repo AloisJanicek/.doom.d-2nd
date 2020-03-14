@@ -736,8 +736,8 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
                                    ((catch 'heading
                                       (org-ql-query
                                         :select (lambda ()
-                                                  (if (org-get-heading)
-                                                      (throw 'heading t)))
+                                                  (when (org-get-heading)
+                                                    (throw 'heading t)))
                                         :from +INBOX
                                         :where '(level 1)))
                                     (org-ql-search `(,+INBOX)
@@ -748,8 +748,8 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
                                    ((catch 'heading
                                       (org-ql-query
                                         :select (lambda ()
-                                                  (if (org-get-heading)
-                                                      (throw 'heading t)))
+                                                  (when (org-get-heading)
+                                                    (throw 'heading t)))
                                         :from (append (org-agenda-files)
                                                       (aj/get-all-projectile-README-org-files t))
                                         :where
