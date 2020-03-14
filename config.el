@@ -431,7 +431,7 @@ if running under WSL")
 
    org-refile-targets `((,(directory-files-recursively
                            org-directory org-agenda-file-regexp)
-                         :maxlevel . 1))
+                         :maxlevel . 3))
 
    org-use-property-inheritance t
 
