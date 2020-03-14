@@ -891,6 +891,24 @@ With this popup rules will apply to them."
             :matcher #'ivy--switch-buffer-matcher
             :caller 'ivy-switch-buffer))
 
+;;;###autoload
+(defun aj/pdf-epub-find-file-other-window (orig-fun &rest args)
+  "Open pdf and epub files into other window.
+Takes ORIG-FUN with its ARGS and executes it in
+a customized lexical scope where original `pop-to-buffer-same-window' is
+overridden for pdf and epub files with `switch-to-buffer-other-window'.
+Intended as an around advice for `find-file' function.
+"
+  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+             (lambda (buf &optional wildcards)
+               (if (or (string-suffix-p "pdf" (buffer-file-name buf) t)
+                       (with-current-buffer buf
+                         (when (eq major-mode 'nov-mode)
+                           (string-suffix-p "epub" nov-file-name t))))
+                   (switch-to-buffer-other-window buf)
+                 (pop-to-buffer buf display-buffer--same-window-action)))))
+    (apply orig-fun args)))
+
 (provide 'functions)
 
 ;;; functions.el ends here
