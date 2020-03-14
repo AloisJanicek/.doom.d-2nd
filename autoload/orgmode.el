@@ -1113,7 +1113,7 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
          (car (seq-filter
                (lambda (win)
                  (with-selected-window win
-                   (if (and (string-match ".epub" (prin1-to-string win))
+                   (if (and (eq major-mode 'nov-mode)
                             (string-equal nov-file-name file))
                        t nil)))
                (window-list))))
@@ -1121,7 +1121,7 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
          (car (seq-filter
                (lambda (buff)
                  (with-current-buffer buff
-                   (if (and (string-match ".epub" (prin1-to-string buff))
+                   (if (and (eq major-mode 'nov-mode)
                             (string-equal nov-file-name file))
                        t nil)))
                (buffer-list)))))
