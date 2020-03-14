@@ -733,24 +733,29 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
                                 (unless aj/gtd-agenda-no-auto
                                   (cond
                                    ;; show inbox if it is not empty
-                                   ((org-ql-query
-                                      :select #'org-get-heading
-                                      :from +INBOX
-                                      :where '(level 1)
-                                      )
+                                   ((catch 'heading
+                                      (org-ql-query
+                                        :select (lambda ()
+                                                  (if (org-get-heading)
+                                                      (throw 'heading t)))
+                                        :from +INBOX
+                                        :where '(level 1)))
                                     (org-ql-search `(,+INBOX)
                                       '(level 1)
                                       :title "Inbox"
                                       :sort '(date)))
                                    ;; show all stucked "PROJECT" if any
-                                   ((org-ql-query
-                                      :select #'org-get-heading
-                                      :from (append (org-agenda-files)
-                                                    (aj/get-all-projectile-README-org-files t))
-                                      :where
-                                      '(and (todo)
-                                            (children (todo))
-                                            (not (descendants (todo "NEXT")))))
+                                   ((catch 'heading
+                                      (org-ql-query
+                                        :select (lambda ()
+                                                  (if (org-get-heading)
+                                                      (throw 'heading t)))
+                                        :from (append (org-agenda-files)
+                                                      (aj/get-all-projectile-README-org-files t))
+                                        :where
+                                        '(and (todo)
+                                              (children (todo))
+                                              (not (descendants (todo "NEXT"))))))
                                     (org-ql-search (append (org-agenda-files)
                                                            (aj/get-all-projectile-README-org-files t))
                                       '(and (todo)
