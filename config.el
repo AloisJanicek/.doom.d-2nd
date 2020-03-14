@@ -80,9 +80,6 @@ if running under WSL")
 
 (setq-default tab-width 2)
 
-(load! "+bindings")
-(load! "+local")
-
 (set-popup-rule! "*backtrace\*"                  :size 0.5  :side 'bottom :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
 
@@ -1082,8 +1079,6 @@ if running under WSL")
   (add-to-list 'zeal-at-point-mode-alist '(web-mode . "html"))
   (add-to-list 'zeal-at-point-mode-alist '(pug-mode . ("html" "pug")))
   )
-
-(toggle-frame-maximized)
 
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
 
