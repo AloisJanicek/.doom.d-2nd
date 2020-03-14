@@ -846,6 +846,51 @@ using a visual block/rectangle selection."
   (interactive)
   (spacemacs/sort-lines-by-column -1))
 
+;;;###autoload
+(defun aj/eaf--browser-display (buf)
+  "Given BUF, find suitable window for it.
+Just one window displaying browser."
+  (pop-to-buffer buf)
+  ;; (let ((eaf-win
+  ;;        (car (seq-filter
+  ;;              (lambda (win)
+  ;;                (with-selected-window win
+  ;;                  (if (and (eq major-mode 'eaf-mode)
+  ;;                           (string-equal eaf--buffer-app-name "browser"))
+  ;;                      t nil)))
+  ;;              (window-list)))))
+  ;;   (if (not eaf-win)
+  ;;       (switch-to-buffer-other-window buf)
+  ;;     (progn
+  ;;       (select-window eaf-win)
+  ;;       (switch-to-buffer buf))))
+  )
+
+;;;###autoload
+(defun aj/eaf-browser-pop-buffers ()
+  "Pop eaf browser buffers.
+With this popup rules will apply to them."
+  (interactive)
+  (ivy-read "Switch to buffer: "
+            (mapcar (lambda (buf)
+                      (cons
+                       (prin1-to-string buf) buf))
+                    (seq-filter
+                     (lambda (buf)
+                       (with-current-buffer buf
+                         (if (and (eq major-mode 'eaf-mode)
+                                  (string-equal eaf--buffer-app-name "browser")
+                                  (not (persp-buffer-in-other-p buf (get-current-persp))))
+                             t nil)))
+                     (buffer-list)))
+            :keymap ivy-switch-buffer-map
+            :preselect (buffer-name (other-buffer (current-buffer)))
+            :action
+            (lambda (x)
+              (pop-to-buffer (cdr x)))
+            :matcher #'ivy--switch-buffer-matcher
+            :caller 'ivy-switch-buffer))
+
 (provide 'functions)
 
 ;;; functions.el ends here

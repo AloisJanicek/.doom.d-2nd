@@ -690,6 +690,7 @@
                                                (if (string= (prin1-to-string major-mode) "emacs-lisp-mode")
                                                    (helpful-at-point)
                                                  (counsel-dash-at-point)))
+        :desc "eaf browser buffers"     "," #'aj/eaf-browser-pop-buffers
         )
 
       (:prefix ("j" . "jump")

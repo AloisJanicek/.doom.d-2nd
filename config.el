@@ -153,7 +153,7 @@ if running under WSL")
   (setq counsel-dash-docsets-path (if (aj/wsl-p)
                                       (expand-file-name  "AppData/Local/Zeal/Zeal/docsets" +BASE-HOME)
                                     (expand-file-name ".local/share/Zeal" +BASE-HOME)))
-  (setq counsel-dash-browser-func 'eww)
+  (setq counsel-dash-browser-func 'eaf-open-url)
   )
 
 (after! doom-modeline
@@ -871,7 +871,7 @@ if running under WSL")
   :config
   (setq
    counsel-web-search-function #'counsel-web-search--google
-   counsel-web-search-action #'browse-url-default-browser
+   counsel-web-search-action #'eaf-open-browser
    counsel-web-search-alternate-action #'eww
    counsel-web-search-dynamic-update t
    )
@@ -1095,3 +1095,27 @@ if running under WSL")
               (cl-letf (((symbol-function 'my/doom--org-headings)
                          #'doom--org-headings))
                 (apply orig-fun args))))
+
+
+(load! "+bindings")
+(load! "+local")
+
+
+(add-to-list 'load-path "/home/alois/repos/emacs-application-framework")
+(require 'eaf)
+
+(after! eaf
+  (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
+  (evil-set-initial-state 'eaf-mode 'insert)
+  (add-to-list 'eaf-app-display-function-alist
+               '("browser" . aj/eaf--browser-display))
+
+  (set-popup-rule! (lambda (buf act)
+                     (with-current-buffer buf
+                       (if (and (eq major-mode 'eaf-mode)
+                                (string-equal eaf--buffer-app-name "browser"))
+                           t nil)))
+    :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
+  )
+
+(toggle-frame-maximized)
