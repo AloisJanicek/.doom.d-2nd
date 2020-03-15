@@ -873,6 +873,7 @@ if running under WSL")
    counsel-web-search-action #'eaf-open-browser
    counsel-web-search-alternate-action #'eww
    counsel-web-search-dynamic-update t
+   counsel-web-engine 'google
    )
   )
 

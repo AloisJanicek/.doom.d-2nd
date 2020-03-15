@@ -648,8 +648,9 @@
                               (interactive)
                               (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
 
-      ;; (:prefix ("s" . "search")
-      ;;   )
+      (:prefix ("s" . "search")
+        :desc "google at point"          "g" #'counsel-web-thing-at-point
+        )
 
       (:prefix ("d" . "dict")
         :desc "dictionary"               "d" (λ! (aj/add-thing-at-point-to-url

@@ -677,15 +677,25 @@ Epub files often has very poor quality."
 ;;;###autoload (autoload 'aj/howdoyou/body "autoload/functions" nil t)
 (defhydra aj/howdoyou (:color blue
                               :body-pre
-                              (when (get-buffer "*How Do You*")
-                                (pop-to-buffer "*How Do You*")))
+                              (if (get-buffer "*How Do You*")
+                                  (pop-to-buffer "*How Do You*")
+                                (counsel-web-suggest nil
+                                                     "How Do You: "
+                                                     #'counsel-web-suggest--google
+                                                     (lambda (x)
+                                                       (howdoyou-query x)))))
   "How do you:"
+  ("s" (counsel-web-suggest nil
+                            "How Do You: "
+                            #'counsel-web-suggest--google
+                            (lambda (x)
+                              (howdoyou-query x))) "query suggest" :exit t)
   ("q" (call-interactively #'howdoyou-query) "query" :exit t)
-  ("s" (call-interactively #'aj/counsel-howdoyou) "search" :exit t)
-  ("f" (howdoyou-go-back-to-first-link) "first")
-  ("n" (howdoyou-next-link) "next")
-  ("p" (howdoyou-previous-link) "previous")
-  ("r" (howdoyou-reload-link) "refresh"))
+  ("a" (call-interactively #'aj/counsel-howdoyou) "search answers" :exit t)
+  ("f" #'howdoyou-go-back-to-first-link "first")
+  ("n" #'howdoyou-next-link "next")
+  ("p" #'howdoyou-previous-link "previous")
+  ("r" #'howdoyou-reload-link "refresh"))
 
 ;;;###autoload
 (defun aj/flycheck-error-search (&optional howdoyou)
