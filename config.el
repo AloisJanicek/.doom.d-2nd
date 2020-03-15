@@ -608,7 +608,9 @@ if running under WSL")
                             :empty-lines 1
                             )
 
-                           ("t" "Task" entry (file ,+INBOX)
+                           ("t" "Task" entry (file
+                                              (lambda ()
+                                                (aj/choose-file-from org-agenda-files)))
                             ,(concat
                               "* TO" "DO %^{PROMPT} \n"
                               ":PROPERTIES:\n"
