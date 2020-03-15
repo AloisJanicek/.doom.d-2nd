@@ -255,7 +255,7 @@ If HEADLINE, capture under it instead of top level."
 ;;;###autoload (autoload 'aj/capture-code/body "autoload/orgmode" nil t)
 (defhydra aj/capture-code-hydra (:color blue)
   "Code:"
-  ("a" (aj/capture-code-ask-where) "ask" )
+  ("a" #'aj/capture-code-ask-where "ask" )
   ("c" (aj/capture-code +INBOX (ivy-read "Choose title: " nil) nil) "inbox" )
   ("q" nil "exit")
   )
@@ -263,7 +263,7 @@ If HEADLINE, capture under it instead of top level."
 ;;;###autoload (autoload 'aj/capture/body "autoload/orgmode" nil t)
 (defhydra aj/capture (:color blue)
   "Capture:"
-  ("d" (aj/capture-calendar-the-right-way) "calendar date")
+  ("d" #'aj/capture-calendar-the-right-way "calendar date")
   ("C" (let ((hydra-hint-display-type 'message))
          (aj/capture-code-hydra/body)) "code:")
   ("c" (let ((hydra-hint-display-type 'message))
@@ -968,12 +968,12 @@ split current window and displays `BUFFER' on the left."
 ;;;###autoload (autoload 'aj/clocking/body "autoload/orgmode" nil t)
 (defhydra aj/clocking (:color blue)
   "Clock:"
-  ("c" (aj/clock-menu) "clock" )
-  ("p" (org-pomodoro) "pomodoro" )
-  ("s" (org-clock-out) "stop clock")
-  ("g" (counsel-org-clock-goto) "goto clock")
-  ("k" (counsel-org-clock-context) "context")
-  ("h" (counsel-org-clock-history) "history")
+  ("c" #'aj/clock-menu "clock" )
+  ("p" #'org-pomodoro "pomodoro" )
+  ("s" #'org-clock-out "stop clock")
+  ("g" #'counsel-org-clock-goto "goto clock")
+  ("k" #'counsel-org-clock-context "context")
+  ("h" #'counsel-org-clock-history "history")
   )
 
 ;;;###autoload
