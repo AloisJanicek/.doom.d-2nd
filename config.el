@@ -216,7 +216,7 @@ if running under WSL")
   (add-hook 'after-save-hook #'beautify-html-file-and-revert)
   (setq large-file-warning-threshold 30000000)
   (add-to-list 'safe-local-variable-values '(org-src-fontify-natively))
-  (advice-add #'find-file :around #'aj/pdf-epub-find-file-other-window)
+  (advice-add #'find-file :around #'aj/pdf-epub-find-file-other-window-reuse)
   )
 
 (after! format-all

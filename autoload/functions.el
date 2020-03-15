@@ -581,6 +581,7 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
 ;;;###autoload
 (defun brds/pdf-jump-last-viewed-bookmark ()
   "Jump to bookmark representing last view position."
+  (interactive)
   (when
       (brds/pdf-has-last-viewed-bookmark)
     (bookmark-jump (brds/pdf-generate-bookmark-name))))
@@ -850,21 +851,38 @@ With this popup rules will apply to them."
             :caller 'ivy-switch-buffer))
 
 ;;;###autoload
-(defun aj/pdf-epub-find-file-other-window (orig-fun &rest args)
-  "Open pdf and epub files into other window.
+(defun aj/pdf-epub-find-file-other-window-reuse (orig-fun &rest args)
+  "Open pdf and epub files into other window or reuse existing ones.
 Takes ORIG-FUN with its ARGS and executes it in
 a customized lexical scope where original `pop-to-buffer-same-window' is
 overridden for pdf and epub files with `switch-to-buffer-other-window'.
 Intended as an around advice for `find-file' function.
 "
   (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-             (lambda (buf &optional wildcards)
-               (if (or (string-suffix-p "pdf" (buffer-file-name buf) t)
-                       (with-current-buffer buf
-                         (when (eq major-mode 'nov-mode)
-                           (string-suffix-p "epub" nov-file-name t))))
-                   (switch-to-buffer-other-window buf)
-                 (pop-to-buffer buf display-buffer--same-window-action)))))
+             (lambda (buf &rest _)
+               (let ((get-win (lambda (mode)
+                                (car (seq-filter
+                                      (lambda (win)
+                                        (with-selected-window win
+                                          (when (eq major-mode mode) t)))
+                                      (window-list))))))
+                 (cond ((string-suffix-p "pdf" (buffer-file-name buf) t)
+                        (let ((pdf-win (funcall get-win 'pdf-view-mode)))
+                          (if pdf-win
+                              (progn
+                                (select-window pdf-win)
+                                (pop-to-buffer buf display-buffer--same-window-action))
+                            (switch-to-buffer-other-window buf))))
+                       ((with-current-buffer buf
+                          (when (eq major-mode 'nov-mode)
+                            (string-suffix-p "epub" nov-file-name t)))
+                        (let ((epub-win (funcall get-win 'nov-mode)))
+                          (if epub-win
+                              (progn
+                                (select-window epub-win)
+                                (pop-to-buffer buf display-buffer--same-window-action))
+                            (switch-to-buffer-other-window buf))))
+                       (t (pop-to-buffer buf display-buffer--same-window-action)))))))
     (apply orig-fun args)))
 
 (provide 'functions)
