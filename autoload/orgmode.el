@@ -1067,26 +1067,21 @@ Otherwise dispatch default commands.
 (defun my/nov--find-file (file index point)
   "Open FILE(nil means current buffer) in nov-mode and go to the specified INDEX and POSITION.
 Prevent opening same FILE into multiple windows or buffers. Always reuse them if possible."
-  (let ((same-epub-file-window
-         (car (seq-filter
-               (lambda (win)
-                 (with-selected-window win
-                   (if (and (eq major-mode 'nov-mode)
-                            (string-equal nov-file-name file))
-                       t nil)))
-               (window-list))))
-        (same-epub-file-buffer
-         (car (seq-filter
-               (lambda (buff)
-                 (with-current-buffer buff
-                   (if (and (eq major-mode 'nov-mode)
-                            (string-equal nov-file-name file))
-                       t nil)))
-               (buffer-list)))))
-    (if same-epub-file-window
-        (select-window same-epub-file-window)
-      (if same-epub-file-buffer
-          (switch-to-buffer-other-window same-epub-file-buffer)
+  (let ((same-epub
+         (car (remove nil
+                      (mapcar
+                       (lambda (buf)
+                         (with-current-buffer buf
+                           (if (and (eq major-mode 'nov-mode)
+                                    (string-equal nov-file-name file))
+                               (if (get-buffer-window)
+                                   (cons buf (get-buffer-window))
+                                 buf))))
+                       (buffer-list))))))
+    (if (consp same-epub)
+        (select-window (cdr same-epub))
+      (if same-epub
+          (switch-to-buffer-other-window same-epub)
         (when file
           (find-file-other-window file))))
     (unless (eq major-mode 'nov-mode)
