@@ -46,8 +46,10 @@
   :recipe (:host github :repo "mkcms/ivy-yasnippet"))
 
 (package! js-react-redux-yasnippets
-  :recipe (:host github :repo "sooqua/js-react-redux-yasnippets"
-                 :files ("*.el" "snippets")))
+  :recipe (:host github :repo "AloisJanicek/js-react-redux-yasnippets"
+                 :files ("*.el" "snippets")
+                 :branch "fix-yas-snippet-dirs"
+                 ))
 
 (package! link-hint)
 

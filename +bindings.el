@@ -588,6 +588,7 @@
         :desc "entity"                   "e" #'counsel-org-entity
         :desc "bash history"             "h" #'counsel-yank-bash-history
         :desc "unicode"                  "u" #'counsel-unicode-char
+        :desc "snippet"                  "s" #'ivy-yasnippet
         )
 
       (:prefix ("o" . "open")
@@ -647,9 +648,8 @@
                               (interactive)
                               (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
 
-      (:prefix ("s" . "snippet")
-        :desc "preview"                  "p" #'ivy-yasnippet
-        )
+      ;; (:prefix ("s" . "search")
+      ;;   )
 
       (:prefix ("d" . "dict")
         :desc "dictionary"               "d" (λ! (aj/add-thing-at-point-to-url
