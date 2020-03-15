@@ -460,6 +460,24 @@
    "C-l"  #'evil-window-right
    )
 
+ (:after term
+   :map term-raw-map
+   :i "C-h" #'evil-window-left
+   :i "C-j" #'evil-window-down
+   :i "C-k" #'evil-window-up
+   :i "M-1"   (λ! (+workspace/switch-to 0))
+   :i "M-2"   (λ! (+workspace/switch-to 1))
+   :i "M-3"   (λ! (+workspace/switch-to 2))
+   :i "M-4"   (λ! (+workspace/switch-to 3))
+   :i "M-5"   (λ! (+workspace/switch-to 4))
+   :i "M-6"   (λ! (+workspace/switch-to 5))
+   :i "M-7"   (λ! (+workspace/switch-to 6))
+   :i "M-8"   (λ! (+workspace/switch-to 7))
+   :i "M-9"   (λ! (+workspace/switch-to 8))
+   :i "M-0"   #'+workspace/switch-to-last
+   :i "M-t"   #'+workspace/new
+   )
+
  (:after vterm
    :map vterm-mode-map
    ;; Easier window movement

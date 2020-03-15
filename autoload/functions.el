@@ -149,58 +149,6 @@ Which operation will be executed depends on value of ENCRYPT."
     (emmet-preview beg end)))
 
 ;;;###autoload
-(defun aj/set-term-keys ()
-  "Set keys for `term-raw-map'."
-  (evil-define-key 'insert term-raw-map
-    (kbd "C-h") 'evil-window-left
-    (kbd "C-j") 'evil-window-down
-    (kbd "C-k") 'evil-window-up
-    (kbd "C-<right>") 'next-buffer
-    (kbd "C-<left>") 'previous-buffer
-    (kbd "M-1") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/switch-to 0)))
-    (kbd "M-2") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/switch-to 1)))
-    (kbd "M-3") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/switch-to 2)))
-    (kbd "M-4") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/switch-to 3)))
-    (kbd "M-5") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/switch-to 4)))
-    (kbd "M-6") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/switch-to 5)))
-    (kbd "M-7") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/switch-to 6)))
-    (kbd "M-8") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/switch-to 7)))
-    (kbd "M-0") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/switch-to-last)))
-    (kbd "M-t") (function
-                 (lambda nil
-                   (interactive)
-                   (+workspace/new)))
-    ;; (kbd "C-l") 'evil-window-right
-    ))
-
-;;;###autoload
 (defun beautify-html-file-and-revert ()
   "Beautify file with html-beautify and only if major mode is `web-mode'."
   (interactive)

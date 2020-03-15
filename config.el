@@ -771,8 +771,6 @@ if running under WSL")
 
 (after! term
   (add-hook 'term-mode-hook #'hide-mode-line-mode)
-  ;; remap keys for terminal with Evil
-  (add-hook! term-mode :append #'aj/set-term-keys)
   (add-hook 'term-mode-hook (lambda () (interactive)(setq left-fringe-width 0
                                                           right-ringe-width 0))))
 
