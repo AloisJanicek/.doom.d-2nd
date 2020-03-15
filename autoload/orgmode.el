@@ -523,48 +523,6 @@ Argument X represents title of the new heading."
   (setq-local org-complete-tags-always-offer-all-agenda-tags t))
 
 ;;;###autoload
-;; https://emacs.stackexchange.com/questions/17622/how-can-i-walk-an-org-mode-tree
-(defun org-get-header-list (&optional buffer)
-  "Get the headers of an org BUFFER as a flat list of headers and levels.
-Buffer will default to the current buffer."
-  (interactive)
-  (with-current-buffer (or buffer (current-buffer))
-    (let ((tree (org-element-parse-buffer 'headline)))
-      (org-element-map
-          tree
-          'headline
-        (lambda (el) (list
-                      (org-element-property :raw-value el) ; get header title without tags etc
-                      (org-element-property :level el) ; get depth
-                      ;; >> could add other properties here
-                      ))))))
-
-;;;###autoload
-(defun my/org-get-header-list (&optional buffer)
-  "Get the headers of an org BUFFER as a flat list of headers and levels.
-Buffer will default to the current buffer."
-  (interactive)
-  (with-current-buffer (or buffer (current-buffer))
-    (let ((tree (org-element-parse-buffer 'headline)))
-      (ivy-read "Headlines: "
-                (org-element-map
-                    tree
-                    'headline
-                  (lambda (el) (list
-                                (org-element-property :title el) ; get header title without tags etc
-                                ;; (org-element-property :level el) ; get depth
-                                ;; >> could add other properties here
-                                )))
-                :action (lambda (x)
-                          ;; (print (if (stringp x) x (car x)))
-                          (goto-char
-                           (org-find-exact-headline-in-buffer (substring-no-properties (if (stringp x) x (car x))))
-                           )
-                          )
-                )
-      )))
-
-;;;###autoload
 (defun org-subtree-region ()
   "Return a list of the start and end of a sub-tree."
   (save-excursion
