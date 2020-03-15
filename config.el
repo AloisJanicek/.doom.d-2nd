@@ -470,6 +470,10 @@ if running under WSL")
   (advice-add #'org-agenda-switch-to :around #'aj/open-org-file-the-right-way)
   (advice-add #'org-agenda-todo :after #'aj/save-and-refresh-agenda)
   (advice-add #'org-agenda-kill :after #'aj/save-and-refresh-agenda)
+  (advice-add #'org-agenda-kill :around (lambda (orig-fun &rest args)
+                                          (let ((major-mode 'org-agenda-mode))
+                                            (apply orig-fun args))))
+
 
   (setq
    org-agenda-files (seq-filter
