@@ -91,13 +91,13 @@
    )
 
  (:after magit
+   :map magit-mode-map
+   :inv "C-k" #'evil-window-up
+
    :map git-commit-mode-map
    :localleader
    :desc "finalize"        "f" #'with-editor-finish
    :desc "cancel"          "k" #'with-editor-cancel
-
-   :map magit-mode-map
-   :iemnv "C-k" #'evil-window-up
    )
 
  (:after man
