@@ -849,23 +849,21 @@ Intended as an around advice for `find-file' function.
                                       (lambda (win)
                                         (with-selected-window win
                                           (when (eq major-mode mode) t)))
-                                      (window-list))))))
+                                      (window-list)))))
+                     (select-win (lambda (win)
+                                   (if win
+                                       (progn
+                                         (select-window win)
+                                         (pop-to-buffer buf display-buffer--same-window-action))
+                                     (switch-to-buffer-other-window buf)))))
                  (cond ((string-suffix-p "pdf" (buffer-file-name buf) t)
                         (let ((pdf-win (funcall get-win 'pdf-view-mode)))
-                          (if pdf-win
-                              (progn
-                                (select-window pdf-win)
-                                (pop-to-buffer buf display-buffer--same-window-action))
-                            (switch-to-buffer-other-window buf))))
+                          (funcall select-win pdf-win)))
                        ((with-current-buffer buf
                           (when (eq major-mode 'nov-mode)
                             (string-suffix-p "epub" nov-file-name t)))
                         (let ((epub-win (funcall get-win 'nov-mode)))
-                          (if epub-win
-                              (progn
-                                (select-window epub-win)
-                                (pop-to-buffer buf display-buffer--same-window-action))
-                            (switch-to-buffer-other-window buf))))
+                          (funcall select-win epub-win)))
                        (t (pop-to-buffer buf display-buffer--same-window-action)))))))
     (apply orig-fun args)))
 
