@@ -289,22 +289,6 @@ Requires esqlite."
       (funcall x))))
 
 ;;;###autoload
-(defun aj/remove-global-mode-string-from-modeline ()
-  "Remove `global-mode-string' (misc-info) from `doom-modeline'."
-  (doom-modeline-def-modeline 'main
-    '(bar window-number matches buffer-info remote-host buffer-position selection-info)
-    '(objed-state persp-name irc mu4e github debug input-method buffer-encoding lsp major-mode process vcs checker))
-
-  (doom-modeline-def-modeline 'special
-    '(bar window-number matches buffer-info-simple buffer-position selection-info)
-    '(objed-state persp-name debug input-method  buffer-encoding lsp major-mode process checker))
-
-  (doom-modeline-def-modeline 'project
-    '(bar window-number buffer-default-directory)
-    '(mu4e github debug " " major-mode process))
-  )
-
-;;;###autoload
 (defun aj/wsl-p ()
   "Return non-nil value if Emacs is running inside WSL."
   (string-match "Microsoft"

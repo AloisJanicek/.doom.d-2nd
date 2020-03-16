@@ -156,11 +156,6 @@ if running under WSL")
   (setq counsel-dash-browser-func 'eaf-open-url)
   )
 
-(after! doom-modeline
-  ;; Remove global-mode-string (misc-info) from doom-modeline
-  (aj/remove-global-mode-string-from-modeline)
-  )
-
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
             (lambda ()
@@ -674,11 +669,12 @@ if running under WSL")
                                         (org-narrow-to-subtree)))
 
   (setq
-   org-clock-report-include-clocking-task t
-   org-clock-out-remove-zero-time-clocks t
+   org-clock-clocked-in-display nil
    org-clock-history-length 20
    org-clock-in-resume t
+   org-clock-out-remove-zero-time-clocks t
    org-clock-persist t
+   org-clock-report-include-clocking-task t
    )
 
   )
@@ -810,6 +806,10 @@ if running under WSL")
     `(web-mode-html-tag-bracket-face :foreground ,(doom-color 'base5))
     `(web-mode-html-tag-face :foreground ,(doom-lighten 'red 0.2))
     `(web-mode-html-tag-unclosed-face :inherit 'web-mode-html-tag-face :underline '(:color ,(doom-lighten 'red 0.1) :style wave)))
+  )
+
+(after! which-func
+  (setq which-func-modes nil)
   )
 
 (after! which-key
