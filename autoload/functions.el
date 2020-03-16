@@ -7,7 +7,7 @@
 ;;; Code:
 
 ;;;###autoload
-(defun aj/decrypt-encrypt-private (file &optional encrypt)
+(defun aj-decrypt-encrypt-file (file &optional encrypt)
   "Decrypt or encrypt whole content of a file FILE.
 Which operation will be executed depends on value of ENCRYPT."
   (with-current-buffer (find-file-noselect file)
@@ -41,7 +41,7 @@ Which operation will be executed depends on value of ENCRYPT."
       (message "%s ...done" operation))))
 
 ;;;###autoload
-(defun aj/private-decrypt-encrypt-all (directory &optional encrypt)
+(defun aj-decrypt-encrypt-files-directory (directory &optional encrypt)
   "Decrypt or encrypt files in directory DIRECTORY.
 Which operation will be executed depends on value of ENCRYPT."
   (let ((files (directory-files directory t ".org"))
@@ -54,42 +54,12 @@ Which operation will be executed depends on value of ENCRYPT."
         (add-to-list 'decrypted i)))
     (if encrypt
         (dolist (i decrypted)
-          (aj/decrypt-encrypt-private i t))
+          (aj/decrypt-encrypt-file i t))
       (dolist (i encrypted)
-        (aj/decrypt-encrypt-private i)))))
+        (aj/decrypt-encrypt-file i)))))
 
 ;;;###autoload
-(defun aj/indent-if-not-webmode ()
-  "Hack for `web-mode'."
-  (if (equal 'web-mode major-mode) nil
-    (newline-and-indent)))
-
-;;;###autoload
-(defun er/add-web-mode-expansions ()
-  "Set some settings for `web-mode'."
-  (require 'html-mode-expansions)
-  (setq er/try-expand-list (append
-                            er/try-expand-list
-                            '(
-                              web-mode-mark-and-expand
-                              er/mark-html-attribute
-                              er/mark-inner-tag
-                              er/mark-outer-tag
-                              ))))
-
-;;;###autoload
-(defun aj/my-web-mode-hook ()
-  "Hooks for Web mode."
-  (setq web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2
-        web-mode-attr-indent-offset 2
-        css-indent-offset 2
-        )
-  )
-
-;;;###autoload
-(defun aj/enable-flyspell-check-if-prog ()
+(defun aj/flyspell-enable ()
   "Toggle command `flyspell-mode' with check for progn-derived mode."
   (interactive)
   (if (not flyspell-mode)
@@ -100,9 +70,8 @@ Which operation will be executed depends on value of ENCRYPT."
     (flyspell-mode 0)))
 
 ;;;###autoload
-(defun aj/swap-two-ispell-dicts (dict1 dict2)
+(defun aj-ispell-swap-two-dicts (dict1 dict2)
   "If DICT1 is active switch to DICT2 or do it backwards."
-  (interactive)
   (let ((target-dict
          (if (string= dict1 ispell-local-dictionary)
              dict2 dict1)))
@@ -112,17 +81,8 @@ Which operation will be executed depends on value of ENCRYPT."
       (flyspell-buffer))))
 
 ;;;###autoload
-(defun obsoke/ediff-dotfile-and-template ()
-  "Diff the current `dotfile' with the template."
-  (interactive)
-  (ediff-files
-   "~/.doom.d/init.el"
-   "~/.emacs.d/init.example.el"))
-
-;;;###autoload
-(defun aj/toggle-two-doom-themes (theme1 theme2)
+(defun aj-doom-themes-swap-two-themes (theme1 theme2)
   "Toggle between THEME1 and THEME2 doom themes."
-  (interactive)
   (let ((target-theme (if (equal theme1 doom-theme)
                           theme2 theme1)))
     (progn
@@ -130,7 +90,7 @@ Which operation will be executed depends on value of ENCRYPT."
       (doom/reload-theme))))
 
 ;;;###autoload
-(defun aj/mark-region-and-preview-emmet ()
+(defun aj/emmet-mark-and-preview ()
   "Mark whole line before current point position and start `emmet-preview' for marked region."
   (interactive)
   (let ((end (point))
@@ -142,27 +102,25 @@ Which operation will be executed depends on value of ENCRYPT."
     (emmet-preview beg end)))
 
 ;;;###autoload
-(defun aj/indent-emment-for-css ()
+(defun aj-emmet-newline-maybe-a ()
   "Go to new line when in CSS modes."
   (when (or (eq major-mode 'css-mode)
             (eq major-mode 'scss-mode))
     (newline-and-indent)))
 
 ;;;###autoload
-(defun beautify-html-file-and-revert ()
+(defun aj-web-mode-html-beautify-h ()
   "Beautify file with html-beautify and only if major mode is `web-mode'."
-  (interactive)
   (when (eq major-mode 'web-mode)
-    (message "html-beautify taking care of your markup %s" (buffer-file-name))
+    (message "Beautifying %s" (buffer-file-name))
     (shell-command (concat "html-beautify --quiet --replace -s 2 -w 120 -A \"auto\" -I -E \"\" --max-preserve-newlines 0 -f " (buffer-file-name)))
     (revert-buffer t t)))
 
 ;;;###autoload
-(defun prettier-stylelint-fix-file-and-revert ()
+(defun aj-css-mode-css-autofix-h ()
   "Prettify current file and apply auto-fixes only in `css-mode'."
-  (interactive)
   (when (or (eq major-mode 'css-mode) (eq major-mode 'scss-mode))
-    (message "prettier-stylelint fixing the file %s" (buffer-file-name))
+    (message "Fixing the file %s" (buffer-file-name))
     (shell-command (concat "prettier-stylelint --quiet --write " (buffer-file-name)))
     (revert-buffer t t)))
 
@@ -196,15 +154,14 @@ Optional argument ARGS represents arguments passed to advised function."
    args))
 
 ;;;###autoload
-(defun aj/add-thing-at-point-to-url (url)
+(defun aj-add-thing-at-point-to-url (url)
   "Combine URL with string representing thing under point.
 Then open it in browser."
-  (interactive)
   (browse-url (concat url
                       (thing-at-point 'word))))
 
 ;;;###autoload
-(defun ivy-yasnippet--copy-edit-snippet-action (template-name)
+(defun aj-ivy-yasnippet--copy-edit-snippet-action (template-name)
   "Action for `ivy-yasnippet'.
 Copy snippet TEMPLATE-NAME into new snippet."
   (let ((inhibit-read-only t))
@@ -235,28 +192,21 @@ Copy snippet TEMPLATE-NAME into new snippet."
               :caller 'counsel-x-path-walker)))
 
 ;;;###autoload
-(defun buffer-mode (buffer-or-string)
-  "Return the major mode associated with a BUFFER-OR-STRING."
-  (with-current-buffer buffer-or-string
-    major-mode))
-
-;;;###autoload
-(defun aj/open-calibre-book (library-path)
+(defun aj-open-calibre-book (library-path)
   "Select book from Calibre database at LIBRARY-PATH.
 Offer user to choose file format if there is more of them and open it.
 Requires esqlite."
-  (interactive)
   (ivy-read "Books: "
             (mapcar (lambda (member)
                       (concat (nth 1 member) ": " (nth 0 member)))
                     (esqlite-read (concat library-path "metadata.db") "SELECT title,id FROM books"))
             :action (lambda (x)
-                      (let ((book-path (aj/return-calibre-book-path x library-path)))
+                      (let ((book-path (aj-get-calibre-book-path x library-path)))
                         (kill-new book-path)
                         (find-file book-path)))))
 
 ;;;###autoload
-(defun aj/return-calibre-book-path (x library-path)
+(defun aj-get-calibre-book-path (x library-path)
   "Return file path of a book X of Calibre library from `LIBRARY-PATH'."
   (let* ((id (substring x 0 (string-match ":" x)))
          (db "metadata.db")
@@ -289,7 +239,7 @@ Requires esqlite."
       (funcall x))))
 
 ;;;###autoload
-(defun aj/wsl-p ()
+(defun aj-wsl-p ()
   "Return non-nil value if Emacs is running inside WSL."
   (string-match "Microsoft"
                 (with-temp-buffer (shell-command "uname -r" t)
@@ -298,51 +248,14 @@ Requires esqlite."
                                   (buffer-string))))
 
 ;;;###autoload
-(defun aj/return-wsl-user-name ()
+(defun aj-get-wsl-user-name ()
   "Return lowercase representation of name of the user hosting WSL."
   (car (cdr (split-string (shell-command-to-string
                            "whoami.exe | sed -e \"s/\\r//g\" | tr -d \"\\\\n\" ")
                           "\\\\"))))
 
 ;;;###autoload
-(defun jlp/add-to-list-multiple (list to-add)
-  "Add multiple items TO-ADD to LIST.
-Allows for adding a sequence of items to the same list, rather
-than having to call `add-to-list' multiple times."
-  (interactive)
-  (dolist (item to-add)
-    (add-to-list list item)))
-
-;;;###autoload
-(defun yankpad-maybe-expand ()
-  "Return t if there is yankpad snippet matching symbol at point.
-Code is from `yankpad-expand' with minor edit."
-  (when (and (called-interactively-p 'any)
-             (not yankpad-category))
-    (yankpad-set-category))
-  (let* ((symbol (symbol-name (symbol-at-point)))
-         (bounds (bounds-of-thing-at-point 'symbol))
-         (snippet-prefix (concat symbol yankpad-expand-separator))
-         (case-fold-search nil))
-    (when (and symbol yankpad-category)
-      (catch 'loop
-        (mapc
-         (lambda (snippet)
-           (when (string-match-p (concat "\\(\\b\\|" yankpad-expand-separator "\\)" snippet-prefix)
-                                 (car (split-string (car snippet) " ")))
-             t
-             (throw 'loop snippet)))
-         (yankpad-active-snippets))
-        nil))))
-
-;;;###autoload
-(defun aj/remap-in-pdf-occur-buffer ()
-  "..."
-  (evil-define-key 'normal 'pdf-occur-buffer-mode-map
-    (kbd "RET") 'pdf-occur-view-occurrence))
-
-;;;###autoload
-(defun aj/ob-javascript--node-path ()
+(defun aj-ob-javascript--node-path-a ()
   "Check for more possibilities when searching for node_modules folder.
 Functions is intended as a replacement for `ob-javascript--node-path'."
   (let ((node-path (or (getenv "NODE_PATH") ""))
@@ -355,10 +268,9 @@ Functions is intended as a replacement for `ob-javascript--node-path'."
       node-path)))
 
 ;;;###autoload
-(defun aj/org-ql-view--format-element (element)
-  ;; This essentially needs to do what `org-agenda-format-item' does,
-  ;; which is a lot.  We are a long way from that, but it's a start.
-  "Return ELEMENT as a string with text-properties set by its property list.
+(defun aj-org-ql-view--format-element-a (element)
+  "Override advice of `org-ql-view--format-element' adding effort field.
+Return ELEMENT as a string with text-properties set by its property list.
 Its property list should be the second item in the list, as
 returned by `org-element-parse-buffer'.  If ELEMENT is nil,
 return an empty string."
@@ -420,7 +332,7 @@ return an empty string."
 ;; PROJECTILE & PROJECTS
 
 ;;;###autoload
-(defun aj/return-project-org-file ()
+(defun aj-get-project-org-file ()
   "Return list of path pointing to README.org in current projectile project."
   (interactive)
   (let ((file (expand-file-name "README.org" (projectile-project-root))))
@@ -430,12 +342,13 @@ return an empty string."
 (defun aj/agenda-project ()
   "Show agenda for current projectile project."
   (interactive)
-  (org-ql-search (aj/return-project-org-file)
+  (org-ql-search (aj-get-project-org-file)
     '(todo)
     :sort '(date priority todo)
     :super-groups '((:auto-category t))
     :title (concat (projectile-project-name) " project tasks")))
 
+;;;###autoload
 (defun aj/agenda-project-all ()
   "Show agenda for all projectile projects."
   (interactive)
@@ -455,9 +368,9 @@ return an empty string."
                      " projects"))))
 
 ;;;###autoload
-(defun aj/projectile-add-known-project-and-save (project-root)
+(defun aj-projectile-add-known-project-and-save (project-root)
   "Add PROJECT-ROOT to the list of known projects and save it to the list of known projects."
-  (interactive (list (read-directory-name "Add to known projects: " +Repos)))
+  (interactive (list (read-directory-name "Add to known projects: " aj-repos-dir)))
   (unless (projectile-ignored-project-p project-root)
     (setq projectile-known-projects
           (delete-dups
@@ -470,7 +383,12 @@ return an empty string."
   "Forward to `bookmark-jump' or `bookmark-set' if bookmark doesn't exist."
   (interactive)
   (require 'bookmark)
-  (let ((projectile-bookmarks (projectile-bookmarks)))
+  (let ((projectile-bookmarks
+         (cl-remove-if-not (lambda (bmark)
+                             (string-prefix-p
+                              (projectile-project-root)
+                              (expand-file-name (bookmark-location bmark))))
+                           (bookmark-all-names))))
     (ivy-read "Create or jump to bookmark: "
               projectile-bookmarks
               :action (lambda (x)
@@ -488,27 +406,7 @@ return an empty string."
               :caller 'counsel-projectile-bookmark)))
 
 ;;;###autoload
-(defun projectile-bookmarks ()
-  "Return bookmarks only associated with current projectile project."
-  (let ((bmarks (bookmark-all-names)))
-    (cl-remove-if-not #'workspace-bookmark-p bmarks)))
-
-;;;###autoload
-(defun workspace-bookmark-p (bmark)
-  "Return t if `BMARK' belongs to current projectile project."
-  (let ((bmark-path (expand-file-name (bookmark-location bmark))))
-    (string-prefix-p (bmacs-project-root) bmark-path)))
-
-;;;###autoload
-(defun bmacs-project-root ()
-  "Get the path to the root of your project.
-If STRICT-P, return nil if no project was found, otherwise return
-`default-directory'."
-  (let (projectile-require-project-root)
-    (projectile-project-root)))
-
-;;;###autoload
-(defun aj/new-project-init-and-register (fp project &optional gitlab)
+(defun aj-new-project-init-and-register (fp project &optional gitlab)
   "Initiate and register new git repository `PROJECT' at `FP'.
 Optionally create associated repository on `gitlab'."
   (call-process-shell-command (concat "cd " fp " && " "git init"))
@@ -519,7 +417,7 @@ Optionally create associated repository on `gitlab'."
         (call-process-shell-command (concat "cd " fp " && " "git remote add origin git@gitlab.com:AloisJanicek/" project ".git"))
         (call-process-shell-command (concat "cd " fp " && " "git push -u origin --all"))
         (call-process-shell-command (concat "cd " fp " && " "git push -u origin --tags"))))
-  (aj/projectile-add-known-project-and-save fp)
+  (aj-projectile-add-known-project-and-save fp)
   (projectile-switch-project-by-name fp))
 
 ;;;###autoload
@@ -527,7 +425,7 @@ Optionally create associated repository on `gitlab'."
   "Bootstrap new git-based project."
   (interactive)
   (let* ((project (read-string "New project name: "))
-         (directory (read-directory-name "Directory: " +Repos))
+         (directory (read-directory-name "Directory: " aj-repos-dir))
          (template (ivy-read "Template: " '("web-starter-kit" "other")))
          (gitlab (ivy-read "Gitlab?:" '("yes" "no")))
          (full-path (concat directory project))
@@ -539,16 +437,16 @@ Optionally create associated repository on `gitlab'."
         (progn
           (call-process-shell-command (concat "git clone git@gitlab.com:AloisJanicek/web-starter-kit.git " full-path))
           (delete-directory (concat full-path "/.git/") t)
-          (aj/new-project-init-and-register full-path project t)
+          (aj-new-project-init-and-register full-path project t)
           )
-      (aj/new-project-init-and-register full-path project t))))
+      (aj-new-project-init-and-register full-path project t))))
 
 ;;;###autoload
 (defun aj/get-all-projectile-README-org-files (&optional existing)
   "Return list of existing projectile projects' README.org files.
 When optional argument `EXISTING' is supplied, it returns only actual existing files."
   (let ((files (mapcar (lambda (project-path)
-                         (expand-file-name aj/project-readme-task-file project-path))
+                         (expand-file-name aj-project-readme-task-filename project-path))
                        projectile-known-projects)))
     (if existing
         (seq-filter 'file-exists-p files) files)))
@@ -560,28 +458,28 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
   "Set bookmark for current page in pdf-view."
   (interactive)
   (when (eq major-mode 'pdf-view-mode)
-    (bookmark-set (brds/pdf-generate-bookmark-name))))
+    (bookmark-set (brds-pdf-generate-bookmark-name))))
 
 ;;;###autoload
 (defun brds/pdf-jump-last-viewed-bookmark ()
   "Jump to bookmark representing last view position."
   (interactive)
   (when
-      (brds/pdf-has-last-viewed-bookmark)
-    (bookmark-jump (brds/pdf-generate-bookmark-name))))
+      (brds-pdf-has-last-viewed-bookmark)
+    (bookmark-jump (brds-pdf-generate-bookmark-name))))
 
 ;;;###autoload
-(defun brds/pdf-has-last-viewed-bookmark ()
+(defun brds-pdf-has-last-viewed-bookmark ()
   "Verify if current PDF has saved latest position in bookmark."
-  (member (brds/pdf-generate-bookmark-name) (bookmark-all-names)))
+  (member (brds-pdf-generate-bookmark-name) (bookmark-all-names)))
 
 ;;;###autoload
-(defun brds/pdf-generate-bookmark-name ()
+(defun brds-pdf-generate-bookmark-name ()
   "Generate name of bookmark representing latest visited position."
   (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
 
 ;;;###autoload
-(defun brds/pdf-set-all-last-viewed-bookmarks ()
+(defun brds-pdf-set-all-last-viewed-bookmarks ()
   "Save latest visited position for all opened PDFs."
   (dolist (buf (buffer-list))
     (with-current-buffer buf
@@ -651,7 +549,7 @@ Epub files often has very poor quality."
 
 ;;;###autoload
 (defun aj/counsel-howdoyou ()
-  "Howdoyou."
+  "Select one of the fetched howdoyou links by its title."
   (interactive)
   (ivy-read "Choose links: "
             (helm-howdoyou--transform-candidates howdoyou--links)
@@ -692,14 +590,14 @@ present, then search Stack Overflow with `howdoyou-query'.
   (let* ((google-base "https://www.google.com/search?q=")
          (error-message (flycheck-error-message
                          (car (flycheck-overlay-errors-at (point)))))
-         (lang (my/org-capture-get-src-block-string major-mode))
+         (lang (my-org-capture-get-src-block-string major-mode))
          (query (concat lang " " error-message)))
     (if howdoyou
         (howdoyou-query (concat lang " " error-message))
       (browse-url (concat google-base (replace-regexp-in-string " " "+" query))))))
 
 ;;;###autoload
-(defun aj/nov-menu ()
+(defun aj/nov-mode-menu ()
   "Chapter menu for nov-mode.
 After launching for the first time on a TOC page
 returned by `nov-goto-to', save list of all links
@@ -709,12 +607,12 @@ from anywhere in the document after.
 "
   (interactive)
   (require 'link-hint)
-  (defvar-local aj/nov-menu-link nil)
-  (unless aj/nov-menu-link
-    (setq-local aj/nov-menu-link
+  (defvar-local aj-nov-menu-links nil)
+  (unless aj-nov-menu-links
+    (setq-local aj-nov-menu-links
                 (mapcar (lambda (item)
-                          (cdr item)) (aj/collect-all-links))))
-  (ivy-read "Open: " aj/nov-menu-link
+                          (cdr item)) (aj-collect-all-links-in-buffer))))
+  (ivy-read "Open: " aj-nov-menu-links
             :action (lambda (x)
                       (interactive)
                       (apply 'nov-visit-relative-file
@@ -723,7 +621,7 @@ from anywhere in the document after.
                       (nov-browse-url))))
 
 ;;;###autoload
-(defun aj/collect-all-links ()
+(defun aj-collect-all-links-in-buffer ()
   "Collect all links in the current buffer.
 Coppie from `link-hint--collect-visible-links' of `link-hint'.
 "
@@ -731,14 +629,14 @@ Coppie from `link-hint--collect-visible-links' of `link-hint'.
     (dolist (type link-hint-types)
       (setq all-link-positions
             (append all-link-positions
-                    (aj/link-hint--collect (point-min) (point-max) type))))
+                    (aj-nov-mode-link-collect (point-min) (point-max) type))))
     (sort (cl-delete-duplicates all-link-positions
                                 :test #'link-hint--equal
                                 :from-end t)
           #'link-hint--<)))
 
 ;;;###autoload
-(defun aj/link-hint--collect (start end type)
+(defun aj-nov-mode-link-collect (start end type)
   "Between START and END in the current buffer, collect all links of TYPE.
 If the link TYPE does not satisfy the necessary predicates, return nil.
 Based on `link-hint--collect' from `link-hint'.
@@ -790,7 +688,7 @@ using a visual block/rectangle selection."
   (spacemacs/sort-lines-by-column -1))
 
 ;;;###autoload
-(defun aj/eaf--browser-display (buf)
+(defun aj-eaf--browser-display (buf)
   "Given BUF, find suitable window for it.
 Just one window displaying browser."
   (pop-to-buffer buf)
@@ -835,7 +733,7 @@ With this popup rules will apply to them."
             :caller 'ivy-switch-buffer))
 
 ;;;###autoload
-(defun aj/pdf-epub-find-file-other-window-reuse (orig-fun &rest args)
+(defun aj-pdf-epub-find-file-other-window-reuse-a (orig-fun &rest args)
   "Open pdf and epub files into other window or reuse existing ones.
 Takes ORIG-FUN with its ARGS and executes it in
 a customized lexical scope where original `pop-to-buffer-same-window' is
@@ -866,6 +764,13 @@ Intended as an around advice for `find-file' function.
                           (funcall select-win epub-win)))
                        (t (pop-to-buffer buf display-buffer--same-window-action)))))))
     (apply orig-fun args)))
+
+;;;###autoload
+(defun aj/choose-file-from (dir)
+  "Just choose file from directory DIR."
+  (interactive)
+  (ivy-read "Choose file: " dir
+            :caller 'aj/choose-file-from))
 
 (provide 'functions)
 

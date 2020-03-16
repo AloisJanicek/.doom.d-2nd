@@ -10,7 +10,7 @@
 
 ;; ORG-REFILE
 ;;;###autoload
-(defun aj/org-refile-to-file-custom (file &optional headline)
+(defun aj-org-refile-to-file-custom (file &optional headline)
   "Refile as new top level heading in specified file `FILE'.
 If headline `HEADLINE' is provided, use it as a refile target instead.
 If run from `org-agenda' use `org-agenda-refile' instead."
@@ -23,12 +23,12 @@ If run from `org-agenda' use `org-agenda-refile' instead."
                       (goto-char (point-min))
                       (forward-line))))))
          (rfloc (list headline file nil pos)))
-    (if (memq major-mode aj/agenda-similar-modes)
+    (if (memq major-mode aj-org-agenda-similar-modes)
         (org-agenda-refile nil rfloc)
       (org-refile nil nil rfloc))))
 
 ;;;###autoload
-(defun aj/org-refile-to-datetree (file &optional week)
+(defun aj-org-refile-to-datetree (file &optional week)
   "Refile into file `FILE' under date-tree. `WEEK' for ISO week format.
 If run from `org-agenda', it uses `org-agenda-refile' instead."
   (let* ((datetree-date (or (org-entry-get nil "TIMESTAMP" t)
@@ -42,7 +42,7 @@ If run from `org-agenda', it uses `org-agenda-refile' instead."
                     (org-datetree-find-date-create date))
                   (point))))
          (rfloc (list nil file nil pos)))
-    (if (memq major-mode aj/agenda-similar-modes)
+    (if (memq major-mode aj-org-agenda-similar-modes)
         (org-agenda-refile nil rfloc)
       (org-refile nil nil rfloc))))
 
@@ -53,7 +53,7 @@ If executed from agenda, use `org-agenda-refile' instead"
   (interactive "P")
   (let* ((org-refile-target-verify-function nil)
          (org-refile-targets `((,file :maxlevel . 9))))
-    (if (memq major-mode aj/agenda-similar-modes)
+    (if (memq major-mode aj-org-agenda-similar-modes)
         (org-agenda-refile)
       (org-refile))))
 
@@ -67,7 +67,7 @@ Works also in `org-agenda'."
         (org-refile-use-outline-path nil)
         (org-refile-keep arg)
         current-prefix-arg)
-    (if (memq major-mode aj/agenda-similar-modes)
+    (if (memq major-mode aj-org-agenda-similar-modes)
         (call-interactively #'org-agenda-refile)
       (call-interactively #'org-refile))))
 
@@ -84,7 +84,7 @@ Works also in `org-agenda'."
         (completing-read-function
          (lambda (_p _coll _pred _rm _ii _h default &rest _)
            default)))
-    (if (memq major-mode aj/agenda-similar-modes)
+    (if (memq major-mode aj-org-agenda-similar-modes)
         (org-agenda-refile)
       (org-refile))))
 
@@ -97,7 +97,7 @@ Works also in `org-agenda'."
   (unless (bound-and-true-p org-clock-current-task)
     (user-error "No active clock to refile to"))
   (let ((org-refile-keep arg))
-    (if (memq major-mode aj/agenda-similar-modes)
+    (if (memq major-mode aj-org-agenda-similar-modes)
         (org-agenda-refile 2)
       (org-refile 2))))
 
@@ -120,7 +120,7 @@ Works also in `org-agenda'."
                                    buffer-file-name)
                                (cons :maxlevel 10))
                          org-refile-targets))))
-    (if (memq major-mode aj/agenda-similar-modes)
+    (if (memq major-mode aj-org-agenda-similar-modes)
         (call-interactively #'org-agenda-refile)
       (call-interactively #'org-refile))))
 
@@ -143,15 +143,15 @@ Works also in `org-agenda'."
                               buffer-file-name)
                           (cons :maxlevel 10))
                          org-refile-targets))))
-    (if (memq major-mode aj/agenda-similar-modes)
+    (if (memq major-mode aj-org-agenda-similar-modes)
         (call-interactively #'org-agenda-refile)
       (call-interactively #'org-refile))))
 
-;;;###autoload (autoload 'aj/refile/body "autoload/orgmode" nil t)
-(defhydra aj/refile (:color blue
-                            :hint nil
-                            :idle which-key-idle-delay
-                            )
+;;;###autoload (autoload 'aj/org-refile-hydra/body "autoload/orgmode" nil t)
+(defhydra aj/org-refile-hydra (:color blue
+                                      :hint nil
+                                      :idle which-key-idle-delay
+                                      )
   "
 _r_efile targets            _t_op level
 _f_ile                      _o_ther window
@@ -162,22 +162,22 @@ _c_lock                     _P_roject journal      _x_private
 "
   ("r" (lambda (arg)
          (interactive "P")
-         (if (memq major-mode aj/agenda-similar-modes)
+         (if (memq major-mode aj-org-agenda-similar-modes)
              (call-interactively #'org-agenda-refile)
            (call-interactively #'org-refile))))
   ("f" (aj/org-refile-to-file
         (aj/choose-file-from
-         (aj/get-all-org-files))))
+         (aj-get-all-org-files))))
   ("v" #'+org/refile-to-visible)
-  ("j" (aj/org-refile-to-datetree
+  ("j" (aj-org-refile-to-datetree
         (aj/choose-file-from
          (directory-files org-directory t ".org"))))
-  ("t" (aj/org-refile-to-file-custom
+  ("t" (aj-org-refile-to-file-custom
         (aj/choose-file-from
-         (aj/get-all-org-files))))
+         (aj-get-all-org-files))))
   ("p" (aj/org-refile-to-file
         (aj/choose-file-from (aj/get-all-projectile-README-org-files t))))
-  ("P" (aj/org-refile-to-datetree
+  ("P" (aj-org-refile-to-datetree
         (aj/choose-file-from (aj/get-all-projectile-README-org-files t))))
   ("x" (let ((hydra-hint-display-type 'message)) (aj/private-refile/body)))
   ("o" #'+org/refile-to-other-window)
@@ -189,14 +189,14 @@ _c_lock                     _P_roject journal      _x_private
 ;; ORG-CAPTURE
 
 ;;;###autoload
-(defun my/org-capture-get-src-block-string (mode)
+(defun my-org-capture-get-src-block-string (mode)
   "Return org mode source block identifier for major mode `MODE'."
   (let ((mm (intern (replace-regexp-in-string "-mode" "" (format "%s" mode)))))
     (or (car (rassoc mm org-src-lang-modes)) (format "%s" mm))))
 
 ;;;###autoload
 ;; https://www.reddit.com/r/emacs/comments/8fg34h/capture_code_snippet_using_org_capture_template/
-(defun my/org-capture-code-snippet (file source-buffer)
+(defun my-org-capture-code-snippet (file source-buffer)
   "Build `org-mode' source block with code selected in FILE.
 Argument SOURCE-BUFFER is buffer visiting FILE."
   (with-current-buffer source-buffer
@@ -206,11 +206,11 @@ Argument SOURCE-BUFFER is buffer visiting FILE."
                                 (pdf-view-active-region-text))
                               (buffer-substring-no-properties (mark) (point)))))
            (isprogmode (cl-member
-                        (my/org-capture-get-src-block-string major-mode)
-                        aj/org-languages :test #'string-match-p))
+                        (my-org-capture-get-src-block-string major-mode)
+                        aj-org-src-block-identifiers :test #'string-match-p))
            (src-identifier (if isprogmode
-                               (my/org-capture-get-src-block-string major-mode)
-                             (ivy-read "Choose language:" aj/org-languages))))
+                               (my-org-capture-get-src-block-string major-mode)
+                             (ivy-read "Choose language:" aj-org-src-block-identifiers))))
       (format (concat "#+BEGIN_SRC %s\n"
                       "%s\n"
                       "#+END_SRC"
@@ -219,7 +219,7 @@ Argument SOURCE-BUFFER is buffer visiting FILE."
               code-snippet))))
 
 ;;;###autoload
-(defun aj/capture-code-ask-where ()
+(defun aj/org-capture-code-ask-where ()
   "Ask for file, headline and title of captured item."
   (interactive)
   (let* ((file (read-file-name "In file: " org-directory))
@@ -231,20 +231,19 @@ Argument SOURCE-BUFFER is buffer visiting FILE."
                        :from file
                        :where '(level 1)))))
          (title (ivy-read "Choose title: " nil)))
-    (aj/capture-code file title headline)))
+    (aj-org-capture-code file title headline)))
 
 ;;;###autoload
-(defun aj/capture-code (file title &optional headline)
+(defun aj-org-capture-code (file title &optional headline)
   "Capture code snippet in FILE and called it TITLE.
 If HEADLINE, capture under it instead of top level."
-  (interactive)
   (let* ((source-buffer (current-buffer))
          (line (concat "* " title " :src:\n"
                        ":PROPERTIES:\n"
                        ":CREATED: %U\n"
                        ":END:\n\n"
                        "from: %a\n\n"
-                       "%(my/org-capture-code-snippet \"%F\" source-buffer)"))
+                       "%(my-org-capture-code-snippet \"%F\" source-buffer)"))
          (org-capture-templates (if headline
                                     `(("s" "code snippet" entry (file+headline ,file ,headline)
                                        ,line :immediate-finish t :empty-lines 1))
@@ -252,49 +251,49 @@ If HEADLINE, capture under it instead of top level."
                                      ,line :immediate-finish t :empty-lines 1)))))
     (org-capture nil "s")))
 
-;;;###autoload (autoload 'aj/capture-code/body "autoload/orgmode" nil t)
-(defhydra aj/capture-code-hydra (:color blue)
+;;;###autoload (autoload 'aj/org-capture-code-hydra/body "autoload/orgmode" nil t)
+(defhydra aj/org-capture-code-hydra (:color blue)
   "Code:"
-  ("a" #'aj/capture-code-ask-where "ask" )
-  ("c" (aj/capture-code +INBOX (ivy-read "Choose title: " nil) nil) "inbox" )
+  ("a" #'aj/org-capture-code-ask-where "ask" )
+  ("c" (aj-org-capture-code aj-inbox-file (ivy-read "Choose title: " nil) nil) "inbox" )
   ("q" nil "exit")
   )
 
-;;;###autoload (autoload 'aj/capture/body "autoload/orgmode" nil t)
-(defhydra aj/capture (:color blue)
+;;;###autoload (autoload 'aj/org-capture-hydra/body "autoload/orgmode" nil t)
+(defhydra aj/org-capture-hydra (:color blue)
   "Capture:"
-  ("d" #'aj/capture-calendar-the-right-way "calendar date")
+  ("d" #'aj/org-capture-calendar "calendar date")
   ("C" (let ((hydra-hint-display-type 'message))
-         (aj/capture-code-hydra/body)) "code:")
+         (aj/org-capture-code-hydra/body)) "code:")
   ("c" (let ((hydra-hint-display-type 'message))
-         (aj/capture-under-clock/body)) "clock:")
+         (aj/org-capture-under-clock/body)) "clock:")
   ("y" (progn
          (when (not (featurep 'yankpad))
            (require 'yankpad))
-         (aj/capture-code yankpad-file
-                          (ivy-read "Choose title: " nil)
-                          (or (when (or (eq major-mode 'pdf-view-mode)
-                                        (eq major-mode 'nov-mode))
-                                (ivy-read "Under heading: "
-                                          (org-ql-query
-                                            :select '(org-get-heading t t t t)
-                                            :from yankpad-file
-                                            :where '(level 1))))
-                              (prin1-to-string major-mode)))) "yankpad" )
+         (aj-org-capture-code yankpad-file
+                              (ivy-read "Choose title: " nil)
+                              (or (when (or (eq major-mode 'pdf-view-mode)
+                                            (eq major-mode 'nov-mode))
+                                    (ivy-read "Under heading: "
+                                              (org-ql-query
+                                                :select '(org-get-heading t t t t)
+                                                :from yankpad-file
+                                                :where '(level 1))))
+                                  (prin1-to-string major-mode)))) "yankpad" )
   ("Y" (progn
          (when (not (featurep 'yankpad))
            (require 'yankpad))
-         (aj/capture-code yankpad-file
-                          (ivy-read "Choose title: " nil)
-                          (substring-no-properties
-                           (ivy-read "Under heading: "
-                                     (org-ql-query
-                                       :select '(org-get-heading t t t t)
-                                       :from yankpad-file
-                                       :where '(level 1)))))) "Yankpad" )
+         (aj-org-capture-code yankpad-file
+                              (ivy-read "Choose title: " nil)
+                              (substring-no-properties
+                               (ivy-read "Under heading: "
+                                         (org-ql-query
+                                           :select '(org-get-heading t t t t)
+                                           :from yankpad-file
+                                           :where '(level 1)))))) "Yankpad" )
   ("k" (org-capture nil "k") "inbox")
   ("t" (org-capture nil "t") "task")
-  ("j" (aj/capture-into-journal-in
+  ("j" (aj-org-capture-into-journal-in
         (aj/choose-file-from
          (seq-filter
           (lambda (file)
@@ -303,8 +302,8 @@ If HEADLINE, capture under it instead of top level."
   ("q" nil "exit")
   )
 
-;;;###autoload (autoload 'aj/capture-under-clock/body "autoload/orgmode" nil t)
-(defhydra aj/capture-under-clock (:color blue)
+;;;###autoload (autoload 'aj/org-capture-under-clock/body "autoload/orgmode" nil t)
+(defhydra aj/org-capture-under-clock (:color blue)
   "Code:"
   ("h" (org-capture nil "ce") "heading" )
   ("c" (org-capture nil "cc") "checkitem" )
@@ -314,7 +313,7 @@ If HEADLINE, capture under it instead of top level."
   )
 
 ;;;###autoload
-(defun aj/capture-calendar-the-right-way ()
+(defun aj/org-capture-calendar ()
   "Ask for file, date, heading title, tag and then capture."
   (interactive)
   (let* ((file (aj/choose-file-from org-agenda-files))
@@ -331,7 +330,7 @@ If HEADLINE, capture under it instead of top level."
     (org-capture nil "c")))
 
 ;;;###autoload
-(defun aj/capture-into-project (&optional current week)
+(defun aj/org-capture-into-project (&optional current week)
   "Capture into projectile project.
 If optional argument `CURRENT' is non-nil then don't ask user for the project.
 Optional argument `WEEK' for ISO week based date tree."
@@ -347,15 +346,15 @@ Optional argument `WEEK' for ISO week based date tree."
                                    :prepend t))))
     (cond ((string= template "journal")
            (if week
-               (aj/capture-into-journal-in file "JOURNAL" t)
-             (aj/capture-into-journal-in file "JOURNAL")))
+               (aj-org-capture-into-journal-in file "JOURNAL" t)
+             (aj-org-capture-into-journal-in file "JOURNAL")))
           ((string= template "task")
            (org-capture nil "P"))
           (t
            (message "Invalid template")))))
 
 ;;;###autoload
-(defun aj/capture-into-journal-in (file &optional headline week)
+(defun aj-org-capture-into-journal-in (file &optional headline week)
   "Capture into journal in `FILE'. Optionally into date-tree under `HEADLINE'.
 Use optional argument `WEEK' for ISO week format."
   (interactive)
@@ -378,7 +377,7 @@ Use optional argument `WEEK' for ISO week format."
     (org-capture nil "J")))
 
 ;;;###autoload
-(defun aj/org-get-yankpad-target ()
+(defun aj-org-get-yankpad-target ()
   "Find yankpad category to capture into."
   (require 'yankpad)
   (with-current-buffer (find-file-noselect yankpad-file)
@@ -394,7 +393,7 @@ Use optional argument `WEEK' for ISO week format."
 ;; ORG-MODE
 
 ;;;###autoload
-(defun aj/insert-file-octals-identify-into-src-block-header ()
+(defun aj/org-insert-file-octals-into-src-block-header ()
   "For file under the point it insert its file permission in octal format at the end of the current line."
   (interactive)
   (let* (($inputStr (if (use-region-p)
@@ -409,7 +408,7 @@ Use optional argument `WEEK' for ISO week format."
         (print "file doesn't exists")))))
 
 ;;;###autoload
-(defun aj/org-menu-and-goto ()
+(defun aj/org-mode-menu ()
   "Convenient way for navigating `org-mode' buffers.
 User is presented with pop-up menu representing all
 headlines in current `org-mode' file.
@@ -430,14 +429,14 @@ and all its children are revealed."
   )
 
 ;;;###autoload
-(defun transform-square-brackets-to-round-ones(string-to-transform)
+(defun my-transform-square-brackets-to-round-ones (string-to-transform)
   "Transforms [ into ( and ] into ), other chars left unchanged.
 Argument STRING-TO-TRANSFORM represents string to manipulate."
   (concat
    (mapcar (lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform)))
 
 ;;;###autoload
-(defun aj-strike-through-org-headline ()
+(defun aj/org-strike-through-headline ()
   "Strikes through headline in org mode."
   (interactive)
   (save-excursion
@@ -457,16 +456,16 @@ Argument STRING-TO-TRANSFORM represents string to manipulate."
       )))
 
 ;;;###autoload
-(defun my-smarter-kill-ring-save ()
+(defun my/org-smarter-kill-ring-save ()
   "Copy actual URL instead of name of the element."
   (interactive)
   (if (region-active-p)
       (call-interactively #'kill-ring-save)
     (when (eq major-mode 'org-mode)
-      (call-interactively #'my-org-retrieve-url-from-point))))
+      (call-interactively #'my/org-retrieve-url-from-point))))
 
 ;;;###autoload
-(defun aj/create-new-org-l1-heading (x)
+(defun aj/org-create-new-top-level-heading (x)
   "Create new top level heading.
 In current org file from which ivy was called.
 Argument X represents title of the new heading."
@@ -490,7 +489,7 @@ Argument X represents title of the new heading."
     (org-set-tags-to nil)))
 
 ;;;###autoload
-(defun aj/insert-link-into-org-heading ()
+(defun aj/org-insert-link-into-heading ()
   "Mark current heading text and then insert link."
   (interactive)
   (progn
@@ -504,7 +503,7 @@ Argument X represents title of the new heading."
   )
 
 ;;;###autoload
-(defun aj/insert-link-into-org-list-item ()
+(defun aj/org-insert-link-into-list-item ()
   "Mark current list item text and then insert link."
   (interactive)
   (progn
@@ -518,7 +517,7 @@ Argument X represents title of the new heading."
   )
 
 ;;;###autoload
-(defun aj/complete-all-tags-for-org ()
+(defun aj-org-complete-all-tags-h ()
   "Set buffer-local variable which allow to complete all tags from `org-agenda' files."
   (setq-local org-complete-tags-always-offer-all-agenda-tags t))
 
@@ -530,7 +529,7 @@ Argument X represents title of the new heading."
           (progn (org-end-of-subtree)  (point)))))
 
 ;;;###autoload
-(defun org-rename-header (label)
+(defun my/org-rename-header (label)
   "Rename the current section's header to `LABEL'.
 Then moves the point to the end of the line."
   (interactive (list
@@ -559,26 +558,17 @@ Then moves the point to the end of the line."
     (org-brain-visualize (org-brain-entry-at-pt))))
 
 ;;;###autoload
-(defun aj/visualize-brain-and-take-care-of-buffers ()
-  "Visualize all brain org files and them hide them from perspectives."
-  (interactive)
-  (let ((persp-autokill-buffer-on-remove nil))
-    (call-interactively 'org-brain-visualize)
-    (persp-remove-buffer +persp-blacklist)))
-
-;;;###autoload
-(defun link-hint-open-link-and-brain-goto ()
+(defun aj/org-brain-link-hint-and-goto ()
   "Use `ivy-avy' to open a visible link and `org-brain-goto'."
   (interactive)
   (when (not (featurep 'link-hint))
     (require 'link-hint))
   (avy-with link-hint-open-link
     (link-hint--one :open)
-    (org-brain-goto-current)
-    ))
+    (org-brain-goto-current)))
 
 ;;;###autoload
-(defun aj/org-brain-entry-at-pt ()
+(defun aj/org-brain-entry-at-pt-a ()
   "Get current org-brain entry.
 In `org-mode' this is the current headline, or the file.
 In `org-brain-visualize' just return `org-brain--vis-entry'.
@@ -608,37 +598,26 @@ This also works with indirect buffers and symbolic links."
     (org-agenda-list)))
 
 ;;;###autoload
-(defun aj/fix-evil-org-agenda-keys ()
-  "Remap some keys in advice after `evil-org-agenda-set-keys'."
-  (evil-define-key 'motion org-agenda-mode-map
-    "ct" 'counsel-org-tag-agenda
-    "j"   'org-agenda-next-item
-    "k"   'org-agenda-previous-item
-    (kbd "C-j") 'org-agenda-next-line
-    (kbd "C-k") 'org-agenda-previous-line
-    ))
-
-;;;###autoload
-(defun aj/copy-set-agenda-filter (string &rest _)
-  "Set `STRING' as a value of `aj/agenda-filter'.
+(defun aj-org-agenda-copy-set-filter-a (string &rest _)
+  "Set `STRING' as a value of `aj-org-agenda-filter'.
 This function is meant to be used as advice for `org-agenda-filter-apply'"
-  (setq aj/agenda-filter string))
+  (setq aj-org-agenda-filter string))
 
 ;;;###autoload
-(defun aj/clear-filter-refresh-view ()
-  "Clear `org-agenda' persistent filter option stored in `aj/agenda-filter'.
+(defun aj/org-agenda-clear-filter-refresh-view ()
+  "Clear `org-agenda' persistent filter option stored in `aj-org-agenda-filter'.
 Also remove agenda filter using built-in `org-agenda-filter-show-all-tag'.
 On top of this refresh view."
   (interactive)
   (progn
     (org-agenda-filter-show-all-tag)
-    (setq aj/agenda-filter nil)
+    (setq aj-org-agenda-filter nil)
     (if (string-match "Org QL" (buffer-name))
         (org-ql-view-refresh)
       (org-agenda-redo))))
 
 ;;;###autoload
-(defun aj/save-and-refresh-agenda (&rest _)
+(defun aj-org-agenda-save-and-refresh-a (&rest _)
   "Save org files and refresh.
 Only org files contributing to `org-agenda' are saved.
 Refreshed are `org-agenda' org `org-ql-view', depending on
@@ -649,23 +628,9 @@ which one is currently active."
     (org-agenda-redo)))
 
 ;;;###autoload
-(defun aj/open-org-file-the-right-way (orig-fun &rest args)
-  "Advice any command opening `org-mode' files.
-For execution of advised command this functions overrides
-`pop-to-buffer-same-window' and `pop-to-buffer' with heavily
-customized alternative `aj/open-file-switch-create-indirect-buffer-per-persp'.
-Argument ORIG-FUN represents advised function.
-Optional argument ARGS are argument passed to `ORIG-FUN'."
-  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-             #'aj/open-file-switch-create-indirect-buffer-per-persp)
-            ((symbol-function 'pop-to-buffer)
-             #'aj/open-file-switch-create-indirect-buffer-per-persp))
-    (apply orig-fun args)))
-
-;;;###autoload
-(defun aj/org-ql-simple-search-for-task (task)
+(defun aj-org-ql-simple-taks-search (task)
   "Search for task `TASK' via `org-ql'."
-  (let ((org-agenda-tag-filter aj/agenda-filter))
+  (let ((org-agenda-tag-filter aj-org-agenda-filter))
     (org-ql-search (append (org-agenda-files)
                            (aj/get-all-projectile-README-org-files t))
       `(todo ,task)
@@ -673,52 +638,52 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
       :super-groups '((:auto-category t))
       :title task)))
 
-;;;###autoload (autoload 'aj/gtd-agenda/body "autoload/orgmode" nil t)
-(defhydra aj/gtd-agenda (:color blue
-                                :body-pre
-                                (unless aj/gtd-agenda-no-auto
-                                  (cond
-                                   ;; show inbox if it is not empty
-                                   ((catch 'heading
-                                      (org-ql-query
-                                        :select (lambda ()
-                                                  (when (org-get-heading)
-                                                    (throw 'heading t)))
-                                        :from +INBOX
-                                        :where '(level 1)))
-                                    (org-ql-search `(,+INBOX)
-                                      '(level 1)
-                                      :title "Inbox"
-                                      :sort '(date)))
-                                   ;; show all stucked "PROJECT" if any
-                                   ((catch 'heading
-                                      (org-ql-query
-                                        :select (lambda ()
-                                                  (when (org-get-heading)
-                                                    (throw 'heading t)))
-                                        :from (append (org-agenda-files)
-                                                      (aj/get-all-projectile-README-org-files t))
-                                        :where
-                                        '(and (todo)
-                                              (children (todo))
-                                              (not (descendants (todo "NEXT"))))))
-                                    (org-ql-search (append (org-agenda-files)
-                                                           (aj/get-all-projectile-README-org-files t))
-                                      '(and (todo)
-                                            (children (todo))
-                                            (not (descendants (todo "NEXT"))))
-                                      :super-groups '((:auto-category t))
-                                      :title "Stucked Projects"))
-                                   ;; otherwise default to showing "NEXT" task
-                                   (t (let ((org-agenda-tag-filter aj/agenda-filter))
-                                        (org-ql-search (append (org-agenda-files)
-                                                               (aj/get-all-projectile-README-org-files t))
-                                          '(and (todo "NEXT")
-                                                (not (ts-active)))
-                                          :sort '(date priority todo)
-                                          :super-groups '((:auto-category t))))))
-                                  )
-                                )
+;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
+(defhydra aj/org-agenda-gtd-hydra (:color blue
+                                          :body-pre
+                                          (unless aj-org-agenda-gtd-hydra-no-auto
+                                            (cond
+                                             ;; show inbox if it is not empty
+                                             ((catch 'heading
+                                                (org-ql-query
+                                                  :select (lambda ()
+                                                            (when (org-get-heading)
+                                                              (throw 'heading t)))
+                                                  :from aj-inbox-file
+                                                  :where '(level 1)))
+                                              (org-ql-search `(,aj-inbox-file)
+                                                '(level 1)
+                                                :title "Inbox"
+                                                :sort '(date)))
+                                             ;; show all stucked "PROJECT" if any
+                                             ((catch 'heading
+                                                (org-ql-query
+                                                  :select (lambda ()
+                                                            (when (org-get-heading)
+                                                              (throw 'heading t)))
+                                                  :from (append (org-agenda-files)
+                                                                (aj/get-all-projectile-README-org-files t))
+                                                  :where
+                                                  '(and (todo)
+                                                        (children (todo))
+                                                        (not (descendants (todo "NEXT"))))))
+                                              (org-ql-search (append (org-agenda-files)
+                                                                     (aj/get-all-projectile-README-org-files t))
+                                                '(and (todo)
+                                                      (children (todo))
+                                                      (not (descendants (todo "NEXT"))))
+                                                :super-groups '((:auto-category t))
+                                                :title "Stucked Projects"))
+                                             ;; otherwise default to showing "NEXT" task
+                                             (t (let ((org-agenda-tag-filter aj-org-agenda-filter))
+                                                  (org-ql-search (append (org-agenda-files)
+                                                                         (aj/get-all-projectile-README-org-files t))
+                                                    '(and (todo "NEXT")
+                                                          (not (ts-active)))
+                                                    :sort '(date priority todo)
+                                                    :super-groups '((:auto-category t))))))
+                                            )
+                                          )
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
 
@@ -728,12 +693,12 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
              )
          (org-agenda nil "a")) "log")
 
-  ("i" (org-ql-search `(,+INBOX)
+  ("i" (org-ql-search `(,aj-inbox-file)
          '(level 1)
          :title "Inbox"
          :sort '(date)) "inbox")
 
-  ("n" (let ((org-agenda-tag-filter aj/agenda-filter))
+  ("n" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search (append (org-agenda-files)
                                 (aj/get-all-projectile-README-org-files t))
            '(and (todo "NEXT")
@@ -742,7 +707,7 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
            :super-groups '((:auto-category t))
            :title "Next Action")) "Next")
 
-  ("t" (let ((org-agenda-tag-filter aj/agenda-filter))
+  ("t" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search (append (org-agenda-files)
                                 (aj/get-all-projectile-README-org-files t))
            '(and (todo "TODO")
@@ -752,7 +717,7 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
            :super-groups '((:auto-category t ))
            :title "Plain Todos")) "tasks")
 
-  ("p" (let ((org-agenda-tag-filter aj/agenda-filter))
+  ("p" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search (append (org-agenda-files)
                                 (aj/get-all-projectile-README-org-files t))
            '(and (todo)
@@ -769,21 +734,21 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
          :super-groups '((:auto-category t))
          :title "Stucked Projects") "stucked projects")
 
-  ("w" (aj/org-ql-simple-search-for-task "WAIT") "Wait")
+  ("w" (aj-org-ql-simple-taks-search "WAIT") "Wait")
 
-  ("c" (aj/org-ql-simple-search-for-task "CANCELLED") "Cancelled")
+  ("c" (aj-org-ql-simple-taks-search "CANCELLED") "Cancelled")
 
-  ("d" (aj/org-ql-simple-search-for-task "DONE") "Done")
+  ("d" (aj-org-ql-simple-taks-search "DONE") "Done")
 
-  ("r" (let ((org-agenda-tag-filter aj/agenda-filter))
+  ("r" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search (append (org-agenda-files)
                                 (aj/get-all-projectile-README-org-files t))
            '(ts :from -7 :to today)
            :sort '(date priority todo)
            :super-groups '((:auto-ts t)))) "recent")
 
-  ("R" (let ((org-agenda-tag-filter aj/agenda-filter))
-         (org-ql-search (aj/get-all-archived-org-files)
+  ("R" (let ((org-agenda-tag-filter aj-org-agenda-filter))
+         (org-ql-search (aj-get-all-archived-org-files)
            '(ts :from -21 :to today)
            :sort '(date priority todo)
            :super-groups '((:auto-ts t)))) "Archived Recent")
@@ -795,40 +760,52 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
          :super-groups '((:auto-category t))
          :title "All Todos") "ALL Todos")
 
-  ("A" (org-ql-search (aj/get-all-archived-org-files)
+  ("A" (org-ql-search (aj-get-all-archived-org-files)
          '(todo "DONE")
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
          :title "ARCHIVED") "Archived")
 
-  ("S" (aj/org-ql-simple-search-for-task "SOMEDAY") "Someday")
+  ("S" (aj-org-ql-simple-taks-search "SOMEDAY") "Someday")
 
-  ("M" (aj/org-ql-simple-search-for-task "MAYBE") "Maybe")
+  ("M" (aj-org-ql-simple-taks-search "MAYBE") "Maybe")
   )
 
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
 
 ;;;###autoload
-(defun aj/take-care-of-org-buffers (&rest _)
+(defun aj-org-open-file-respect-sanity-a (orig-fun &rest args)
+  "Advice any command opening `org-mode' files.
+For execution of advised command this functions overrides
+`pop-to-buffer-same-window' and `pop-to-buffer' with heavily
+customized alternative `aj-open-file-switch-create-indirect-buffer-per-persp'.
+Argument ORIG-FUN represents advised function.
+Optional argument ARGS are argument passed to `ORIG-FUN'."
+  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+             #'aj-open-file-switch-create-indirect-buffer-per-persp)
+            ((symbol-function 'pop-to-buffer)
+             #'aj-open-file-switch-create-indirect-buffer-per-persp))
+    (apply orig-fun args)))
+
+;;;###autoload
+(defun aj-org-buffers-respect-sanity-a (&rest _)
   "This is meant as an advice to all commands which like to opens a lot of org files."
   (let ((persp-autokill-buffer-on-remove nil))
     (org-save-all-org-buffers)
-    (persp-remove-buffer +persp-blacklist))
-  )
+    (persp-remove-buffer aj-persp-blacklist)))
 
 ;;;###autoload
-(defun aj/find-org-file (dir)
+(defun aj-org-find-file (dir)
   "Find org file in DIR.
 Open it the way I like it."
-  (interactive)
   (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-             #'aj/open-file-switch-create-indirect-buffer-per-persp)
+             #'aj-open-file-switch-create-indirect-buffer-per-persp)
             ((symbol-function 'pop-to-buffer)
-             #'aj/open-file-switch-create-indirect-buffer-per-persp))
+             #'aj-open-file-switch-create-indirect-buffer-per-persp))
     (counsel-find-file dir)))
 
 ;;;###autoload
-(defun aj/open-file-switch-create-indirect-buffer-per-persp (buffer-or-path &optional return-back)
+(defun aj-open-file-switch-create-indirect-buffer-per-persp (buffer-or-path &optional return-back)
   "Opens file from BUFFER-OR-PATH into perspective-specific indirect buffer.
 
 This function is intended for workflow consisting of large number of org files
@@ -868,7 +845,7 @@ executing this function.
 
         (persp-add-buffer (get-buffer new-buffer-name))
 
-        (aj/find-me-window-for-org-buffer new-buffer-name)
+        (aj-get-window-for-org-buffer new-buffer-name)
 
         (when return-back
           (select-window win)
@@ -877,7 +854,7 @@ executing this function.
     (message "%s is not valid buffer" buffer-or-path)))
 
 ;;;###autoload
-(defun aj/find-me-window-for-org-buffer (buffer)
+(defun aj-get-window-for-org-buffer (buffer)
   "Take `BUFFER' and try to find suitable window for it.
 First look for available `org-mode' buffers.
 If there isn't one, select fist window which isn't current window.
@@ -891,7 +868,8 @@ split current window and displays `BUFFER' on the left."
          (too-narrow (< (frame-width) 120))
          (org-window (catch 'org-window
                        (mapcar (lambda (win)
-                                 (let* ((mode (buffer-mode (window-buffer win))))
+                                 (let* ((mode (with-current-buffer (window-buffer win)
+                                                major-mode)))
                                    (if (eq 'org-mode mode)
                                        (when (not from-agenda)
                                          (throw 'org-window win)))))
@@ -917,16 +895,16 @@ split current window and displays `BUFFER' on the left."
 ;; ORG-CLOCK AND ORG-POMODORO
 
 ;;;###autoload
-(defun aj/clock-menu ()
+(defun aj/org-clock-menu ()
   "Present recent clocked tasks."
   (interactive)
   (setq current-prefix-arg '(4))
   (call-interactively 'org-clock-in-last))
 
-;;;###autoload (autoload 'aj/clocking/body "autoload/orgmode" nil t)
-(defhydra aj/clocking (:color blue)
+;;;###autoload (autoload 'aj/org-clock-hydra/body "autoload/orgmode" nil t)
+(defhydra aj/org-clock-hydra (:color blue)
   "Clock:"
-  ("c" #'aj/clock-menu "clock" )
+  ("c" #'aj/org-clock-menu "clock" )
   ("p" #'org-pomodoro "pomodoro" )
   ("s" #'org-clock-out "stop clock")
   ("g" #'counsel-org-clock-goto "goto clock")
@@ -935,7 +913,7 @@ split current window and displays `BUFFER' on the left."
   )
 
 ;;;###autoload
-(defun aj/update-org-clock-heading ()
+(defun aj-org-clock-update-heading ()
   "Update `org-clock-heading'."
   (interactive)
   (save-excursion
@@ -953,11 +931,10 @@ split current window and displays `BUFFER' on the left."
     (bury-buffer)))
 
 ;;;###autoload
-(defun my/org-pomodoro-text-time ()
+(defun my-org-pomodoro-text-time ()
   "Return status info about `org-pomodoro'.
 If `org-pomodoro' is not running, try to print info about org-clock.
 If either `org-pomodoro' or org-clock aren't active, print \"No Active Task \""
-  (interactive)
   (when (featurep 'org)
     (require 'org-pomodoro)
     (cond ((equal :none org-pomodoro-state)
@@ -974,7 +951,7 @@ If either `org-pomodoro' or org-clock aren't active, print \"No Active Task \""
 ;; URL
 
 ;;;###autoload
-(defun my-org-retrieve-url-from-point (&optional x)
+(defun my/org-retrieve-url-from-point (&optional x)
   "Get URL from selected `org-mode' element.
 Argument X represents selected `org-mode' element."
   (interactive)
@@ -999,12 +976,12 @@ Argument TEXT represents string being investigated."
 
 ;; ORG LINKS
 ;;;###autoload
-(defun aj/org-calibre-follow (link)
+(defun aj-org-calibre-follow (link)
   "Follow \"calibre:\" links.
 Reconstruct full file path first."
   (let ((path
          (file-truename
-          (concat +Reference
+          (concat aj-reference-dir
                   (substring
                    link
                    (string-match "/Libraries" link))))))
@@ -1015,7 +992,7 @@ Reconstruct full file path first."
           (t (message "Not supported file-type.")))))
 
 ;;;###autoload
-(defun aj/pdf-epub-org-store-link-custom-dispatch ()
+(defun aj-org-calibre-store ()
   "Store link maybe as \"calibre:\".
 Otherwise dispatch default commands.
 "
@@ -1064,7 +1041,7 @@ Otherwise dispatch default commands.
        :description (format "EPUB file from Calibre Library: %s" file-name)))))
 
 ;;;###autoload
-(defun my/nov--find-file (file index point)
+(defun my-nov--find-file-a (file index point)
   "Open FILE(nil means current buffer) in nov-mode and go to the specified INDEX and POSITION.
 Prevent opening same FILE into multiple windows or buffers. Always reuse them if possible."
   (let ((same-epub
@@ -1093,7 +1070,7 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
     (goto-char point)))
 
 ;;;###autoload
-(defun aj/org-update-org-ids-recursively ()
+(defun aj/org-id-update-recursively ()
   "Get all files in `org-directory' recursively and update org IDs."
   (interactive)
   (org-id-update-id-locations
@@ -1102,21 +1079,21 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
 
 ;; MISC
 ;;;###autoload
-(defun aj/get-all-org-files ()
+(defun aj-get-all-org-files ()
   "Return all org files but without archived files."
   (seq-filter (lambda (elt)
                 (not (string-match "org_archive" elt)))
               (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
-(defun aj/get-all-archived-org-files ()
+(defun aj-get-all-archived-org-files ()
   "Return all org files but without archived files."
   (seq-filter (lambda (elt)
                 (string-match "org_archive" elt))
               (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
-(defun my/doom--org-headings (files &optional depth include-files)
+(defun my-doom--org-headings (files &optional depth include-files)
   "Search FILES for headings.
 Only include headings with todo keyword and do not apply
 doom's org buffer magic."
@@ -1162,15 +1139,15 @@ doom's org buffer magic."
   "Jump to an task Org headline in `org-agenda-files'.
 Optionally search with INPUT"
   (interactive)
-  (aj/doom-completing-read-org-headings
+  (aj-doom-completing-read-org-headings
    "Jump to org headline: " org-agenda-files 6 t input))
 
 ;;;###autoload
-(defun aj/doom-completing-read-org-headings (prompt files &optional depth include-files initial-input extra-candidates)
+(defun aj-doom-completing-read-org-headings (prompt files &optional depth include-files initial-input extra-candidates)
   "Read PROMPT and visit org-heading filtered from FILES.
 "
   (let ((alist
-         (append (my/doom--org-headings files depth include-files)
+         (append (my-doom--org-headings files depth include-files)
                  extra-candidates))
         ivy-sort-functions-alist)
     (if-let (result (completing-read prompt alist nil nil initial-input))
@@ -1189,11 +1166,10 @@ Optionally search with INPUT"
       (user-error "Aborted"))))
 
 ;;;###autoload
-(defun aj/jump-to-headline-at (directory level)
+(defun aj-org-jump-to-headline-at (directory level)
   "Jump to headline in org files from DIRECTORY.
 Specify depth of the search with LEVEL."
-  (interactive)
-  (aj/doom-completing-read-org-headings
+  (aj-doom-completing-read-org-headings
    "Jump to org headline: " directory level t))
 
 ;; Need this autoload
@@ -1231,13 +1207,6 @@ Specify depth of the search with LEVEL."
           t 'agenda))
       (mapc #'kill-buffer org-agenda-new-buffers)
       (setq org-agenda-new-buffers nil))))
-
-;;;###autoload
-(defun aj/choose-file-from (dir)
-  "Just choose file from directory DIR."
-  (interactive)
-  (ivy-read "Choose file: " dir
-            :caller 'aj/choose-file-from))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

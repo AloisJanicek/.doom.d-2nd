@@ -1,76 +1,70 @@
 ;;;  -*- lexical-binding: t; -*-
 
-(defvar +BASE-HOME nil
+(defvar aj-home-base-dir nil
   "Variable which equals to ~ on linux or to a specified host home directory
 if running under WSL")
 
-(setq +BASE-HOME (if (aj/wsl-p)
-                     (expand-file-name (aj/return-wsl-user-name) "/mnt/c/Users/")
-                   (setq +BASE-HOME (expand-file-name "~/"))))
+(setq aj-home-base-dir (if (aj-wsl-p)
+                           (expand-file-name (aj-get-wsl-user-name) "/mnt/c/Users/")
+                         (setq aj-home-base-dir (expand-file-name "~/"))))
 
-(defvar +Reference (expand-file-name "Documents/MEGAsync" +BASE-HOME)
+(defvar aj-reference-dir (expand-file-name "Documents/MEGAsync" aj-home-base-dir)
   "Location of Reference folder.")
 
-(defvar +Libraries (expand-file-name "Libraries" +Reference)
+(defvar aj-libraries-dir (expand-file-name "Libraries" aj-reference-dir)
   "Location of Calibre libraries.")
 
-(defvar +Repos (expand-file-name "repos" +BASE-HOME)
+(defvar aj-repos-dir (expand-file-name "repos" aj-home-base-dir)
   "Location of Repos folder.")
 
-(setq org-directory (expand-file-name "Dropbox/org" +BASE-HOME))
+(setq org-directory (expand-file-name "Dropbox/org" aj-home-base-dir))
 
-(defvar +INBOX (expand-file-name "inbox.org" org-directory)
+(defvar aj-inbox-file (expand-file-name "inbox.org" org-directory)
   "File where all stuff goes initially.")
 
-(defvar +TASKS (expand-file-name "tasks.org" org-directory)
-  "File where all stuff goes.")
-
-(defvar +TECHNICAL (expand-file-name "technical" org-directory)
+(defvar aj-technical-dir (expand-file-name "technical" org-directory)
   "Directory of technical notes.")
 
-(defvar +PERSONAL (expand-file-name "personal" org-directory)
+(defvar aj-personal-dir (expand-file-name "personal" org-directory)
   "Directory of personal notes.")
 
-(defvar +PRIVATE (expand-file-name "private" org-directory)
+(defvar aj-private-dir (expand-file-name "private" org-directory)
   "Directory of private notes.")
 
-(defvar aj/agenda-filter nil
+(defvar aj-org-agenda-filter nil
   "Variable for preserving filter choice between agenda views.")
 
-(defvar aj/gtd-agenda-no-auto nil
-  "When t, do not evaluate \":body-pre\" in `aj/gtd-agenda/body'.")
+(defvar aj-org-agenda-gtd-hydra-no-auto nil
+  "When t, do not evaluate \":body-pre\" in `aj/org-agenda-gtd-hydra/body'.")
 
 (defvar hydra-stack nil
   "Holds names of hydras for display when nesting them.")
 
-(defvar aj/project-readme-task-file "README.org"
+(defvar aj-project-readme-task-filename "README.org"
   "Org file in every project which can be used to contribute into agenda")
 
-(defvar +persp-blacklist nil
+(defvar aj-persp-blacklist nil
   "Contains list files which should not be considered as part of workspace")
 
-(defvar +refile-targets-with-headlines t
-  "List of org files which should be allowed offer refile under headlines")
-
-(defvar aj/agenda-similar-modes '(org-agenda-mode org-ql-view-mode)
+(defvar aj-org-agenda-similar-modes '(org-agenda-mode org-ql-view-mode)
   "List of org-agenda like modes for purpose of running commands from their buffers.")
 
 (make-variable-buffer-local 'er/try-expand-list)
 
-(defvar aj/org-languages
+(defvar aj-org-src-block-identifiers
   '("awk" "C" "C++" "clojure" "css" "ditaa" "calc" "elisp" "eshell" "html" "php" "go" "rust"
-    "fortran" "gnuplot" "screen" "dot" "haskell" "java" "js" "latex" "ledger" "racket" "haskell"
+    "fortran" "gnuplot" "screen" "dot" "haskell" "java" "js" "latex" "ledger" "racket"
     "lilypond" "lisp" "lua" "matlab" "ocaml" "octave" "org" "oz" "perl" "plantuml"
     "processing" "python" "R" "ruby" "sass" "scheme" "sed" "sh" "sql" "sqlite" "vala")
   "List of Org mode code block language identifiers.
  Useful when capturing code snippets.")
 
 (add-to-list 'org-modules 'ol-info)
+
 (setq user-mail-address "janicek.dev@gmail.com"
       user-full-name    "Alois Janíček"
-      +refile-targets-with-headlines nil
-      +file-templates-dir (expand-file-name "templates" +Repos)
-      +snippets-dir (expand-file-name "snippets" +Repos)
+      +file-templates-dir (expand-file-name "templates" aj-repos-dir)
+      +snippets-dir (expand-file-name "snippets" aj-repos-dir)
       doom-scratch-initial-major-mode 'emacs-lisp-mode
       doom-font                   (font-spec :family "Iosevka SS08" :size 16)
       doom-big-font               (font-spec :family "Iosevka SS08" :size 24)
@@ -79,16 +73,17 @@ if running under WSL")
       doom-theme 'doom-one
       all-the-icons-scale-factor 1
       +doom-quit-messages '("")
+      standard-indent 2
       )
 
-(setq-default tab-width 2)
+(setq-default tab-width 4)
 
 (set-popup-rule! "*backtrace\*"                  :size 0.5  :side 'bottom :select t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
 
 (after! alert
   (setq alert-default-style 'libnotify)
-  (setq alert-libnotify-command (if (aj/wsl-p)
+  (setq alert-libnotify-command (if (aj-wsl-p)
                                     (executable-find "notify-wsl")
                                   (executable-find "notify-send"))))
 
@@ -125,7 +120,9 @@ if running under WSL")
     `(css-selector :foreground ,(doom-lighten 'red 0.1)))
   (set-docsets! '(css-mode scss-mode)
     "CSS" "HTML"
-    ["Sass" (memq major-mode '(scss-mode))]))
+    ["Sass" (memq major-mode '(scss-mode))])
+  (setq css-indent-offset 2)
+  )
 
 (after! cus-edit
   (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t :transient nil))
@@ -144,15 +141,15 @@ if running under WSL")
         counsel-projectile-sort-projects t
         )
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
-  (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj/open-org-file-the-right-way)
-  (advice-add #'counsel-org-clock--run-context-action :around #'aj/open-org-file-the-right-way)
-  (advice-add #'counsel-org-clock--run-history-action :around #'aj/open-org-file-the-right-way)
+  (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-clock--run-context-action :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-clock--run-history-action :around #'aj-org-open-file-respect-sanity-a)
   )
 
 (after! counsel-dash
-  (setq counsel-dash-docsets-path (if (aj/wsl-p)
-                                      (expand-file-name  "AppData/Local/Zeal/Zeal/docsets" +BASE-HOME)
-                                    (expand-file-name ".local/share/Zeal" +BASE-HOME)))
+  (setq counsel-dash-docsets-path (if (aj-wsl-p)
+                                      (expand-file-name  "AppData/Local/Zeal/Zeal/docsets" aj-home-base-dir)
+                                    (expand-file-name ".local/share/Zeal" aj-home-base-dir)))
   (setq counsel-dash-browser-func 'eaf-open-url)
   )
 
@@ -179,17 +176,13 @@ if running under WSL")
   (setq evil-org-key-theme '(textobjects insert navigation additional shift heading))
   )
 
-(after! evil-org-agenda
-  (advice-add #'evil-org-agenda-set-keys :after #'aj/fix-evil-org-agenda-keys)
-  )
-
 (after! evil-snipe
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
   )
 
 (after! emmet-mode
-  (advice-add #'emmet-preview-accept :after #'aj/indent-emment-for-css)
-  (advice-add #'emmet-expand-yas :after #'aj/indent-emment-for-css)
+  (advice-add #'emmet-preview-accept :after #'aj-emmet-newline-maybe-a)
+  (advice-add #'emmet-expand-yas :after #'aj-emmet-newline-maybe-a)
   )
 
 (after! eww
@@ -203,11 +196,11 @@ if running under WSL")
   )
 
 (after! files
-  (add-hook 'after-save-hook #'prettier-stylelint-fix-file-and-revert)
-  (add-hook 'after-save-hook #'beautify-html-file-and-revert)
+  (add-hook 'after-save-hook #'aj-css-mode-css-autofix-h)
+  (add-hook 'after-save-hook #'aj-web-mode-html-beautify-h)
   (setq large-file-warning-threshold 30000000)
   (add-to-list 'safe-local-variable-values '(org-src-fontify-natively))
-  (advice-add #'find-file :around #'aj/pdf-epub-find-file-other-window-reuse)
+  (advice-add #'find-file :around #'aj-pdf-epub-find-file-other-window-reuse-a)
   )
 
 (after! format-all
@@ -263,7 +256,7 @@ if running under WSL")
      ("e" bookmark-rename "edit")))
   (ivy-add-actions
    #'ivy-yasnippet
-   '(("e" ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own"))))
+   '(("e" aj-ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own"))))
 
 (after! ivy-pages
   (advice-add #'ivy-pages-transformer :override #'ivy-pages-transformer-clear-string)
@@ -312,7 +305,7 @@ if running under WSL")
         browse-url-secondary-browser-function 'browse-url-chromium
         )
 
-  (when (aj/wsl-p)
+  (when (aj-wsl-p)
     (let ((cmd-exe (executable-find "cmd.exe"))
           (cmd-args '("/c" "start")))
       (setq browse-url-generic-program  cmd-exe
@@ -330,8 +323,8 @@ if running under WSL")
   )
 
 (after! magit
-  (setq magit-repository-directories `((,+Repos . 1))
-        magit-clone-default-directory `,+Repos
+  (setq magit-repository-directories `((,aj-repos-dir . 1))
+        magit-clone-default-directory `,aj-repos-dir
         )
   (magit-todos-mode)
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
@@ -385,14 +378,14 @@ if running under WSL")
   (add-hook 'org-capture-mode-hook #'flyspell-mode)
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'org-mode-hook #'visual-line-mode)
-  (advice-add #'org-refile :after #'aj/take-care-of-org-buffers)
+  (advice-add #'org-refile :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
                                                 (when (eq major-mode 'org-mode) (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
 
-  (org-link-set-parameters "calibre" :follow #'aj/org-calibre-follow :store #'aj/pdf-epub-org-store-link-custom-dispatch)
+  (org-link-set-parameters "calibre" :follow #'aj-org-calibre-follow :store #'aj-org-calibre-store)
 
   (setq
    ;; org-M-RET-may-split-line '((default . nil))
@@ -444,7 +437,7 @@ if running under WSL")
   )
 
 (after! org-agenda
-  (add-hook 'org-agenda-mode-hook #'aj/complete-all-tags-for-org)
+  (add-hook 'org-agenda-mode-hook #'aj-org-complete-all-tags-h)
   (add-hook 'org-agenda-finalize-hook (lambda ()
                                         "Complete tags from all org-agenda files across each other."
                                         (setq-local org-global-tags-completion-table
@@ -456,9 +449,9 @@ if running under WSL")
                 (org-show-children)))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
-  (advice-add #'org-agenda-exit :after #'aj/take-care-of-org-buffers)
-  (advice-add #'org-agenda-filter-apply :after #'aj/copy-set-agenda-filter)
-  (advice-add #'org-agenda-refile :after #'aj/take-care-of-org-buffers)
+  (advice-add #'org-agenda-exit :after #'aj-org-buffers-respect-sanity-a)
+  (advice-add #'org-agenda-filter-apply :after #'aj-org-agenda-copy-set-filter-a)
+  (advice-add #'org-agenda-refile :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-agenda-refile :after (lambda (&rest _)
                                            "Refresh view."
                                            (if (string-match "Org QL" (buffer-name))
@@ -466,9 +459,9 @@ if running under WSL")
                                              (org-agenda-redo))))
   (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
   (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
-  (advice-add #'org-agenda-switch-to :around #'aj/open-org-file-the-right-way)
-  (advice-add #'org-agenda-todo :after #'aj/save-and-refresh-agenda)
-  (advice-add #'org-agenda-kill :after #'aj/save-and-refresh-agenda)
+  (advice-add #'org-agenda-switch-to :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-agenda-todo :after #'aj-org-agenda-save-and-refresh-a)
+  (advice-add #'org-agenda-kill :after #'aj-org-agenda-save-and-refresh-a)
 
   (setq
    org-agenda-files (seq-filter
@@ -509,11 +502,11 @@ if running under WSL")
 
 (after! org-capture
   (require 'yankpad)
-  (add-hook 'org-capture-mode-hook #'aj/complete-all-tags-for-org)
+  (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
   (setq
-   org-capture-templates `(("p" "Protocol" entry (file ,+INBOX)
+   org-capture-templates `(("p" "Protocol" entry (file ,aj-inbox-file)
                             ,(concat
-                              "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
+                              "* [[%:link][%(my-transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
                               ":END:\n"
@@ -527,9 +520,9 @@ if running under WSL")
                             :prepend t
                             )
 
-                           ("L" "Protocol Link" entry (file ,+INBOX)
+                           ("L" "Protocol Link" entry (file ,aj-inbox-file)
                             ,(concat
-                              "* [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
+                              "* [[%:link][%(my-transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
                               ":END:\n"
@@ -539,7 +532,7 @@ if running under WSL")
                             :prepend t
                             )
 
-                           ("w" "Website" entry (file ,+INBOX)
+                           ("w" "Website" entry (file ,aj-inbox-file)
                             ,(concat
                               "* %c :website:\n"
                               ":PROPERTIES:\n"
@@ -555,7 +548,7 @@ if running under WSL")
                             :prepend t
                             )
 
-                           ("k" "Capture" entry (file ,+INBOX)
+                           ("k" "Capture" entry (file ,aj-inbox-file)
                             ,(concat
                               "* %^{PROMPT} \n"
                               ":PROPERTIES:\n"
@@ -569,7 +562,7 @@ if running under WSL")
                             :prepend t
                             )
 
-                           ("y" "Yankpad" entry (file+function ,yankpad-file aj/org-get-yankpad-target)
+                           ("y" "Yankpad" entry (file+function ,yankpad-file aj-org-get-yankpad-target)
                             ,(concat
                               "** %^{PROMPT} :src: \n"
                               ":PROPERTIES:\n"
@@ -578,7 +571,7 @@ if running under WSL")
                               "\n"
                               "from %a\n"
                               "\n"
-                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
+                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj-org-src-block-identifiers)\n"
                               "%i\n"
                               "#+END_SRC\n"
                               )
@@ -586,7 +579,7 @@ if running under WSL")
                             :empty-lines 1
                             )
 
-                           ("s" "Snippet" entry (file ,+INBOX)
+                           ("s" "Snippet" entry (file ,aj-inbox-file)
                             ,(concat
                               "* %^{PROMPT} :src: \n"
                               ":PROPERTIES:\n"
@@ -595,7 +588,7 @@ if running under WSL")
                               "\n"
                               "from %a\n"
                               "\n"
-                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
+                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj-org-src-block-identifiers)\n"
                               "%i\n"
                               "#+END_SRC\n"
                               )
@@ -652,7 +645,7 @@ if running under WSL")
                               "\n"
                               "from %a\n"
                               "\n"
-                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj/org-languages)\n"
+                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj-org-src-block-identifiers)\n"
                               "%i\n"
                               "#+END_SRC\n"
                               )
@@ -671,7 +664,7 @@ if running under WSL")
                                        "Save all opened org-mode files."
                                        (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
-  (advice-add #'org-clock-goto :around #'aj/open-org-file-the-right-way)
+  (advice-add #'org-clock-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-clock-goto :after (lambda (&rest _)
                                         "Narrow view after switching."
                                         (interactive)
@@ -731,7 +724,7 @@ if running under WSL")
         )
   (advice-add #'persp-remove-buffer :around #'doom-shut-up-a)
   (dolist (file (directory-files-recursively org-directory ".org"))
-    (add-to-list '+persp-blacklist `,(file-name-nondirectory file)))
+    (add-to-list 'aj-persp-blacklist `,(file-name-nondirectory file)))
 
   (setq persp-emacsclient-init-frame-behaviour-override 'persp-ignore-wconf)
   )
@@ -742,7 +735,7 @@ if running under WSL")
 (after! projectile
   (advice-add #'projectile-cleanup-known-projects :around #'doom-shut-up-a)
   (setq projectile-track-known-projects-automatically t
-        projectile-project-search-path +Repos
+        projectile-project-search-path aj-repos-dir
         )
   )
 
@@ -810,11 +803,12 @@ if running under WSL")
 
 (after! web-mode
   (set-docsets! 'web-mode "HTML" "CSS" "WordPress")
-  (add-hook 'web-mode-hook #'aj/my-web-mode-hook)
-  (add-hook 'web-mode-hook #'er/add-web-mode-expansions)
+
   (add-hook 'web-mode-hook 'flycheck-mode)
+
   (setq web-mode-enable-current-element-highlight t
-        web-mode-auto-close-style 1)
+        web-mode-auto-close-style 1
+        )
 
   (custom-set-faces!
     `(web-mode-current-element-highlight-face :background ,(doom-color 'bg-alt) :foreground ,(doom-color 'blue))
@@ -993,13 +987,13 @@ if running under WSL")
                              (setq org-link-parameters
                                    (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
                              (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
-  (advice-add #'nov--find-file :override #'my/nov--find-file)
+  (advice-add #'nov--find-file :override #'my-nov--find-file-a)
   )
 
 (use-package! ob-javascript
   :after ob-core
   :config
-  (advice-add #'ob-javascript--node-path :override #'aj/ob-javascript--node-path))
+  (advice-add #'ob-javascript--node-path :override #'aj-ob-javascript--node-path-a))
 
 (use-package! org-brain
   ;; :after org
@@ -1024,13 +1018,13 @@ if running under WSL")
   (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode)
   :config
   (add-hook 'org-brain-visualize-mode-hook #'visual-line-mode)
-  (advice-add #'org-brain-visualize :after #'aj/take-care-of-org-buffers)
-  (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt)
-  (advice-add #'org-brain-goto :around #'aj/open-org-file-the-right-way)
-  (advice-add #'org-brain-goto-current :around #'aj/open-org-file-the-right-way)
+  (advice-add #'org-brain-visualize :after #'aj-org-buffers-respect-sanity-a)
+  (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt-a)
+  (advice-add #'org-brain-goto :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-brain-goto-current :around #'aj-org-open-file-respect-sanity-a)
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
-        org-brain-path +TECHNICAL
+        org-brain-path aj-technical-dir
         org-brain-data-file (expand-file-name ".org-brain-data.el" doom-cache-dir)
         org-brain-include-file-entries t
         org-brain-file-entries-use-title t
@@ -1054,8 +1048,8 @@ if running under WSL")
                                                               (string-match "Stucked Projects" buffer)
                                                               (string-match "All Todos" buffer)
                                                               (string-match "ARCHIVED" buffer)))
-                                                 (org-agenda-filter-apply aj/agenda-filter 'tag)))))
-  (advice-add #'org-ql-view--format-element :override #'aj/org-ql-view--format-element)
+                                                 (org-agenda-filter-apply aj-org-agenda-filter 'tag)))))
+  (advice-add #'org-ql-view--format-element :override #'aj-org-ql-view--format-element-a)
   )
 
 (use-package! org-sidebar
@@ -1107,28 +1101,28 @@ if running under WSL")
 
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
 
-(advice-add #'aj/doom-completing-read-org-headings :around #'aj/open-org-file-the-right-way)
-(advice-add #'doom-completing-read-org-headings :around #'aj/open-org-file-the-right-way)
+(advice-add #'aj-doom-completing-read-org-headings :around #'aj-org-open-file-respect-sanity-a)
+(advice-add #'doom-completing-read-org-headings :around #'aj-org-open-file-respect-sanity-a)
 
-(advice-add #'aj/jump-to-headline-at :around (lambda (orig-fun &rest args)
-                                               "Temporarily switch back to original function."
-                                               (cl-letf (((symbol-function 'my/doom--org-headings)
-                                                          #'doom--org-headings))
-                                                 (apply orig-fun args))))
+(advice-add #'aj-org-jump-to-headline-at :around (lambda (orig-fun &rest args)
+                                                   "Temporarily switch back to original function."
+                                                   (cl-letf (((symbol-function 'my-doom--org-headings)
+                                                              #'doom--org-headings))
+                                                     (apply orig-fun args))))
 
 
 (load! "+bindings")
 (load! "+local")
 
 
-(add-to-list 'load-path (expand-file-name "emacs-application-framework" +Repos))
+(add-to-list 'load-path (expand-file-name "emacs-application-framework" aj-repos-dir))
 (require 'eaf)
 
 (after! eaf
   (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
   (evil-set-initial-state 'eaf-mode 'insert)
   (add-to-list 'eaf-app-display-function-alist
-               '("browser" . aj/eaf--browser-display))
+               '("browser" . aj-eaf--browser-display))
 
   (set-popup-rule! (lambda (buf act)
                      "Find EAF browser buffer."

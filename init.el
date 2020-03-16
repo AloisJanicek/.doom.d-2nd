@@ -115,7 +115,7 @@
        ;;coq
        ;;crystal
        (csharp +lsp)
-       ; data
+                                        ; data
        ;;elixir
        ;;elm
        emacs-lisp
@@ -149,7 +149,7 @@
        (python +lsp)
        ;;qt
        racket
-       ; rest
+                                        ; rest
        ;;rst
        (ruby +lsp)
        (rust +lsp)

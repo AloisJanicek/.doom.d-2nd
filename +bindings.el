@@ -54,7 +54,7 @@
 
  (:after emmet-mode
    :map emmet-mode-keymap
-   :i "M-r" #'aj/mark-region-and-preview-emmet
+   :i "M-r" #'aj/emmet-mark-and-preview
    :i "M-E" #'emmet-expand-yas
    :i "M-e" #'emmet-expand-line
 
@@ -99,7 +99,7 @@
 
  (:after nov
    :map nov-mode-map
-   :nm "o" #'aj/nov-menu
+   :nm "o" #'aj/nov-mode-menu
    :nm "q" #'kill-this-buffer
    :nm "C-j" nil
    :nm "C-k" nil
@@ -158,9 +158,9 @@
      :desc "search"         "s" #'org-tags-view
      )
 
-   :desc "wiki"                "w" #'aj/org-menu-and-goto
+   :desc "wiki"                "w" #'aj/org-mode-menu
    "r" nil
-   :desc "refile"              "r" #'aj/refile/body
+   :desc "refile"              "r" #'aj/org-refile-hydra/body
 
    "e" nil
    (:prefix ("e" . "export")
@@ -178,9 +178,9 @@
 
    "l" nil
    (:prefix ("l" . "link")
-     :desc "headline"         "h" #'aj/insert-link-into-org-heading
+     :desc "headline"         "h" #'aj/org-insert-link-into-heading
      :desc "insert"           "i" #'org-insert-link
-     :desc "list"             "l" #'aj/insert-link-into-org-list-item
+     :desc "list"             "l" #'aj/org-insert-link-into-list-item
      :desc "open"             "o" #'org-open-at-point
      :desc "store"            "s" #'org-store-link
      )
@@ -264,11 +264,22 @@
    :m         "."    (lambda ()
                        (interactive)
                        (let ((hydra-hint-display-type 'message)
-                             (aj/gtd-agenda-no-auto t))
-                         (aj/gtd-agenda/body)))
+                             (aj-org-agenda-gtd-hydra-no-auto t))
+                         (aj/org-agenda-gtd-hydra/body)))
+
+   :m         "j"    #'org-agenda-next-item
+   :m         "k"    #'org-agenda-previous-item
+   :m         "C-j"  #'org-agenda-next-line
+   :m         "C-k"  #'org-agenda-previous-line
+
+   (:prefix ("c" . "change")
+     :m         "t"    #'counsel-org-tag-agenda
+     )
+
    (:prefix ("g" . "goto")
      :m         "T"    #'org-agenda-goto-today
      )
+
    :map org-agenda-mode-map
    :m         "f"     (λ! (org-agenda-filter-apply
                            (list (concat "+"
@@ -277,24 +288,24 @@
                                                     (org-agenda-files)))))
                            'tag))
 
-   :m         "F"    #'aj/clear-filter-refresh-view
+   :m         "F"    #'aj/org-agenda-clear-filter-refresh-view
 
    (:prefix ("s" . "set")
-     :m         "f"     (λ! (org-agenda-filter-apply aj/agenda-filter 'tag))
+     :m         "f"     (λ! (org-agenda-filter-apply aj-org-agenda-filter 'tag))
      :m         "F"     (λ! (org-agenda-filter-show-all-tag))
      )
 
    (:prefix ("c" . "clock")
      :m         "i"     #'org-agenda-clock-in
      :m         "l"     #'visual-line-mode
-     :m         "m"     #'aj/clock-menu
+     :m         "m"     #'aj/org-clock-menu
      :m         "o"     #'org-agenda-clock-out
      :m         "p"     #'org-pomodoro
      :m         "t"     #'counsel-org-tag-agenda
      )
 
    :localleader
-   :desc "refile"              "r" #'aj/refile/body
+   :desc "refile"              "r" #'aj/org-refile-hydra/body
    )
 
  (:after org-agenda
@@ -311,12 +322,12 @@
 
    "d" nil
    (:prefix ("d" . "do")
-     :m              "r"     #'aj/refile/body
+     :m              "r"     #'aj/org-refile-hydra/body
      :m              "s"     #'org-agenda-schedule
      )
 
    :localleader
-   :desc "refile"              "r" #'aj/refile/body
+   :desc "refile"              "r" #'aj/org-refile-hydra/body
    )
 
  (:after org-brain
@@ -371,14 +382,14 @@
 
    ;; :m  "RET" #'org-brain-goto-current
    :m  "f" #'link-hint-open-link
-   :m  "F" #'link-hint-open-link-and-brain-goto
+   :m  "F" #'aj/org-brain-link-hint-and-goto
    :m  "j" #'forward-button
    :m  "k" #'backward-button
    :m  "o" #'org-brain-goto-current
    :m  "O" (λ! (org-brain-goto
                 (org-brain-entry-at-pt)
                 (lambda (buffer)
-                  (aj/open-file-switch-create-indirect-buffer-per-persp buffer t))))
+                  (aj-open-file-switch-create-indirect-buffer-per-persp buffer t))))
    :m  "v" #'org-brain-visualize
    :m  "q" #'org-brain-visualize-quit
    )
@@ -410,10 +421,10 @@
                                                      (org-agenda-files))))
                                          ))
                            'tag))
-   :m         "F"    #'aj/clear-filter-refresh-view
+   :m         "F"    #'aj/org-agenda-clear-filter-refresh-view
 
    :localleader
-   :desc "refile"              "r" #'aj/refile/body
+   :desc "refile"              "r" #'aj/org-refile-hydra/body
    )
 
  (:after org-ql
@@ -436,7 +447,7 @@
    :n "O" #'pdf-outline
    :n "R" (λ! (brds/pdf-jump-last-viewed-bookmark))
    :n "y" #'pdf-view-kill-ring-save
-   :n "q" (λ! (progn (brds/pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
+   :n "q" (λ! (progn (brds-pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
    )
 
  (:after pdf-occur
@@ -488,7 +499,7 @@
 
  (:after web-mode
    :map web-mode-map
-   :i "M-r" #'aj/mark-region-and-preview-emmet
+   :i "M-r" #'aj/emmet-mark-and-preview
    :localleader
    :desc "dash at point" "." #'+lookup/in-docsets
    :desc "docsets at point" ">" #'+lookup/in-devdocs
@@ -549,9 +560,9 @@
         :desc "highlight-blocks"  "B" #'highlight-blocks-mode
         :desc "modeline"          "m" #'hide-mode-line-mode
         :desc "re-builder"        "R" #'regexp-builder
-        :desc "flyspell"          "s" #'aj/enable-flyspell-check-if-prog
-        :desc "swap dictionaries" "S" (λ! (aj/swap-two-ispell-dicts "english" "czech"))
-        :desc "light/dark theme"  "t" (λ! (aj/toggle-two-doom-themes 'doom-solarized-dark 'doom-solarized-light))
+        :desc "flyspell"          "s" #'aj/flyspell-enable
+        :desc "swap dictionaries" "S" (λ! (aj-ispell-swap-two-dicts "english" "czech"))
+        :desc "light/dark theme"  "t" (λ! (aj-doom-themes-swap-two-themes 'doom-solarized-dark 'doom-solarized-light))
         :desc "themes"            "T" #'counsel-load-theme
         :desc "undo-tree"         "u" #'undo-tree-visualize
         :desc "visual-line-mode"  "v" #'visual-line-mode
@@ -583,16 +594,16 @@
       (:prefix ("o" . "open")
         :desc "clock"                   "c" (lambda ()
                                               (interactive)
-                                              (let ((hydra-hint-display-type 'message)) (aj/clocking/body)))
+                                              (let ((hydra-hint-display-type 'message)) (aj/org-clock-hydra/body)))
         (:prefix ("C" . "calibre")
-          :desc "technical"             "c" (lambda! (aj/open-calibre-book (expand-file-name "Technical/" +Libraries)))
-          :desc "personal"              "p" (lambda! (aj/open-calibre-book (expand-file-name "Personal/" +Libraries)))
+          :desc "technical"             "c" (lambda! (aj-open-calibre-book (expand-file-name "Technical/" aj-libraries-dir)))
+          :desc "personal"              "p" (lambda! (aj-open-calibre-book (expand-file-name "Personal/" aj-libraries-dir)))
           )
 
         :desc "agenda"                   "A" #'org-agenda
         :desc "agenda"                   "a" (lambda ()
                                                (interactive)
-                                               (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
+                                               (let ((hydra-hint-display-type 'message)) (aj/org-agenda-gtd-hydra/body)))
         :desc "agenda tasks"             "h" #'aj/org-notes-headlines
         :desc "imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "NEXT agenda tasks"        "n" (λ! (aj/org-notes-headlines "NEXT "))
@@ -603,23 +614,23 @@
       (:prefix ("p" . "project")
         :desc "agenda"                   "a" #'aj/agenda-project
         :desc "agenda All"               "A" #'aj/agenda-project-all
-        :desc "bootstrap"                "B" #'aj/project-bootstrap
+        :desc "brain"                    "B" #'aj/org-brain-per-project
         :desc "buffer"                   "b" #'counsel-projectile-switch-to-buffer
-        :desc "capture ALL "             "K" (λ! (aj/capture-into-project))
-        :desc "capture current"          "k" (λ! (aj/capture-into-project t))
+        :desc "capture ALL "             "K" (λ! (aj/org-capture-into-project))
+        :desc "capture current"          "k" (λ! (aj/org-capture-into-project t))
         :desc "directories"              "d" #'counsel-projectile-find-dir
         :desc "add-known-projet"         "D" #'projectile-add-known-project
         :desc "files"                    "f" #'counsel-projectile-find-file
         :desc "invalidate cache"         "i" #'projectile-invalidate-cache
         :desc "kill project buffers"     "x" #'projectile-kill-buffers
         :desc "all projects README"      "P" (lambda () (interactive)
-                                               (aj/open-file-switch-create-indirect-buffer-per-persp
+                                               (aj-open-file-switch-create-indirect-buffer-per-persp
                                                 (ivy-read
                                                  "Choose file: "
                                                  (aj/get-all-projectile-README-org-files t)
                                                  :caller 'counsel-find-file)))
         :desc "project README"           "p" (lambda () (interactive)
-                                               (aj/open-file-switch-create-indirect-buffer-per-persp
+                                               (aj-open-file-switch-create-indirect-buffer-per-persp
                                                 (expand-file-name "README.org" (projectile-project-root))))
         :desc "grep"                     "g" #'+ivy/project-search
         :desc "remove"                   "R" #'projectile-remove-known-project
@@ -635,14 +646,14 @@
       
       :desc "agenda"    "a" (lambda ()
                               (interactive)
-                              (let ((hydra-hint-display-type 'message)) (aj/gtd-agenda/body)))
+                              (let ((hydra-hint-display-type 'message)) (aj/org-agenda-gtd-hydra/body)))
 
       (:prefix ("s" . "search")
         :desc "google at point"          "g" #'counsel-web-thing-at-point
         )
 
       (:prefix ("d" . "dict")
-        :desc "dictionary"               "d" (λ! (aj/add-thing-at-point-to-url
+        :desc "dictionary"               "d" (λ! (aj-add-thing-at-point-to-url
                                                   "https://dictionary.com/browse/"))
         :desc "google at point"          "g" #'google-translate-at-point
         :desc "google at point reverse:" "G" #'google-translate-at-point-reverse
@@ -655,7 +666,7 @@
         :desc "online"                   "o" #'define-word
         :desc "online/point"             "p" #'define-word-at-point
         :desc "word/stardict"            "s" #'sdcv-search-pointer
-        :desc "webster"                  "w" (λ! (aj/add-thing-at-point-to-url
+        :desc "webster"                  "w" (λ! (aj-add-thing-at-point-to-url
                                                   "https://www.merriam-webster.com/dictionary/"))
         )
 
@@ -689,7 +700,9 @@
         :desc "stack Overflow"           "s" (lambda ()
                                                (interactive)
                                                (let ((hydra-hint-display-type 'message)) (aj/howdoyou/body)))
-        :desc "update-diff"              "u" #'obsoke/ediff-dotfile-and-template
+        :desc "update-diff"              "u" (λ! (ediff-files
+                                                  "~/.doom.d/init.el"
+                                                  "~/.emacs.d/init.example.el"))
         :desc "zeal set buffer docset"   "Z" #'zeal-at-point-set-docset
         :desc "zeal at point"            "z" #'zeal-at-point
         :desc "dash docset"              "/" #'counsel-dash
@@ -718,12 +731,12 @@
 
       :desc "capture"   "k" (lambda ()
                               (interactive)
-                              (let ((hydra-hint-display-type 'message)) (aj/capture/body)))
+                              (let ((hydra-hint-display-type 'message)) (aj/org-capture-hydra/body)))
 
       (:prefix ("l" . "link")
         :desc "open all links"           "a" #'link-hint-open-all-links
         :desc "copy"                     "c" #'link-hint-copy-link
-        :desc "org-copy-link"            "c" #'my-org-retrieve-url-from-point
+        :desc "org-copy-link"            "c" #'my/org-retrieve-url-from-point
         :desc "copy all links"           "C" #'link-hint-copy-all-links
         :desc "open"                     "f" #'link-hint-open-link
         :desc "org-store-link"           "s" #'org-store-link
@@ -736,7 +749,7 @@
       ;; "z"
 
       ;; scratch-buffer         "x"
-     
+
       (:prefix ("c" . "code")
         :desc "eval-last-sexp"           "s" #'eval-last-sexp
         :desc "google this error"        "H" #'aj/flycheck-error-search
@@ -759,24 +772,25 @@
         )
 
       (:prefix ("n" . "notes")
-        :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj/open-file-switch-create-indirect-buffer-per-persp))
+        :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp))
         :desc "grep"               "g" (λ! (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-                                                      #'aj/open-file-switch-create-indirect-buffer-per-persp)
+                                                      #'aj-open-file-switch-create-indirect-buffer-per-persp)
                                                      ((symbol-function 'pop-to-buffer)
-                                                      #'aj/open-file-switch-create-indirect-buffer-per-persp))
+                                                      #'aj-open-file-switch-create-indirect-buffer-per-persp))
                                              (+default/org-notes-search)))
-        :desc "indirect"           "i" (λ! (aj/open-file-switch-create-indirect-buffer-per-persp (buffer-file-name (current-buffer))))
-        :desc "IDs"                "I" #'aj/org-update-org-ids-recursively
-        :desc "notes"              "n" (λ! (aj/find-org-file +TECHNICAL))
-        :desc "notes headlines"    "N" (λ! (aj/jump-to-headline-at +TECHNICAL 3))
-        :desc "org-dir"            "o" (λ! (aj/find-org-file org-directory))
-        :desc "personal"           "p" (λ! (aj/find-org-file +PERSONAL))
-        :desc "personal headlines" "P" (λ! (aj/jump-to-headline-at +PERSONAL 3))
+        :desc "indirect"           "i" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
+                                            (buffer-file-name (current-buffer))))
+        :desc "IDs"                "I" #'aj/org-id-update-recursively
+        :desc "notes"              "n" (λ! (aj-org-find-file aj-technical-dir))
+        :desc "notes headlines"    "N" (λ! (aj-org-jump-to-headline-at aj-technical-dir 3))
+        :desc "org-dir"            "o" (λ! (aj-org-find-file org-directory))
+        :desc "personal"           "p" (λ! (aj-org-find-file aj-personal-dir))
+        :desc "personal headlines" "P" (λ! (aj-org-jump-to-headline-at aj-personal-dir 3))
         :desc "query"              "q" #'org-ql-search
-        :desc "private files"      "r" (λ! (aj/find-org-file +PRIVATE))
-        :desc "private headlines"  "R" (λ! (aj/jump-to-headline-at +PRIVATE 3))
-        :desc "headlines all"      "s" (λ! (aj/jump-to-headline-at (aj/get-all-org-files) 3))
-        :desc "headlines all DEEP" "S" (λ! (aj/jump-to-headline-at (aj/get-all-org-files) 5))
+        :desc "private files"      "r" (λ! (aj-org-find-file aj-private-dir))
+        :desc "private headlines"  "R" (λ! (aj-org-jump-to-headline-at aj-private-dir 3))
+        :desc "headlines all"      "s" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 3))
+        :desc "headlines all DEEP" "S" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 5))
         :desc "sparse tree"        "t" #'org-ql-sparse-tree
         :desc "visualize"          "v" #'org-brain-visualize
         :desc "PRVT"               "x" #'aj/private-refile/body
@@ -789,7 +803,7 @@
       :desc "switch buffer"            "," #'persp-switch-to-buffer
 
       ;; find file              "."
-     
+
       ;; "/"
 
       :desc "bookmarks"                 "RET" #'my/counsel-bookmark-without-pdfs
