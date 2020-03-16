@@ -1119,4 +1119,4 @@ if running under WSL")
     :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
   )
 
-(toggle-frame-maximized)
+(pushnew! default-frame-alist '(fullscreen . maximized))
