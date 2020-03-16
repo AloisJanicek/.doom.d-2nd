@@ -19,16 +19,16 @@ if running under WSL")
 
 (setq org-directory (expand-file-name "Dropbox/org" aj-home-base-dir))
 
-(defvar aj-inbox-file (expand-file-name "inbox.org" org-directory)
+(defvar aj-org-inbox-file (expand-file-name "inbox.org" org-directory)
   "File where all stuff goes initially.")
 
-(defvar aj-technical-dir (expand-file-name "technical" org-directory)
+(defvar aj-org-technical-dir (expand-file-name "technical" org-directory)
   "Directory of technical notes.")
 
-(defvar aj-personal-dir (expand-file-name "personal" org-directory)
+(defvar aj-org-personal-dir (expand-file-name "personal" org-directory)
   "Directory of personal notes.")
 
-(defvar aj-private-dir (expand-file-name "private" org-directory)
+(defvar aj-org-private-dir (expand-file-name "private" org-directory)
   "Directory of private notes.")
 
 (defvar aj-org-agenda-filter nil
@@ -504,7 +504,7 @@ if running under WSL")
   (require 'yankpad)
   (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
   (setq
-   org-capture-templates `(("p" "Protocol" entry (file ,aj-inbox-file)
+   org-capture-templates `(("p" "Protocol" entry (file ,aj-org-inbox-file)
                             ,(concat
                               "* [[%:link][%(my-transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
                               ":PROPERTIES:\n"
@@ -520,7 +520,7 @@ if running under WSL")
                             :prepend t
                             )
 
-                           ("L" "Protocol Link" entry (file ,aj-inbox-file)
+                           ("L" "Protocol Link" entry (file ,aj-org-inbox-file)
                             ,(concat
                               "* [[%:link][%(my-transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
                               ":PROPERTIES:\n"
@@ -532,7 +532,7 @@ if running under WSL")
                             :prepend t
                             )
 
-                           ("w" "Website" entry (file ,aj-inbox-file)
+                           ("w" "Website" entry (file ,aj-org-inbox-file)
                             ,(concat
                               "* %c :website:\n"
                               ":PROPERTIES:\n"
@@ -548,7 +548,7 @@ if running under WSL")
                             :prepend t
                             )
 
-                           ("k" "Capture" entry (file ,aj-inbox-file)
+                           ("k" "Capture" entry (file ,aj-org-inbox-file)
                             ,(concat
                               "* %^{PROMPT} \n"
                               ":PROPERTIES:\n"
@@ -579,7 +579,7 @@ if running under WSL")
                             :empty-lines 1
                             )
 
-                           ("s" "Snippet" entry (file ,aj-inbox-file)
+                           ("s" "Snippet" entry (file ,aj-org-inbox-file)
                             ,(concat
                               "* %^{PROMPT} :src: \n"
                               ":PROPERTIES:\n"
@@ -915,7 +915,7 @@ if running under WSL")
   (global-hungry-delete-mode 1))
 
 (use-package! howdoyou
-  :commands (howdoyou-query aj/howdoyou/body)
+  :commands (howdoyou-query aj/howdoyou-hydra/body)
   :config
   (set-popup-rule! "*How Do You*"      :vslot 1 :size 0.4  :side 'left :select t :ttl nil)
   )
@@ -1024,7 +1024,7 @@ if running under WSL")
   (advice-add #'org-brain-goto-current :around #'aj-org-open-file-respect-sanity-a)
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
-        org-brain-path aj-technical-dir
+        org-brain-path aj-org-technical-dir
         org-brain-data-file (expand-file-name ".org-brain-data.el" doom-cache-dir)
         org-brain-include-file-entries t
         org-brain-file-entries-use-title t

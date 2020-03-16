@@ -699,7 +699,7 @@
         ;; :desc "zeal search"              "s" #'zeal-at-point-search
         :desc "stack Overflow"           "s" (lambda ()
                                                (interactive)
-                                               (let ((hydra-hint-display-type 'message)) (aj/howdoyou/body)))
+                                               (let ((hydra-hint-display-type 'message)) (aj/howdoyou-hydra/body)))
         :desc "update-diff"              "u" (λ! (ediff-files
                                                   "~/.doom.d/init.el"
                                                   "~/.emacs.d/init.example.el"))
@@ -781,14 +781,14 @@
         :desc "indirect"           "i" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
                                             (buffer-file-name (current-buffer))))
         :desc "IDs"                "I" #'aj/org-id-update-recursively
-        :desc "notes"              "n" (λ! (aj-org-find-file aj-technical-dir))
-        :desc "notes headlines"    "N" (λ! (aj-org-jump-to-headline-at aj-technical-dir 3))
+        :desc "notes"              "n" (λ! (aj-org-find-file aj-org-technical-dir))
+        :desc "notes headlines"    "N" (λ! (aj-org-jump-to-headline-at aj-org-technical-dir 3))
         :desc "org-dir"            "o" (λ! (aj-org-find-file org-directory))
-        :desc "personal"           "p" (λ! (aj-org-find-file aj-personal-dir))
-        :desc "personal headlines" "P" (λ! (aj-org-jump-to-headline-at aj-personal-dir 3))
+        :desc "personal"           "p" (λ! (aj-org-find-file aj-org-personal-dir))
+        :desc "personal headlines" "P" (λ! (aj-org-jump-to-headline-at aj-org-personal-dir 3))
         :desc "query"              "q" #'org-ql-search
-        :desc "private files"      "r" (λ! (aj-org-find-file aj-private-dir))
-        :desc "private headlines"  "R" (λ! (aj-org-jump-to-headline-at aj-private-dir 3))
+        :desc "private files"      "r" (λ! (aj-org-find-file aj-org-private-dir))
+        :desc "private headlines"  "R" (λ! (aj-org-jump-to-headline-at aj-org-private-dir 3))
         :desc "headlines all"      "s" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 3))
         :desc "headlines all DEEP" "S" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 5))
         :desc "sparse tree"        "t" #'org-ql-sparse-tree

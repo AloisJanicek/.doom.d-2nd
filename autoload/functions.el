@@ -334,7 +334,6 @@ return an empty string."
 ;;;###autoload
 (defun aj-get-project-org-file ()
   "Return list of path pointing to README.org in current projectile project."
-  (interactive)
   (let ((file (expand-file-name "README.org" (projectile-project-root))))
     (if (file-exists-p file) file nil)))
 
@@ -368,7 +367,7 @@ return an empty string."
                      " projects"))))
 
 ;;;###autoload
-(defun aj-projectile-add-known-project-and-save (project-root)
+(defun aj/projectile-add-known-project-and-save (project-root)
   "Add PROJECT-ROOT to the list of known projects and save it to the list of known projects."
   (interactive (list (read-directory-name "Add to known projects: " aj-repos-dir)))
   (unless (projectile-ignored-project-p project-root)
@@ -417,7 +416,7 @@ Optionally create associated repository on `gitlab'."
         (call-process-shell-command (concat "cd " fp " && " "git remote add origin git@gitlab.com:AloisJanicek/" project ".git"))
         (call-process-shell-command (concat "cd " fp " && " "git push -u origin --all"))
         (call-process-shell-command (concat "cd " fp " && " "git push -u origin --tags"))))
-  (aj-projectile-add-known-project-and-save fp)
+  (aj/projectile-add-known-project-and-save fp)
   (projectile-switch-project-by-name fp))
 
 ;;;###autoload
@@ -557,8 +556,8 @@ Epub files often has very poor quality."
                       (helm-howdoyou--print-link (cdr x)))
             :caller 'aj/counsel-howdoto))
 
-;;;###autoload (autoload 'aj/howdoyou/body "autoload/functions" nil t)
-(defhydra aj/howdoyou (:color blue
+;;;###autoload (autoload 'aj/howdoyou-hydra/body "autoload/functions" nil t)
+(defhydra aj/howdoyou-hydra (:color blue
                               :body-pre
                               (if (get-buffer "*How Do You*")
                                   (pop-to-buffer "*How Do You*")

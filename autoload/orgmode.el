@@ -255,7 +255,7 @@ If HEADLINE, capture under it instead of top level."
 (defhydra aj/org-capture-code-hydra (:color blue)
   "Code:"
   ("a" #'aj/org-capture-code-ask-where "ask" )
-  ("c" (aj-org-capture-code aj-inbox-file (ivy-read "Choose title: " nil) nil) "inbox" )
+  ("c" (aj-org-capture-code aj-org-inbox-file (ivy-read "Choose title: " nil) nil) "inbox" )
   ("q" nil "exit")
   )
 
@@ -357,7 +357,6 @@ Optional argument `WEEK' for ISO week based date tree."
 (defun aj-org-capture-into-journal-in (file &optional headline week)
   "Capture into journal in `FILE'. Optionally into date-tree under `HEADLINE'.
 Use optional argument `WEEK' for ISO week format."
-  (interactive)
   (let* ((org-capture-templates
           `(("J" "Project journal" entry
              ,(if headline
@@ -649,9 +648,9 @@ which one is currently active."
                                                   :select (lambda ()
                                                             (when (org-get-heading)
                                                               (throw 'heading t)))
-                                                  :from aj-inbox-file
+                                                  :from aj-org-inbox-file
                                                   :where '(level 1)))
-                                              (org-ql-search `(,aj-inbox-file)
+                                              (org-ql-search `(,aj-org-inbox-file)
                                                 '(level 1)
                                                 :title "Inbox"
                                                 :sort '(date)))
@@ -693,7 +692,7 @@ which one is currently active."
              )
          (org-agenda nil "a")) "log")
 
-  ("i" (org-ql-search `(,aj-inbox-file)
+  ("i" (org-ql-search `(,aj-org-inbox-file)
          '(level 1)
          :title "Inbox"
          :sort '(date)) "inbox")
@@ -913,24 +912,6 @@ split current window and displays `BUFFER' on the left."
   )
 
 ;;;###autoload
-(defun aj-org-clock-update-heading ()
-  "Update `org-clock-heading'."
-  (interactive)
-  (save-excursion
-    (org-clock-goto)
-    (setq org-clock-heading
-          (cond ((and org-clock-heading-function
-                      (functionp org-clock-heading-function))
-                 (funcall org-clock-heading-function))
-
-                ((nth 4 (org-heading-components))
-                 (replace-regexp-in-string
-                  "\\[\\[.*?\\]\\[\\(.*?\\)\\]\\]" "\\1"
-                  (match-string-no-properties 4)))
-                (t "???")))
-    (bury-buffer)))
-
-;;;###autoload
 (defun my-org-pomodoro-text-time ()
   "Return status info about `org-pomodoro'.
 If `org-pomodoro' is not running, try to print info about org-clock.
@@ -1087,7 +1068,7 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
 
 ;;;###autoload
 (defun aj-get-all-archived-org-files ()
-  "Return all org files but without archived files."
+  "Return all archived org files."
   (seq-filter (lambda (elt)
                 (string-match "org_archive" elt))
               (directory-files-recursively org-directory "org")))
