@@ -66,11 +66,14 @@
    "C-;" #'ivy-restrict-to-matches
    )
 
- (:after emmet
+ (:after emmet-mode
    :map emmet-mode-keymap
    :i "M-r" #'aj/mark-region-and-preview-emmet
    :i "M-E" #'emmet-expand-yas
    :i "M-e" #'emmet-expand-line
+
+   :map emmet-preview-keymap
+   "M-r" #'emmet-preview-accept
    )
 
  (:after flycheck

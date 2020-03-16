@@ -78,13 +78,6 @@ Which operation will be executed depends on value of ENCRYPT."
                               ))))
 
 ;;;###autoload
-(defun aj/remap-emmet (&rest _)
-  "Remaps keys for emmet-preview-key-map."
-  (map!
-   :map emmet-preview-keymap
-   "M-r" #'emmet-preview-accept))
-
-;;;###autoload
 (defun aj/my-web-mode-hook ()
   "Hooks for Web mode."
   (setq web-mode-markup-indent-offset 2
@@ -147,6 +140,13 @@ Which operation will be executed depends on value of ENCRYPT."
     (evil-last-non-blank)
     (forward-char)
     (emmet-preview beg end)))
+
+;;;###autoload
+(defun aj/indent-emment-for-css ()
+  "Go to new line when in CSS modes."
+  (when (or (eq major-mode 'css-mode)
+            (eq major-mode 'scss-mode))
+    (newline-and-indent)))
 
 ;;;###autoload
 (defun beautify-html-file-and-revert ()

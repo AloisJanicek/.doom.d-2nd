@@ -187,14 +187,9 @@ if running under WSL")
   )
 
 (after! emmet-mode
-;;; run remaping function before entering emmet-preview
-  (setq
-   ;; emmet-move-cursor-after-expanding nil
-   ;;      emmet-move-cursor-between-quotes nil
-   ;; emmet-preview-default t
-   )
-  (advice-add #'emmet-preview :before #'aj/remap-emmet)
-  (defadvice emmet-preview-accept (after emmet-after activate) (aj/indent-if-not-webmode)))
+  (advice-add #'emmet-preview-accept :after #'aj/indent-emment-for-css)
+  (advice-add #'emmet-expand-yas :after #'aj/indent-emment-for-css)
+  )
 
 (after! eww
   (set-popup-rule! "*eww\*"            :vslot 1 :size 0.4  :side 'left :select t)
