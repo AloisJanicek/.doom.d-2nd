@@ -159,6 +159,7 @@ if running under WSL")
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
             (lambda ()
+              "Make imenu recognize `after!' and `hydra' keywords."
               (dolist (imenu-exp '(("After" "^\\s-*(after! +\\([^ ()\n]+\\)" 1)
                                    ("Hydra" "^\\s-*(defhydra +\\([^ ()\n]+\\)" 1)))
                 (add-to-list 'imenu-generic-expression imenu-exp)))
@@ -274,10 +275,12 @@ if running under WSL")
           #'ivy-display-function-fallback))
   (setf (alist-get t ivy-posframe-display-functions-alist)
         #'ivy-posframe-display-at-frame-top-center)
-  (setq ivy-posframe-size-function (lambda () (list :height 20
-                                                    :width (round (* (frame-width) 0.8))
-                                                    :min-height 20
-                                                    :min-width (round (* (frame-width) 0.8))))))
+  (setq ivy-posframe-size-function (lambda ()
+                                     "Customize size of ivy-posframe."
+                                     (list :height 20
+                                           :width (round (* (frame-width) 0.8))
+                                           :min-height 20
+                                           :min-width (round (* (frame-width) 0.8))))))
 
 (after! (:any js2-mode rjsx-mode web-mode)
   (set-docsets! '(js2-mode rjsx-mode)
@@ -383,7 +386,9 @@ if running under WSL")
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (advice-add #'org-refile :after #'aj/take-care-of-org-buffers)
-  (advice-add #'+popup--delete-window :before (lambda (&rest _) (when (eq major-mode 'org-mode) (save-buffer))))
+  (advice-add #'+popup--delete-window :before (lambda (&rest _)
+                                                "Save buffer when in `org-mode'."
+                                                (when (eq major-mode 'org-mode) (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
 
@@ -441,10 +446,12 @@ if running under WSL")
 (after! org-agenda
   (add-hook 'org-agenda-mode-hook #'aj/complete-all-tags-for-org)
   (add-hook 'org-agenda-finalize-hook (lambda ()
+                                        "Complete tags from all org-agenda files across each other."
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
   (advice-add 'org-agenda-switch-to :after
               (lambda (&rest _)
+                "Narrow and show children after switching."
                 (org-narrow-to-subtree)
                 (org-show-children)))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
@@ -453,6 +460,7 @@ if running under WSL")
   (advice-add #'org-agenda-filter-apply :after #'aj/copy-set-agenda-filter)
   (advice-add #'org-agenda-refile :after #'aj/take-care-of-org-buffers)
   (advice-add #'org-agenda-refile :after (lambda (&rest _)
+                                           "Refresh view."
                                            (if (string-match "Org QL" (buffer-name))
                                                (org-ql-view-refresh)
                                              (org-agenda-redo))))
@@ -656,11 +664,17 @@ if running under WSL")
   )
 
 (after! org-clock
-  (advice-add #'org-clock-in :after (lambda (&rest _) (org-save-all-org-buffers)))
-  (advice-add #'org-clock-out :after (lambda (&rest _) (org-save-all-org-buffers)))
+  (advice-add #'org-clock-in :after (lambda (&rest _)
+                                      "Save all opened org-mode files."
+                                      (org-save-all-org-buffers)))
+  (advice-add #'org-clock-out :after (lambda (&rest _)
+                                       "Save all opened org-mode files."
+                                       (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
   (advice-add #'org-clock-goto :around #'aj/open-org-file-the-right-way)
-  (advice-add #'org-clock-goto :after (lambda (&rest _) (interactive)
+  (advice-add #'org-clock-goto :after (lambda (&rest _)
+                                        "Narrow view after switching."
+                                        (interactive)
                                         (org-narrow-to-subtree)))
 
   (setq
@@ -696,6 +710,7 @@ if running under WSL")
 (after! pdf-view
   (setq pdf-view-midnight-colors `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))
   (add-hook 'pdf-view-mode-hook (lambda ()
+                                  "Set up pdf-view to my liking."
                                   (hide-mode-line-mode)
                                   (turn-off-solaire-mode)
                                   (pdf-view-auto-slice-minor-mode)
@@ -765,8 +780,11 @@ if running under WSL")
 
 (after! term
   (add-hook 'term-mode-hook #'hide-mode-line-mode)
-  (add-hook 'term-mode-hook (lambda () (interactive)(setq left-fringe-width 0
-                                                          right-ringe-width 0))))
+  (add-hook 'term-mode-hook (lambda ()
+                              "Maximize window space."
+                              (interactive)
+                              (setq left-fringe-width 0
+                                    right-ringe-width 0))))
 
 (after! tide
   (setq tide-completion-detailed nil
@@ -784,8 +802,11 @@ if running under WSL")
 
 (after! vterm
   (add-hook 'vterm-mode-hook #'hide-mode-line-mode)
-  (add-hook 'vterm-mode-hook (lambda () (interactive)(setq left-fringe-width 0
-                                                           right-ringe-width 0))))
+  (add-hook 'vterm-mode-hook (lambda ()
+                               "Maximize window space."
+                               (interactive)
+                               (setq left-fringe-width 0
+                                     right-ringe-width 0))))
 
 (after! web-mode
   (set-docsets! 'web-mode "HTML" "CSS" "WordPress")
@@ -930,6 +951,7 @@ if running under WSL")
                       :foreground `,(doom-lighten 'blue 0.25))
   ;; Finally, the hook
   (add-hook 'imenu-list-major-mode-hook (lambda ()
+                                          "Customize hl-line-face locally."
                                           (set (make-local-variable 'hl-line-face)
                                                'hl-line-imenu-list-face)
                                           (hl-line-mode)))
@@ -967,6 +989,7 @@ if running under WSL")
   (add-hook 'nov-mode-hook #'hide-mode-line-mode)
   (add-hook 'nov-mode-hook #'doom-mark-buffer-as-real-h)
   (add-hook 'nov-mode-hook (lambda ()
+                             "Customize \"nov:\" org link."
                              (setq org-link-parameters
                                    (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
                              (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
@@ -1025,6 +1048,7 @@ if running under WSL")
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
   (advice-add #'org-ql-view-refresh :around #'doom-shut-up-a)
   (advice-add #'org-ql-view-refresh :after (lambda (&rest _)
+                                             "Blacklist certain Org-QL views from refreshing."
                                              (let ((buffer (prin1-to-string (current-buffer))))
                                                (when (not (or (string-match "Inbox" buffer)
                                                               (string-match "Stucked Projects" buffer)
@@ -1086,11 +1110,11 @@ if running under WSL")
 (advice-add #'aj/doom-completing-read-org-headings :around #'aj/open-org-file-the-right-way)
 (advice-add #'doom-completing-read-org-headings :around #'aj/open-org-file-the-right-way)
 
-(advice-add #'aj/jump-to-headline-at :around
-            (lambda (orig-fun &rest args)
-              (cl-letf (((symbol-function 'my/doom--org-headings)
-                         #'doom--org-headings))
-                (apply orig-fun args))))
+(advice-add #'aj/jump-to-headline-at :around (lambda (orig-fun &rest args)
+                                               "Temporarily switch back to original function."
+                                               (cl-letf (((symbol-function 'my/doom--org-headings)
+                                                          #'doom--org-headings))
+                                                 (apply orig-fun args))))
 
 
 (load! "+bindings")
@@ -1107,6 +1131,7 @@ if running under WSL")
                '("browser" . aj/eaf--browser-display))
 
   (set-popup-rule! (lambda (buf act)
+                     "Find EAF browser buffer."
                      (with-current-buffer buf
                        (if (and (eq major-mode 'eaf-mode)
                                 (string-equal eaf--buffer-app-name "browser"))
