@@ -1,19 +1,5 @@
 ;;; ~/.doom.d/+bindings.el -*- lexical-binding: t; -*-
 
-;;global
-(map! (:map override
-        ;; Smart tab, these will only work in GUI Emacs
-        :i [tab] (general-predicate-dispatch nil ; fall back to nearest keymap
-                   (and (featurep! :editor snippets)
-                        (bound-and-true-p yas-minor-mode)
-                        (yas-maybe-expand-abbrev-key-filter 'yas-expand))
-                   'yas-expand
-                   (yankpad-maybe-expand)
-                   'yankpad-expand
-                   (and (featurep! :completion company +tng)
-                        (+company-has-completion-p))
-                   '+company/complete)))
-
 (map!
  "C-\\"      #'move-to-window-line-top-bottom
  "C-s"       #'ispell-word
