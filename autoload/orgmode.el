@@ -892,6 +892,24 @@ split current window and displays `BUFFER' on the left."
       (switch-to-buffer buffer))))
 
 ;; ORG-CLOCK AND ORG-POMODORO
+(defun aj/org-clock-update-heading ()
+  "Update title of `org-clock-heading'.
+Manually update title of running clock task which
+got renamed while clock were running.
+"
+  (interactive)
+  (with-current-buffer (marker-buffer org-clock-marker)
+    (goto-char org-clock-marker)
+    (setq org-clock-heading
+          (cond ((and org-clock-heading-function
+                      (functionp org-clock-heading-function))
+                 (funcall org-clock-heading-function))
+
+                ((nth 4 (org-heading-components))
+                 (replace-regexp-in-string
+                  "\\[\\[.,?\\]\\[\\(.,?\\)\\]\\]" "\\1"
+                  (match-string-no-properties 4)))
+                (t "???")))))
 
 ;;;###autoload
 (defun aj/org-clock-menu ()
@@ -909,6 +927,7 @@ split current window and displays `BUFFER' on the left."
   ("g" #'counsel-org-clock-goto "goto clock")
   ("k" #'counsel-org-clock-context "context")
   ("h" #'counsel-org-clock-history "history")
+  ("u" #'aj/org-clock-update-heading "update heading" )
   )
 
 ;;;###autoload
