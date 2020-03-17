@@ -881,7 +881,20 @@ if running under WSL")
   (set-popup-rule! "*Google Translate\*"        :size 0.4  :side 'top :select t))
 
 (use-package! highlight-blocks
-  :commands (highlight-blocks-mode highlight-blocks-now))
+  :commands (highlight-blocks-mode highlight-blocks-now)
+  :config
+  (custom-set-faces!
+    `(highlight-blocks-depth-1-face :background ,(doom-color 'base1))
+    `(highlight-blocks-depth-2-face :background ,(doom-lighten 'base1 0.03))
+    `(highlight-blocks-depth-3-face :background ,(doom-lighten 'base1 0.06))
+    `(highlight-blocks-depth-4-face :background ,(doom-lighten 'base1 0.09))
+    `(highlight-blocks-depth-5-face :background ,(doom-lighten 'base1 0.12))
+    `(highlight-blocks-depth-6-face :background ,(doom-lighten 'base1 0.15))
+    `(highlight-blocks-depth-7-face :background ,(doom-lighten 'base1 0.17))
+    `(highlight-blocks-depth-8-face :background ,(doom-lighten 'base1 0.2))
+    `(highlight-blocks-depth-9-face :background ,(doom-lighten 'base1 0.23))
+    )
+  )
 
 (use-package! highlight-escape-sequences
   :hook ((prog-mode conf-mode) . highlight-escape-sequences-mode))
