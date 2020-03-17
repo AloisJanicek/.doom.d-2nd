@@ -301,9 +301,9 @@ if running under WSL")
           ("thefreedictionary\\.com" . eww-browse-url)
           ("dictionary\\.com" . eww-browse-url)
           ("merriam-webster\\.com" . eww-browse-url)
-          ("." . eaf-open-browser)
+          ("." . gk-browse-url)
           )
-        browse-url-secondary-browser-function 'browse-url-chromium
+        browse-url-secondary-browser-function 'eww-browse-url
         )
 
   (when (aj-wsl-p)

@@ -148,9 +148,9 @@ Which operation will be executed depends on value of ENCRYPT."
 If no, browse with external browser.
 Optional argument ARGS represents arguments passed to advised function."
   (apply
-   (if (y-or-n-p (concat "link: " "Browse with EWW? "))
-       'eww-browse-url
-     #'browse-url-xdg-open)
+   (if (y-or-n-p (concat "link: " "Browse with EAF browser? "))
+       #'eaf-open-browser
+     #'browse-url-chromium)
    args))
 
 ;;;###autoload
