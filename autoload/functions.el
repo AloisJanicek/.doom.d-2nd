@@ -143,14 +143,37 @@ Which operation will be executed depends on value of ENCRYPT."
       (message "%s => kill-ring" val))))
 
 ;;;###autoload
+(defun aj-eaf-browse-url-maybe (url &optional args)
+  "Open URL with eaf browser unless running under wsl."
+  (if (aj-wsl-p)
+      (wsl-browse-url url args)
+    (eaf-open-browser url args)))
+
+;;;###autoload
+(defun aj-chromium-browse-url-dispatch (url &optional args)
+  "Open URL with chromium or default Windows browser if under wsl."
+  (if (aj-wsl-p)
+      (wsl-browse-url url args)
+    (browse-url-chromium url args)))
+
+;;;###autoload
+(defun wsl-browse-url (url &optional _new-window)
+  "Opens link via powershell.exe"
+  (interactive (browse-url-interactive-arg "URL: "))
+  (let ((quotedUrl (format "start '%s'" url)))
+    (apply 'call-process "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe" nil
+           0 nil
+           (list "-Command" quotedUrl))))
+
+;;;###autoload
 (defun gk-browse-url (&rest args)
   "Prompt for whether or not to browse with EWW.
 If no, browse with external browser.
 Optional argument ARGS represents arguments passed to advised function."
   (apply
    (if (y-or-n-p (concat "link: " "Browse with EAF browser? "))
-       #'eaf-open-browser
-     #'browse-url-chromium)
+       #'aj-eaf-browse-url-maybe
+     #'aj-chromium-browse-url-dispatch)
    args))
 
 ;;;###autoload
@@ -557,14 +580,14 @@ Epub files often has very poor quality."
 
 ;;;###autoload (autoload 'aj/howdoyou-hydra/body "autoload/functions" nil t)
 (defhydra aj/howdoyou-hydra (:color blue
-                              :body-pre
-                              (if (get-buffer "*How Do You*")
-                                  (pop-to-buffer "*How Do You*")
-                                (counsel-web-suggest nil
-                                                     "How Do You: "
-                                                     #'counsel-web-suggest--google
-                                                     (lambda (x)
-                                                       (howdoyou-query x)))))
+                                    :body-pre
+                                    (if (get-buffer "*How Do You*")
+                                        (pop-to-buffer "*How Do You*")
+                                      (counsel-web-suggest nil
+                                                           "How Do You: "
+                                                           #'counsel-web-suggest--google
+                                                           (lambda (x)
+                                                             (howdoyou-query x)))))
   "How do you:"
   ("s" (counsel-web-suggest nil
                             "How Do You: "

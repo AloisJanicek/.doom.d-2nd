@@ -154,7 +154,7 @@ if running under WSL")
   (setq counsel-dash-docsets-path (if (aj-wsl-p)
                                       (expand-file-name  "AppData/Local/Zeal/Zeal/docsets" aj-home-base-dir)
                                     (expand-file-name ".local/share/Zeal" aj-home-base-dir)))
-  (setq counsel-dash-browser-func 'eaf-open-url)
+  (setq counsel-dash-browser-func 'aj-eaf-browse-url-maybe)
   )
 
 (after! elisp-mode
@@ -296,12 +296,12 @@ if running under WSL")
 (after! loaddefs
   (setq browse-url-browser-function
         '(
-          ("github" . browse-url-chromium)
-          ("reddit" . browse-url-chromium)
-          ("gitlab" . browse-url-chromium)
-          ("youtube" . browse-url-chromium)
-          ("eslint.org" . eaf-open-browser)
-          ("stylelint.io" .  eaf-open-browser)
+          ("github" . aj-chromium-browse-url-dispatch)
+          ("reddit" . aj-chromium-browse-url-dispatch)
+          ("gitlab" . aj-chromium-browse-url-dispatch)
+          ("youtube" . aj-chromium-browse-url-dispatch)
+          ("eslint.org" . aj-eaf-browse-url-maybe)
+          ("stylelint.io" .  aj-eaf-browse-url-maybe)
           ("thefreedictionary\\.com" . eww-browse-url)
           ("dictionary\\.com" . eww-browse-url)
           ("merriam-webster\\.com" . eww-browse-url)
@@ -892,7 +892,7 @@ if running under WSL")
   :config
   (setq
    counsel-web-search-function #'counsel-web-search--google
-   counsel-web-search-action #'eaf-open-browser
+   counsel-web-search-action #'aj-eaf-browse-url-maybe
    counsel-web-search-alternate-action #'eww
    counsel-web-search-dynamic-update t
    counsel-web-engine 'google
