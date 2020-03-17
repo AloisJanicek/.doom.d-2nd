@@ -267,10 +267,11 @@
                              (aj-org-agenda-gtd-hydra-no-auto t))
                          (aj/org-agenda-gtd-hydra/body)))
 
-   :m         "j"    #'org-agenda-next-item
-   :m         "k"    #'org-agenda-previous-item
-   :m         "C-j"  #'org-agenda-next-line
-   :m         "C-k"  #'org-agenda-previous-line
+   :m         "j"      #'org-agenda-next-line
+   :m         "C-j"    #'org-agenda-next-item
+
+   :m         "k"      #'org-agenda-previous-line
+   :m         "C-k"    #'org-agenda-previous-item
 
    (:prefix ("c" . "change")
      :m         "t"    #'counsel-org-tag-agenda
@@ -314,8 +315,10 @@
    :iemnv "C-j" #'evil-window-down
    :iemnv "C-k" #'evil-window-up
    :iemnv "C-l" #'evil-window-right
-   :mn    "j"   #'org-agenda-next-item
-   :mn    "k"   #'org-agenda-previous-item
+   :m         "j"      #'org-agenda-next-line
+   :m         "C-j"    #'org-agenda-next-item
+   :m         "k"      #'org-agenda-previous-line
+   :m         "C-k"    #'org-agenda-previous-item
    :mn    "o"   #'org-agenda-open-link
    :mn    "t"   #'org-agenda-todo
    :mn    "z"   #'org-agenda-view-mode-dispatch
@@ -429,8 +432,8 @@
 
  (:after org-ql
    :map org-ql-view-map
-   :mne "j" #'org-agenda-next-item
-   :mne "k" #'org-agenda-previous-item
+   :mne "j" #'org-agenda-next-line
+   :mne "k" #'org-agenda-previous-line
    )
 
  (:after pdf-tools
