@@ -1133,7 +1133,7 @@ if running under WSL")
     (add-to-list 'eaf-app-display-function-alist
       '("browser" . aj-eaf--browser-display))
 
-    (set-popup-rule! (lambda (buf act)
+    (set-popup-rule! (lambda (buf &rest _)
                        "Find EAF browser buffer."
                        (with-current-buffer buf
                          (if (and (eq major-mode 'eaf-mode)
