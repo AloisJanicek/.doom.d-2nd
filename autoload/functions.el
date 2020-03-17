@@ -54,9 +54,9 @@ Which operation will be executed depends on value of ENCRYPT."
         (add-to-list 'decrypted i)))
     (if encrypt
         (dolist (i decrypted)
-          (aj/decrypt-encrypt-file i t))
+          (aj-decrypt-encrypt-file i t))
       (dolist (i encrypted)
-        (aj/decrypt-encrypt-file i)))))
+        (aj-decrypt-encrypt-file i)))))
 
 ;;;###autoload
 (defun aj/flyspell-enable ()
