@@ -342,9 +342,6 @@ if running under WSL")
   (set-popup-rule! "*Man\*"            :vslot 1 :size 0.4  :side 'left :select t)
   (set-popup-rule! "*man\*"            :vslot 1 :size 0.4  :side 'left :select t))
 
-(after! nav-flash
-  (add-to-list '+nav-flash-exclude-commands 'find-file-noselect))
-
 (after! ob-core
   (setq
    org-babel-default-header-args '((:session . "none")
