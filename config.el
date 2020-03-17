@@ -1119,23 +1119,24 @@ if running under WSL")
 (load! "+bindings")
 (load! "+local")
 
+(unless (aj-wsl-p)
+  (add-to-list 'load-path (expand-file-name "emacs-application-framework" aj-repos-dir))
+  (require 'eaf)
 
-(add-to-list 'load-path (expand-file-name "emacs-application-framework" aj-repos-dir))
-(require 'eaf)
+  (after! eaf
+    (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
+    (evil-set-initial-state 'eaf-mode 'insert)
+    (add-to-list 'eaf-app-display-function-alist
+      '("browser" . aj-eaf--browser-display))
 
-(after! eaf
-  (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
-  (evil-set-initial-state 'eaf-mode 'insert)
-  (add-to-list 'eaf-app-display-function-alist
-               '("browser" . aj-eaf--browser-display))
-
-  (set-popup-rule! (lambda (buf act)
-                     "Find EAF browser buffer."
-                     (with-current-buffer buf
-                       (if (and (eq major-mode 'eaf-mode)
-                                (string-equal eaf--buffer-app-name "browser"))
+    (set-popup-rule! (lambda (buf act)
+                       "Find EAF browser buffer."
+                       (with-current-buffer buf
+                         (if (and (eq major-mode 'eaf-mode)
+                               (string-equal eaf--buffer-app-name "browser"))
                            t nil)))
-    :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
+      :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
+    )
   )
 
 (pushnew! default-frame-alist '(fullscreen . maximized))
