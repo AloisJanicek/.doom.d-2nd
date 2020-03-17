@@ -249,8 +249,6 @@ if running under WSL")
   )
 
 (after! ispell
-  (setq ispell-program-name "aspell")
-  (add-to-list 'ispell-extra-args "--sug-mode=ultra")
   (advice-add #'ispell-init-process :around #'doom-shut-up-a)
   )
 
@@ -728,32 +726,20 @@ if running under WSL")
   (advice-add #'persp-remove-buffer :around #'doom-shut-up-a)
   (dolist (file (directory-files-recursively org-directory ".org"))
     (add-to-list 'aj-persp-blacklist `,(file-name-nondirectory file)))
-
-  (setq persp-emacsclient-init-frame-behaviour-override 'persp-ignore-wconf)
   )
 
 (after! profiler
   (set-popup-rule! "^.*-Profiler-Report.*$"  :vslot 2 :size 0.4  :side 'right :select t))
 
 (after! projectile
-  (advice-add #'projectile-cleanup-known-projects :around #'doom-shut-up-a)
   (setq projectile-track-known-projects-automatically t
         projectile-project-search-path aj-repos-dir
         )
   )
 
-(after! prodigy
-  (prodigy-define-service
-    :name "Gulp"
-    :command "gulp"
-    :cwd (projectile-project-root)
-    :stop-signal 'sigkill
-    :kill-process-buffer-on-stop t))
-
 (after! prog-mode
   (add-hook 'prog-mode-hook #'goto-address-mode)
   (add-hook 'prog-mode-hook #'which-function-mode)
-  ;; (add-hook 'prog-mode-hook #'hs-hide-all)
   )
 
 (after! python
@@ -774,14 +760,6 @@ if running under WSL")
 (after! synosaurus
   (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t))
 
-(after! term
-  (add-hook 'term-mode-hook #'hide-mode-line-mode)
-  (add-hook 'term-mode-hook (lambda ()
-                              "Maximize window space."
-                              (interactive)
-                              (setq left-fringe-width 0
-                                    right-ringe-width 0))))
-
 (after! tide
   (setq tide-completion-detailed nil
         tide-always-show-documentation nil)
@@ -795,14 +773,6 @@ if running under WSL")
   (set-face-attribute 'treemacs-root-face nil :height 1.0)
   (add-hook 'treemacs-mode-hook #'variable-pitch-mode)
   )
-
-(after! vterm
-  (add-hook 'vterm-mode-hook #'hide-mode-line-mode)
-  (add-hook 'vterm-mode-hook (lambda ()
-                               "Maximize window space."
-                               (interactive)
-                               (setq left-fringe-width 0
-                                     right-ringe-width 0))))
 
 (after! web-mode
   (set-docsets! 'web-mode "HTML" "CSS" "WordPress")
@@ -827,8 +797,7 @@ if running under WSL")
 
 (after! which-key
   (setq which-key-idle-delay 0.8
-        which-key-allow-regexps nil
-        which-key-allow-evil-operators 1))
+        which-key-allow-evil-operators t))
 
 (after! wordnut
   (set-popup-rule! "*WordNut\*"                 :size 0.4  :side 'top :select t))
@@ -1090,7 +1059,7 @@ if running under WSL")
   :commands (systemd-mode))
 
 (use-package! x-path-walker
-  :commands (helm-x-path-walker  x-path-get-mode))
+  :commands (helm-x-path-walker x-path-get-mode))
 
 (use-package! vimrc-mode
   :commands vimrc-mode
