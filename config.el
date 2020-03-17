@@ -246,6 +246,7 @@ if running under WSL")
 (after! ispell
   (setq ispell-program-name "aspell")
   (add-to-list 'ispell-extra-args "--sug-mode=ultra")
+  (advice-add #'ispell-init-process :around #'doom-shut-up-a)
   )
 
 (after! ivy
