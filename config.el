@@ -836,6 +836,10 @@ if running under WSL")
         yas-triggers-in-field t
         ))
 
+(after! writeroom-mode
+  (add-hook #'writeroom-mode-hook  #'doom-disable-line-numbers-h)
+  )
+
 (use-package! ace-link)
 
 (use-package! ahk-mode
