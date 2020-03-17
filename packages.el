@@ -31,6 +31,9 @@
 
 (package! highlight-blocks)
 
+(package! highlight-escape-sequences
+  :recipe (:host github :repo "hlissner/highlight-escape-sequences"))
+
 (package! hungry-delete :pin "0434458d3f6b2b585f332271feaa054bf4ec96d7")
 
 (package! howdoyou

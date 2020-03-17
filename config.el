@@ -916,6 +916,9 @@ if running under WSL")
 (use-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now))
 
+(use-package! highlight-escape-sequences
+  :hook ((prog-mode conf-mode) . highlight-escape-sequences-mode))
+
 (use-package! hungry-delete
   :demand t
   :config
