@@ -795,13 +795,8 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
 
 ;;;###autoload
 (defun aj-org-find-file (dir)
-  "Find org file in DIR.
-Open it the way I like it."
-  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-             #'aj-open-file-switch-create-indirect-buffer-per-persp)
-            ((symbol-function 'pop-to-buffer)
-             #'aj-open-file-switch-create-indirect-buffer-per-persp))
-    (counsel-find-file dir)))
+  "Wrapper for `counsel-find-file' so it can be advised."
+  (counsel-find-file dir))
 
 ;;;###autoload
 (defun aj-open-file-switch-create-indirect-buffer-per-persp (buffer-or-path &optional return-back)
