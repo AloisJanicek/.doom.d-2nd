@@ -49,7 +49,8 @@ if running under WSL")
 (defvar aj-org-agenda-similar-modes '(org-agenda-mode org-ql-view-mode)
   "List of org-agenda like modes for purpose of running commands from their buffers.")
 
-(make-variable-buffer-local 'er/try-expand-list)
+(defvar aj-nov-menu-links nil
+  "List of chapter links for `nov-mode'.")
 
 (defvar aj-org-src-block-identifiers
   '("awk" "C" "C++" "clojure" "css" "ditaa" "calc" "elisp" "eshell" "html" "php" "go" "rust"
@@ -58,6 +59,9 @@ if running under WSL")
     "processing" "python" "R" "ruby" "sass" "scheme" "sed" "sh" "sql" "sqlite" "vala")
   "List of Org mode code block language identifiers.
  Useful when capturing code snippets.")
+
+(make-variable-buffer-local 'er/try-expand-list)
+(make-variable-buffer-local 'aj-nov-menu-links)
 
 (add-to-list 'org-modules 'ol-info)
 

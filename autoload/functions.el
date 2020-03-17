@@ -605,7 +605,6 @@ from anywhere in the document after.
 "
   (interactive)
   (require 'link-hint)
-  (defvar-local aj-nov-menu-links nil)
   (unless aj-nov-menu-links
     (setq-local aj-nov-menu-links
                 (mapcar (lambda (item)
