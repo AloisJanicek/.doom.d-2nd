@@ -1142,7 +1142,7 @@ if running under WSL")
                          (if (and (eq major-mode 'eaf-mode)
                                (string-equal eaf--buffer-app-name "browser"))
                            t nil)))
-      :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
+      :vslot 2 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
     )
   )
 
