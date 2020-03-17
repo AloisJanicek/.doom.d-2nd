@@ -927,7 +927,13 @@ got renamed while clock were running.
   ("g" #'counsel-org-clock-goto "goto clock")
   ("k" #'counsel-org-clock-context "context")
   ("h" #'counsel-org-clock-history "history")
-  ("u" #'aj/org-clock-update-heading "update heading" )
+  ("U" #'aj/org-clock-update-heading "update title" )
+  ("r" (lambda ()
+         (interactive)
+         (with-current-buffer (marker-buffer org-clock-marker)
+           (goto-char org-clock-marker)
+           (org-edit-headline (ivy-read "Change title: " nil)))
+         (aj/org-clock-update-heading)) "rename" )
   )
 
 ;;;###autoload
