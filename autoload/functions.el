@@ -170,8 +170,7 @@ Copy snippet TEMPLATE-NAME into new snippet."
   (erase-buffer)
   (insert-file-contents
    (yas--template-get-file
-    (ivy-yasnippet--lookup-template template-name))
-   nil 0 500))
+    (ivy-yasnippet--lookup-template template-name))))
 
 ;;;###autoload
 (defun counsel-x-path-walker ()
