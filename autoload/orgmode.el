@@ -1081,14 +1081,14 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
 ;; MISC
 ;;;###autoload
 (defun aj-get-all-org-files ()
-  "Return all org files but without archived files."
+  "Return list of all org files but without archived files."
   (seq-filter (lambda (elt)
                 (not (string-match "org_archive" elt)))
               (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
 (defun aj-get-all-archived-org-files ()
-  "Return all archived org files."
+  "Return list of all archived org files."
   (seq-filter (lambda (elt)
                 (string-match "org_archive" elt))
               (directory-files-recursively org-directory "org")))
