@@ -119,7 +119,7 @@ if running under WSL")
 (after! calendar
   (setq calendar-week-start-day 1))
 
-(after! css-mode
+(after! (:any css-mode scss-mode)
   (custom-set-faces!
     `(css-selector :foreground ,(doom-lighten 'red 0.1)))
   (set-docsets! '(css-mode scss-mode)
@@ -177,10 +177,6 @@ if running under WSL")
 (after! evil
   (setq evil-move-cursor-back nil))
 
-(after! evil-org
-  (setq evil-org-key-theme '(textobjects insert navigation additional shift heading))
-  )
-
 (after! evil-snipe
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
   )
@@ -221,16 +217,8 @@ if running under WSL")
   (setq-default flycheck-disabled-checkers '(css-csslint scss sass/scss-sass-lint))
   )
 
-(after! flyspell
-  (setq flyspell-issue-message-flag nil
-        flyspell-issue-welcome-flag nil)
-  (add-to-list 'ispell-skip-region-alist '("^#+BEGIN_SRC" . "^#+END_SRC")))
-
 (after! geiser
   (setq geiser-default-implementation 'guile))
-
-(after! helm
-  (helm-mode -1))
 
 (after! help
   (set-popup-rule! "*help\*"           :vslot 2 :size 0.32 :side 'left :select t))
@@ -257,29 +245,12 @@ if running under WSL")
   (ivy-set-actions
    'counsel-projectile-bookmark
    '(("d" bookmark-delete "delete")
-     ("e" bookmark-rename "edit")))
+     ("r" bookmark-rename "rename")))
   (ivy-add-actions
    #'ivy-yasnippet
    '(("e" aj-ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own"))))
 
-(after! ivy-pages
-  (advice-add #'ivy-pages-transformer :override #'ivy-pages-transformer-clear-string)
-  )
-
-(after! ivy-posframe
-  (dolist (fn '(swiper-thing-at-point swiper-all swiper-all-thing-at-point))
-    (setf (alist-get fn ivy-posframe-display-functions-alist)
-          #'ivy-display-function-fallback))
-  (setf (alist-get t ivy-posframe-display-functions-alist)
-        #'ivy-posframe-display-at-frame-top-center)
-  (setq ivy-posframe-size-function (lambda ()
-                                     "Customize size of ivy-posframe."
-                                     (list :height 20
-                                           :width (round (* (frame-width) 0.8))
-                                           :min-height 20
-                                           :min-width (round (* (frame-width) 0.8))))))
-
-(after! (:any js2-mode rjsx-mode web-mode)
+(after! (:any js-mode js2-mode rjsx-mode web-mode)
   (set-docsets! '(js2-mode rjsx-mode)
     "JavaScript" "Angular" "Bootstrap_4" "jQuery" "NodeJS" "React" "VueJS"))
 
@@ -289,8 +260,13 @@ if running under WSL")
   (setq-default js2-basic-offset 2)
   )
 
+(after! js-mode
+  (setq js-indent-level 2)
+  )
+
 (after! json-mode
-  (setq js2-basic-offset 2))
+  (setq json-reformat:indent-width 2)
+  )
 
 (after! loaddefs
   (setq browse-url-browser-function
@@ -308,22 +284,10 @@ if running under WSL")
           )
         browse-url-secondary-browser-function 'eww-browse-url
         )
-
-  (when (aj-wsl-p)
-    (let ((cmd-exe (executable-find "cmd.exe"))
-          (cmd-args '("/c" "start")))
-      (setq browse-url-generic-program  cmd-exe
-            browse-url-generic-args     cmd-args
-            browse-url-browser-function 'browse-url-generic)))
   )
 
 (after! lsp
   (setq lsp-ui-sideline-enable nil)
-  ;; (add-to-list 'lsp-disabled-clients '(web-mode . angular-ls))
-  )
-
-(after! lsp-ui
-  ;; (remove-hook 'lsp-ui-mode-hook '+lsp-init-ui-flycheck-or-flymake-h)
   )
 
 (after! magit
@@ -389,8 +353,6 @@ if running under WSL")
   (org-link-set-parameters "calibre" :follow #'aj-org-calibre-follow :store #'aj-org-calibre-store)
 
   (setq
-   ;; org-M-RET-may-split-line '((default . nil))
-   ;; settings for export to ical file
    org-icalendar-combined-agenda-file (expand-file-name "agenda.ics" org-directory)
    org-icalendar-combined-name "OrgAgenda"
    org-icalendar-combined-description "export from Org Mode"
@@ -760,12 +722,6 @@ if running under WSL")
 (after! synosaurus
   (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t))
 
-(after! tide
-  (setq tide-completion-detailed nil
-        tide-always-show-documentation nil)
-  (advice-add #'tide-imenu-index :around #'+javascript*sort-imenu-index-by-position)
-  )
-
 (after! treemacs
   (setq evil-treemacs-state-cursor 'box)
   (setq treemacs-project-follow-cleanup t)
@@ -945,13 +901,16 @@ if running under WSL")
   )
 
 (use-package! ivy-yasnippet
-  :commands (ivy-yasnippet))
+  :commands ivy-yasnippet)
 
-;; for navigation in epub files
 (use-package! ivy-pages
-  :commands ivy-pages)
+  :commands ivy-pages
+  :config
+  (advice-add #'ivy-pages-transformer :override #'ivy-pages-transformer-clear-string)
+  )
 
 (use-package! js-react-redux-yasnippets
+  :after yasnippet
   )
 
 (use-package! link-hint
@@ -970,12 +929,12 @@ if running under WSL")
         visual-fill-column-center-text t
         nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (add-hook 'nov-mode-hook #'visual-line-mode)
-  (add-hook 'nov-mode-hook #'visual-fill-column-mode)
-  (add-hook 'nov-mode-hook #'hide-mode-line-mode)
-  (add-hook 'nov-mode-hook #'doom-mark-buffer-as-real-h)
   (add-hook 'nov-mode-hook (lambda ()
-                             "Customize \"nov:\" org link."
+                             "Setup nov-mode to my liking."
+                             (visual-line-mode)
+                             (visual-fill-column-mode)
+                             (hide-mode-line-mode)
+                             (doom-mark-buffer-as-real-h)
                              (setq org-link-parameters
                                    (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
                              (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
@@ -988,24 +947,7 @@ if running under WSL")
   (advice-add #'ob-javascript--node-path :override #'aj-ob-javascript--node-path-a))
 
 (use-package! org-brain
-  ;; :after org
-  :commands
-  (org-brain-visualize
-   org-brain-add-parent
-   org-brain-add-child
-   org-brain-add-friendship
-   org-brain-add-relationship
-   org-brain-add-resource
-   org-brain-goto-parent
-   org-brain-goto-child
-   org-brain-goto-friend
-   org-brain-goto-current
-   org-brain-goto-end
-   org-brain-goto-other-window
-   org-brain-remove-child
-   org-brain-remove-friendship
-   org-brain-remove-parent
-   )
+  :after org
   :init
   (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode)
   :config
@@ -1029,7 +971,6 @@ if running under WSL")
 
 (use-package! org-ql
   :after org
-  :commands org-ql-search
   :config
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
   (advice-add #'org-ql-view-refresh :around #'doom-shut-up-a)
@@ -1114,14 +1055,14 @@ if running under WSL")
     (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
     (evil-set-initial-state 'eaf-mode 'insert)
     (add-to-list 'eaf-app-display-function-alist
-      '("browser" . aj-eaf--browser-display))
+                 '("browser" . aj-eaf--browser-display))
 
     (set-popup-rule! (lambda (buf &rest _)
                        "Find EAF browser buffer."
                        (with-current-buffer buf
                          (if (and (eq major-mode 'eaf-mode)
-                               (string-equal eaf--buffer-app-name "browser"))
-                           t nil)))
+                                  (string-equal eaf--buffer-app-name "browser"))
+                             t nil)))
       :vslot 2 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
     )
   )
