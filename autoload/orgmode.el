@@ -260,7 +260,10 @@ If HEADLINE, capture under it instead of top level."
   )
 
 ;;;###autoload (autoload 'aj/org-capture-hydra/body "autoload/orgmode" nil t)
-(defhydra aj/org-capture-hydra (:color blue)
+(defhydra aj/org-capture-hydra (:color blue
+                                       :hint nil
+                                       :idle which-key-idle-delay
+                                       )
   "Capture:"
   ("d" #'aj/org-capture-calendar "calendar date")
   ("C" (let ((hydra-hint-display-type 'message))
@@ -639,50 +642,53 @@ which one is currently active."
 
 ;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-agenda-gtd-hydra (:color blue
+                                          :hint nil
+                                          :idle which-key-idle-delay
                                           :body-pre
-                                          (unless aj-org-agenda-gtd-hydra-no-auto
-                                            (cond
-                                             ;; show inbox if it is not empty
-                                             ((catch 'heading
-                                                (org-ql-query
-                                                  :select (lambda ()
-                                                            (when (org-get-heading)
-                                                              (throw 'heading t)))
-                                                  :from aj-org-inbox-file
-                                                  :where '(level 1)))
-                                              (org-ql-search `(,aj-org-inbox-file)
-                                                '(level 1)
-                                                :title "Inbox"
-                                                :sort '(date)))
-                                             ;; show all stucked "PROJECT" if any
-                                             ((catch 'heading
-                                                (org-ql-query
-                                                  :select (lambda ()
-                                                            (when (org-get-heading)
-                                                              (throw 'heading t)))
-                                                  :from (append (org-agenda-files)
-                                                                (aj/get-all-projectile-README-org-files t))
-                                                  :where
+                                          (if org-clock-current-task
+                                              (org-clock-goto)
+                                            (unless aj-org-agenda-gtd-hydra-no-auto
+                                              (cond
+                                               ;; show inbox if it is not empty
+                                               ((catch 'heading
+                                                  (org-ql-query
+                                                    :select (lambda ()
+                                                              (when (org-get-heading)
+                                                                (throw 'heading t)))
+                                                    :from aj-org-inbox-file
+                                                    :where '(level 1)))
+                                                (org-ql-search `(,aj-org-inbox-file)
+                                                  '(level 1)
+                                                  :title "Inbox"
+                                                  :sort '(date)))
+                                               ;; show all stucked "PROJECT" if any
+                                               ((catch 'heading
+                                                  (org-ql-query
+                                                    :select (lambda ()
+                                                              (when (org-get-heading)
+                                                                (throw 'heading t)))
+                                                    :from (append (org-agenda-files)
+                                                                  (aj/get-all-projectile-README-org-files t))
+                                                    :where
+                                                    '(and (todo)
+                                                          (children (todo))
+                                                          (not (descendants (todo "NEXT"))))))
+                                                (org-ql-search (append (org-agenda-files)
+                                                                       (aj/get-all-projectile-README-org-files t))
                                                   '(and (todo)
                                                         (children (todo))
-                                                        (not (descendants (todo "NEXT"))))))
-                                              (org-ql-search (append (org-agenda-files)
-                                                                     (aj/get-all-projectile-README-org-files t))
-                                                '(and (todo)
-                                                      (children (todo))
-                                                      (not (descendants (todo "NEXT"))))
-                                                :super-groups '((:auto-category t))
-                                                :title "Stucked Projects"))
-                                             ;; otherwise default to showing "NEXT" task
-                                             (t (let ((org-agenda-tag-filter aj-org-agenda-filter))
-                                                  (org-ql-search (append (org-agenda-files)
-                                                                         (aj/get-all-projectile-README-org-files t))
-                                                    '(and (todo "NEXT")
-                                                          (not (ts-active)))
-                                                    :sort '(date priority todo)
-                                                    :super-groups '((:auto-category t))))))
-                                            )
-                                          )
+                                                        (not (descendants (todo "NEXT"))))
+                                                  :super-groups '((:auto-category t))
+                                                  :title "Stucked Projects"))
+                                               ;; otherwise default to showing "NEXT" task
+                                               (t (let ((org-agenda-tag-filter aj-org-agenda-filter))
+                                                    (org-ql-search (append (org-agenda-files)
+                                                                           (aj/get-all-projectile-README-org-files t))
+                                                      '(and (todo "NEXT")
+                                                            (not (ts-active)))
+                                                      :sort '(date priority todo)
+                                                      :super-groups '((:auto-category t))))))
+                                              )))
   "agenda"
   ("a" (org-agenda nil "a") "agenda")
 
@@ -886,6 +892,35 @@ split current window and displays `BUFFER' on the left."
           (select-window start-win)))
       (switch-to-buffer buffer))))
 
+;;;###autoload
+(defun aj-display-org-buffer-popup (buf)
+  "Display org buffer in popup window.
+Similar to `aj-get-window-for-org-buffer' but displays org buffer
+in temporarily popup window on the right side of the frame.
+"
+  (+popup-buffer (get-buffer buf)
+                 '((side . right)
+                   (size . 86)
+                   (window-width . 40)
+                   (window-height . 0.16)
+                   (slot)
+                   (vslot . 1)
+                   (window-parameters
+                    (ttl)
+                    (quit . t)
+                    (select . t)
+                    (modeline)
+                    (autosave . t)))))
+
+;;;###autoload
+(defun aj-org-buffer-to-popup-a (orig-fun &rest args)
+  "Override `aj-get-window-for-org-buffer' with `aj-display-org-buffer-popup'.
+Intended for overriding default behavior of `aj-open-file-switch-create-indirect-buffer-per-persp'
+to allow pop org buffer into popup window."
+  (cl-letf (((symbol-function 'aj-get-window-for-org-buffer)
+             #'aj-display-org-buffer-popup))
+    (apply orig-fun args)))
+
 ;; ORG-CLOCK AND ORG-POMODORO
 (defun aj/org-clock-update-heading ()
   "Update title of `org-clock-heading'.
@@ -914,7 +949,13 @@ got renamed while clock were running.
   (call-interactively 'org-clock-in-last))
 
 ;;;###autoload (autoload 'aj/org-clock-hydra/body "autoload/orgmode" nil t)
-(defhydra aj/org-clock-hydra (:color blue)
+(defhydra aj/org-clock-hydra (:color blue
+                                     :hint nil
+                                     :idle which-key-idle-delay
+                                     :body-pre
+                                     (when org-clock-current-task
+                                       (org-clock-goto))
+                                     )
   "Clock:"
   ("c" #'aj/org-clock-menu "in" )
   ("p" #'org-pomodoro "pomodoro" )

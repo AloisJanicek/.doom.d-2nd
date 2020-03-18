@@ -128,6 +128,10 @@
      )
 
    :localleader
+   :desc "agenda"  ">"  (lambda ()
+                          (interactive)
+                          (let ((aj-org-agenda-gtd-hydra-no-auto t))
+                            (aj/org-agenda-gtd-hydra/body)))
    "B"  nil
    (:prefix ("B" . "babel")
      :desc "tangle"  "t" #'org-babel-tangle
@@ -263,8 +267,7 @@
    :map evil-org-agenda-mode-map
    :m         "."    (lambda ()
                        (interactive)
-                       (let ((hydra-hint-display-type 'message)
-                             (aj-org-agenda-gtd-hydra-no-auto t))
+                       (let ((aj-org-agenda-gtd-hydra-no-auto t))
                          (aj/org-agenda-gtd-hydra/body)))
 
    :m         "j"      #'org-agenda-next-line
@@ -595,18 +598,14 @@
         )
 
       (:prefix ("o" . "open")
-        :desc "clock"                   "c" (lambda ()
-                                              (interactive)
-                                              (let ((hydra-hint-display-type 'message)) (aj/org-clock-hydra/body)))
+        :desc "clock"                   "c" #'aj/org-clock-hydra/body
         (:prefix ("C" . "calibre")
           :desc "technical"             "c" (lambda! (aj-open-calibre-book (expand-file-name "Technical/" aj-libraries-dir)))
           :desc "personal"              "p" (lambda! (aj-open-calibre-book (expand-file-name "Personal/" aj-libraries-dir)))
           )
 
         :desc "agenda"                   "A" #'org-agenda
-        :desc "agenda"                   "a" (lambda ()
-                                               (interactive)
-                                               (let ((hydra-hint-display-type 'message)) (aj/org-agenda-gtd-hydra/body)))
+        :desc "agenda"                   "a" #'aj/org-agenda-gtd-hydra/body
         :desc "agenda tasks"             "h" #'aj/org-notes-headlines
         :desc "imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "NEXT agenda tasks"        "n" (λ! (aj/org-notes-headlines "NEXT "))
@@ -647,9 +646,7 @@
 
       ;; next                   "]"
       
-      :desc "agenda"    "a" (lambda ()
-                              (interactive)
-                              (let ((hydra-hint-display-type 'message)) (aj/org-agenda-gtd-hydra/body)))
+      :desc "agenda"                    "a" #'aj/org-agenda-gtd-hydra/body
 
       (:prefix ("s" . "search")
         :desc "google at point"          "g" #'counsel-web-thing-at-point
@@ -675,10 +672,7 @@
 
       (:prefix ("f" . "file")
         :desc "file"                     "f" #'counsel-find-file
-        :desc "grep"                     "g" (lambda ()
-                                               (interactive)
-                                               (let ((hydra-hint-display-type 'message))
-                                                 (+default/search-cwd)))
+        :desc "grep"                     "g" #'+default/search-cwd
         :desc "jump file"                "j" #'counsel-file-jump
         :desc "jump dir"                 "k" #'counsel-dired-jump
         :desc "recent"                   "r" #'counsel-recentf
@@ -700,9 +694,7 @@
         :desc "pop on error"             "P" #'toggle-debug-on-error
         :desc "search Web"               "S" #'counsel-web-search
         ;; :desc "zeal search"              "s" #'zeal-at-point-search
-        :desc "stack Overflow"           "s" (lambda ()
-                                               (interactive)
-                                               (let ((hydra-hint-display-type 'message)) (aj/howdoyou-hydra/body)))
+        :desc "stack Overflow"           "s" #'aj/howdoyou-hydra/body
         :desc "update-diff"              "u" (λ! (ediff-files
                                                   "~/.doom.d/init.el"
                                                   "~/.emacs.d/init.example.el"))
@@ -732,9 +724,7 @@
         :desc "workspace"                "i" #'+workspace/switch-to
         )
 
-      :desc "capture"   "k" (lambda ()
-                              (interactive)
-                              (let ((hydra-hint-display-type 'message)) (aj/org-capture-hydra/body)))
+      :desc "capture"                    "k" #'aj/org-capture-hydra/body
 
       (:prefix ("l" . "link")
         :desc "open all links"           "a" #'link-hint-open-all-links
