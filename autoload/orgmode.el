@@ -645,7 +645,7 @@ which one is currently active."
                                           :hint nil
                                           :idle which-key-idle-delay
                                           :body-pre
-                                          (if org-clock-current-task
+                                          (if (bound-and-true-p org-clock-current-task)
                                               (org-clock-goto)
                                             (unless aj-org-agenda-gtd-hydra-no-auto
                                               (cond
@@ -953,7 +953,7 @@ got renamed while clock were running.
                                      :hint nil
                                      :idle which-key-idle-delay
                                      :body-pre
-                                     (when org-clock-current-task
+                                     (when (bound-and-true-p org-clock-current-task)
                                        (org-clock-goto))
                                      )
   "Clock:"
