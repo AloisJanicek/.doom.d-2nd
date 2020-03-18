@@ -660,8 +660,11 @@ if running under WSL")
 ;;   (load! "local/org-protocol-capture-html/org-protocol-capture-html.el"))
 
 (after! org-pomodoro
+  (advice-add #'org-pomodoro-update-mode-line :override (lambda () "Do nothing." t))
   (setq alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
-        org-pomodoro-ask-upon-killing nil))
+        org-pomodoro-ask-upon-killing nil
+        org-pomodoro-mode-line nil)
+  )
 
 (after! pdf-view
   (setq pdf-view-midnight-colors `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))
