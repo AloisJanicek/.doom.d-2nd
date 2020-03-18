@@ -1004,6 +1004,7 @@ if running under WSL")
 (use-package! org-super-agenda
   :after org
   :config
+  (advice-add #'org-super-agenda-mode :around #'doom-shut-up-a)
   (org-super-agenda-mode)
   (setq org-super-agenda-header-map (make-sparse-keymap))
   )
