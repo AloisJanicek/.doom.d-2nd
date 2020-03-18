@@ -690,7 +690,8 @@ which one is currently active."
                                                       :super-groups '((:auto-category t))))))
                                               )))
   "agenda"
-  ("a" (org-agenda nil "a") "agenda")
+  ("a" (let ((org-agenda-start-day "today"))
+         (org-agenda nil "a")) "agenda")
 
   ("l" (let ((org-agenda-start-with-log-mode t)
              (org-agenda-span 1)
