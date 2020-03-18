@@ -790,7 +790,7 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
   (cl-letf (((symbol-function 'pop-to-buffer-same-window)
              #'aj-open-file-switch-create-indirect-buffer-per-persp)
             ((symbol-function 'pop-to-buffer)
-             #'aj-open-file-switch-create-indirect-buffer-per-persp))
+             #'aj-display-org-buffer-popup))
     (apply orig-fun args)))
 
 ;;;###autoload
@@ -848,7 +848,7 @@ executing this function.
 
         (aj-get-window-for-org-buffer new-buffer-name)
 
-        (when return-back
+        (when (string-equal return-back "back")
           (select-window win)
           (goto-char pos)))
 
@@ -894,7 +894,7 @@ split current window and displays `BUFFER' on the left."
       (switch-to-buffer buffer))))
 
 ;;;###autoload
-(defun aj-display-org-buffer-popup (buf)
+(defun aj-display-org-buffer-popup (buf &rest _)
   "Display org buffer in popup window.
 Similar to `aj-get-window-for-org-buffer' but displays org buffer
 in temporarily popup window on the right side of the frame.

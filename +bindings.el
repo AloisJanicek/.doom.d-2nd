@@ -395,7 +395,7 @@
    :m  "O" (λ! (org-brain-goto
                 (org-brain-entry-at-pt)
                 (lambda (buffer)
-                  (aj-open-file-switch-create-indirect-buffer-per-persp buffer t))))
+                  (aj-open-file-switch-create-indirect-buffer-per-persp buffer "back"))))
    :m  "v" #'org-brain-visualize
    :m  "q" #'org-brain-visualize-quit
    )
@@ -766,11 +766,7 @@
 
       (:prefix ("n" . "notes")
         :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp))
-        :desc "grep"               "g" (λ! (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-                                                      #'aj-open-file-switch-create-indirect-buffer-per-persp)
-                                                     ((symbol-function 'pop-to-buffer)
-                                                      #'aj-open-file-switch-create-indirect-buffer-per-persp))
-                                             (+default/org-notes-search)))
+        :desc "grep"               "g" #'+default/org-notes-search
         :desc "indirect"           "i" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
                                             (buffer-file-name (current-buffer))))
         :desc "IDs"                "I" #'aj/org-id-update-recursively

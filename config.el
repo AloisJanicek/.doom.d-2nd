@@ -1049,7 +1049,7 @@ if running under WSL")
 
 (advice-add #'aj-doom-completing-read-org-headings :around #'aj-org-open-file-respect-sanity-a)
 (advice-add #'doom-completing-read-org-headings :around #'aj-org-open-file-respect-sanity-a)
-
+(advice-add #'+default/org-notes-search :around #'aj-org-open-file-respect-sanity-a)
 (advice-add #'aj-org-jump-to-headline-at :around (lambda (orig-fun &rest args)
                                                    "Temporarily switch back to original function."
                                                    (cl-letf (((symbol-function 'my-doom--org-headings)
