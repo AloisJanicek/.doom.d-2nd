@@ -694,7 +694,7 @@ if running under WSL")
   (set-popup-rule! "^.*-Profiler-Report.*$"  :vslot 2 :size 0.4  :side 'right :select t))
 
 (after! projectile
-  (setq projectile-track-known-projects-automatically t
+  (setq projectile-track-known-projects-automatically nil
         projectile-project-search-path aj-repos-dir
         )
   )
