@@ -410,6 +410,7 @@ if running under WSL")
   (advice-add 'org-agenda-switch-to :after
               (lambda (&rest _)
                 "Narrow and show children after switching."
+                (widen)
                 (org-narrow-to-subtree)
                 (org-show-children)))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
@@ -634,6 +635,7 @@ if running under WSL")
   (advice-add #'org-clock-goto :after (lambda (&rest _)
                                         "Narrow view after switching."
                                         (interactive)
+                                        (widen)
                                         (org-narrow-to-subtree)))
 
   (setq
