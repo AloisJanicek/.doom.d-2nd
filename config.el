@@ -147,7 +147,9 @@ if running under WSL")
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
   (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'counsel-org-clock--run-context-action :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-clock--run-context-action :around #'aj-org-buffer-to-popup-a)
   (advice-add #'counsel-org-clock--run-history-action :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-clock--run-history-action :around #'aj-org-buffer-to-popup-a)
   (advice-add #'aj-org-find-file :around #'aj-org-open-file-respect-sanity-a)
   )
 
@@ -628,6 +630,7 @@ if running under WSL")
                                        (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
   (advice-add #'org-clock-goto :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-clock-goto :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-clock-goto :after (lambda (&rest _)
                                         "Narrow view after switching."
                                         (interactive)
@@ -660,8 +663,11 @@ if running under WSL")
 ;;   (load! "local/org-protocol-capture-html/org-protocol-capture-html.el"))
 
 (after! org-pomodoro
+  (advice-add #'org-pomodoro-update-mode-line :override (lambda () "Do nothing." t))
   (setq alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
-        org-pomodoro-ask-upon-killing nil))
+        org-pomodoro-ask-upon-killing nil
+        org-pomodoro-mode-line nil)
+  )
 
 (after! pdf-view
   (setq pdf-view-midnight-colors `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))
@@ -694,7 +700,7 @@ if running under WSL")
   (set-popup-rule! "^.*-Profiler-Report.*$"  :vslot 2 :size 0.4  :side 'right :select t))
 
 (after! projectile
-  (setq projectile-track-known-projects-automatically t
+  (setq projectile-track-known-projects-automatically nil
         projectile-project-search-path aj-repos-dir
         )
   )
