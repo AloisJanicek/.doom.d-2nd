@@ -680,7 +680,6 @@ if running under WSL")
                                   (pdf-view-auto-slice-minor-mode)
                                   (pdf-view-midnight-minor-mode)
                                   (pdf-outline-imenu-enable)
-                                  (set (make-local-variable 'evil-normal-state-cursor) (list nil)) 
                                   (setq org-link-parameters
                                         (remove '("pdfview" :follow org-pdfview-open :complete org-pdfview-complete-link :store org-pdfview-store-link)
                                                 org-link-parameters))
