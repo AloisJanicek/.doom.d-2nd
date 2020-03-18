@@ -111,7 +111,8 @@ Which operation will be executed depends on value of ENCRYPT."
 ;;;###autoload
 (defun aj-web-mode-html-beautify-h ()
   "Beautify file with html-beautify and only if major mode is `web-mode'."
-  (when (eq major-mode 'web-mode)
+  (when (and (eq major-mode 'web-mode)
+             (executable-find "html-beautify"))
     (message "Beautifying %s" (buffer-file-name))
     (shell-command (concat "html-beautify --quiet --replace -s 2 -w 120 -A \"auto\" -I -E \"\" --max-preserve-newlines 0 -f " (buffer-file-name)))
     (revert-buffer t t)))
@@ -119,7 +120,8 @@ Which operation will be executed depends on value of ENCRYPT."
 ;;;###autoload
 (defun aj-css-mode-css-autofix-h ()
   "Prettify current file and apply auto-fixes only in `css-mode'."
-  (when (or (eq major-mode 'css-mode) (eq major-mode 'scss-mode))
+  (when (and (or (eq major-mode 'css-mode) (eq major-mode 'scss-mode))
+             (executable-find "prettier-stylelint"))
     (message "Fixing the file %s" (buffer-file-name))
     (shell-command (concat "prettier-stylelint --quiet --write " (buffer-file-name)))
     (revert-buffer t t)))
