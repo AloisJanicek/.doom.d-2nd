@@ -1066,6 +1066,7 @@ if running under WSL")
   (after! eaf
     (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
     (evil-set-initial-state 'eaf-mode 'insert)
+    (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir))
     (add-to-list 'eaf-app-display-function-alist
                  '("browser" . aj-eaf--browser-display))
 
