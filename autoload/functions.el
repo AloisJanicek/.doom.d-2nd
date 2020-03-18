@@ -170,11 +170,13 @@ Which operation will be executed depends on value of ENCRYPT."
   "Prompt for whether or not to browse with EWW.
 If no, browse with external browser.
 Optional argument ARGS represents arguments passed to advised function."
-  (apply
-   (if (y-or-n-p (concat "link: " "Browse with EAF browser? "))
-       #'aj-eaf-browse-url-maybe
-     #'aj-chromium-browse-url-dispatch)
-   args))
+  (if (aj-wsl-p)
+    (apply #'wsl-browse-url args)
+    (apply
+      (if (y-or-n-p (concat "link: " "Browse with EAF browser? "))
+        #'aj-eaf-browse-url-maybe
+        #'aj-chromium-browse-url-dispatch)
+      args)))
 
 ;;;###autoload
 (defun aj-add-thing-at-point-to-url (url)
