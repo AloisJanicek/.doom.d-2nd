@@ -768,7 +768,9 @@ if running under WSL")
 
 (after! which-key
   (setq which-key-idle-delay 0.8
-        which-key-allow-evil-operators t))
+        which-key-allow-evil-operators t
+        which-key-show-operator-state-maps t
+        ))
 
 (after! wordnut
   (set-popup-rule! "*WordNut\*"                 :size 0.4  :side 'top :select t))
