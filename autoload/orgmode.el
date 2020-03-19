@@ -832,7 +832,7 @@ executing this function.
              (source-buffer (if (stringp buffer-or-path)
                                 (find-buffer-visiting buffer-or-path)
                               buffer-or-path))
-             (source-buffer-name (buffer-name buffer-or-path))
+             (source-buffer-name (buffer-name source-buffer))
              (persp-buffer-is-there (string-match (concat "::" current-persp-name) source-buffer-name))
              (new-buffer-name (concat source-buffer-name "::" current-persp-name)))
 
