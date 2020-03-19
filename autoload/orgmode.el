@@ -1025,10 +1025,11 @@ Argument TEXT represents string being investigated."
 Reconstruct full file path first."
   (let ((path
          (file-truename
-          (concat aj-reference-dir
-                  (substring
-                   link
-                   (string-match "/Libraries" link))))))
+          (expand-file-name
+           (substring
+            link
+            (string-match aj-library-dir link))
+           aj-reference-dir))))
     (cond ((string-match ".epub" path)
            (nov-org-link-follow path))
           ((string-match ".pdf" path)
@@ -1045,7 +1046,8 @@ Otherwise dispatch default commands.
                    (buffer-file-name)))
          (epub (string-suffix-p "epub" file t))
          (pdf (string-suffix-p "pdf" file t))
-         (calibre (string-match "/Libraries" file)))
+         (calibre (file-in-directory-p file
+                                       (file-truename aj-calibre-path))))
     (cond (epub
            (if calibre
                (nov-org-calibre-link-store)
@@ -1060,7 +1062,7 @@ Otherwise dispatch default commands.
 (defun org-pdfview-calibre-store-link ()
   "Store a link to a `pdf-view-mode' buffer representing PDF file from Calibre library."
   (when (eq major-mode 'pdf-view-mode)
-    (let* ((calibre (string-match "/Libraries" buffer-file-name))
+    (let* ((calibre (string-match aj-library-dir buffer-file-name))
            (path (substring buffer-file-name calibre (length buffer-file-name)))
            (page (pdf-view-current-page))
            (type "calibre")
@@ -1076,7 +1078,7 @@ Otherwise dispatch default commands.
   (when (and (eq major-mode 'nov-mode) nov-file-name)
     (when (not (integerp nov-documents-index))
       (setq nov-documents-index 0))
-    (let* ((calibre (string-match "/Libraries" nov-file-name))
+    (let* ((calibre (string-match aj-library-dir nov-file-name))
            (path (substring nov-file-name calibre (length nov-file-name)))
            (file-name (file-name-base nov-file-name)))
       (org-store-link-props

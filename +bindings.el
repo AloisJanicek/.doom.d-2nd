@@ -600,8 +600,8 @@
       (:prefix ("o" . "open")
         :desc "clock"                   "c" #'aj/org-clock-hydra/body
         (:prefix ("C" . "calibre")
-          :desc "technical"             "c" (lambda! (aj-open-calibre-book (expand-file-name "Technical/" aj-libraries-dir)))
-          :desc "personal"              "p" (lambda! (aj-open-calibre-book (expand-file-name "Personal/" aj-libraries-dir)))
+          :desc "technical"             "c" (lambda! (aj-open-calibre-book (expand-file-name "Technical/" aj-calibre-path)))
+          :desc "personal"              "p" (lambda! (aj-open-calibre-book (expand-file-name "Personal/" aj-calibre-path)))
           )
 
         :desc "agenda"                   "A" #'org-agenda

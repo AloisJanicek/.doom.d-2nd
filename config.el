@@ -9,13 +9,16 @@ if running under WSL")
                          (setq aj-home-base-dir (expand-file-name "~/"))))
 
 (defvar aj-reference-dir (expand-file-name "Documents/MEGAsync" aj-home-base-dir)
-  "Location of Reference folder.")
+  "Location of the Reference folder.")
 
-(defvar aj-libraries-dir (expand-file-name "Libraries" aj-reference-dir)
-  "Location of Calibre libraries.")
+(defvar aj-library-dir "Libraries"
+  "Name of the directory housing Calibre libraries.")
+
+(defvar aj-calibre-path (expand-file-name aj-library-dir aj-reference-dir)
+  "Path of the Calibre libraries.")
 
 (defvar aj-repos-dir (expand-file-name "repos" aj-home-base-dir)
-  "Location of Repos folder.")
+  "Path of the repos folder.")
 
 (setq org-directory (expand-file-name "Dropbox/org" aj-home-base-dir))
 
