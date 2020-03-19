@@ -790,7 +790,7 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
   (cl-letf (((symbol-function 'pop-to-buffer-same-window)
              #'aj-open-file-switch-create-indirect-buffer-per-persp)
             ((symbol-function 'pop-to-buffer)
-             #'aj-display-org-buffer-popup))
+             #'aj-open-file-switch-create-indirect-buffer-per-persp))
     (apply orig-fun args)))
 
 ;;;###autoload
