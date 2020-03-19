@@ -377,8 +377,8 @@ return an empty string."
 (defun aj/agenda-project-all ()
   "Show agenda for all projectile projects."
   (interactive)
-  (let* ((readmes (aj/get-all-projectile-README-org-files t))
-         (projects (aj/get-all-projectile-README-org-files))
+  (let* ((readmes (aj-get-all-projectile-README-org-files t))
+         (projects (aj-get-all-projectile-README-org-files))
          (readmes-n (length readmes))
          (projects-n (length projects))
          (without-readme (- projects-n readmes-n)))
@@ -465,7 +465,7 @@ Optionally create associated repository on `gitlab'."
       (aj-new-project-init-and-register full-path project t))))
 
 ;;;###autoload
-(defun aj/get-all-projectile-README-org-files (&optional existing)
+(defun aj-get-all-projectile-README-org-files (&optional existing)
   "Return list of existing projectile projects' README.org files.
 When optional argument `EXISTING' is supplied, it returns only actual existing files."
   (let ((files (mapcar (lambda (project-path)

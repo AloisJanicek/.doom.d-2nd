@@ -629,7 +629,7 @@
                                                (aj-open-file-switch-create-indirect-buffer-per-persp
                                                 (ivy-read
                                                  "Choose file: "
-                                                 (aj/get-all-projectile-README-org-files t)
+                                                 (aj-get-all-projectile-README-org-files t)
                                                  :caller 'counsel-find-file)))
         :desc "project README"           "p" (lambda () (interactive)
                                                (aj-open-file-switch-create-indirect-buffer-per-persp
