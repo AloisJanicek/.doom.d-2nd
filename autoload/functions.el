@@ -173,12 +173,12 @@ Which operation will be executed depends on value of ENCRYPT."
 If no, browse with external browser.
 Optional argument ARGS represents arguments passed to advised function."
   (if (aj-wsl-p)
-    (apply #'wsl-browse-url args)
+      (apply #'wsl-browse-url args)
     (apply
-      (if (y-or-n-p (concat "link: " "Browse with EAF browser? "))
-        #'aj-eaf-browse-url-maybe
-        #'aj-chromium-browse-url-dispatch)
-      args)))
+     (if (y-or-n-p (concat "link: " "Browse with EAF browser? "))
+         #'aj-eaf-browse-url-maybe
+       #'aj-chromium-browse-url-dispatch)
+     args)))
 
 ;;;###autoload
 (defun aj-add-thing-at-point-to-url (url)
@@ -225,7 +225,7 @@ Requires esqlite."
   (ivy-read "Books: "
             (mapcar (lambda (member)
                       (concat (nth 1 member) ": " (nth 0 member)))
-                    (esqlite-read (concat library-path "metadata.db") "SELECT title,id FROM books"))
+                    (esqlite-read (expand-file-name "metadata.db" library-path) "SELECT title,id FROM books"))
             :action (lambda (x)
                       (let ((book-path (aj-get-calibre-book-path x library-path)))
                         (kill-new book-path)
@@ -236,7 +236,7 @@ Requires esqlite."
   "Return file path of a book X of Calibre library from `LIBRARY-PATH'."
   (let* ((id (substring x 0 (string-match ":" x)))
          (db "metadata.db")
-         (dbpath (concat library-path db))
+         (dbpath (expand-file-name db library-path))
          (path (car (-flatten (esqlite-read dbpath (concat "SELECT path FROM books WHERE id=" id ";")))))
          (name (car (-flatten (esqlite-read dbpath (concat "SELECT name FROM data WHERE book=" id ";")))))
          (formats (esqlite-read dbpath (concat "SELECT format FROM data WHERE book=" id ";")))
@@ -287,8 +287,8 @@ Functions is intended as a replacement for `ob-javascript--node-path'."
   (let ((node-path (or (getenv "NODE_PATH") ""))
         (node-modules (or (when (buffer-file-name)
                             (locate-dominating-file (buffer-file-name) "node_modules"))
-                          (concat (getenv "npm_config_prefix") "/lib/node_modules")
-                          (concat (getenv "HOME") "/node_modules"))))
+                          (expand-file-name "lib/node_modules" (getenv "npm_config_prefix"))
+                          (expand-file-name "node_modules" (getenv "HOME")))))
     (if node-modules
         (format "%s:%s:node_modules" node-path (file-truename node-modules))
       node-path)))
@@ -360,7 +360,7 @@ return an empty string."
 ;;;###autoload
 (defun aj-get-project-org-file ()
   "Return list of path pointing to README.org in current projectile project."
-  (let ((file (expand-file-name "README.org" (projectile-project-root))))
+  (let ((file (expand-file-name aj-project-readme-task-filename (projectile-project-root))))
     (if (file-exists-p file) file nil)))
 
 ;;;###autoload
@@ -453,17 +453,15 @@ Optionally create associated repository on `gitlab'."
          (directory (read-directory-name "Directory: " aj-repos-dir))
          (template (ivy-read "Template: " '("web-starter-kit" "other")))
          (gitlab (ivy-read "Gitlab?:" '("yes" "no")))
-         (full-path (concat directory project))
-         )
+         (full-path (expand-file-name project directory)))
     ;; create directory
     (make-directory full-path)
 
     (if (string-equal template "web-starter-kit")
         (progn
           (call-process-shell-command (concat "git clone git@gitlab.com:AloisJanicek/web-starter-kit.git " full-path))
-          (delete-directory (concat full-path "/.git/") t)
-          (aj-new-project-init-and-register full-path project t)
-          )
+          (delete-directory (expand-file-name ".git" full-path) t)
+          (aj-new-project-init-and-register full-path project t))
       (aj-new-project-init-and-register full-path project t))))
 
 ;;;###autoload

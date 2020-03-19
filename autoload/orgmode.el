@@ -342,7 +342,7 @@ Optional argument `WEEK' for ISO week based date tree."
                       (projectile-project-root)
                     (ivy-read "Project: " projectile-known-projects)))
          (template (ivy-read "Template: " '("journal" "task")))
-         (file (concat (expand-file-name project) "README.org"))
+         (file (expand-file-name aj-project-readme-task-filename (expand-file-name project)))
 
          (org-capture-templates `(("P" "Project task" entry (file+headline ,file "TASKS")
                                    ,(concat "* TO" "DO %^{PROMPT} \n:PROPERTIES:\n:CREATED: %U\n:END:\n\n%i\n%?")
@@ -549,7 +549,7 @@ Then moves the point to the end of the line."
   (interactive)
   (let ((org-brain-path (projectile-project-root)))
     (org-brain-visualize
-     (expand-file-name "README.org" (projectile-project-root)))))
+     (expand-file-name aj-project-readme-task-filename (projectile-project-root)))))
 
 ;;;###autoload
 (defun aj/org-brain-visualize-entry-at-pt ()
