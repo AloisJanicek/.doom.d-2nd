@@ -766,30 +766,35 @@ a customized lexical scope where original `pop-to-buffer-same-window' is
 overridden for pdf and epub files with `switch-to-buffer-other-window'.
 Intended as an around advice for `find-file' function.
 "
-  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-             (lambda (buf &rest _)
-               (let ((get-win (lambda (mode)
-                                (car (seq-filter
-                                      (lambda (win)
-                                        (with-selected-window win
-                                          (when (eq major-mode mode) t)))
-                                      (window-list)))))
-                     (select-win (lambda (win)
-                                   (if win
-                                       (progn
-                                         (select-window win)
-                                         (pop-to-buffer buf display-buffer--same-window-action))
-                                     (switch-to-buffer-other-window buf)))))
-                 (cond ((string-suffix-p "pdf" (buffer-file-name buf) t)
-                        (let ((pdf-win (funcall get-win 'pdf-view-mode)))
-                          (funcall select-win pdf-win)))
-                       ((with-current-buffer buf
-                          (when (eq major-mode 'nov-mode)
-                            (string-suffix-p "epub" nov-file-name t)))
-                        (let ((epub-win (funcall get-win 'nov-mode)))
-                          (funcall select-win epub-win)))
-                       (t (pop-to-buffer buf display-buffer--same-window-action)))))))
-    (apply orig-fun args)))
+  (if (or (string-suffix-p "pdf" (nth 0 args) t)
+          (string-suffix-p "epub" (nth 0 args) t))
+      (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+                 (lambda (buf &rest _)
+                   (let ((get-win (lambda (mode)
+                                    (car (seq-filter
+                                          (lambda (win)
+                                            (with-selected-window win
+                                              (when (eq major-mode mode) t)))
+                                          (window-list)))))
+                         (select-win (lambda (win)
+                                       (if win
+                                           (progn
+                                             (select-window win)
+                                             (pop-to-buffer buf display-buffer--same-window-action))
+                                         (switch-to-buffer-other-window buf)))))
+                     (cond ((string-suffix-p "pdf" (buffer-file-name buf) t)
+                            (let ((pdf-win (funcall get-win 'pdf-view-mode)))
+                              (funcall select-win pdf-win)))
+                           ((with-current-buffer buf
+                              (when (eq major-mode 'nov-mode)
+                                (string-suffix-p "epub" nov-file-name t)))
+                            (let ((epub-win (funcall get-win 'nov-mode)))
+                              (funcall select-win epub-win)))
+                           (t (pop-to-buffer buf display-buffer--same-window-action)))))))
+        (apply orig-fun args))
+    (apply orig-fun args)
+    )
+  )
 
 ;;;###autoload
 (defun aj/choose-file-from (dir)
