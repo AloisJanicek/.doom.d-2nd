@@ -145,18 +145,18 @@ Which operation will be executed depends on value of ENCRYPT."
       (message "%s => kill-ring" val))))
 
 ;;;###autoload
-(defun aj-eaf-browse-url-maybe (url &optional args)
+(defun aj-eaf-browse-url-maybe (url &optional _new-window)
   "Open URL with eaf browser unless running under wsl."
   (if (aj-wsl-p)
-      (wsl-browse-url url args)
-    (eaf-open-browser url args)))
+      (wsl-browse-url url _new-window)
+    (eaf-open-browser url _new-window)))
 
 ;;;###autoload
-(defun aj-chromium-browse-url-dispatch (url &optional args)
+(defun aj-chromium-browse-url-dispatch (url &optional _new-window)
   "Open URL with chromium or default Windows browser if under wsl."
   (if (aj-wsl-p)
-      (wsl-browse-url url args)
-    (browse-url-chromium url args)))
+      (wsl-browse-url url _new-window)
+    (browse-url-chromium url _new-window)))
 
 ;;;###autoload
 (defun wsl-browse-url (url &optional _new-window)
