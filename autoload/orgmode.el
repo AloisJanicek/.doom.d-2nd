@@ -1043,8 +1043,8 @@ Otherwise dispatch default commands.
   (require 'nov)
   (let* ((file (or nov-file-name
                    (buffer-file-name)))
-         (epub (string-match ".epub" file))
-         (pdf (string-match ".pdf" file))
+         (epub (string-suffix-p "epub" file t))
+         (pdf (string-suffix-p "pdf" file t))
          (calibre (string-match "/Libraries" file)))
     (cond (epub
            (if calibre
