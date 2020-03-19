@@ -844,6 +844,9 @@ executing this function.
 
         (persp-add-buffer (get-buffer new-buffer-name))
 
+        (with-current-buffer (get-buffer new-buffer-name)
+          (widen))
+
         (aj-get-window-for-org-buffer new-buffer-name)
 
         (when (string-equal return-back "back")

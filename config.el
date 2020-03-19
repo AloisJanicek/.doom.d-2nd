@@ -1050,6 +1050,10 @@ if running under WSL")
 (advice-add #'doom-completing-read-org-headings :around #'aj-org-open-file-respect-sanity-a)
 (advice-add #'+default/org-notes-search :around #'aj-org-open-file-respect-sanity-a)
 (advice-add #'+default/org-notes-search :around #'aj-org-buffer-to-popup-a)
+(advice-add #'+default/org-notes-search :after (lambda (&rest _)
+                                                 "Narrow view after switching."
+                                                 (interactive)
+                                                 (org-narrow-to-subtree)))
 (advice-add #'aj-org-jump-to-headline-at :around (lambda (orig-fun &rest args)
                                                    "Temporarily switch back to original function."
                                                    (cl-letf (((symbol-function 'my-doom--org-headings)
