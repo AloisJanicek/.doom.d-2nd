@@ -1030,9 +1030,6 @@ if running under WSL")
 (use-package! systemd
   :commands (systemd-mode))
 
-(use-package! x-path-walker
-  :commands (helm-x-path-walker x-path-get-mode))
-
 (use-package! vimrc-mode
   :commands vimrc-mode
   )

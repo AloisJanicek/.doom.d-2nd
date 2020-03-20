@@ -200,24 +200,6 @@ Copy snippet TEMPLATE-NAME into new snippet."
     (ivy-yasnippet--lookup-template template-name))))
 
 ;;;###autoload
-(defun counsel-x-path-walker ()
-  "Go to JSON or XML node."
-  (interactive)
-  (require 'x-path-walker)
-  (let* ((mode (x-path-get-mode))
-         (file (buffer-file-name))
-         (cmd-line `(,(if (bound-and-true-p x-path-walker-verbose)
-                          "-a"
-                        "")
-                     "-m"
-                     ,mode
-                     ,file ))
-         (cands  (split-string (x-path-run-py-script cmd-line)"\n")))
-    (ivy-read "Goto: " cands
-              :action 'x-path-walker-jump-path
-              :caller 'counsel-x-path-walker)))
-
-;;;###autoload
 (defun aj-open-calibre-book (library-path)
   "Select book from Calibre database at LIBRARY-PATH.
 Offer user to choose file format if there is more of them and open it.
