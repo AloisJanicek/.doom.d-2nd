@@ -13,6 +13,7 @@
        ;;ido
        (ivy
         +icons
+        +prescient
         ;; +childframe
         )
 
