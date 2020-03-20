@@ -104,7 +104,8 @@ if running under WSL")
 
 (after! ansible-doc
   (set-popup-rule! "*ansible-doc "     :vslot 2 :size 0.32 :side 'left :select t :ttl t)
-  (add-hook 'ansible-doc-module-mode-hook #'evil-normal-state)
+  (when (featurep! :editor evil)
+    (add-hook 'ansible-doc-module-mode-hook #'evil-normal-state))
   (add-hook 'ansible-doc-module-mode-hook #'visual-line-mode))
 
 (after! apropos
@@ -173,6 +174,14 @@ if running under WSL")
                 (add-to-list 'imenu-generic-expression imenu-exp)))
             t)
   )
+
+(after! smartparens
+  (define-key smartparens-mode-map (kbd "<C-left>") nil)
+  (define-key smartparens-mode-map (kbd "<C-right>") nil)
+  )
+
+(global-set-key (kbd "<C-left>") 'backward-word)
+(global-set-key (kbd "<C-right>") 'forward-word)
 
 (after! epg
   (setq epg-pinentry-mode 'ask))
@@ -966,7 +975,8 @@ if running under WSL")
 (use-package! org-brain
   :after org
   :init
-  (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode)
+  (when (featurep! :editor evil)
+    (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode))
   :config
   (add-hook 'org-brain-visualize-mode-hook #'visual-line-mode)
   (advice-add #'org-brain-visualize :after #'aj-org-buffers-respect-sanity-a)
@@ -1073,7 +1083,8 @@ if running under WSL")
 
   (after! eaf
     (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
-    (evil-set-initial-state 'eaf-mode 'insert)
+    (when (featurep! :editor evil)
+      (evil-set-initial-state 'eaf-mode 'insert))
     (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir))
     (add-to-list 'eaf-app-display-function-alist
                  '("browser" . aj-eaf--browser-display))
