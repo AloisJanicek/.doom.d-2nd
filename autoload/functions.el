@@ -364,6 +364,16 @@ return an empty string."
     (if (file-exists-p file) file nil)))
 
 ;;;###autoload
+(defun aj-get-all-projectile-README-org-files (&optional existing)
+  "Return list of existing projectile projects' README.org files.
+When optional argument `EXISTING' is supplied, it returns only actual existing files."
+  (let ((files (mapcar (lambda (project-path)
+                         (expand-file-name aj-project-readme-task-filename project-path))
+                       projectile-known-projects)))
+    (if existing
+        (seq-filter 'file-exists-p files) files)))
+
+;;;###autoload
 (defun aj/agenda-project ()
   "Show agenda for current projectile project."
   (interactive)
@@ -463,16 +473,6 @@ Optionally create associated repository on `gitlab'."
           (delete-directory (expand-file-name ".git" full-path) t)
           (aj-new-project-init-and-register full-path project t))
       (aj-new-project-init-and-register full-path project t))))
-
-;;;###autoload
-(defun aj-get-all-projectile-README-org-files (&optional existing)
-  "Return list of existing projectile projects' README.org files.
-When optional argument `EXISTING' is supplied, it returns only actual existing files."
-  (let ((files (mapcar (lambda (project-path)
-                         (expand-file-name aj-project-readme-task-filename project-path))
-                       projectile-known-projects)))
-    (if existing
-        (seq-filter 'file-exists-p files) files)))
 
 ;; PDF BOOKMARS
 
