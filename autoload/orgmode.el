@@ -645,23 +645,62 @@ which one is currently active."
                                           :hint nil
                                           :idle which-key-idle-delay
                                           :body-pre
+
+                                          ;; When clock is running, visit clocked task
                                           (if (bound-and-true-p org-clock-current-task)
                                               (org-clock-goto)
+
+                                            ;; If true, do not auto-popup any views
                                             (unless aj-org-agenda-gtd-hydra-no-auto
                                               (cond
-                                               ;; show inbox if it is not empty
-                                               ((catch 'heading
-                                                  (org-ql-query
-                                                    :select (lambda ()
-                                                              (when (org-get-heading)
-                                                                (throw 'heading t)))
-                                                    :from aj-org-inbox-file
-                                                    :where '(level 1)))
-                                                (org-ql-search `(,aj-org-inbox-file)
-                                                  '(level 1)
-                                                  :title "Inbox"
-                                                  :sort '(date)))
-                                               ;; show all stucked "PROJECT" if any
+
+                                               ;; Scheduled for today but without "HH:MM" is a reminder
+                                               ;; that needs to be addressed
+                                               ((let* ((today (format-time-string "%F" (current-time)))
+                                                       (space " ")
+                                                       (start (concat today space "00:01"))
+                                                       (end (concat today space "23:59"))
+                                                       (scheduled-today (org-ql-query
+                                                                          :select #'org-get-heading
+                                                                          :from (org-agenda-files)
+                                                                          :where '(and (ts-active :on today)
+                                                                                       (not (habit)))))
+                                                       (scheduled-today-hm (org-ql-query
+                                                                             :select #'org-get-heading
+                                                                             :from (org-agenda-files)
+                                                                             :where `(and (ts-active :from ,start :to ,end)
+                                                                                          (not (habit)))))
+                                                       (scheduled-today-without-hm (seq-filter
+                                                                                    (lambda (x)
+                                                                                      (not (member x scheduled-today-hm)))
+                                                                                    scheduled-today)))
+                                                  (when scheduled-today-without-hm t))
+                                                (let ((org-agenda-start-with-log-mode t)
+                                                      (org-agenda-span 1)
+                                                      (org-agenda-start-day nil)
+                                                      (org-agenda-use-time-grid t)
+                                                      (org-agenda-time-grid '((daily today require-timed)
+                                                                              (700 800 900 1000 1100 1200
+                                                                                   1300 1400 1500 1600 1700
+                                                                                   1800 1900 2000 2100)
+                                                                              "......" "----------------")))
+                                                  (org-agenda nil "a")))
+
+                                               ;; Show Inbox when it is not empty
+                                               ;; every time it isn't empty
+                                               ;; ((catch 'heading
+                                               ;;    (org-ql-query
+                                               ;;      :select (lambda ()
+                                               ;;                (when (org-get-heading)
+                                               ;;                  (throw 'heading t)))
+                                               ;;      :from aj-org-inbox-file
+                                               ;;      :where '(level 1)))
+                                               ;;  (org-ql-search `(,aj-org-inbox-file)
+                                               ;;    '(level 1)
+                                               ;;    :title "Inbox"
+                                               ;;    :sort '(date)))
+
+                                               ;; Show stucked projects
                                                ((catch 'heading
                                                   (org-ql-query
                                                     :select (lambda ()
@@ -711,6 +750,7 @@ which one is currently active."
   ("l" (let ((org-agenda-start-with-log-mode t)
              (org-agenda-span 1)
              (org-agenda-start-day nil)
+             (org-agenda-use-time-grid t)
              )
          (org-agenda nil "a")) "log")
 
