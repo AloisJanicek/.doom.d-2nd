@@ -88,9 +88,7 @@
        docker
        editorconfig
        ;;ein
-       (eval
-        +overlay
-        )
+       eval
        gist
        (lookup
         +devdocs
