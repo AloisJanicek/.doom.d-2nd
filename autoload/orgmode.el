@@ -1208,120 +1208,58 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
               (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
-(defun my-doom--org-headings (files &optional depth include-files)
-  "Search FILES for headings.
-Only include headings with todo keyword and do not apply
-doom's org buffer magic."
-  (require 'org)
-  (let* ((default-directory doom-docs-dir)
-         (depth (if (integerp depth) depth)))
-    (message "Loading search results...")
-    (unwind-protect
-        (delq
-         nil
-         (org-map-entries
-          (lambda ()
-            (cl-destructuring-bind (level _reduced-level todo _priority text tags)
-                (org-heading-components)
-              (when (and (or (null depth)
-                             (<= level depth))
-                         (or (null tags)
-                             (not (string-match-p ":TOC" tags)))
-                         todo)
-                (let ((path (org-get-outline-path)))
-                  (list
-                   (string-join
-                    (list
-                     (string-join
-                      (append (when include-files
-                                (list
-                                 todo
-                                 (or (+org-get-global-property "TITLE")
-                                     (file-relative-name (buffer-file-name)))))
-                              path
-                              (list
-
-                               (replace-regexp-in-string org-link-any-re "\\4" text)))
-                      " > ")
-                     tags)
-                    " ")
-                   (buffer-file-name)
-                   (point))))))
-          t 'agenda)))))
-
-;;;###autoload
-(defun aj/org-notes-headlines (&optional input)
+(defun aj/org-agenda-headlines (&optional keyword)
   "Jump to an task Org headline in `org-agenda-files'.
-Optionally search with INPUT"
+Optionally search for specific Todo KEYWORD."
   (interactive)
-  (aj-doom-completing-read-org-headings
-   "Jump to org headline: " org-agenda-files 6 t input))
-
-;;;###autoload
-(defun aj-doom-completing-read-org-headings (prompt files &optional depth include-files initial-input extra-candidates)
-  "Read PROMPT and visit org-heading filtered from FILES.
-"
-  (let ((alist
-         (append (my-doom--org-headings files depth include-files)
-                 extra-candidates))
-        ivy-sort-functions-alist)
-    (if-let (result (completing-read prompt alist nil nil initial-input))
-        (cl-destructuring-bind (file &optional location)
-            (cdr (assoc result alist))
-          (find-file file)
-          (widen)
-          (cond ((functionp location)
-                 (funcall location))
-                (location
-                 (goto-char location)))
-          (save-excursion
-            (outline-show-branches)
-            (org-narrow-to-subtree)
-            (org-show-entry)))
-      (user-error "Aborted"))))
+  (let ((todo-keyword (or keyword (concat "TO" "DO"))))
+    (ivy-read "Go to: " (org-ql-query
+                          :select (lambda ()
+                                    (cons (org-get-heading) (cons (current-buffer) (point))))
+                          :from (org-agenda-files)
+                          :where `(todo ,todo-keyword))
+              :action (lambda (x)
+                        (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
+                        (widen)
+                        (goto-char (cdr (cdr x)))
+                        (org-show-subtree)
+                        (org-narrow-to-subtree))
+              :caller 'aj/org-agenda-headlines)))
 
 ;;;###autoload
 (defun aj-org-jump-to-headline-at (directory level)
-  "Jump to headline in org files from DIRECTORY.
-Specify depth of the search with LEVEL."
-  (aj-doom-completing-read-org-headings
-   "Jump to org headline: " directory level t))
-
-;; Need this autoload
-;;;###autoload
-(defun doom--org-headings (files &optional depth include-files)
-  (require 'org)
-  (let* ((default-directory doom-docs-dir)
-         (org-agenda-files (mapcar #'expand-file-name (doom-enlist files)))
-         (depth (if (integerp depth) depth)))
-    (message "Loading search results...")
-    (unwind-protect
-        (delq
-         nil
-         (org-map-entries
-          (lambda ()
-            (cl-destructuring-bind (level _reduced-level _todo _priority text tags)
-                (org-heading-components)
-              (when (and (or (null depth)
-                             (<= level depth))
-                         (or (null tags)
-                             (not (string-match-p ":TOC" tags))))
-                (let ((path (org-get-outline-path)))
-                  (list (string-join
-                         (list (string-join
-                                (append (when include-files
-                                          (list (or (+org-get-global-property "TITLE")
-                                                    (file-relative-name (buffer-file-name)))))
-                                        path
-                                        (list (replace-regexp-in-string org-link-any-re "\\4" text)))
-                                " > ")
-                               tags)
-                         " ")
-                        (buffer-file-name)
-                        (point))))))
-          t 'agenda))
-      (mapc #'kill-buffer org-agenda-new-buffers)
-      (setq org-agenda-new-buffers nil))))
+  "Jump to org mode heading.
+Optionally specify DIRECTORY."
+  (interactive)
+  (let ((files
+         (if (listp directory)
+             directory
+           (if (file-directory-p directory)
+               (directory-files-recursively directory org-agenda-file-regexp)
+             (aj-get-all-org-files))))
+        (level (or level 3))
+        ivy-sort-functions-alist)
+    (ivy-read "Go to: " (org-ql-query
+                          :select (lambda ()
+                                    (let* ((path (org-get-outline-path))
+                                           (heading (org-get-heading))
+                                           (heading-text (substring-no-properties heading))
+                                           (filename (string-remove-suffix ".org" (file-relative-name (buffer-file-name))))
+                                           (full-path (concat filename
+                                                              (when path (concat " > " (mapconcat #'identity path " > ")))
+                                                              " > "
+                                                              heading-text
+                                                              )))
+                                      (cons full-path (cons (current-buffer) (point)))))
+                          :from files
+                          :where `(level <= ,level))
+              :action (lambda (x)
+                        (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
+                        (widen)
+                        (goto-char (cdr (cdr x)))
+                        (org-show-subtree)
+                        (org-narrow-to-subtree))
+              :caller 'aj/org-heading-jump)))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
