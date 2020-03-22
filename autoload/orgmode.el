@@ -1259,7 +1259,9 @@ Optionally specify heading LEVEL. Default is 3.
        :select (lambda ()
                  (let* ((path (org-get-outline-path))
                         (heading (org-get-heading))
-                        (heading-text (substring-no-properties heading))
+                        (heading-text
+                         (org-link-display-format
+                          (substring-no-properties heading)))
                         (filename (string-remove-suffix ".org" (file-relative-name (buffer-file-name))))
                         (full-path (concat filename
                                            (when path (concat " > " (mapconcat #'identity path " > ")))
