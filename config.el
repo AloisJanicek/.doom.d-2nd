@@ -1063,6 +1063,12 @@ if running under WSL")
 
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
 
+(advice-add #'+default/org-notes-search :around #'aj-org-open-file-respect-sanity-a)
+(advice-add #'+default/org-notes-search :around #'aj-org-buffer-to-popup-a)
+(advice-add #'+default/org-notes-search :after (lambda (&rest _)
+                                                 "Narrow view after switching."
+                                                 (interactive)
+                                                 (org-narrow-to-subtree)))
 (advice-add #'aj/org-agenda-headlines :around #'aj-org-buffer-to-popup-a)
 
 (load! "+bindings")
