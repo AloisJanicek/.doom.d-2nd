@@ -418,17 +418,44 @@ After selecting headline from the menu, visibility
 of the document is restricted to the selected headline
 and all its children are revealed."
   (interactive)
-  (progn
-    (widen)
-    (search-forward "*")
-    (org-set-visibility-according-to-property)
-    (outline-show-branches)
-    (counsel-outline)
-    (outline-show-branches)
-    (outline-show-entry)
-    (org-narrow-to-subtree)
-    )
-  )
+  (when (eq major-mode 'org-mode)
+    (with-current-buffer (current-buffer)
+      (let* ((menu
+              (lambda ()
+                (ivy-read
+                 "Go to: "
+                 (org-ql-query
+                   :select (lambda ()
+                             (let* ((heading (org-heading-components))
+                                    (text
+                                     (org-link-display-format (nth 4 heading)))
+                                    (level (nth 0 heading))
+                                    (path (org-get-outline-path))
+                                    (depth (length path))
+                                    (i 0))
+                               (put-text-property 0 (length text) 'face (format "outline-%d" level) text)
+                               (cons (if path
+                                         (progn
+                                           (while (< i depth)
+                                             (let ((ancestor (nth i path)))
+                                               (put-text-property 0 (length ancestor) 'face (format "outline-%d" (+ i 1)) ancestor))
+                                             (setq i (+ i 1)))
+                                           (concat (mapconcat #'identity path "/") "/" text))
+                                       text)
+                                     (point))))
+                   :from (current-buffer)
+                   :where '(level <= 9))
+                 :action (lambda (x)
+                           (goto-char (cdr x))))))
+             ivy-sort-functions-alist)
+
+        (widen)
+        (point-min)
+        (search-forward "* ")
+        (funcall menu)
+        (org-show-children)
+        (org-show-entry)
+        (org-narrow-to-subtree)))))
 
 ;;;###autoload
 (defun my-transform-square-brackets-to-round-ones (string-to-transform)
