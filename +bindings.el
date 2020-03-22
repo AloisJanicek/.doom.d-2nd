@@ -189,6 +189,7 @@
 
    "l" nil
    (:prefix ("l" . "link")
+     :desc "follow"           "f" #'link-hint-open-link
      :desc "headline"         "h" #'aj/org-insert-link-into-heading
      :desc "insert"           "i" #'org-insert-link
      :desc "list"             "l" #'aj/org-insert-link-into-list-item
@@ -758,9 +759,8 @@
       (:prefix ("l" . "link")
         :desc "open all links"           "a" #'link-hint-open-all-links
         :desc "copy"                     "c" #'link-hint-copy-link
-        :desc "org-copy-link"            "c" #'my/org-retrieve-url-from-point
         :desc "copy all links"           "C" #'link-hint-copy-all-links
-        :desc "open"                     "f" #'link-hint-open-link
+        :desc "follow"                   "f" #'link-hint-open-link
         :desc "org-store-link"           "s" #'org-store-link
         )
 
