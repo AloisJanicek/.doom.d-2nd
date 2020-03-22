@@ -1212,12 +1212,15 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
   "Jump to task headline in `org-agenda-files'.
 Optionally search for specific Todo KEYWORD."
   (interactive)
-  (let ((todo-keyword (or keyword (concat "TO" "DO"))))
+  (let* ((todo-concat (concat "TO" "DO"))
+         (query (if keyword
+                    `(todo ,keyword)
+                  `(todo ,todo-concat "NEXT" "WAIT" "PROJECT"))))
     (ivy-read "Go to: " (org-ql-query
                           :select (lambda ()
                                     (cons (org-get-heading) (cons (current-buffer) (point))))
                           :from (org-agenda-files)
-                          :where `(todo ,todo-keyword))
+                          :where query)
               :action (lambda (x)
                         (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
                         (widen)
