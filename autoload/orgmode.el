@@ -1210,12 +1210,22 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
 ;;;###autoload
 (defun aj/org-agenda-headlines (&optional keyword)
   "Jump to task headline in `org-agenda-files'.
-Optionally search for specific Todo KEYWORD."
+Optionally search for specific Todo KEYWORD.
+Filters headlines according to `aj-org-agenda-filter'.
+"
   (interactive)
   (let* ((todo-concat (concat "TO" "DO"))
+         (tag-filter
+          (when aj-org-agenda-filter
+            (string-remove-prefix "+"(car aj-org-agenda-filter))))
          (query (if keyword
-                    `(todo ,keyword)
-                  `(todo ,todo-concat "NEXT" "WAIT" "PROJECT"))))
+                    `(and (todo ,keyword)
+                          (if tag-filter
+                              (tags tag-filter) t))
+                  `(and (todo ,todo-concat "NEXT" "WAIT" "PROJECT")
+                        (if tag-filter
+                            (tags tag-filter) t))))
+         ivy-sort-functions-alist)
     (ivy-read "Go to: " (org-ql-query
                           :select (lambda ()
                                     (cons (org-get-heading) (cons (current-buffer) (point))))
