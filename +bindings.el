@@ -68,6 +68,13 @@
    :ne "k" #'flycheck-error-list-previous-error
    )
 
+ (:after flyspell
+   :map flyspell-mouse-map
+   "RET"    nil
+   [return] nil
+   [mouse-1] nil
+   )
+
  (:after inferior-python
    :map inferior-python-mode-map
    :ienv "C-l" #'evil-window-up
