@@ -770,16 +770,16 @@
         :desc "indirect"           "i" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
                                             (buffer-file-name (current-buffer))))
         :desc "IDs"                "I" #'aj/org-id-update-recursively
-        :desc "notes"              "n" (λ! (aj-org-find-file aj-org-technical-dir))
-        :desc "notes headlines"    "N" (λ! (aj-org-jump-to-headline-at aj-org-technical-dir 3))
+        :desc "notes"              "N" (λ! (aj-org-find-file aj-org-technical-dir))
+        :desc "notes headlines"    "n" (λ! (aj-org-jump-to-headline-at aj-org-technical-dir 3))
         :desc "org-dir"            "o" (λ! (aj-org-find-file org-directory))
-        :desc "personal"           "p" (λ! (aj-org-find-file aj-org-personal-dir))
-        :desc "personal headlines" "P" (λ! (aj-org-jump-to-headline-at aj-org-personal-dir 3))
+        :desc "personal"           "P" (λ! (aj-org-find-file aj-org-personal-dir))
+        :desc "personal headlines" "p" (λ! (aj-org-jump-to-headline-at aj-org-personal-dir 3))
         :desc "query"              "q" #'org-ql-search
         :desc "private files"      "r" (λ! (aj-org-find-file aj-org-private-dir))
         :desc "private headlines"  "R" (λ! (aj-org-jump-to-headline-at aj-org-private-dir 3))
         :desc "headlines all"      "s" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 3))
-        :desc "headlines all DEEP" "S" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 5))
+        :desc "headlines all DEEP" "S" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 9))
         :desc "sparse tree"        "t" #'org-ql-sparse-tree
         :desc "visualize"          "v" #'org-brain-visualize
         :desc "PRVT"               "x" #'aj/private-refile/body
