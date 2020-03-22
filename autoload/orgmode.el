@@ -1209,7 +1209,7 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
 
 ;;;###autoload
 (defun aj/org-agenda-headlines (&optional keyword)
-  "Jump to an task Org headline in `org-agenda-files'.
+  "Jump to task headline in `org-agenda-files'.
 Optionally search for specific Todo KEYWORD."
   (interactive)
   (let ((todo-keyword (or keyword (concat "TO" "DO"))))
@@ -1227,39 +1227,40 @@ Optionally search for specific Todo KEYWORD."
               :caller 'aj/org-agenda-headlines)))
 
 ;;;###autoload
-(defun aj-org-jump-to-headline-at (directory level)
-  "Jump to org mode heading.
-Optionally specify DIRECTORY."
-  (interactive)
+(defun aj-org-jump-to-headline-at (list-or-dir &optional level)
+  "Jump to org mode heading of any file of LIST-OR-DIR.
+LIST-OR-DIR can be either list of files or directory path.
+Optionally specify heading LEVEL. Default is 3.
+"
   (let ((files
-         (if (listp directory)
-             directory
-           (if (file-directory-p directory)
-               (directory-files-recursively directory org-agenda-file-regexp)
+         (if (listp list-or-dir)
+             list-or-dir
+           (if (file-directory-p list-or-dir)
+               (directory-files-recursively list-or-dir org-agenda-file-regexp)
              (aj-get-all-org-files))))
         (level (or level 3))
         ivy-sort-functions-alist)
-    (ivy-read "Go to: " (org-ql-query
-                          :select (lambda ()
-                                    (let* ((path (org-get-outline-path))
-                                           (heading (org-get-heading))
-                                           (heading-text (substring-no-properties heading))
-                                           (filename (string-remove-suffix ".org" (file-relative-name (buffer-file-name))))
-                                           (full-path (concat filename
-                                                              (when path (concat " > " (mapconcat #'identity path " > ")))
-                                                              " > "
-                                                              heading-text
-                                                              )))
-                                      (cons full-path (cons (current-buffer) (point)))))
-                          :from files
-                          :where `(level <= ,level))
-              :action (lambda (x)
-                        (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
-                        (widen)
-                        (goto-char (cdr (cdr x)))
-                        (org-show-subtree)
-                        (org-narrow-to-subtree))
-              :caller 'aj/org-heading-jump)))
+    (ivy-read
+     "Go to: "
+     (org-ql-query
+       :select (lambda ()
+                 (let* ((path (org-get-outline-path))
+                        (heading (org-get-heading))
+                        (heading-text (substring-no-properties heading))
+                        (filename (string-remove-suffix ".org" (file-relative-name (buffer-file-name))))
+                        (full-path (concat filename
+                                           (when path (concat " > " (mapconcat #'identity path " > ")))
+                                           " > " heading-text)))
+                   (cons full-path (cons (current-buffer) (point)))))
+       :from files
+       :where `(level <= ,level))
+     :action (lambda (x)
+               (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
+               (widen)
+               (goto-char (cdr (cdr x)))
+               (org-show-subtree)
+               (org-narrow-to-subtree))
+     :caller 'aj/org-heading-jump)))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
