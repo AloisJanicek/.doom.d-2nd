@@ -1039,7 +1039,11 @@ if running under WSL")
 (use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)
   :config
-  (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t))
+  (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t)
+  (when (featurep! :editor evil)
+    (add-hook #'sdcv-mode-hook (lambda ()
+                                 (evil-set-initial-state 'sdcv-mode 'motion))))
+  )
 
 (use-package! systemd
   :commands (systemd-mode))

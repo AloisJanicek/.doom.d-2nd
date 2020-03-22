@@ -473,6 +473,28 @@
    "C-l"  #'evil-window-right
    )
 
+ (:after sdcv
+   :map sdcv-mode-map
+   :m "C-n" #'sdcv-next-dictionary
+   :m "C-p" #'sdcv-previous-dictionary
+   :m "." #'sdcv-search-pointer
+   :m "A" #'outline-hide-body
+   :m "I" #'sdcv-search-input+
+   :m "J" #'sdcv-scroll-up-one-line
+   :m "K" #'sdcv-scroll-down-one-line
+   :m "P" #'sdcv-search-pointer+
+   :m "R" #'isearch-backward-regexp
+   :m "S" #'isearch-forward-regexp
+   :m "V" #'hide-entry
+   :m "a" #'outline-show-all
+   :m "i" #'sdcv-search-input
+   :m "j" #'sdcv-next-line
+   :m "k" #'sdcv-prev-line
+   :m "q" #'evil-quit
+   :m "r" #'isearch-backward
+   :m "s" #'isearch-forward
+   :m "v" #'show-entry
+   )
  (:after term
    :map term-raw-map
    :i "C-h" #'evil-window-left
