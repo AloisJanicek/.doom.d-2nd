@@ -425,24 +425,7 @@ and all its children are revealed."
                 (ivy-read
                  "Go to: "
                  (org-ql-query
-                   :select (lambda ()
-                             (let* ((heading (org-heading-components))
-                                    (text
-                                     (org-link-display-format (nth 4 heading)))
-                                    (level (nth 0 heading))
-                                    (path (org-get-outline-path))
-                                    (depth (length path))
-                                    (i 0))
-                               (put-text-property 0 (length text) 'face (format "outline-%d" level) text)
-                               (cons (if path
-                                         (progn
-                                           (while (< i depth)
-                                             (let ((ancestor (nth i path)))
-                                               (put-text-property 0 (length ancestor) 'face (format "outline-%d" (+ i 1)) ancestor))
-                                             (setq i (+ i 1)))
-                                           (concat (mapconcat #'identity path "/") "/" text))
-                                       text)
-                                     (point))))
+                   :select #'aj-org-get-pretty-heading-path
                    :from (current-buffer)
                    :where '(level <= 9))
                  :action (lambda (x)
@@ -1284,16 +1267,7 @@ Optionally specify heading LEVEL. Default is 3.
      "Go to: "
      (org-ql-query
        :select (lambda ()
-                 (let* ((path (org-get-outline-path))
-                        (heading (org-get-heading))
-                        (heading-text
-                         (org-link-display-format
-                          (substring-no-properties heading)))
-                        (filename (string-remove-suffix ".org" (file-relative-name (buffer-file-name))))
-                        (full-path (concat filename
-                                           (when path (concat " > " (mapconcat #'identity path " > ")))
-                                           " > " heading-text)))
-                   (cons full-path (cons (current-buffer) (point)))))
+                 (aj-org-get-pretty-heading-path t))
        :from files
        :where `(level <= ,level))
      :action (lambda (x)
@@ -1303,6 +1277,41 @@ Optionally specify heading LEVEL. Default is 3.
                (org-show-subtree)
                (org-narrow-to-subtree))
      :caller 'aj/org-heading-jump)))
+
+;;;###autoload
+(defun aj-org-get-pretty-heading-path (&optional filename)
+  "Get nice org heading path.
+Heading is stripped of org-mode link syntax and whole
+path is colorized according to outline faces.
+When FILENAME is non-nil, include file name in the path."
+  (let* ((heading (org-heading-components))
+         (text
+          (org-link-display-format (nth 4 heading)))
+         (path (org-get-outline-path))
+         (depth (length path))
+         (level (nth 0 heading))
+         (filename
+          (when filename
+            (string-remove-suffix ".org" (file-relative-name (buffer-file-name)))))
+         (i 0))
+    (put-text-property 0 (length text) 'face (format "outline-%d" level) text)
+    (when filename
+      (put-text-property 0 (length filename) 'face 'bold filename))
+    (cons
+     (if path
+         (progn
+           (while (< i depth)
+             (let ((ancestor (nth i path)))
+               (put-text-property 0 (length ancestor) 'face (format "outline-%d" (+ i 1)) ancestor))
+             (setq i (+ i 1)))
+           (concat
+            (when filename (concat filename "/"))
+            (mapconcat #'identity path "/") "/" text))
+       (concat
+        (when filename (concat filename "/")) text))
+     (if filename
+         (cons (current-buffer) (point))
+       (point)))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
