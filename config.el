@@ -1059,6 +1059,8 @@ if running under WSL")
 
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
 
+(advice-add #'aj/org-agenda-headlines :around #'aj-org-buffer-to-popup-a)
+
 (load! "+bindings")
 (load! "+local")
 
