@@ -265,6 +265,10 @@ if running under WSL")
    #'ivy-yasnippet
    '(("e" aj-ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own"))))
 
+(after! ivy-prescient
+  (add-to-list 'ivy-prescient-sort-commands 'counsel-outline t)
+  )
+
 (after! (:any js-mode js2-mode rjsx-mode web-mode)
   (set-docsets! '(js2-mode rjsx-mode)
     "JavaScript" "Angular" "Bootstrap_4" "jQuery" "NodeJS" "React" "VueJS"))
