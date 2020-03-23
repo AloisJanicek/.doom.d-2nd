@@ -204,14 +204,15 @@ Copy snippet TEMPLATE-NAME into new snippet."
   "Select book from Calibre database at LIBRARY-PATH.
 Offer user to choose file format if there is more of them and open it.
 Requires esqlite."
-  (ivy-read "Books: "
-            (mapcar (lambda (member)
-                      (concat (nth 1 member) ": " (nth 0 member)))
-                    (esqlite-read (expand-file-name "metadata.db" library-path) "SELECT title,id FROM books"))
-            :action (lambda (x)
-                      (let ((book-path (aj-get-calibre-book-path x library-path)))
-                        (kill-new book-path)
-                        (find-file book-path)))))
+  (let (ivy-sort-functions-alist)
+    (ivy-read "Books: "
+              (mapcar (lambda (member)
+                        (concat (nth 1 member) ": " (nth 0 member)))
+                      (esqlite-read (expand-file-name "metadata.db" library-path) "SELECT title,id FROM books"))
+              :action (lambda (x)
+                        (let ((book-path (aj-get-calibre-book-path x library-path)))
+                          (kill-new book-path)
+                          (find-file book-path))))))
 
 ;;;###autoload
 (defun aj-get-calibre-book-path (x library-path)
