@@ -1039,6 +1039,7 @@ if running under WSL")
 (use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)
   :config
+  (setq sdcv-dictionary-simple-list '("WordNet"))
   (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t)
   (when (featurep! :editor evil)
     (add-hook #'sdcv-mode-hook (lambda ()
