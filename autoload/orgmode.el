@@ -1199,39 +1199,44 @@ Filters todo headlines according to `aj-org-agenda-filter'.
                           (if tag-filter
                               (tags tag-filter) t))
                   `(todo)))
+         (headings
+          (lambda ()
+            (let* ((heading (org-heading-components))
+                   (text (nth 4 heading))
+                   (keyword (nth 2 heading))
+                   (colorize-heading (lambda (face)
+                                       (put-text-property 0 (length text) 'face face text)))
+                   (colorize-keyword (lambda (color)
+                                       (add-face-text-property 0 (length keyword) 'bold t keyword)
+                                       (add-face-text-property 0 (length keyword) `(:foreground ,color) t keyword))))
+
+              (if (string-match (concat "TO" "DO" "\\|PROJECT\\|NEXT") keyword)
+                  (funcall colorize-heading 'outline-1)
+                (funcall colorize-heading 'bold))
+
+              (funcall colorize-keyword (catch 'color
+                                          (dolist (i org-todo-keyword-faces)
+                                            (when (equal (car i) keyword)
+                                              (throw 'color (cdr i))))))
+
+              (cons (concat keyword " " text)
+                    (cons (current-buffer) (point))))))
          ivy-sort-functions-alist)
+
     (ivy-read "Go to: " (org-ql-query
-                          :select (lambda ()
-                                    (let* ((heading (org-heading-components))
-                                           (text (nth 4 heading))
-                                           (keyword (nth 2 heading))
-                                           (colorize-heading (lambda (face)
-                                                               (put-text-property 0 (length text) 'face face text)))
-                                           (colorize-keyword (lambda (color)
-                                                               (add-face-text-property 0 (length keyword) 'bold t keyword)
-                                                               (add-face-text-property 0 (length keyword) `(:foreground ,color) t keyword))))
-
-                                      (if (string-match (concat "TO" "DO" "\\|PROJECT\\|NEXT") keyword)
-                                          (funcall colorize-heading 'outline-1)
-                                        (funcall colorize-heading 'bold))
-
-                                      (funcall colorize-keyword (catch 'color
-                                                                  (dolist (i org-todo-keyword-faces)
-                                                                    (when (equal (car i) keyword)
-                                                                      (throw 'color (cdr i))))))
-
-                                      (cons (concat keyword " " text)
-                                            (cons (current-buffer) (point)))))
-
+                          :select headings
                           :from (org-agenda-files)
                           :where query)
-              :action (lambda (x)
-                        (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
-                        (widen)
-                        (goto-char (cdr (cdr x)))
-                        (org-show-subtree)
-                        (org-narrow-to-subtree))
+              :action #'aj-org-jump-to-heading-action
               :caller 'aj/org-agenda-headlines)))
+
+;;;###autoload
+(defun aj-org-jump-to-heading-action (x)
+  (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
+  (widen)
+  (goto-char (cdr (cdr x)))
+  (org-show-subtree)
+  (org-narrow-to-subtree))
 
 ;;;###autoload
 (defun aj-org-jump-to-headline-at (list-or-dir &optional level)
@@ -1246,20 +1251,16 @@ Optionally specify heading LEVEL. Default is 3.
                (directory-files-recursively list-or-dir org-agenda-file-regexp)
              (aj-get-all-org-files))))
         (level (or level 3))
+        (headings (lambda ()
+                    (aj-org-get-pretty-heading-path t)))
         ivy-sort-functions-alist)
     (ivy-read
      "Go to: "
      (org-ql-query
-       :select (lambda ()
-                 (aj-org-get-pretty-heading-path t))
+       :select headings
        :from files
        :where `(level <= ,level))
-     :action (lambda (x)
-               (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
-               (widen)
-               (goto-char (cdr (cdr x)))
-               (org-show-subtree)
-               (org-narrow-to-subtree))
+     :action #'aj-org-jump-to-heading-action
      :caller 'aj/org-heading-jump)))
 
 ;;;###autoload
