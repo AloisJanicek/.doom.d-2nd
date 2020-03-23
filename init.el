@@ -88,7 +88,9 @@
        docker
        editorconfig
        ;;ein
-       eval
+       (eval
+        +overlay
+        )
        gist
        (lookup
         +devdocs
@@ -145,7 +147,10 @@
        (php +lsp)
        ;;plantuml
        ;;purescript
-       (python +lsp)
+       (python
+       ;;+lsp
+       ;;+conda
+        )
        ;;qt
        racket
                                         ; rest
