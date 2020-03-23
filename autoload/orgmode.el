@@ -1199,7 +1199,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
                           (if tag-filter
                               (tags tag-filter) t))
                   `(todo)))
-         (headings
+         (pretty-heading
           (lambda ()
             (let* ((heading (org-heading-components))
                    (text (nth 4 heading))
@@ -1224,7 +1224,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
          ivy-sort-functions-alist)
 
     (ivy-read "Go to: " (org-ql-query
-                          :select headings
+                          :select pretty-heading
                           :from (org-agenda-files)
                           :where query)
               :action #'aj-org-jump-to-heading-action
@@ -1232,6 +1232,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
 
 ;;;###autoload
 (defun aj-org-jump-to-heading-action (x)
+  "Jump to heading X and narrow view after showing sub-tree."
   (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
   (widen)
   (goto-char (cdr (cdr x)))
