@@ -1185,27 +1185,44 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
               (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
-(defun aj/org-agenda-headlines (&optional keyword)
-  "Jump to task headline in `org-agenda-files'.
-Optionally search for specific Todo KEYWORD.
-Filters headlines according to `aj-org-agenda-filter'.
+(defun aj/org-agenda-headlines (&optional keywords)
+  "Jump to a todo headline in `org-agenda-files'.
+Optionally search for specific list of todo KEYWORDS.
+Filters todo headlines according to `aj-org-agenda-filter'.
 "
   (interactive)
-  (let* ((todo-concat (concat "TO" "DO"))
-         (tag-filter
+  (let* ((tag-filter
           (when aj-org-agenda-filter
             (string-remove-prefix "+"(car aj-org-agenda-filter))))
-         (query (if keyword
-                    `(and (todo ,keyword)
+         (query (if keywords
+                    `(and ,keywords
                           (if tag-filter
                               (tags tag-filter) t))
-                  `(and (todo ,todo-concat "NEXT" "WAIT" "PROJECT")
-                        (if tag-filter
-                            (tags tag-filter) t))))
+                  `(todo)))
          ivy-sort-functions-alist)
     (ivy-read "Go to: " (org-ql-query
                           :select (lambda ()
-                                    (cons (org-get-heading) (cons (current-buffer) (point))))
+                                    (let* ((heading (org-heading-components))
+                                           (text (nth 4 heading))
+                                           (keyword (nth 2 heading))
+                                           (colorize-heading (lambda (face)
+                                                               (put-text-property 0 (length text) 'face face text)))
+                                           (colorize-keyword (lambda (color)
+                                                               (add-face-text-property 0 (length keyword) 'bold t keyword)
+                                                               (add-face-text-property 0 (length keyword) `(:foreground ,color) t keyword))))
+
+                                      (if (string-match (concat "TO" "DO" "\\|PROJECT\\|NEXT") keyword)
+                                          (funcall colorize-heading 'outline-1)
+                                        (funcall colorize-heading 'bold))
+
+                                      (funcall colorize-keyword (catch 'color
+                                                                  (dolist (i org-todo-keyword-faces)
+                                                                    (when (equal (car i) keyword)
+                                                                      (throw 'color (cdr i))))))
+
+                                      (cons (concat keyword " " text)
+                                            (cons (current-buffer) (point)))))
+
                           :from (org-agenda-files)
                           :where query)
               :action (lambda (x)

@@ -636,9 +636,10 @@
 
         :desc "agenda"                   "A" #'org-agenda
         :desc "agenda"                   "a" #'aj/org-agenda-gtd-hydra/body
-        :desc "agenda tasks"             "h" #'aj/org-agenda-headlines
+        :desc "agenda tasks"             "h" (λ! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT")))
+        :desc "all agenda tasks"         "H" #'aj/org-agenda-headlines
         :desc "imenu-list"               "i" #'imenu-list-smart-toggle
-        :desc "NEXT agenda tasks"        "n" (λ! (aj/org-agenda-headlines "NEXT"))
+        :desc "NEXT agenda tasks"        "n" (λ! (aj/org-agenda-headlines '(todo "NEXT")))
         :desc "link"                     "o" #'link-hint-open-link
         :desc "sidebar"                  "s" #'+treemacs/toggle
         )
