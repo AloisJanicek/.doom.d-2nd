@@ -962,6 +962,7 @@ if running under WSL")
   (add-hook 'nov-mode-hook (lambda ()
                              "Setup nov-mode to my liking."
                              (visual-line-mode)
+                             (solaire-mode)
                              (visual-fill-column-mode)
                              (hide-mode-line-mode)
                              (doom-mark-buffer-as-real-h)
