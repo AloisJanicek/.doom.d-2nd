@@ -1061,8 +1061,6 @@ If either `org-pomodoro' or org-clock aren't active, print \"No Active Task \""
           ((equal :short-break org-pomodoro-state) "Short Break")
           ((equal :long-break org-pomodoro-state) "Long Break"))))
 
-;; URL
-
 ;; ORG LINKS
 ;;;###autoload
 (defun aj-org-calibre-follow (link)
@@ -1296,6 +1294,16 @@ When FILENAME is non-nil, include file name in the path."
      (if filename
          (cons (current-buffer) (point))
        (point)))))
+
+;;;###autoload
+(defun aj/org-notes-search-no-link ()
+  "Remove org link syntax from grep search results."
+  (interactive)
+  (let ((orig-fun (symbol-function 'counsel-git-grep-transformer)))
+    (cl-letf (((symbol-function 'counsel-git-grep-transformer)
+               (lambda (str)
+                 (funcall orig-fun (org-link-display-format str)))))
+      (counsel-rg nil org-directory))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
