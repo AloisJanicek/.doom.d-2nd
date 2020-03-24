@@ -604,7 +604,8 @@ This also works with indirect buffers and symbolic links."
 (defun aj-org-agenda-copy-set-filter-a (string &rest _)
   "Set `STRING' as a value of `aj-org-agenda-filter'.
 This function is meant to be used as advice for `org-agenda-filter-apply'"
-  (setq aj-org-agenda-filter string))
+  (setq aj-org-agenda-filter string)
+  (setq org-ql-cache (make-hash-table :weakness 'key)))
 
 ;;;###autoload
 (defun aj/org-agenda-clear-filter-refresh-view ()
@@ -615,6 +616,7 @@ On top of this refresh view."
   (progn
     (org-agenda-filter-show-all-tag)
     (setq aj-org-agenda-filter nil)
+    (setq org-ql-cache (make-hash-table :weakness 'key))
     (if (string-match "Org QL" (buffer-name))
         (org-ql-view-refresh)
       (org-agenda-redo))))
