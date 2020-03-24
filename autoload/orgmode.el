@@ -1296,14 +1296,18 @@ When FILENAME is non-nil, include file name in the path."
        (point)))))
 
 ;;;###autoload
-(defun aj/org-notes-search-no-link ()
+(defun aj/org-notes-search-no-link (&optional directory)
   "Remove org link syntax from grep search results."
   (interactive)
-  (let ((orig-fun (symbol-function 'counsel-git-grep-transformer)))
+  (let ((orig-fun (symbol-function 'counsel-git-grep-transformer))
+        (dir (or directory
+                 (read-directory-name "Search directory: " org-directory)))
+        (counsel-rg-base-command
+         "rg -M 300 --no-heading --line-number --color never %s"))
     (cl-letf (((symbol-function 'counsel-git-grep-transformer)
                (lambda (str)
                  (funcall orig-fun (org-link-display-format str)))))
-      (counsel-rg nil org-directory))))
+      (counsel-rg nil dir))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

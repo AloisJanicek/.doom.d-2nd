@@ -799,7 +799,8 @@
 
       (:prefix ("n" . "notes")
         :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp))
-        :desc "grep"               "g" #'aj/org-notes-search-no-link
+        :desc "grep"               "g" (λ! (aj/org-notes-search-no-link aj-org-technical-dir))
+        :desc "grep dir"           "G" #'aj/org-notes-search-no-link
         :desc "indirect"           "i" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
                                             (buffer-file-name (current-buffer))))
         :desc "IDs"                "I" #'aj/org-id-update-recursively
