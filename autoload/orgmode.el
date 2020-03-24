@@ -1192,8 +1192,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
 "
   (interactive)
   (let* ((tag-filter
-          (when aj-org-agenda-filter
-            (string-remove-prefix "+"(car aj-org-agenda-filter))))
+          (string-remove-prefix "+" (car aj-org-agenda-filter)))
          (query (if keywords
                     `(and ,keywords
                           (if tag-filter
