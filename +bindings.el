@@ -734,7 +734,10 @@
         :desc "dash docset"              "/" #'counsel-dash
         :desc "helpful-symbol"           "." (lambda ()
                                                (interactive)
-                                               (if (eq major-mode 'emacs-lisp-mode)
+                                               (if (or (eq major-mode 'emacs-lisp-mode)
+                                                       (eq major-mode 'helpful-mode)
+                                                       (eq major-mode 'help-mode)
+                                                       (eq major-mode 'debugger-mode))
                                                    (helpful-at-point)
                                                  (counsel-dash-at-point)))
         :desc "eaf browser buffers"     "," #'aj/eaf-browser-pop-buffers
