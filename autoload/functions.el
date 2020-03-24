@@ -202,7 +202,7 @@ Copy snippet TEMPLATE-NAME into new snippet."
 ;;;###autoload
 (defun aj-open-calibre-book (library-path)
   "Select book from Calibre database at LIBRARY-PATH.
-Offer user to choose file format if there is more of them and open it.
+Prompt user if there is more then one file format for selected book.
 Requires esqlite."
   (let (ivy-sort-functions-alist)
     (ivy-read "Books: "
