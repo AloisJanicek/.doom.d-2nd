@@ -271,8 +271,7 @@ If HEADLINE, capture under it instead of top level."
   ("c" (let ((hydra-hint-display-type 'message))
          (aj/org-capture-under-clock/body)) "clock:")
   ("y" (progn
-         (when (not (featurep 'yankpad))
-           (require 'yankpad))
+         (require 'yankpad)
          (aj-org-capture-code yankpad-file
                               (ivy-read "Choose title: " nil)
                               (or (when (or (eq major-mode 'pdf-view-mode)
@@ -284,8 +283,7 @@ If HEADLINE, capture under it instead of top level."
                                                 :where '(level 1))))
                                   (prin1-to-string major-mode)))) "yankpad" )
   ("Y" (progn
-         (when (not (featurep 'yankpad))
-           (require 'yankpad))
+         (require 'yankpad)
          (aj-org-capture-code yankpad-file
                               (ivy-read "Choose title: " nil)
                               (substring-no-properties
@@ -325,7 +323,7 @@ If HEADLINE, capture under it instead of top level."
          (tag (ivy-read "Tag: " nil))
          (org-capture-templates `(("c" "calendar" entry (file ,file)
                                    ,(concat "** " title " "
-                                            (when (not (seq-empty-p tag))
+                                            (unless (seq-empty-p tag)
                                               (concat ":" tag ":"))
                                             "\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n"
                                             "<" date ">" "\n %?")
@@ -564,8 +562,7 @@ Then moves the point to the end of the line."
 (defun aj/org-brain-link-hint-and-goto ()
   "Use `ivy-avy' to open a visible link and `org-brain-goto'."
   (interactive)
-  (when (not (featurep 'link-hint))
-    (require 'link-hint))
+  (require 'link-hint)
   (avy-with link-hint-open-link
     (link-hint--one :open)
     (org-brain-goto-current)))
@@ -908,10 +905,10 @@ executing this function.
              (persp-buffer-is-there (string-match (concat "::" current-persp-name) source-buffer-name))
              (new-buffer-name (concat source-buffer-name "::" current-persp-name)))
 
-        (when (not persp-buffer-is-there)
+        (unless persp-buffer-is-there
           (persp-remove-buffer (get-buffer source-buffer)))
 
-        (when (not (get-buffer new-buffer-name))
+        (unless (get-buffer new-buffer-name)
           (make-indirect-buffer (get-buffer source-buffer) new-buffer-name t))
 
         (persp-add-buffer (get-buffer new-buffer-name))
@@ -945,7 +942,7 @@ split current window and displays `BUFFER' on the left."
                                  (let* ((mode (with-current-buffer (window-buffer win)
                                                 major-mode)))
                                    (if (eq 'org-mode mode)
-                                       (when (not from-agenda)
+                                       (unless from-agenda
                                          (throw 'org-window win)))))
                                (window-list)))))
     (if (windowp org-window)
@@ -1124,7 +1121,7 @@ Otherwise dispatch default commands.
 ;;;###autoload
 (defun nov-org-calibre-link-store ()
   (when (and (eq major-mode 'nov-mode) nov-file-name)
-    (when (not (integerp nov-documents-index))
+    (unless (integerp nov-documents-index)
       (setq nov-documents-index 0))
     (let* ((calibre (string-match aj-library-dir nov-file-name))
            (path (substring nov-file-name calibre (length nov-file-name)))
@@ -1157,7 +1154,7 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
           (find-file-other-window file))))
     (unless (eq major-mode 'nov-mode)
       (nov-mode))
-    (when (not (nov--index-valid-p nov-documents index))
+    (unless (nov--index-valid-p nov-documents index)
       (error "Invalid documents index"))
     (setq nov-documents-index index)
     (nov-render-document)

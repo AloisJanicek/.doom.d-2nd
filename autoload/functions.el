@@ -16,7 +16,7 @@ Which operation will be executed depends on value of ENCRYPT."
            (context (epg-make-context epa-protocol))
            (coding (select-safe-coding-system start end))
            (operation (if (not encrypt) "Decrypting" "Encrypting"))
-           (decoded (when (not encrypt)
+           (decoded (unless encrypt
                       (decode-coding-string
                        (epg-decrypt-string
                         context
