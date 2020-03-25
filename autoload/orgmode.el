@@ -918,8 +918,6 @@ executing this function.
         (with-current-buffer output-buffer
           (widen))
 
-        (message "Fn received %s and passed out %s" buffer-or-path new-buffer-name)
-
         (aj-get-window-for-org-buffer output-buffer)
 
         (when (string-equal return-back "back")
