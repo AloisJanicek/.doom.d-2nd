@@ -403,7 +403,7 @@
    :m  "O" (λ! (org-brain-goto
                 (org-brain-entry-at-pt)
                 (lambda (buffer)
-                  (aj-open-file-switch-create-indirect-buffer-per-persp buffer "back"))))
+                  (aj-open-file-switch-create-indirect-buffer-per-persp buffer))))
    :m  "v" #'org-brain-visualize
    :m  "q" #'org-brain-visualize-quit
    )

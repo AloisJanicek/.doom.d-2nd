@@ -892,9 +892,7 @@ Designed as an override advice for file or buffer opening functions like `pop-to
       (setq buffer-or-path (find-file-noselect buffer-or-path))))
 
   (if buffer-or-path
-      (let* ((pos (mark-marker))
-             (win (selected-window))
-             (persp-autokill-buffer-on-remove nil)
+      (let* ((persp-autokill-buffer-on-remove nil)
              (persp-suffix (concat "::" (persp-name (get-current-persp))))
              (source-buffer (or (buffer-base-buffer buffer-or-path)
                                 buffer-or-path))
