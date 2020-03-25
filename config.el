@@ -1072,11 +1072,13 @@ if running under WSL")
 (advice-add #'aj/org-notes-search-no-link :around #'aj-org-open-file-respect-sanity-a)
 (advice-add #'aj/org-notes-search-no-link :around #'aj-org-buffer-to-popup-a)
 (advice-add #'aj/org-notes-search-no-link :after (lambda (&rest _)
-                                                 "Narrow view after switching."
-                                                 (interactive)
-                                                 (org-narrow-to-subtree)))
+                                                   "Narrow view after switching."
+                                                   (interactive)
+                                                   (org-narrow-to-subtree)))
 
 (advice-add #'aj/org-agenda-headlines :around #'aj-org-buffer-to-popup-a)
+(advice-add #'aj-org-jump-to-headline-at :around #'aj-org-buffer-to-popup-a)
+
 
 (load! "+bindings")
 (load! "+local")

@@ -890,39 +890,43 @@ Designed as an override advice for file opening functions like `pop-to-buffer'.
 Optional argument RETURN-BACK returns cursor into starting position before
 executing this function.
 "
-  (if (and (stringp buffer-or-path)
-           (not (get-file-buffer buffer-or-path)))
-      (find-file-noselect buffer-or-path))
-  (if (not (eq buffer-or-path nil))
+  (unless (bufferp buffer-or-path)
+    (when (file-readable-p buffer-or-path)
+      (setq buffer-or-path (find-file-noselect buffer-or-path))))
+
+  (if buffer-or-path
       (let* ((pos (mark-marker))
              (win (selected-window))
              (persp-autokill-buffer-on-remove nil)
-             (current-persp-name (persp-name (get-current-persp)))
-             (source-buffer (if (stringp buffer-or-path)
-                                (find-buffer-visiting buffer-or-path)
-                              buffer-or-path))
+             (persp-suffix (concat "::" (persp-name (get-current-persp))))
+             (source-buffer (or (buffer-base-buffer buffer-or-path)
+                                buffer-or-path))
              (source-buffer-name (buffer-name source-buffer))
-             (persp-buffer-is-there (string-match (concat "::" current-persp-name) source-buffer-name))
-             (new-buffer-name (concat source-buffer-name "::" current-persp-name)))
+             (new-buffer-name (concat source-buffer-name persp-suffix))
+             (persp-buffer-is-there
+              (memq (get-buffer new-buffer-name)
+                    (safe-persp-buffers (get-current-persp))))
+             output-buffer)
+
+        (persp-remove-buffer source-buffer)
 
         (unless persp-buffer-is-there
-          (persp-remove-buffer (get-buffer source-buffer)))
+          (persp-add-buffer (make-indirect-buffer source-buffer new-buffer-name t)))
 
-        (unless (get-buffer new-buffer-name)
-          (make-indirect-buffer (get-buffer source-buffer) new-buffer-name t))
+        (setq output-buffer (get-buffer new-buffer-name))
 
-        (persp-add-buffer (get-buffer new-buffer-name))
-
-        (with-current-buffer (get-buffer new-buffer-name)
+        (with-current-buffer output-buffer
           (widen))
 
-        (aj-get-window-for-org-buffer new-buffer-name)
+        (message "Fn received %s and passed out %s" buffer-or-path new-buffer-name)
+
+        (aj-get-window-for-org-buffer output-buffer)
 
         (when (string-equal return-back "back")
           (select-window win)
           (goto-char pos)))
 
-    (message "%s is not valid buffer" buffer-or-path)))
+    (message "this is not buffer: %s" buffer-or-path)))
 
 ;;;###autoload
 (defun aj-get-window-for-org-buffer (buffer)
@@ -931,57 +935,61 @@ First look for available `org-mode' buffers.
 If there isn't one, select fist window which isn't current window.
 If there is only one window,
 split current window and displays `BUFFER' on the left."
-  (let* ((start-win (selected-window))
-         (start-win-name (prin1-to-string start-win))
-         (just-one (= (length (window-list)) 1))
-         (from-brain (string-match "*org-brain*" start-win-name))
-         (from-agenda (string-match "*Org QL View\\|*Org Agenda*" start-win-name))
-         (too-narrow (< (frame-width) 120))
-         (org-window (catch 'org-window
-                       (mapcar (lambda (win)
-                                 (let* ((mode (with-current-buffer (window-buffer win)
-                                                major-mode)))
-                                   (if (eq 'org-mode mode)
-                                       (unless from-agenda
-                                         (throw 'org-window win)))))
-                               (window-list)))))
-    (if (windowp org-window)
-        (progn
-          (select-window org-window t)
-          (switch-to-buffer buffer))
-      (progn
-        (when (and (or just-one from-brain) (not too-narrow))
-          (if from-brain
-              (split-window (next-window) (floor (/ (frame-width) 1.95)) 'left)
-            (split-window start-win (floor (/ (frame-width) 2.8)) 'right)))
-        (if (or from-brain
-                (and too-narrow
-                     (not from-agenda)
-                     (not just-one)))
-            (select-window (some-window (lambda (win)
-                                          (not (eq win start-win)))))
-          (select-window start-win)))
-      (switch-to-buffer buffer))))
+  (if (bufferp buffer)
+      (let* ((start-win (selected-window))
+             (start-win-name (prin1-to-string start-win))
+             (just-one (= (length (window-list)) 1))
+             (from-brain (string-match "*org-brain*" start-win-name))
+             (from-agenda (string-match "*Org QL View\\|*Org Agenda*" start-win-name))
+             (too-narrow (< (frame-width) 120))
+             (org-window (catch 'org-window
+                           (mapcar (lambda (win)
+                                     (let* ((mode (with-current-buffer (window-buffer win)
+                                                    major-mode)))
+                                       (if (eq 'org-mode mode)
+                                           (unless from-agenda
+                                             (throw 'org-window win)))))
+                                   (window-list)))))
+        (if (windowp org-window)
+            (progn
+              (select-window org-window t)
+              (switch-to-buffer buffer))
+          (progn
+            (when (and (or just-one from-brain) (not too-narrow))
+              (if from-brain
+                  (split-window (next-window) (floor (/ (frame-width) 1.95)) 'left)
+                (split-window start-win (floor (/ (frame-width) 2.8)) 'right)))
+            (if (or from-brain
+                    (and too-narrow
+                         (not from-agenda)
+                         (not just-one)))
+                (select-window (some-window (lambda (win)
+                                              (not (eq win start-win)))))
+              (select-window start-win)))
+          (switch-to-buffer buffer)))
+    (message "this is not buffer: %s" buffer)))
 
 ;;;###autoload
-(defun aj-display-org-buffer-popup (buf &rest _)
+(defun aj-display-org-buffer-popup (buffer &rest _)
   "Display org buffer in popup window.
 Similar to `aj-get-window-for-org-buffer' but displays org buffer
 in temporarily popup window on the right side of the frame.
 "
-  (+popup-buffer (get-buffer buf)
-                 '((side . right)
-                   (size . 86)
-                   (window-width . 40)
-                   (window-height . 0.16)
-                   (slot)
-                   (vslot . 1)
-                   (window-parameters
-                    (ttl)
-                    (quit . t)
-                    (select . t)
-                    (modeline)
-                    (autosave . t)))))
+  (if (bufferp buffer)
+      (+popup-buffer buffer
+                     '((side . right)
+                       (size . 86)
+                       (window-width . 40)
+                       (window-height . 0.16)
+                       (slot)
+                       (vslot . 1)
+                       (window-parameters
+                        (ttl)
+                        (quit . t)
+                        (select . t)
+                        (modeline)
+                        (autosave . t))))
+    (message "this is not buffer: %s" buffer)))
 
 ;;;###autoload
 (defun aj-org-buffer-to-popup-a (orig-fun &rest args)

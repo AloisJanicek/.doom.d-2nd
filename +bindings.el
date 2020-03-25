@@ -810,12 +810,21 @@
         :desc "personal"           "P" (λ! (aj-org-find-file aj-org-personal-dir))
         :desc "personal headlines" "p" (λ! (aj-org-jump-to-headline-at aj-org-personal-dir 3))
         :desc "query"              "q" #'org-ql-search
-        :desc "private files"      "r" (λ! (aj-org-find-file aj-org-private-dir))
-        :desc "private headlines"  "R" (λ! (aj-org-jump-to-headline-at aj-org-private-dir 3))
+        :desc "private headlines"  "r" (λ! (aj-org-jump-to-headline-at aj-org-private-dir 3))
+        :desc "private files"      "R" (λ! (aj-org-find-file aj-org-private-dir))
         :desc "headlines all"      "s" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 3))
         :desc "headlines all DEEP" "S" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 9))
         :desc "sparse tree"        "t" #'org-ql-sparse-tree
         :desc "visualize"          "v" #'org-brain-visualize
+        :desc "rise to window"     "z" (lambda (window &optional arg)
+                                         (interactive
+                                          (list (selected-window) current-prefix-arg))
+                                         (let ((buffer (current-buffer))
+                                               (+popup--inhibit-transient t)
+                                               +popup--remember-last)
+                                           (+popup/close window 'force)
+                                           (aj-open-file-switch-create-indirect-buffer-per-persp buffer))
+                                         (selected-window))
         :desc "PRVT"               "x" #'aj/private-refile/body
         )
 
