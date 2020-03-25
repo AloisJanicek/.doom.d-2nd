@@ -1185,13 +1185,12 @@ Optionally search for specific list of todo KEYWORDS.
 Filters todo headlines according to `aj-org-agenda-filter'.
 "
   (interactive)
-  (let* ((tag-filter
-          (string-remove-prefix "+" (car aj-org-agenda-filter)))
-         (query (if keywords
-                    `(and ,keywords
-                          (if tag-filter
-                              (tags tag-filter) t))
-                  `(todo)))
+  (let* ((keywords (or keywords '(todo)))
+         (tags (when aj-org-agenda-filter
+                 `(tags ,(string-remove-prefix "+" (car aj-org-agenda-filter)))))
+         (query (if tags
+                    `(and ,keywords, tags)
+                  keywords))
          (pretty-heading
           (lambda ()
             (let* ((heading (org-heading-components))
