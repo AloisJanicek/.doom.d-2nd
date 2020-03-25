@@ -589,6 +589,11 @@ This also works with indirect buffers and symbolic links."
          (error "Not in org-mode or org-brain-visualize"))))
 
 ;; ORG-AGENDA
+;;;###autoload
+(defun aj-org-combined-agenda-files ()
+  "Return combined list of `org-agenda-files' with project readme.org files."
+  (append (org-agenda-files)
+          (aj-get-all-projectile-README-org-files t)))
 
 ;;;###autoload
 (defun aj/org-agenda-current-file ()
@@ -632,8 +637,7 @@ which one is currently active."
 (defun aj-org-ql-simple-taks-search (task)
   "Search for task `TASK' via `org-ql'."
   (let ((org-agenda-tag-filter aj-org-agenda-filter))
-    (org-ql-search (append (org-agenda-files)
-                           (aj-get-all-projectile-README-org-files t))
+    (org-ql-search (aj-org-combined-agenda-files)
       `(todo ,task)
       :sort '(date priority todo)
       :super-groups '((:auto-category t))
@@ -705,8 +709,7 @@ which one is currently active."
                                                     :select (lambda ()
                                                               (when (org-get-heading)
                                                                 (throw 'heading t)))
-                                                    :from (append (org-agenda-files)
-                                                                  (aj-get-all-projectile-README-org-files t))
+                                                    :from (aj-org-combined-agenda-files)
                                                     :where
                                                     '(or (and (todo)
                                                               (children (todo))
@@ -719,8 +722,7 @@ which one is currently active."
                                                               (children (todo))
                                                               (not (children (todo "WAIT")))))
                                                     ))
-                                                (org-ql-search (append (org-agenda-files)
-                                                                       (aj-get-all-projectile-README-org-files t))
+                                                (org-ql-search (aj-org-combined-agenda-files)
                                                   '(or (and (todo)
                                                             (children (todo))
                                                             (not (descendants (todo "NEXT")))
@@ -735,8 +737,7 @@ which one is currently active."
                                                   :title "Stucked Projects"))
                                                ;; otherwise default to showing "NEXT" task
                                                (t (let ((org-agenda-tag-filter aj-org-agenda-filter))
-                                                    (org-ql-search (append (org-agenda-files)
-                                                                           (aj-get-all-projectile-README-org-files t))
+                                                    (org-ql-search (aj-org-combined-agenda-files)
                                                       '(and (todo "NEXT")
                                                             (not (ts-active)))
                                                       :sort '(date priority todo)
@@ -759,8 +760,7 @@ which one is currently active."
          :sort '(date)) "inbox")
 
   ("n" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (append (org-agenda-files)
-                                (aj-get-all-projectile-README-org-files t))
+         (org-ql-search (aj-org-combined-agenda-files)
            '(and (todo "NEXT")
                  (not (ts-active)))
            :sort '(date priority todo)
@@ -768,8 +768,7 @@ which one is currently active."
            :title "Next Action")) "Next")
 
   ("t" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (append (org-agenda-files)
-                                (aj-get-all-projectile-README-org-files t))
+         (org-ql-search (aj-org-combined-agenda-files)
            '(and (todo "TODO")
                  (not (ts-active))
                  (not (children (todo)))
@@ -778,16 +777,14 @@ which one is currently active."
            :title "Plain Todos")) "tasks")
 
   ("p" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (append (org-agenda-files)
-                                (aj-get-all-projectile-README-org-files t))
+         (org-ql-search (aj-org-combined-agenda-files)
            '(and (todo)
                  (children (todo)))
            :sort '(date priority todo)
            :super-groups '((:auto-category t))
            :title "Projects")) "projects")
 
-  ("s" (org-ql-search (append (org-agenda-files)
-                              (aj-get-all-projectile-README-org-files t))
+  ("s" (org-ql-search (aj-org-combined-agenda-files)
          '(or (and (todo)
                    (children (todo))
                    (not (descendants (todo "NEXT")))
@@ -802,8 +799,7 @@ which one is currently active."
          :title "Stucked Projects") "stucked projects")
 
   ("w" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (append (org-agenda-files)
-                                (aj-get-all-projectile-README-org-files t))
+         (org-ql-search (aj-org-combined-agenda-files)
            '(and (todo "WAIT")
                  (not (children (todo))))
            :sort '(date priority todo)
@@ -815,8 +811,7 @@ which one is currently active."
   ("d" (aj-org-ql-simple-taks-search "DONE") "Done")
 
   ("r" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (append (org-agenda-files)
-                                (aj-get-all-projectile-README-org-files t))
+         (org-ql-search (aj-org-combined-agenda-files)
            '(ts :from -7 :to today)
            :sort '(date priority todo)
            :super-groups '((:auto-ts t)))) "recent")
@@ -827,8 +822,7 @@ which one is currently active."
            :sort '(date priority todo)
            :super-groups '((:auto-ts t)))) "Archived Recent")
 
-  ("T" (org-ql-search (append (org-agenda-files)
-                              (aj-get-all-projectile-README-org-files t))
+  ("T" (org-ql-search (aj-org-combined-agenda-files)
          '(todo)
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
@@ -1216,7 +1210,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
 
     (ivy-read "Go to: " (org-ql-query
                           :select pretty-heading
-                          :from (org-agenda-files)
+                          :from (aj-org-combined-agenda-files)
                           :where query)
               :action #'aj-org-jump-to-heading-action
               :caller 'aj/org-agenda-headlines)))
