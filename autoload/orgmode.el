@@ -885,7 +885,7 @@ by user with help of this function.
 In such case this function clones buffer from background into perspective-specific
 indirect buffer.
 
-Designed as an override advice for file opening functions like `pop-to-buffer'.
+Designed as an override advice for file or buffer opening functions like `pop-to-buffer'.
 "
   (unless (bufferp buffer-or-path)
     (when (file-readable-p buffer-or-path)
@@ -917,7 +917,7 @@ Designed as an override advice for file opening functions like `pop-to-buffer'.
 
         (aj-get-window-for-org-buffer output-buffer))
 
-    (message "this is not buffer: %s" buffer-or-path)))
+    (message "this is not buffer or valid file path: %s" buffer-or-path)))
 
 ;;;###autoload
 (defun aj-get-window-for-org-buffer (buffer)
