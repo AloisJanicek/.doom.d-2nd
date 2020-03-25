@@ -875,7 +875,7 @@ Optional argument ARGS are argument passed to `ORIG-FUN'."
   (counsel-find-file dir))
 
 ;;;###autoload
-(defun aj-open-file-switch-create-indirect-buffer-per-persp (buffer-or-path &optional return-back)
+(defun aj-open-file-switch-create-indirect-buffer-per-persp (buffer-or-path &rest _)
   "Opens file from BUFFER-OR-PATH into perspective-specific indirect buffer.
 
 This function is intended for workflow consisting of large number of org files
@@ -886,9 +886,6 @@ In such case this function clones buffer from background into perspective-specif
 indirect buffer.
 
 Designed as an override advice for file opening functions like `pop-to-buffer'.
-
-Optional argument RETURN-BACK returns cursor into starting position before
-executing this function.
 "
   (unless (bufferp buffer-or-path)
     (when (file-readable-p buffer-or-path)
@@ -918,11 +915,7 @@ executing this function.
         (with-current-buffer output-buffer
           (widen))
 
-        (aj-get-window-for-org-buffer output-buffer)
-
-        (when (string-equal return-back "back")
-          (select-window win)
-          (goto-char pos)))
+        (aj-get-window-for-org-buffer output-buffer))
 
     (message "this is not buffer: %s" buffer-or-path)))
 
