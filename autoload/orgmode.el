@@ -933,7 +933,14 @@ split current window and displays `BUFFER' on the left."
                          (not just-one)))
                 (select-window (some-window (lambda (win)
                                               (not (eq win start-win)))))
-              (select-window start-win)))
+              (select-window (some-window (lambda (win)
+                                            (and
+                                             (not (eq (window-buffer win) (doom-scratch-buffer)))
+                                             (not
+                                              (with-current-buffer (window-buffer win)
+                                                (or
+                                                 (eq major-mode 'helpful-mode)
+                                                 (eq major-mode 'help-mode))))))))))
           (switch-to-buffer buffer)))
     (message "this is not buffer: %s" buffer)))
 
