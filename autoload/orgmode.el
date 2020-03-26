@@ -917,7 +917,15 @@ split current window and displays `BUFFER' on the left."
                                        (if (eq 'org-mode mode)
                                            (unless from-agenda
                                              (throw 'org-window win)))))
-                                   (window-list)))))
+                                   (window-list))))
+             (not-special-windows (lambda (win)
+                                    (and
+                                     (not (eq (window-buffer win) (doom-scratch-buffer)))
+                                     (not
+                                      (with-current-buffer (window-buffer win)
+                                        (or
+                                         (eq major-mode 'helpful-mode)
+                                         (eq major-mode 'help-mode))))))))
         (if (windowp org-window)
             (progn
               (select-window org-window t)
@@ -933,14 +941,14 @@ split current window and displays `BUFFER' on the left."
                          (not just-one)))
                 (select-window (some-window (lambda (win)
                                               (not (eq win start-win)))))
-              (select-window (some-window (lambda (win)
-                                            (and
-                                             (not (eq (window-buffer win) (doom-scratch-buffer)))
-                                             (not
-                                              (with-current-buffer (window-buffer win)
-                                                (or
-                                                 (eq major-mode 'helpful-mode)
-                                                 (eq major-mode 'help-mode))))))))))
+              (if (funcall not-special-windows start-win)
+                  (progn
+                    (unless from-agenda
+                      (split-window start-win (floor (/ (frame-width) 2.8)) 'right))
+                    (select-window start-win))
+                (progn
+                  (split-window (some-window not-special-windows) (floor (/ (frame-width) 2.8)) 'right)
+                  (select-window (some-window not-special-windows))))))
           (switch-to-buffer buffer)))
     (message "this is not buffer: %s" buffer)))
 
