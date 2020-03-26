@@ -870,10 +870,14 @@ if running under WSL")
 (use-package! google-translate
   :commands (google-translate-at-point
              google-translate-at-point-reverse)
+  :init
+  (setq google-translate-default-source-language "en"
+        google-translate-default-target-language "cs"
+        google-translate-listen-program (executable-find "mpv")
+        google-translate-show-phonetic t
+        )
   :config
-  (setq google-translate-default-source-language "cs"
-        google-translate-default-target-language "en")
-  (set-popup-rule! "*Google Translate\*"        :size 0.4  :side 'top :select t))
+  (set-popup-rule! "*Google Translate*"        :size 0.4  :side 'top :select t))
 
 (use-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now)
