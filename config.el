@@ -269,6 +269,12 @@ if running under WSL")
   (add-to-list 'ivy-prescient-sort-commands 'counsel-outline t)
   )
 
+(defer-until! ivy-rich-mode
+  (cl-callf (lambda (from what)
+              (delete what from))
+      (cadr (plist-get ivy-rich-display-transformers-list
+                       'ivy-switch-buffer)) '(+ivy-rich-buffer-icon)))
+
 (after! (:any js-mode js2-mode rjsx-mode web-mode)
   (set-docsets! '(js2-mode rjsx-mode)
     "JavaScript" "Angular" "Bootstrap_4" "jQuery" "NodeJS" "React" "VueJS"))
