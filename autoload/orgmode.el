@@ -426,9 +426,8 @@ and all its children are revealed."
                    :select (lambda () (aj-org-get-pretty-heading-path nil t nil nil))
                    :from (current-buffer)
                    :where '(level <= 9))
-                 :action (lambda (x)
-                           (goto-char (cdr (cdr x))))
-                 )))
+                 :action (lambda (headline)
+                           (goto-char (get-text-property 0 'marker headline))))))
              ivy-sort-functions-alist)
 
         (widen)
@@ -1195,13 +1194,15 @@ Filters todo headlines according to `aj-org-agenda-filter'.
               :caller 'aj/org-agenda-headlines)))
 
 ;;;###autoload
-(defun aj-org-jump-to-heading-action (x)
+(defun aj-org-jump-to-heading-action (headline)
   "Jump to heading X and narrow view after showing sub-tree."
-  (aj-open-file-switch-create-indirect-buffer-per-persp (car (cdr x)))
-  (widen)
-  (goto-char (cdr (cdr x)))
-  (org-show-subtree)
-  (org-narrow-to-subtree))
+  (let* ((marker (get-text-property 0 'marker headline))
+         (buffer (marker-buffer marker)))
+    (aj-open-file-switch-create-indirect-buffer-per-persp buffer)
+    (widen)
+    (goto-char marker)
+    (org-show-subtree)
+    (org-narrow-to-subtree)))
 
 ;;;###autoload
 (defun aj-org-jump-to-headline-at (list-or-dir &optional level)
@@ -1277,7 +1278,7 @@ path is colorized according to outline faces.
     (when tag
       (put-text-property 0 (length tag) 'face 'org-tag tag))
 
-    (cons
+    (propertize
      (if outline
          (concat
           (when filename (concat filename "/"))
@@ -1286,7 +1287,7 @@ path is colorized according to outline faces.
        (concat
         (when filename (concat filename "/"))
         (when keyword (concat keyword spc)) text (when tag (concat spc tag))))
-     (cons (current-buffer) (point)))))
+     'marker (copy-marker (point)))))
 
 ;;;###autoload
 (defun aj/org-notes-search-no-link (&optional directory)
