@@ -1222,12 +1222,39 @@ Optionally specify heading LEVEL. Default is 3.
         ivy-sort-functions-alist)
     (ivy-read
      "Go to: "
-     (org-ql-query
-       :select headings
-       :from files
-       :where `(level <= ,level))
+     (lambda (input)
+       (eh-org-query-collect input files t t nil t))
+     :dynamic-collection t
      :action #'aj-org-jump-to-heading-action
      :caller 'aj/org-heading-jump)))
+
+;;;###autoload
+(defun eh-org-query-collect (input files filename outline keyword tag)
+  "Get dynamic collection of org headings.
+Search by INPUT in FILES.
+FILENAME, OUTLINE, KEYWORD and TAG are booleans determining composition
+and appearance of headline line.
+"
+  (when eh-org-query-collect-timer
+    (cancel-timer eh-org-query-collect-timer))
+  (if (< (length input) 2)
+      (list "" (format "%d chars more" (- 2 (length input))))
+    (setq eh-org-query-collect-timer
+          (run-with-timer
+           0.25 nil
+           `(lambda ()
+              (let ((query (org-ql--plain-query  ,input)))
+                (when query
+                  (ignore-errors
+                    (setq ivy--all-candidates
+                          (or
+                           (org-ql-select files query
+                             :action (lambda ()
+                                       (aj-org-get-pretty-heading-path ,filename ,outline ,keyword ,tag)))
+                           '("" "Search no results!")))
+                    (setq ivy--old-cands ivy--all-candidates)
+                    (ivy--exhibit)))))))
+    nil))
 
 ;;;###autoload
 (defun aj-org-get-pretty-heading-path (&optional filename outline keyword tag)

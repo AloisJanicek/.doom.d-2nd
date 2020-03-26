@@ -55,6 +55,9 @@ if running under WSL")
 (defvar aj-nov-menu-links nil
   "List of chapter links for `nov-mode'.")
 
+(defvar eh-org-query-collect-timer nil
+  "Store timer for `eh-org-query-collect'.")
+
 (defvar aj-org-src-block-identifiers
   '("awk" "C" "C++" "clojure" "css" "ditaa" "calc" "elisp" "eshell" "html" "php" "go" "rust"
     "fortran" "gnuplot" "screen" "dot" "haskell" "java" "js" "latex" "ledger" "racket"
