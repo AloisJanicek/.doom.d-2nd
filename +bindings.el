@@ -400,10 +400,13 @@
    :m  "j" #'forward-button
    :m  "k" #'backward-button
    :m  "o" #'org-brain-goto-current
-   :m  "O" (λ! (org-brain-goto
-                (org-brain-entry-at-pt)
-                (lambda (buffer)
-                  (aj-open-file-switch-create-indirect-buffer-per-persp buffer))))
+   :m  "O" (lambda ()
+             (interactive)
+             (let ((start (point))
+                   (win (selected-window)))
+               (org-brain-goto-current)
+               (select-window win)
+               (goto-char start)))
    :m  "v" #'org-brain-visualize
    :m  "q" #'org-brain-visualize-quit
    )
