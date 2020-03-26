@@ -1242,7 +1242,7 @@ and appearance of headline line.
       (list "" (format "%d chars more" (- 2 (length input))))
     (setq eh-org-query-collect-timer
           (run-with-timer
-           0.25 nil
+           0.175 nil
            `(lambda ()
               (let ((query (org-ql--plain-query  ,input)))
                 (when query
