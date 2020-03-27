@@ -663,30 +663,36 @@ which one is currently active."
                                           :idle which-key-idle-delay
                                           :body-pre
 
-                                          ;; When clock is running, visit clocked task
-                                          (if (bound-and-true-p org-clock-current-task)
-                                              (org-clock-goto)
+                                          ;; Don't auto-pop following if true
+                                          (unless aj-org-agenda-gtd-hydra-no-auto
 
-                                            ;; If true, do not auto-popup any views
-                                            (unless aj-org-agenda-gtd-hydra-no-auto
+                                            (let* ((today (format-time-string "%F" (current-time)))
+                                                   (now (format-time-string "%F %H:%M" (current-time)))
+                                                   (space " ")
+                                                   (start (concat today space "00:01"))
+                                                   (end (concat today space "23:59"))
+                                                   (past-dues `(and (ts-active :from ,start :to ,now)
+                                                                    (not (habit)))))
+
                                               (cond
 
-                                               ;; Scheduled for today but without "HH:MM" is a reminder
-                                               ;; that needs to be addressed
-                                               ((let* ((today (format-time-string "%F" (current-time)))
-                                                       (space " ")
-                                                       (start (concat today space "00:01"))
-                                                       (end (concat today space "23:59"))
-                                                       (scheduled-today (org-ql-query
-                                                                          :select #'org-get-heading
-                                                                          :from (org-agenda-files)
-                                                                          :where '(and (ts-active :on today)
-                                                                                       (not (habit)))))
-                                                       (scheduled-today-hm (org-ql-query
-                                                                             :select #'org-get-heading
-                                                                             :from (org-agenda-files)
-                                                                             :where `(and (ts-active :from ,start :to ,end)
-                                                                                          (not (habit)))))
+                                               ;; Visit running clock if any
+                                               ((bound-and-true-p org-clock-current-task)
+                                                (org-clock-goto))
+
+                                               ;; Show past scheduled / deadline items if any
+                                               ((org-ql-select (org-agenda-files) past-dues)
+                                                (org-ql-search (org-agenda-files) past-dues))
+
+                                               ;; Show today's scheduled / deadline items without "HH:MM" if any
+                                               ((let* ((scheduled-today (org-ql-select
+                                                                          (org-agenda-files)
+                                                                          '(and (ts-active :on today)
+                                                                                (not (habit)))))
+                                                       (scheduled-today-hm (org-ql-select
+                                                                             (org-agenda-files)
+                                                                             `(and (ts-active :from ,start :to ,end)
+                                                                                   (not (habit)))))
                                                        (scheduled-today-without-hm (seq-filter
                                                                                     (lambda (x)
                                                                                       (not (member x scheduled-today-hm)))
@@ -703,41 +709,32 @@ which one is currently active."
                                                                               "......" "----------------")))
                                                   (org-agenda nil "a")))
 
-                                               ;; Show Inbox when it is not empty
-                                               ;; every time it isn't empty
-                                               ;; ((catch 'heading
-                                               ;;    (org-ql-query
-                                               ;;      :select (lambda ()
-                                               ;;                (when (org-get-heading)
-                                               ;;                  (throw 'heading t)))
-                                               ;;      :from aj-org-inbox-file
-                                               ;;      :where '(level 1)))
-                                               ;;  (org-ql-search `(,aj-org-inbox-file)
-                                               ;;    '(level 1)
-                                               ;;    :title "Inbox"
-                                               ;;    :sort '(date)))
-
-                                               ;; Show stucked projects
+                                               ;; Show stucked projects if any
                                                ((catch 'heading
-                                                  (org-ql-query
-                                                    :select (lambda ()
+                                                  (org-ql-select
+                                                    (aj-org-combined-agenda-files)
+                                                    (aj-org-ql-search-stucked-project)
+                                                    :action (lambda ()
                                                               (when (org-get-heading)
-                                                                (throw 'heading t)))
-                                                    :from (aj-org-combined-agenda-files)
-                                                    :where (aj-org-ql-search-stucked-project)
-                                                    ))
-                                                (org-ql-search (aj-org-combined-agenda-files)
+                                                                (throw 'heading t)))))
+                                                (org-ql-search
+                                                  (aj-org-combined-agenda-files)
                                                   (aj-org-ql-search-stucked-project)
                                                   :super-groups '((:auto-category t))
                                                   :title "Stucked Projects"))
-                                               ;; otherwise default to showing "NEXT" task
+
+                                               ;; otherwise default to showing "NEXT" tasks
                                                (t (let ((org-agenda-tag-filter aj-org-agenda-filter))
-                                                    (org-ql-search (aj-org-combined-agenda-files)
+                                                    (org-ql-search
+                                                      (aj-org-combined-agenda-files)
                                                       '(and (todo "NEXT")
                                                             (not (ts-active)))
                                                       :sort '(date priority todo)
                                                       :super-groups '((:auto-category t))))))
-                                              )))
+
+                                              )
+                                            )
+                                          )
   "agenda"
   ("a" (let ((org-agenda-start-day "today"))
          (org-agenda nil "a")) "agenda")
@@ -749,13 +746,15 @@ which one is currently active."
              )
          (org-agenda nil "a")) "log")
 
-  ("i" (org-ql-search `(,aj-org-inbox-file)
+  ("i" (org-ql-search
+         `(,aj-org-inbox-file)
          '(level 1)
          :title "Inbox"
          :sort '(date)) "inbox")
 
   ("n" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (aj-org-combined-agenda-files)
+         (org-ql-search
+           (aj-org-combined-agenda-files)
            '(and (todo "NEXT")
                  (not (ts-active)))
            :sort '(date priority todo)
@@ -763,7 +762,8 @@ which one is currently active."
            :title "Next Action")) "Next")
 
   ("t" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (aj-org-combined-agenda-files)
+         (org-ql-search
+           (aj-org-combined-agenda-files)
            '(and (todo "TODO")
                  (not (ts-active))
                  (not (children (todo)))
@@ -772,14 +772,16 @@ which one is currently active."
            :title "Plain Todos")) "tasks")
 
   ("p" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (aj-org-combined-agenda-files)
+         (org-ql-search
+           (aj-org-combined-agenda-files)
            '(and (todo)
                  (children (todo)))
            :sort '(date priority todo)
            :super-groups '((:auto-category t))
            :title "Projects")) "projects")
 
-  ("s" (org-ql-search (aj-org-combined-agenda-files)
+  ("s" (org-ql-search
+         (aj-org-combined-agenda-files)
          (aj-org-ql-search-stucked-project)
          :super-groups '((:auto-category t))
          :title "Stucked Projects") "stucked projects")
@@ -797,24 +799,28 @@ which one is currently active."
   ("d" (aj-org-ql-simple-taks-search "DONE") "Done")
 
   ("r" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (aj-org-combined-agenda-files)
+         (org-ql-search
+           (aj-org-combined-agenda-files)
            '(ts :from -7 :to today)
            :sort '(date priority todo)
            :super-groups '((:auto-ts t)))) "recent")
 
   ("R" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (aj-get-all-archived-org-files)
+         (org-ql-search
+           (aj-get-all-archived-org-files)
            '(ts :from -21 :to today)
            :sort '(date priority todo)
            :super-groups '((:auto-ts t)))) "Archived Recent")
 
-  ("T" (org-ql-search (aj-org-combined-agenda-files)
+  ("T" (org-ql-search
+         (aj-org-combined-agenda-files)
          '(todo)
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
          :title "All Todos") "ALL Todos")
 
-  ("A" (org-ql-search (aj-get-all-archived-org-files)
+  ("A" (org-ql-search
+         (aj-get-all-archived-org-files)
          '(todo "DONE")
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
