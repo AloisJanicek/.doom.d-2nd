@@ -276,7 +276,12 @@ if running under WSL")
   (cl-callf (lambda (from what)
               (delete what from))
       (cadr (plist-get ivy-rich-display-transformers-list
-                       'ivy-switch-buffer)) '(+ivy-rich-buffer-icon)))
+                       'ivy-switch-buffer)) '(+ivy-rich-buffer-icon))
+  (cl-callf (lambda (from what)
+              (delete what from))
+      (cadr (plist-get ivy-rich-display-transformers-list
+                       'ivy-switch-buffer))
+    '(ivy-rich-switch-buffer-project (:width 15 :face success))))
 
 (after! (:any js-mode js2-mode rjsx-mode web-mode)
   (set-docsets! '(js2-mode rjsx-mode)
