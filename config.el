@@ -127,7 +127,7 @@ if running under WSL")
   (setq calendar-week-start-day 1))
 
 (after! (:any css-mode scss-mode)
-  (custom-set-faces!
+  (custom-theme-set-faces! 'doom-one
     `(css-selector :foreground ,(doom-lighten 'red 0.1)))
   (set-docsets! '(css-mode scss-mode)
     "CSS" "HTML"
@@ -331,9 +331,9 @@ if running under WSL")
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (after! man
-  (custom-set-faces!
-    `(Man-overstrike :inherit 'bold :foreground ,(doom-lighten 'red 0.2))
-    `(Man-underline :inherit 'underline :foreground ,(doom-lighten 'green 0.2)))
+  (custom-theme-set-faces! 'doom-one
+    `(Man-overstrike :inherit 'bold :foreground ,(doom-lighten 'red 0.1))
+    `(Man-underline :inherit 'underline :foreground ,(doom-lighten 'green 0.1)))
   (set-popup-rule! "*Man\*"            :vslot 1 :size 0.4  :side 'left :select t)
   (set-popup-rule! "*man\*"            :vslot 1 :size 0.4  :side 'left :select t))
 
@@ -781,7 +781,7 @@ if running under WSL")
         web-mode-auto-close-style 1
         )
 
-  (custom-set-faces!
+  (custom-theme-set-faces! 'doom-one
     `(web-mode-current-element-highlight-face :background ,(doom-color 'bg-alt) :foreground ,(doom-color 'blue))
     `(web-mode-html-attr-equal-face :foreground ,(doom-color 'base5))
     `(web-mode-html-tag-bracket-face :foreground ,(doom-color 'base5))
@@ -889,7 +889,7 @@ if running under WSL")
 (use-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now)
   :config
-  (custom-set-faces!
+  (custom-theme-set-faces! 'doom-one
     `(highlight-blocks-depth-1-face :background ,(doom-color 'base1))
     `(highlight-blocks-depth-2-face :background ,(doom-lighten 'base1 0.03))
     `(highlight-blocks-depth-3-face :background ,(doom-lighten 'base1 0.06))
