@@ -930,25 +930,27 @@ split current window and displays `BUFFER' on the left."
             (progn
               (select-window org-window t)
               (switch-to-buffer buffer))
+
           (progn
             (when (and (or just-one from-brain) (not too-narrow))
               (if from-brain
                   (split-window (next-window) (floor (/ (frame-width) 1.95)) 'left)
                 (split-window start-win (floor (/ (frame-width) 2.8)) 'right)))
+
             (if (or from-brain
                     (and too-narrow
                          (not from-agenda)
                          (not just-one)))
                 (select-window (some-window (lambda (win)
-                                              (not (eq win start-win)))))
+                                              (not (eq win start-win))))))
+
+            (when (< (/ (frame-width) (window-width)) 2)
               (if (funcall not-special-windows start-win)
-                  (progn
-                    (unless from-agenda
-                      (split-window start-win (floor (/ (frame-width) 2.8)) 'right))
-                    (select-window start-win))
-                (progn
-                  (split-window (some-window not-special-windows) (floor (/ (frame-width) 2.8)) 'right)
-                  (select-window (some-window not-special-windows))))))
+                  (progn (unless from-agenda (split-window start-win (floor (/ (frame-width) 2.8)) 'right)
+                                 (select-window start-win)))
+                (progn (split-window (some-window not-special-windows) (floor (/ (frame-width) 2.8)) 'right)
+                       (select-window (some-window not-special-windows))))))
+
           (switch-to-buffer buffer)))
     (message "this is not buffer: %s" buffer)))
 
