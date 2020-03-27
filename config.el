@@ -882,8 +882,9 @@ if running under WSL")
         google-translate-listen-program (executable-find "mpv")
         google-translate-show-phonetic t
         )
-  :config
-  (set-popup-rule! "*Google Translate*"        :size 0.4  :side 'top :select t))
+  )
+
+(set-popup-rule! "*Google Translate*"        :size 0.4  :side 'top :select t)
 
 (use-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now)
