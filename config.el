@@ -809,6 +809,7 @@ if running under WSL")
 
 (after! writeroom-mode
   (add-hook #'writeroom-mode-hook  #'doom-disable-line-numbers-h)
+  (setq writeroom-width 100)
   )
 
 (use-package! ace-link)
