@@ -672,7 +672,8 @@ which one is currently active."
                                                    (start (concat today space "00:01"))
                                                    (end (concat today space "23:59"))
                                                    (past-dues `(and (ts-active :from ,start :to ,now)
-                                                                    (not (habit)))))
+                                                                    (not (habit))
+                                                                    (not (todo "DONE")))))
 
                                               (cond
 
@@ -688,11 +689,13 @@ which one is currently active."
                                                ((let* ((scheduled-today (org-ql-select
                                                                           (org-agenda-files)
                                                                           '(and (ts-active :on today)
-                                                                                (not (habit)))))
+                                                                                (not (habit))
+                                                                                (not (todo "DONE")))))
                                                        (scheduled-today-hm (org-ql-select
                                                                              (org-agenda-files)
                                                                              `(and (ts-active :from ,start :to ,end)
-                                                                                   (not (habit)))))
+                                                                                   (not (habit))
+                                                                                   (not (todo "DONE")))))
                                                        (scheduled-today-without-hm (seq-filter
                                                                                     (lambda (x)
                                                                                       (not (member x scheduled-today-hm)))
