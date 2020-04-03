@@ -1057,6 +1057,10 @@ if running under WSL")
   (setq org-super-agenda-header-map (make-sparse-keymap))
   )
 
+(use-package! powershell
+  :defer t
+  )
+
 (use-package! powerthesaurus
   :commands (powerthesaurus-lookup-word
              powerthesaurus-lookup-word-dwim

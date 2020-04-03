@@ -73,6 +73,9 @@
 
 (package! org-super-agenda)
 
+(package! powershell
+  :recipe (:host github :repo "jschaf/powershell.el"))
+
 (package! powerthesaurus
   :recipe (:host github :repo "SavchenkoValeriy/emacs-powerthesaurus"))
 
