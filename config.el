@@ -5,7 +5,7 @@
 if running under WSL")
 
 (setq aj-home-base-dir (if (aj-wsl-p)
-                           (expand-file-name (aj-get-wsl-user-name) "/mnt/c/Users/")
+                           (expand-file-name (aj-get-wsl-user-name) "/c/Users/")
                          (setq aj-home-base-dir (expand-file-name "~/"))))
 
 (defvar aj-reference-dir (expand-file-name "Documents/MEGAsync" aj-home-base-dir)
@@ -85,6 +85,14 @@ if running under WSL")
       +doom-quit-messages '("")
       standard-indent 2
       )
+
+(when (aj-wsl-p)
+  (setq
+   doom-font                   (font-spec :family "Consolas 1.3" :size 14)
+   doom-big-font               (font-spec :family "Consolas 1.3" :size 24)
+   doom-theme 'doom-dark+
+   doom-modeline-height 20
+   ))
 
 (setq-default tab-width 4)
 
@@ -495,7 +503,7 @@ if running under WSL")
 
 (after! org-bullets
   (setq org-bullets-bullet-list
-        '("◉")))
+        '("*")))
 
 (after! org-capture
   (require 'yankpad)
