@@ -1141,3 +1141,6 @@ if running under WSL")
   )
 
 (pushnew! default-frame-alist '(fullscreen . maximized))
+
+(custom-theme-set-faces! 'doom-dark+
+  `(show-paren-match :foreground "#F426A5" :underline t))
