@@ -163,7 +163,7 @@ Which operation will be executed depends on value of ENCRYPT."
   "Opens link via powershell.exe"
   (interactive (browse-url-interactive-arg "URL: "))
   (let ((quotedUrl (format "start '%s'" url)))
-    (apply 'call-process "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe" nil
+    (apply 'call-process (executable-find "powershell.exe") nil
            0 nil
            (list "-Command" quotedUrl))))
 

@@ -4,8 +4,11 @@
   "Variable which equals to ~ on linux or to a specified host home directory
 if running under WSL")
 
+(defvar aj-wsl-win-root "/c"
+  "Mount point of the Windows system partition")
+
 (setq aj-home-base-dir (if (aj-wsl-p)
-                           (expand-file-name (aj-get-wsl-user-name) "/c/Users/")
+                           (expand-file-name (aj-get-wsl-user-name) (concat aj-wsl-win-root  "/Users/"))
                          (setq aj-home-base-dir (expand-file-name "~/"))))
 
 (defvar aj-reference-dir (expand-file-name "MEGAsync" aj-home-base-dir)
