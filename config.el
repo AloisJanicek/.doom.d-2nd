@@ -8,7 +8,7 @@ if running under WSL")
                            (expand-file-name (aj-get-wsl-user-name) "/c/Users/")
                          (setq aj-home-base-dir (expand-file-name "~/"))))
 
-(defvar aj-reference-dir (expand-file-name "Documents/MEGAsync" aj-home-base-dir)
+(defvar aj-reference-dir (expand-file-name "MEGAsync" aj-home-base-dir)
   "Location of the Reference folder.")
 
 (defvar aj-library-dir "Libraries"
