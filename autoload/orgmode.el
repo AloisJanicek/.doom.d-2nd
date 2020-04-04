@@ -1247,6 +1247,7 @@ Search by INPUT in FILES.
 FILENAME, OUTLINE, KEYWORD and TAG are booleans determining composition
 and appearance of headline line.
 "
+  (require 'org-ql)
   (when eh-org-query-collect-timer
     (cancel-timer eh-org-query-collect-timer))
   (if (< (length input) 2)
