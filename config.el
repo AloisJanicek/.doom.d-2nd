@@ -1140,7 +1140,9 @@ if running under WSL")
     )
   )
 
-(pushnew! default-frame-alist '(fullscreen . maximized))
+(if (aj-wsl-p)
+    (set-frame-size (selected-frame) 120 42)
+  (pushnew! default-frame-alist '(fullscreen . maximized)))
 
 (custom-theme-set-faces! 'doom-dark+
   `(show-paren-match :foreground "#F426A5" :underline t))
