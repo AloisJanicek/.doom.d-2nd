@@ -928,13 +928,7 @@ split current window and displays `BUFFER' on the left."
                                              (throw 'org-window win)))))
                                    (window-list))))
              (not-special-windows (lambda (win)
-                                    (and
-                                     (not (eq (window-buffer win) (doom-scratch-buffer)))
-                                     (not
-                                      (with-current-buffer (window-buffer win)
-                                        (or
-                                         (eq major-mode 'helpful-mode)
-                                         (eq major-mode 'help-mode))))))))
+                                    (not (doom-special-buffer-p (window-buffer win))))))
         (if (windowp org-window)
             (progn
               (select-window org-window t)
@@ -955,9 +949,13 @@ split current window and displays `BUFFER' on the left."
 
             (when (< (/ (frame-width) (window-width)) 2)
               (if (funcall not-special-windows start-win)
-                  (progn (unless from-agenda (split-window start-win (floor (/ (frame-width) 2.8)) 'right)
-                                 (select-window start-win)))
-                (progn (split-window (some-window not-special-windows) (floor (/ (frame-width) 2.8)) 'right)
+                  (progn (unless (or from-agenda
+                                     too-narrow)
+                           (split-window start-win (floor (/ (frame-width) 2.8)) 'right)
+                           (select-window start-win)))
+                (progn (unless too-narrow (split-window
+                                           (some-window not-special-windows)
+                                           (floor (/ (frame-width) 2.8)) 'right))
                        (select-window (some-window not-special-windows))))))
 
           (switch-to-buffer buffer)))
