@@ -714,7 +714,10 @@ if running under WSL")
   )
 
 (after! pdf-view
-  (setq pdf-view-midnight-colors `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))
+  (setq pdf-view-midnight-colors (cond ((eq doom-theme 'doom-dark+)
+                                        `(,(doom-color 'fg) . ,(doom-color 'bg)))
+                                       ((eq doom-theme 'doom-one)
+                                        `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))))
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   "Set up pdf-view to my liking."
                                   (hide-mode-line-mode)
