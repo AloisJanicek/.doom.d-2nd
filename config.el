@@ -729,6 +729,7 @@ if running under WSL")
                                         (remove '("pdfview" :follow org-pdfview-open :complete org-pdfview-complete-link :store org-pdfview-store-link)
                                                 org-link-parameters))
                                   (org-link-set-parameters "pdfview" :follow #'org-pdfview-open)
+                                  (pdf-view-fit-width-to-window)
                                   ))
 
   )
