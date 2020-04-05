@@ -1000,6 +1000,8 @@ if running under WSL")
                              (solaire-mode)
                              (visual-fill-column-mode)
                              (hide-mode-line-mode)
+                             (face-remap-add-relative 'mode-line `(:background ,(doom-color 'bg)
+                                                                               :foreground ,(doom-color 'fg)))
                              (doom-mark-buffer-as-real-h)
                              (setq org-link-parameters
                                    (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
