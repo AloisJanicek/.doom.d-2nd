@@ -918,7 +918,7 @@ split current window and displays `BUFFER' on the left."
              (just-one (= (length (window-list)) 1))
              (from-brain (string-match "*org-brain*" start-win-name))
              (from-agenda (string-match "*Org QL View\\|*Org Agenda*" start-win-name))
-             (too-narrow (< (frame-width) 120))
+             (too-narrow (< (frame-width) 145))
              (org-window (catch 'org-window
                            (mapcar (lambda (win)
                                      (let* ((mode (with-current-buffer (window-buffer win)
