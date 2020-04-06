@@ -758,11 +758,13 @@ Intended as an around advice for `find-file' function.
                                               (when (eq major-mode mode) t)))
                                           (window-list)))))
                          (select-win (lambda (win)
-                                       (if win
-                                           (progn
-                                             (select-window win)
-                                             (pop-to-buffer buf display-buffer--same-window-action))
-                                         (switch-to-buffer-other-window buf)))))
+                                       (when win
+                                         (select-window win))
+                                       (when (and
+                                              (> (frame-width) 145)
+                                              (< (/ (frame-width) (window-width)) 2))
+                                         (split-window (selected-window) (floor (/ (frame-width) 2.8)) 'right))
+                                       (pop-to-buffer buf display-buffer--same-window-action))))
                      (if (string-suffix-p "pdf" (buffer-file-name buf) t)
                          (let ((pdf-win (funcall get-win 'pdf-view-mode)))
                            (funcall select-win pdf-win))
