@@ -935,17 +935,18 @@ split current window and displays `BUFFER' on the left."
               (switch-to-buffer buffer))
 
           (progn
-            (when (and (or just-one from-brain) (not too-narrow))
+            (when (and (or just-one from-brain)
+                       (not too-narrow))
               (if from-brain
                   (split-window (next-window) (floor (/ (frame-width) 1.95)) 'left)
                 (split-window start-win (floor (/ (frame-width) 2.8)) 'right)))
 
-            (if (or from-brain
-                    (and too-narrow
-                         (not from-agenda)
-                         (not just-one)))
-                (select-window (some-window (lambda (win)
-                                              (not (eq win start-win))))))
+            (when (or from-brain
+                      (and too-narrow
+                           (not from-agenda)
+                           (not just-one)))
+              (select-window (some-window (lambda (win)
+                                            (not (eq win start-win))))))
 
             (when (< (/ (frame-width) (window-width)) 2)
               (if (funcall not-special-windows start-win)
@@ -956,7 +957,9 @@ split current window and displays `BUFFER' on the left."
                 (progn (unless too-narrow (split-window
                                            (some-window not-special-windows)
                                            (floor (/ (frame-width) 2.8)) 'right))
-                       (select-window (some-window not-special-windows))))))
+                       (select-window
+                        (or (when from-agenda start-win)
+                            (some-window not-special-windows)))))))
 
           (switch-to-buffer buffer)))
     (message "this is not buffer: %s" buffer)))
