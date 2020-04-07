@@ -954,9 +954,11 @@ split current window and displays `BUFFER' on the left."
                                      too-narrow)
                            (split-window start-win (floor (/ (frame-width) 2.8)) 'right)
                            (select-window start-win)))
-                (progn (unless too-narrow (split-window
-                                           (some-window not-special-windows)
-                                           (floor (/ (frame-width) 2.8)) 'right))
+                (progn (unless (or too-narrow
+                                   from-agenda)
+                         (split-window
+                          (some-window not-special-windows)
+                          (floor (/ (frame-width) 2.8)) 'right))
                        (select-window
                         (or (when from-agenda start-win)
                             (some-window not-special-windows)))))))
