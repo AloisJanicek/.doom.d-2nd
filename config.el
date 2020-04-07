@@ -119,7 +119,7 @@ if running under WSL")
 (after! ansible-doc
   (set-popup-rule! "*ansible-doc "     :vslot 2 :size 0.32 :side 'left :select t :ttl t)
   (when (featurep! :editor evil)
-    (add-hook 'ansible-doc-module-mode-hook #'evil-normal-state))
+    (add-hook 'ansible-doc-module-mode-hook #'evil-motion-state))
   (add-hook 'ansible-doc-module-mode-hook #'visual-line-mode))
 
 (after! apropos
