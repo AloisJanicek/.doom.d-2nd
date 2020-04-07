@@ -780,6 +780,15 @@ Intended as an around advice for `find-file' function.
   (ivy-read "Choose file: " dir
             :caller 'aj/choose-file-from))
 
+;;;###autoload
+(defun aj-zeal-at-point-run-search-on-wsl-a (search)
+  "Launch Windows Zeal from WSL emacs.
+Use `call-process' instead of `start-process'.
+Use in conjunction with
+https://github.com/Konfekt/wsl-gui-bins/blob/master/zeal
+"
+    (call-process (executable-find "zeal") nil 0 nil search))
+
 (provide 'functions)
 
 ;;; functions.el ends here

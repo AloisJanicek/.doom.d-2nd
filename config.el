@@ -1106,6 +1106,8 @@ if running under WSL")
   :config
   (add-to-list 'zeal-at-point-mode-alist '(web-mode . "html"))
   (add-to-list 'zeal-at-point-mode-alist '(pug-mode . ("html" "pug")))
+  (when (aj-wsl-p)
+    (advice-add #'zeal-at-point-run-search :override #'aj-zeal-at-point-run-search-on-wsl-a))
   )
 
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
