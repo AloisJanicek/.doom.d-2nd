@@ -413,8 +413,12 @@ if running under WSL")
                             ("WAIT" . ,(doom-color 'magenta))
                             ("PROJECT" . ,(doom-color 'yellow))
                             ("TODO" . ,(doom-color 'yellow))
-                            ("SOMEDAY" . ,(doom-color 'base5))
-                            ("MAYBE" . ,(doom-color 'base5)))
+                            ,(if (eq doom-theme 'doom-dark+)
+                                 (cons "SOMEDAY" (doom-color 'base7))
+                               (cons "SOMEDAY" (doom-color 'base5)))
+                            ,(if (eq doom-theme 'doom-dark+)
+                                 (cons "MAYBE" (doom-color 'base7))
+                               (cons "MAYBE" (doom-color 'base5))))
    org-enforce-todo-dependencies nil ;; if t, it hides todo entries with todo children from agenda
    org-enforce-todo-checkbox-dependencies nil
    org-provide-todo-statistics t
@@ -1151,4 +1155,7 @@ if running under WSL")
   (pushnew! default-frame-alist '(fullscreen . maximized)))
 
 (custom-theme-set-faces! 'doom-dark+
-  `(show-paren-match :foreground "#F426A5" :underline t))
+  `(show-paren-match :foreground "#F426A5" :underline t)
+  `(org-done :foreground ,(doom-color 'base7))
+  `(org-headline-done :foreground ,(doom-color 'base7))
+  )
