@@ -35,6 +35,8 @@
  (:after ansible-doc
    :map ansible-doc-module-mode-map
    :nm "o" #'ace-link-woman
+   :nm "C-l" #'evil-window-right
+   :nm "C-j" #'evil-window-down
    )
 
  (:after css-mode
@@ -77,7 +79,7 @@
 
  (:after inferior-python
    :map inferior-python-mode-map
-   :ienv "C-l" #'evil-window-up
+   :ienv "C-l" #'evil-window-right
    )
 
  (:after info
