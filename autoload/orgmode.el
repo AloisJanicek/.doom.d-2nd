@@ -1225,6 +1225,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
 LIST-OR-DIR can be either list of files or directory path.
 Optionally specify heading LEVEL. Default is 3.
 "
+  (require 'org)
   (let ((files
          (if (listp list-or-dir)
              list-or-dir
@@ -1336,6 +1337,7 @@ path is colorized according to outline faces.
 (defun aj/org-notes-search-no-link (&optional directory)
   "Remove org link syntax from grep search results."
   (interactive)
+  (require 'org)
   (let ((orig-fun (symbol-function 'counsel-git-grep-transformer))
         (dir (or directory
                  (read-directory-name "Search directory: " org-directory)))
