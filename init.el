@@ -93,8 +93,10 @@
         )
        gist
        (lookup
-        +devdocs
-        +docsets)
+        +dictionary
+        +offline
+        +docsets
+        )
        lsp
        ;;macos
        magit
