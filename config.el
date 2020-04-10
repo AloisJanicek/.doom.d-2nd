@@ -1177,12 +1177,14 @@ if running under WSL")
   `(css-property :foreground ,(doom-color 'cyan))
   )
 
-(after! json-mode
-  (add-hook 'json-mode-hook (lambda ()
-                              (face-remap-add-relative 'font-lock-keyword-face `(:foreground ,(doom-color 'cyan)))
-                              )))
+(when (eq doom-theme 'doom-dark+)
+  (after! json-mode
+    (add-hook 'json-mode-hook (lambda ()
+                                (face-remap-add-relative 'font-lock-keyword-face `(:foreground ,(doom-color 'cyan)))
+                                )))
 
-(after! js2-mode
-  (add-hook 'js2-mode-hook (lambda ()
-                             (face-remap-add-relative 'font-lock-function-name-face `(:foreground ,(doom-color 'teal)))
-                             )))
+  (after! js2-mode
+    (add-hook 'js2-mode-hook (lambda ()
+                               (face-remap-add-relative 'font-lock-function-name-face `(:foreground ,(doom-color 'teal)))
+                               )))
+  )
