@@ -637,14 +637,16 @@ which one is currently active."
 (defun aj-org-ql-search-stucked-project ()
   "Stucked projects query for org-ql."
   '(or (and (todo)
-            (children (todo))
+            (children (or (todo)
+                          (todo "DONE")
+                          (todo "CANCELLED")
+                          (todo "WAIT")))
             (not (descendants (todo "NEXT")))
             (not (todo "WAIT")))
-       (and (todo)
-            (not (todo "WAIT"))
-            (children (todo "WAIT")))
        (and (todo "WAIT")
-            (children (todo))
+            (children (or (todo)
+                          (todo "DONE")
+                          (todo "CANCELLED")))
             (not (children (todo "WAIT"))))))
 
 ;;;###autoload
