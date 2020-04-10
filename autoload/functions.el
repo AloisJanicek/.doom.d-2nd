@@ -619,13 +619,16 @@ from anywhere in the document after.
     (setq-local aj-nov-menu-links
                 (mapcar (lambda (item)
                           (cdr item)) (aj-collect-all-links-in-buffer))))
-  (ivy-read "Open: " aj-nov-menu-links
-            :action (lambda (x)
-                      (interactive)
-                      (apply 'nov-visit-relative-file
-                             (nov-url-filename-and-target
-                              (plist-get (cdr x) :url)))
-                      (nov-browse-url))))
+  (let (ivy-sort-functions-alist)
+    (ivy-read "Open: " aj-nov-menu-links
+              :action (lambda (x)
+                        (interactive)
+                        (apply 'nov-visit-relative-file
+                               (nov-url-filename-and-target
+                                (plist-get (cdr x) :url)))
+                        (nov-browse-url)))
+    )
+  )
 
 ;;;###autoload
 (defun aj-collect-all-links-in-buffer ()
