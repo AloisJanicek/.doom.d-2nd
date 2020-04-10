@@ -769,7 +769,8 @@ which one is currently active."
   ("t" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
            (aj-org-combined-agenda-files)
-           '(and (todo "TODO")
+           '(and (or (todo "TODO")
+                     (todo "PROJECT"))
                  (not (ts-active))
                  (not (children (todo)))
                  (not (parent (todo))))
