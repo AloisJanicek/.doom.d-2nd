@@ -989,12 +989,21 @@ if running under WSL")
   (setq link-hint-avy-all-windows nil)
   )
 
+(use-package shrface
+  :after shr
+  :config
+  (setq shrface-bullets-bullet-list '("*" "*" "*" "*" "*" "*"))
+  (setq shrface-paragraph-indentation 2)
+  (setq shrface-paragraph-fill-column 120)
+  )
+
 (use-package! nov
   :after org
   :config
   (setq nov-text-width t
         visual-fill-column-center-text t
         nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
+  (setq nov-shr-rendering-functions shr-external-rendering-functions)
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
   (add-hook 'nov-mode-hook (lambda ()
                              "Setup nov-mode to my liking."

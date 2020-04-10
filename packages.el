@@ -84,6 +84,8 @@
 (package! sdcv
   :recipe (:host github :repo "stardiviner/sdcv.el" :files ("sdcv.el")))
 
+(package! shrface :recipe (:host github :repo "chenyanming/shrface"))
+
 (package! systemd)
 
 (package! vimrc-mode)
