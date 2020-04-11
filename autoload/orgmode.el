@@ -1201,7 +1201,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
          (tags (when aj-org-agenda-filter
                  `(tags ,(string-remove-prefix "+" (car aj-org-agenda-filter)))))
          (query (if tags
-                    `(and ,keywords, tags)
+                    `(and ,keywords ,tags)
                   keywords))
          ivy-sort-functions-alist)
 
