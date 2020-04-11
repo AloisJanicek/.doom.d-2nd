@@ -1055,6 +1055,10 @@ if running under WSL")
 (use-package! org-ql
   :after org
   :config
+  (add-hook 'org-agenda-mode-hook
+            (lambda ()
+              (face-remap-add-relative 'mode-line `(:background ,(doom-color 'bg)
+                                                                :foreground ,(doom-color 'fg)))))
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
   (advice-add #'org-ql-view-refresh :around #'doom-shut-up-a)
   (advice-add #'org-ql-view-refresh :after (lambda (&rest _)
