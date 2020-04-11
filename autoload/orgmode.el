@@ -751,7 +751,13 @@ which one is currently active."
                                                              (query (if tags
                                                                         `(and (todo "NEXT") ,tags (not (ts-active)))
                                                                       `(and (todo "NEXT") (not (ts-active))))))
-                                                        (org-ql-select (aj-org-combined-agenda-files) query))
+                                                        (catch 'heading
+                                                          (org-ql-select
+                                                            (aj-org-combined-agenda-files)
+                                                            query
+                                                            :action (lambda ()
+                                                                      (when (org-get-heading)
+                                                                        (throw 'heading t))))))
                                                       (let ((org-agenda-tag-filter aj-org-agenda-filter))
                                                         (org-ql-search
                                                           (aj-org-combined-agenda-files)
