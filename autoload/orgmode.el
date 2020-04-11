@@ -659,6 +659,20 @@ which one is currently active."
       :super-groups '((:auto-category t))
       :title task)))
 
+;;;###autoload
+(defun aj-org-ql-custom-task-search ()
+  "Search for tasks."
+  (let ((org-agenda-tag-filter aj-org-agenda-filter))
+    (org-ql-search
+      (aj-org-combined-agenda-files)
+      '(and (or (todo "TODO")
+                (todo "PROJECT"))
+            (not (ts-active))
+            (not (children (todo)))
+            (not (parent (todo))))
+      :super-groups '((:auto-category t ))
+      :title "Plain Todos")))
+
 ;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-agenda-gtd-hydra (:color blue
                                           :hint nil
@@ -729,14 +743,24 @@ which one is currently active."
                                                   :title "Stucked Projects"))
 
                                                ;; otherwise default to showing "NEXT" tasks
-                                               (t (let ((org-agenda-tag-filter aj-org-agenda-filter))
-                                                    (org-ql-search
-                                                      (aj-org-combined-agenda-files)
-                                                      '(and (todo "NEXT")
-                                                            (not (ts-active)))
-                                                      :sort '(date priority todo)
-                                                      :super-groups '((:auto-category t))))))
-
+                                               ;; if there are no "NEXT" tasks for current filtered view
+                                               ;; show normal tasks instead
+                                               (t (if (let* ((tags (when aj-org-agenda-filter
+                                                                     `(tags ,(string-remove-prefix
+                                                                              "+" (car aj-org-agenda-filter)))))
+                                                             (query (if tags
+                                                                        `(and (todo "NEXT") ,tags (not (ts-active)))
+                                                                      `(and (todo "NEXT") (not (ts-active))))))
+                                                        (org-ql-select (aj-org-combined-agenda-files) query))
+                                                      (let ((org-agenda-tag-filter aj-org-agenda-filter))
+                                                        (org-ql-search
+                                                          (aj-org-combined-agenda-files)
+                                                          '(and (todo "NEXT")
+                                                                (not (ts-active)))
+                                                          :sort '(date priority todo)
+                                                          :super-groups '((:auto-category t))))
+                                                    (aj-org-ql-custom-task-search)))
+                                               )
                                               )
                                             )
                                           )
@@ -766,16 +790,7 @@ which one is currently active."
            :super-groups '((:auto-category t))
            :title "Next Action")) "Next")
 
-  ("t" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search
-           (aj-org-combined-agenda-files)
-           '(and (or (todo "TODO")
-                     (todo "PROJECT"))
-                 (not (ts-active))
-                 (not (children (todo)))
-                 (not (parent (todo))))
-           :super-groups '((:auto-category t ))
-           :title "Plain Todos")) "tasks")
+  ("t" (aj-org-ql-custom-task-search) "tasks")
 
   ("p" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
