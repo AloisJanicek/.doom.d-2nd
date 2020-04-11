@@ -743,8 +743,10 @@ which one is currently active."
                                                   :title "Stucked Projects"))
 
                                                ;; otherwise default to showing "NEXT" tasks
-                                               ;; if there are no "NEXT" tasks for current filtered view
+                                               ;; if there are no "NEXT" tasks for current filtered view (or at all)
                                                ;; show normal tasks instead
+                                               ;; if there are no "normal tasks" for current filtered view (or at all)
+                                               ;; show "SOMEDAY" tasks
                                                (t (if (let* ((tags (when aj-org-agenda-filter
                                                                      `(tags ,(string-remove-prefix
                                                                               "+" (car aj-org-agenda-filter)))))
@@ -765,7 +767,31 @@ which one is currently active."
                                                                 (not (ts-active)))
                                                           :sort '(date priority todo)
                                                           :super-groups '((:auto-category t))))
-                                                    (aj-org-ql-custom-task-search)))
+                                                    (if (let* ((tags (when aj-org-agenda-filter
+                                                                       `(tags ,(string-remove-prefix
+                                                                                "+" (car aj-org-agenda-filter)))))
+                                                               (query (if tags
+                                                                          `(and (or (todo "TODO")
+                                                                                    (todo "PROJECT"))
+                                                                                ,tags
+                                                                                (not (ts-active))
+                                                                                (not (children (todo)))
+                                                                                (not (parent (todo))))
+                                                                        (and (or (todo "TODO")
+                                                                                 (todo "PROJECT"))
+                                                                             (not (ts-active))
+                                                                             (not (children (todo)))
+                                                                             (not (parent (todo)))))))
+                                                          (catch 'heading
+                                                            (org-ql-select
+                                                              (aj-org-combined-agenda-files)
+                                                              query
+                                                              :action (lambda ()
+                                                                        (when (org-get-heading)
+                                                                          (throw 'heading t))))))
+                                                        (aj-org-ql-custom-task-search)
+                                                      (aj-org-ql-simple-taks-search "SOMEDAY")))
+                                                  )
                                                )
                                               )
                                             )
