@@ -1035,6 +1035,9 @@ if running under WSL")
   (advice-add #'org-brain-visualize :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt-a)
   (advice-add #'org-brain-goto :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-brain-goto :after (lambda (&rest _)
+                                        "Recenter visited heading to the top of the buffer."
+                                        (recenter 0 t)))
   (advice-add #'org-brain-goto-current :around #'aj-org-open-file-respect-sanity-a)
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
