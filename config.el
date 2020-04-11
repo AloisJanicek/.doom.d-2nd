@@ -79,8 +79,8 @@ if running under WSL")
       +file-templates-dir (expand-file-name "templates" aj-repos-dir)
       +snippets-dir (expand-file-name "snippets" aj-repos-dir)
       doom-scratch-initial-major-mode 'emacs-lisp-mode
-      doom-font                   (font-spec :family "JetBrains Mono 1.1" :size 14)
-      doom-big-font               (font-spec :family "JetBrains Mono 1.1" :size 24)
+      doom-font                   (font-spec :family "JetBrains Mono NL 1.1" :size 14)
+      doom-big-font               (font-spec :family "JetBrains Mono NL 1.1" :size 24)
       doom-variable-pitch-font    (font-spec :family "Roboto" :size 16)
       doom-unicode-font           "Noto Color Emoji"
       doom-theme 'doom-one
