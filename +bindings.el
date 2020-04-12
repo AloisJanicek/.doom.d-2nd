@@ -138,10 +138,6 @@
      )
 
    :localleader
-   :desc "agenda"  ">"  (lambda ()
-                          (interactive)
-                          (let ((aj-org-agenda-gtd-hydra-no-auto t))
-                            (aj/org-agenda-gtd-hydra/body)))
    "B"  nil
    (:prefix ("B" . "babel")
      :desc "tangle"  "t" #'org-babel-tangle
@@ -276,75 +272,53 @@
 
  (:after evil-org-agenda
    :map evil-org-agenda-mode-map
-   :m         "."    (lambda ()
-                       (interactive)
-                       (let ((aj-org-agenda-gtd-hydra-no-auto t))
-                         (aj/org-agenda-gtd-hydra/body)))
-
-   :m         "j"      #'org-agenda-next-line
-   :m         "C-j"    #'org-agenda-next-item
-
-   :m         "k"      #'org-agenda-previous-line
-   :m         "C-k"    #'org-agenda-previous-item
-
-   (:prefix ("c" . "change")
-     :m         "t"    #'counsel-org-tag-agenda
-     )
-
-   (:prefix ("g" . "goto")
-     :m         "T"    #'org-agenda-goto-today
-     )
-
-   :map org-agenda-mode-map
-   :m         "f"     (λ! (org-agenda-filter-apply
-                           (list (concat "+"
-                                         (ivy-read "Select tag: "
-                                                   (org-global-tags-completion-table
-                                                    (org-agenda-files)))))
-                           'tag))
-
-   :m         "F"    #'aj/org-agenda-clear-filter-refresh-view
-
-   (:prefix ("s" . "set")
-     :m         "f"     (λ! (org-agenda-filter-apply aj-org-agenda-filter 'tag))
-     :m         "F"     (λ! (org-agenda-filter-show-all-tag))
-     )
-
-   (:prefix ("c" . "clock")
-     :m         "i"     #'org-agenda-clock-in
-     :m         "l"     #'visual-line-mode
-     :m         "m"     #'aj/org-clock-menu
-     :m         "o"     #'org-agenda-clock-out
-     :m         "p"     #'org-pomodoro
-     :m         "t"     #'counsel-org-tag-agenda
-     )
-
-   :localleader
-   :desc "refile"              "r" #'aj/org-refile-hydra/body
+   :m "." (lambda ()
+            (interactive)
+            (let ((aj-org-agenda-gtd-hydra-no-auto t))
+              (aj/org-agenda-gtd-hydra/body)))
    )
 
  (:after org-agenda
    :map org-agenda-mode-map
-   :iemnv "C-h" #'evil-window-left
-   :iemnv "C-j" #'evil-window-down
-   :iemnv "C-k" #'evil-window-up
-   :iemnv "C-l" #'evil-window-right
-   :m         "j"      #'org-agenda-next-line
-   :m         "C-j"    #'org-agenda-next-item
-   :m         "k"      #'org-agenda-previous-line
-   :m         "C-k"    #'org-agenda-previous-item
-   :mn    "o"   #'org-agenda-open-link
-   :mn    "t"   #'org-agenda-todo
-   :mn    "z"   #'org-agenda-view-mode-dispatch
+   :m "f" (λ! (org-agenda-filter-apply
+               (list (concat "+"
+                             (ivy-read "Select tag: "
+                                       (org-global-tags-completion-table
+                                        (org-agenda-files)))))
+               'tag))
+
+   :m "F" #'aj/org-agenda-clear-filter-refresh-view
+
+   (:prefix ("c" . "clock")
+     :m "i" #'org-agenda-clock-in
+     :m "m" #'aj/org-clock-menu
+     :m "o" #'org-agenda-clock-out
+     :m "p" #'org-pomodoro
+     )
+
+   :m "C-h" #'evil-window-left
+   :m "C-l" #'evil-window-right
+   :m "j"   #'org-agenda-next-line
+   :m "C-j" #'org-agenda-next-item
+   :m "k"   #'org-agenda-previous-line
+   :m "C-k" #'org-agenda-previous-item
+   :m "o"   #'org-agenda-open-link
+   :m "t"   #'org-agenda-todo
+   :m "z"   #'org-agenda-view-mode-dispatch
 
    "d" nil
    (:prefix ("d" . "do")
-     :m              "r"     #'aj/org-refile-hydra/body
-     :m              "s"     #'org-agenda-schedule
+     :m "r"  #'aj/org-refile-hydra/body
+     :m "s"  #'org-agenda-schedule
+     :m "t"  #'counsel-org-tag-agenda
+     )
+
+   (:prefix ("g" . "goto")
+     :m "T"  #'org-agenda-goto-today
      )
 
    :localleader
-   :desc "refile"              "r" #'aj/org-refile-hydra/body
+   :desc "refile" "r" #'aj/org-refile-hydra/body
    )
 
  (:after org-brain
@@ -428,29 +402,6 @@
      :desc "in"     "i" #'org-clock-in
      :desc "out"    "o" #'org-clock-out
      )
-   )
-
- (:after org-ql-view
-   :map org-ql-view-map
-   :m "r" #'org-ql-view-refresh
-   :m         "f"     (λ! (org-agenda-filter-apply
-                           (list (concat "+"
-                                         (substring-no-properties
-                                          (ivy-read "Select tag: "
-                                                    (org-global-tags-completion-table
-                                                     (org-agenda-files))))
-                                         ))
-                           'tag))
-   :m         "F"    #'aj/org-agenda-clear-filter-refresh-view
-
-   :localleader
-   :desc "refile"              "r" #'aj/org-refile-hydra/body
-   )
-
- (:after org-ql
-   :map org-ql-view-map
-   :mne "j" #'org-agenda-next-line
-   :mne "k" #'org-agenda-previous-line
    )
 
  (:after pdf-tools
