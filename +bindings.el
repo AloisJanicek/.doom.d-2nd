@@ -115,6 +115,17 @@
    :nm "C-k" nil
    )
 
+ (:after replace
+   :map occur-mode-map
+   :n "i" #'occur-edit-mode
+   :n "M-s" (lambda ()
+              (interactive)
+              (save-some-buffers t))
+
+   :map occur-edit-mode-map
+   :i [escape] #'occur-cease-edit
+   )
+
  (:after org-colview
    :map org-columns-map
    "O" #'org-open-at-point
