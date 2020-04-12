@@ -1261,7 +1261,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
 
 ;;;###autoload
 (defun aj-org-jump-to-heading-action (headline)
-  "Jump to heading X and narrow view after showing sub-tree."
+  "Jump to HEADLINE and narrow view after showing sub-tree."
   (let* ((marker (get-text-property 0 'marker headline))
          (buffer (marker-buffer marker)))
     (aj-open-file-switch-create-indirect-buffer-per-persp buffer)
