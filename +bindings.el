@@ -9,7 +9,7 @@
  :ni "C-j"       #'evil-window-down
  :ni "C-k"       #'evil-window-up
  :ni "C-l"       #'evil-window-right
- :ni "C-="       #'recenter-top-bottom
+ "C-="       #'recenter-top-bottom
  "M-a"       #'mark-whole-buffer
  "M-f"       #'swiper
  "M-F"       #'swiper-all
