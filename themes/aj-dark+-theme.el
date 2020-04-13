@@ -78,9 +78,9 @@ Can be an integer to determine the exact padding."
 
    ;; custom categories
    (modeline-bg     (if aj-dark+-blue-modeline base6 dark-violet))
-   (modeline-bg-alt (doom-darken bg 0.01))
+   (modeline-bg-alt bg)
    (modeline-fg     "#ffffff")
-   (modeline-fg-alt blue)
+   (modeline-fg-alt fg-alt)
 
    (-modeline-pad
     (when aj-dark+-padded-modeline
