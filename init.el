@@ -25,7 +25,7 @@
        ;;fill-column
        hl-todo
        ;;hydra
-       ;;indent-guides
+       indent-guides
        modeline
        nav-flash
        ;;neotree

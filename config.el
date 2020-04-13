@@ -79,22 +79,24 @@ if running under WSL")
       +file-templates-dir (expand-file-name "templates" aj-repos-dir)
       +snippets-dir (expand-file-name "snippets" aj-repos-dir)
       doom-scratch-initial-major-mode 'emacs-lisp-mode
-      doom-font                   (font-spec :family "JetBrains Mono NL 1.1" :size 14)
-      doom-big-font               (font-spec :family "JetBrains Mono NL 1.1" :size 24)
-      doom-variable-pitch-font    (font-spec :family "Roboto" :size 16)
-      doom-unicode-font           "Noto Color Emoji"
-      doom-theme 'doom-one
-      doom-theme 'doom-dark+
-      all-the-icons-scale-factor 1
       +doom-quit-messages '("")
       standard-indent 2
-      doom-modeline-height 20
       delete-by-moving-to-trash t
       )
 
-(when (aj-wsl-p)
-  (setq doom-font                   (font-spec :family "Consolas 1.3" :size 14)
-        doom-big-font               (font-spec :family "Consolas 1.3" :size 24)))
+;; Look & Feel
+(setq doom-themes-treemacs-line-spacing 0
+      doom-themes-treemacs-enable-variable-pitch t
+      doom-themes-treemacs-theme "doom-colors"
+      doom-modeline-height 22
+      aj-dark+-blue-modeline t
+      doom-theme 'aj-dark+
+      doom-font                   (font-spec :family "JetBrains Mono NL 1.1" :size 14)
+      doom-big-font               (font-spec :family "JetBrains Mono NL 1.1" :size 24)
+      doom-variable-pitch-font    (font-spec :family "Noto Sans" :size 14)
+      doom-unicode-font           "Noto Color Emoji"
+      all-the-icons-scale-factor 1
+      )
 
 (setq-default tab-width 4)
 
@@ -416,10 +418,10 @@ if running under WSL")
                             ("WAIT" . ,(doom-color 'magenta))
                             ("PROJECT" . ,(doom-color 'yellow))
                             ("TODO" . ,(doom-color 'yellow))
-                            ,(if (eq doom-theme 'doom-dark+)
+                            ,(if (eq doom-theme 'aj-dark+)
                                  (cons "SOMEDAY" (doom-color 'base7))
                                (cons "SOMEDAY" (doom-color 'base5)))
-                            ,(if (eq doom-theme 'doom-dark+)
+                            ,(if (eq doom-theme 'aj-dark+)
                                  (cons "MAYBE" (doom-color 'base7))
                                (cons "MAYBE" (doom-color 'base5))))
    org-enforce-todo-dependencies nil ;; if t, it hides todo entries with todo children from agenda
@@ -719,14 +721,13 @@ if running under WSL")
   )
 
 (after! pdf-view
-  (setq pdf-view-midnight-colors (cond ((eq doom-theme 'doom-dark+)
+  (setq pdf-view-midnight-colors (cond ((eq doom-theme 'aj-dark+)
                                         `(,(doom-color 'fg) . ,(doom-color 'bg)))
                                        ((eq doom-theme 'doom-one)
                                         `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))))
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   "Set up pdf-view to my liking."
                                   (hide-mode-line-mode)
-                                  (turn-off-solaire-mode)
                                   (pdf-view-auto-slice-minor-mode)
                                   (pdf-view-midnight-minor-mode)
                                   (pdf-outline-imenu-enable)
@@ -781,11 +782,11 @@ if running under WSL")
   (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t))
 
 (after! treemacs
-  (setq evil-treemacs-state-cursor 'box)
-  (setq treemacs-project-follow-cleanup t)
-
-  (set-face-attribute 'treemacs-root-face nil :height 1.0)
-  (add-hook 'treemacs-mode-hook #'variable-pitch-mode)
+  (setq
+   evil-treemacs-state-cursor 'box
+   treemacs-project-follow-cleanup t
+   treemacs-width 25
+   )
   )
 
 (after! undo-tree
@@ -1006,16 +1007,14 @@ if running under WSL")
   (setq nov-text-width t
         visual-fill-column-center-text t
         nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
-  (setq nov-shr-rendering-functions shr-external-rendering-functions)
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
   (add-hook 'nov-mode-hook (lambda ()
                              "Setup nov-mode to my liking."
                              (visual-line-mode)
-                             (solaire-mode)
                              (visual-fill-column-mode)
                              (hide-mode-line-mode)
-                             (face-remap-add-relative 'mode-line `(:background ,(doom-color 'bg)
-                                                                               :foreground ,(doom-color 'fg)))
+                             (face-remap-add-relative 'header-line `(:background ,(doom-color 'bg)
+                                                                                 :foreground ,(doom-color 'fg)))
                              (doom-mark-buffer-as-real-h)
                              (setq org-link-parameters
                                    (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
@@ -1169,33 +1168,35 @@ if running under WSL")
     )
   )
 
-(if (aj-wsl-p)
-    (set-frame-size (selected-frame) 120 42)
-  (pushnew! default-frame-alist '(fullscreen . maximized)))
-
-(custom-theme-set-faces! 'doom-dark+
+(custom-theme-set-faces! 'aj-dark+
   `(show-paren-match :foreground "#F426A5" :underline t)
-  `(org-done :foreground ,(doom-color 'base7))
-  `(org-headline-done :foreground ,(doom-color 'base7))
-  `(line-number :foreground ,(doom-color 'base7))
-  `(web-mode-html-tag-face :foreground ,(doom-color 'blue))
-  `(web-mode-html-attr-name-face :foreground ,(doom-color 'cyan))
-  `(web-mode-html-attr-equal-face :foreground ,(doom-color 'fg))
-  `(web-mode-html-tag-bracket-face :foreground ,(doom-color 'base7))
-  `(web-mode-current-element-highlight-face :background ,(doom-color 'bg-alt) :foreground ,(doom-color 'blue) :underline t)
-  `(css-selector :foreground ,(doom-color 'yellow))
-  `(css-property :foreground ,(doom-color 'cyan))
-  `(outline-3 :foreground ,(doom-lighten 'dark-violet 0.3) :bold t)
   )
 
-(when (eq doom-theme 'doom-dark+)
+(when (eq doom-theme 'aj-dark+)
   (after! json-mode
-    (add-hook 'json-mode-hook (lambda ()
-                                (face-remap-add-relative 'font-lock-keyword-face `(:foreground ,(doom-color 'cyan)))
-                                )))
+    (add-hook 'json-mode-hook
+              (lambda ()
+                (face-remap-add-relative 'font-lock-keyword-face
+                                         `(:foreground ,(doom-color 'cyan))))))
 
   (after! js2-mode
-    (add-hook 'js2-mode-hook (lambda ()
-                               (face-remap-add-relative 'font-lock-function-name-face `(:foreground ,(doom-color 'teal)))
-                               )))
+    (add-hook 'js2-mode-hook
+              (lambda ()
+                (face-remap-add-relative 'font-lock-function-name-face
+                                         `(:foreground ,(doom-color 'teal))))))
+
+  (after! treemacs-mode
+    (add-hook 'treemacs-mode-hook
+              (lambda ()
+                (face-remap-add-relative 'default
+                                         `(:background ,(doom-color 'bg-alt) :foreground ,(doom-color 'fg)))
+                (face-remap-add-relative 'hl-line
+                                         `(:background ,(doom-color 'dark-blue) :foreground "white")))))
   )
+
+(if (aj-wsl-p)
+    (progn
+      (setq doom-font                   (font-spec :family "Consolas 1.3" :size 14)
+            doom-big-font               (font-spec :family "Consolas 1.3" :size 24))
+      (set-frame-size (selected-frame) 120 42))
+  (pushnew! default-frame-alist '(fullscreen . maximized)))

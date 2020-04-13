@@ -563,6 +563,7 @@
       (:prefix ("t" . "toggle")
         :desc "auto-fill"         "a" #'auto-fill-mode
         :desc "highlight-blocks"  "B" #'highlight-blocks-mode
+        :desc "colors"            "c" #'rainbow-mode
         :desc "modeline"          "m" #'hide-mode-line-mode
         :desc "re-builder"        "R" #'regexp-builder
         :desc "flyspell"          "s" #'aj/flyspell-enable
