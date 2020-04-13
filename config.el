@@ -89,6 +89,7 @@ if running under WSL")
       +doom-quit-messages '("")
       standard-indent 2
       doom-modeline-height 20
+      delete-by-moving-to-trash t
       )
 
 (when (aj-wsl-p)
@@ -202,7 +203,9 @@ if running under WSL")
   (setq epa-pinentry-mode 'ask))
 
 (after! evil
-  (setq evil-move-cursor-back nil))
+  (setq evil-move-cursor-back nil
+        evil-want-fine-undo t
+        ))
 
 (after! evil-snipe
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
@@ -1182,6 +1185,7 @@ if running under WSL")
   `(web-mode-current-element-highlight-face :background ,(doom-color 'bg-alt) :foreground ,(doom-color 'blue) :underline t)
   `(css-selector :foreground ,(doom-color 'yellow))
   `(css-property :foreground ,(doom-color 'cyan))
+  `(outline-3 :foreground ,(doom-lighten 'dark-violet 0.3) :bold t)
   )
 
 (when (eq doom-theme 'doom-dark+)
