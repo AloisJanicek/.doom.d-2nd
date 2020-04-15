@@ -478,7 +478,7 @@
    :i "M-8"   (λ! (+workspace/switch-to 7))
    :i "M-9"   (λ! (+workspace/switch-to 8))
    :i "M-0"   #'+workspace/switch-to-last
-   :i "M-t"   #'+workspace/new
+   :in "M-t"   #'+workspace/new
    )
 
  (:after vterm
@@ -497,7 +497,7 @@
    :i "M-8"   (λ! (+workspace/switch-to 7))
    :i "M-9"   (λ! (+workspace/switch-to 8))
    :i "M-0"   #'+workspace/switch-to-last
-   :i "M-t"   #'+workspace/new
+   :in "M-t"   #'+workspace/new
    )
 
  (:after web-mode
