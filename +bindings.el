@@ -287,6 +287,8 @@
             (interactive)
             (let ((aj-org-agenda-gtd-hydra-no-auto t))
               (aj/org-agenda-gtd-hydra/body)))
+   :localleader
+   :desc "refile" "r" #'aj/org-refile-hydra/body
    )
 
  (:after org-agenda
@@ -327,9 +329,6 @@
    (:prefix ("g" . "goto")
      :m "T"  #'org-agenda-goto-today
      )
-
-   :localleader
-   :desc "refile" "r" #'aj/org-refile-hydra/body
    )
 
  (:after org-brain
