@@ -65,6 +65,9 @@
         +icons
         )
        electric
+       (undo
+        +tree
+        )
        ;;ibuffer
        vc
 
