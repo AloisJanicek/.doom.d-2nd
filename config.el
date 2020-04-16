@@ -511,8 +511,8 @@ if running under WSL")
   (setq org-archive-location "./archive/%s_archive::")
   )
 
-(after! org-bullets
-  (setq org-bullets-bullet-list
+(after! org-superstar
+  (setq org-superstar-headline-bullets-list
         '("*")))
 
 (after! org-capture
@@ -732,9 +732,9 @@ if running under WSL")
                                   (pdf-view-midnight-minor-mode)
                                   (pdf-outline-imenu-enable)
                                   (setq org-link-parameters
-                                        (remove '("pdfview" :follow org-pdfview-open :complete org-pdfview-complete-link :store org-pdfview-store-link)
+                                        (remove '("pdftools" :follow org-pdftools-open :complete org-pdftools-complete-link :store org-pdftools-store-link :export org-pdftools-export)
                                                 org-link-parameters))
-                                  (org-link-set-parameters "pdfview" :follow #'org-pdfview-open)
+                                  (org-link-set-parameters "pdfview" :follow #'org-pdftools-open)
                                   (pdf-view-fit-width-to-window)
                                   ))
 
@@ -1048,10 +1048,6 @@ if running under WSL")
         org-brain-include-file-entries t
         org-brain-file-entries-use-title t
         )
-  )
-
-(use-package! org-pdfview
-  :commands (org-pdfview-open org-pdfview-store-link org-pdfview-complete-link org-pdfview-export)
   )
 
 (use-package! org-ql

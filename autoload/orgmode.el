@@ -1131,7 +1131,7 @@ Reconstruct full file path first."
     (cond ((string-match ".epub" path)
            (nov-org-link-follow path))
           ((string-match ".pdf" path)
-           (org-pdfview-open path))
+           (org-pdftools-open path))
           (t (message "Not supported file-type.")))))
 
 ;;;###autoload
@@ -1153,12 +1153,12 @@ Otherwise dispatch default commands.
              (nov-org-link-store)))
           (pdf
            (if calibre
-               (org-pdfview-calibre-store-link)
-             (org-pdfview-store-link)))
+               (org-pdftools-calibre-store-link)
+             (org-pdftools-store-link)))
           (t nil))))
 
 ;;;###autoload
-(defun org-pdfview-calibre-store-link ()
+(defun org-pdftools-calibre-store-link ()
   "Store a link to a `pdf-view-mode' buffer representing PDF file from Calibre library."
   (when (eq major-mode 'pdf-view-mode)
     (let* ((calibre (string-match aj-library-dir buffer-file-name))

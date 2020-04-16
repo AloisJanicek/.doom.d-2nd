@@ -64,8 +64,6 @@
 (package! org-brain
   :recipe (:host github :repo "Kungsgeten/org-brain"))
 
-(package! org-pdfview)
-
 (package! org-sidebar
   :recipe (:host github :repo "alphapapa/org-sidebar"))
 
