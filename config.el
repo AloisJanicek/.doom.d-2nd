@@ -732,9 +732,10 @@ if running under WSL")
                                   (pdf-view-midnight-minor-mode)
                                   (pdf-outline-imenu-enable)
                                   (setq org-link-parameters
-                                        (remove '("pdftools" :follow org-pdftools-open :complete org-pdftools-complete-link :store org-pdftools-store-link :export org-pdftools-export)
-                                                org-link-parameters))
-                                  (org-link-set-parameters "pdfview" :follow #'org-pdftools-open)
+                                        (remove
+                                         '("pdf" :follow org-pdftools-open :complete org-pdftools-complete-link :store org-pdftools-store-link :export org-pdftools-export)
+                                         org-link-parameters))
+                                  (org-link-set-parameters "pdf" :follow #'org-pdftools-open)
                                   (pdf-view-fit-width-to-window)
                                   ))
 
