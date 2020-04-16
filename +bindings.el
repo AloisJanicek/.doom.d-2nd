@@ -54,6 +54,12 @@
    "C-;" #'ivy-restrict-to-matches
    )
 
+ (:after eww
+   :map eww-mode-map
+   :n "<tab>" #'org-cycle
+   :n "S-<tab>" #'org-shifttab
+   )
+
  (:after emmet-mode
    :map emmet-mode-keymap
    :i "M-r" #'aj/emmet-mark-and-preview
@@ -111,6 +117,8 @@
    :map nov-mode-map
    :nm "o" #'aj/nov-mode-menu
    :nm "q" #'kill-this-buffer
+   :nm "<tab>" #'org-cycle
+   :nm "S-<tab>" #'org-shifttab
    :nm "C-j" nil
    :nm "C-k" nil
    )

@@ -84,6 +84,8 @@
 
 (package! shrface :recipe (:host github :repo "chenyanming/shrface"))
 
+(package! shr-tag-pre-highlight :recipe (:host github :repo "xuchunyang/shr-tag-pre-highlight.el"))
+
 (package! systemd)
 
 (package! vimrc-mode)

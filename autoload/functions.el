@@ -792,6 +792,40 @@ https://github.com/Konfekt/wsl-gui-bins/blob/master/zeal
 "
     (call-process (executable-find "zeal") nil 0 nil search))
 
+;;;###autoload
+(defun shrface-shr-tag-pre-highlight (pre)
+  "Highlighting code in PRE."
+  (let* ((shr-folding-mode 'none)
+         (shr-current-font 'default)
+         (code (with-temp-buffer
+                 (shr-generic pre)
+                 (setq-local fill-column 120)
+                 (indent-rigidly (point-min) (point-max) 2)
+                 (if (eq "" (dom-texts pre))
+                     nil
+                   (progn
+                     (setq-local fill-column shrface-paragraph-fill-column)
+                     (indent-rigidly (point-min) (point-max) shrface-paragraph-indentation)))
+                 (buffer-string)))
+         (lang (or (shr-tag-pre-highlight-guess-language-attr pre)
+                   (let ((sym (language-detection-string code)))
+                     (and sym (symbol-name sym)))))
+         (mode (and lang
+                    (shr-tag-pre-highlight--get-lang-mode lang))))
+    (shr-ensure-newline)
+    (insert (make-string shrface-paragraph-indentation ?\ )) ; make indent string
+    (insert (propertize (concat "#+BEGIN_SRC " lang) 'face 'org-block-begin-line))
+    (shr-ensure-newline)
+    (insert
+     (or (and (fboundp mode)
+              (with-demoted-errors "Error while fontifying: %S"
+                (shr-tag-pre-highlight-fontify code mode)))
+         code))
+    (shr-ensure-newline)
+    (insert (make-string shrface-paragraph-indentation ?\ )) ; make indent string
+    (insert (propertize "#+END_SRC" 'face 'org-block-end-line ) )
+    (shr-ensure-newline)))
+
 (provide 'functions)
 
 ;;; functions.el ends here

@@ -153,8 +153,8 @@
        ;;plantuml
        ;;purescript
        (python
-       ;;+lsp
-       ;;+conda
+        ;;+lsp
+        ;;+conda
         )
        ;;qt
        racket

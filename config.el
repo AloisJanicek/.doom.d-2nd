@@ -177,7 +177,7 @@ if running under WSL")
   (setq counsel-dash-docsets-path (if (aj-wsl-p)
                                       (expand-file-name  "AppData/Local/Zeal/Zeal/docsets" aj-home-base-dir)
                                     (expand-file-name ".local/share/Zeal" aj-home-base-dir)))
-  (setq counsel-dash-browser-func 'aj-eaf-browse-url-maybe)
+  (setq counsel-dash-browser-func 'eww-browse-url)
   )
 
 (after! elisp-mode
@@ -219,13 +219,14 @@ if running under WSL")
   )
 
 (after! eww
-  (set-popup-rule! "*eww\*"            :vslot 1 :size 0.4  :side 'left :select t)
-  (add-hook 'eww-mode-hook #'visual-line-mode)
-  (add-hook 'eww-after-render-hook #'eww-readable)
-  )
-
-(after! faces
-  (set-face-attribute 'fixed-pitch-serif nil :family "Iosevka Slab")
+  (set-popup-rule! "*eww\*"            :vslot 1 :size 80  :side 'left :select t :quit nil :ttl nil)
+  (add-hook 'eww-after-render-hook
+            (lambda ()
+              (eww-readable)
+              (turn-on-visual-line-mode)
+              (face-remap-add-relative 'header-line `(:background ,(doom-color 'bg)
+                                                                  :foreground ,(doom-color 'fg)))
+              ))
   )
 
 (after! files
@@ -299,7 +300,7 @@ if running under WSL")
 
 (after! (:any js-mode js2-mode rjsx-mode web-mode)
   (set-docsets! '(js2-mode rjsx-mode)
-    "JavaScript" "Angular" "Bootstrap_4" "jQuery" "NodeJS" "React" "VueJS"))
+    "JavaScript" "AngularJS" "Bootstrap_4" "jQuery" "NodeJS" "React" "VueJS"))
 
 (after! js2-mode
   (add-hook 'js2-mode-hook #'eslintd-fix-mode)
@@ -765,7 +766,7 @@ if running under WSL")
   )
 
 (after! python
-  (set-docsets! 'python-mode "Python 3"))
+  (set-docsets! 'python-mode "Python_3"))
 
 (after! racket-mode
   (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil))
@@ -997,14 +998,29 @@ if running under WSL")
 (use-package shrface
   :after shr
   :config
-  (setq shrface-bullets-bullet-list '("*" "*" "*" "*" "*" "*"))
-  (setq shrface-paragraph-indentation 2)
-  (setq shrface-paragraph-fill-column 120)
+  (setq shrface-bullets-bullet-list '("*"
+                                      "**"
+                                      "***"
+                                      "****"
+                                      "*****"
+                                      "******")
+        shrface-paragraph-indentation 0
+        shrface-paragraph-fill-column 120)
+  (add-to-list 'shr-external-rendering-functions 
+               '(code . shrface-tag-code))
   )
+
+(use-package shr-tag-pre-highlight
+  :after shr
+  :config
+  (add-to-list 'shr-external-rendering-functions
+               '(pre . shrface-shr-tag-pre-highlight)))
 
 (use-package! nov
   :after org
   :config
+  (setq nov-shr-rendering-functions
+        (append nov-shr-rendering-functions shr-external-rendering-functions))
   (setq nov-text-width t
         visual-fill-column-center-text t
         nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
@@ -1139,8 +1155,6 @@ if running under WSL")
 (advice-add #'aj-org-jump-to-headline-at :around #'aj-org-buffer-to-popup-a)
 
 
-(load! "+bindings")
-(load! "+local")
 
 (unless (aj-wsl-p)
   (add-to-list 'load-path (expand-file-name "emacs-application-framework" aj-repos-dir))
@@ -1196,3 +1210,8 @@ if running under WSL")
             doom-big-font               (font-spec :family "Consolas 1.3" :size 24))
       (set-frame-size (selected-frame) 120 42))
   (pushnew! default-frame-alist '(fullscreen . maximized)))
+
+(set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono NL 1.1" :slant 'italic :height 105 :weight 'bold)
+
+(load! "+bindings")
+(load! "+local")
