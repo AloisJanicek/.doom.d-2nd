@@ -398,6 +398,7 @@ if running under WSL")
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (advice-add #'org-refile :after #'aj-org-buffers-respect-sanity-a)
+  (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
                                                 (when (eq major-mode 'org-mode) (save-buffer))))
