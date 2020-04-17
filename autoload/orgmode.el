@@ -1107,12 +1107,12 @@ If either `org-pomodoro' or org-clock aren't active, print \"No Active Task \""
     (require 'org-pomodoro)
     (cond ((equal :none org-pomodoro-state)
            (if (org-clock-is-active)
-               (format "Clocked task: %d minutes - %s"
+               (format "⏲ %d m - %s"
                        (org-clock-get-clocked-time) (substring-no-properties org-clock-heading))
              "No Active task"))
           ((equal :pomodoro org-pomodoro-state)
-           (format "%d - Pomodoro: %d minutes - %s"
-                   org-pomodoro-count (/ (org-pomodoro-remaining-seconds) 60) (substring-no-properties org-clock-heading)))
+           (format "⦿ %d m / %d - %s"
+                   (/ (org-pomodoro-remaining-seconds) 60) org-pomodoro-count (substring-no-properties org-clock-heading)))
           ((equal :short-break org-pomodoro-state) "Short Break")
           ((equal :long-break org-pomodoro-state) "Long Break"))))
 
