@@ -59,6 +59,8 @@
    :n "<tab>" #'org-cycle
    :n "S-<tab>" #'org-shifttab
    :n "f" #'link-hint-open-link
+   :n "o" #'eww-browse-with-external-browser
+   :n "O" #'eww
    )
 
  (:after emmet-mode

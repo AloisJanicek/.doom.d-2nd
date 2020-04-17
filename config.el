@@ -337,7 +337,10 @@ if running under WSL")
           ("merriam-webster\\.com" . eww-browse-url)
           ("." . gk-browse-url)
           )
-        browse-url-secondary-browser-function 'eww-browse-url
+        browse-url-secondary-browser-function (lambda (url &rest _)
+                                                (if (not (eq major-mode 'eww-mode))
+                                                    (eww-browse-url url)
+                                                  (aj-chromium-browse-url-dispatch url)))
         )
   )
 
