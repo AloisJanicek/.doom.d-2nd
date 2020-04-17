@@ -151,8 +151,11 @@ if running under WSL")
   (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t :transient nil))
 
 (after! company
-  (setq company-idle-delay nil)
-  (setq company-minimum-prefix-length 2))
+  (setq company-idle-delay 0.5
+        company-minimum-prefix-length 2
+        company-tooltip-timer 0.5
+        )
+  )
 
 (after! counsel
   (setq counsel-grep-base-command "grep -E -n -i -e %s %s"
@@ -220,13 +223,11 @@ if running under WSL")
 
 (after! eww
   (set-popup-rule! "*eww\*"            :vslot 1 :size 80  :side 'left :select t :quit nil :ttl nil)
+  (setq eww-after-render-hook nil)
   (add-hook 'eww-after-render-hook
             (lambda ()
               (eww-readable)
-              (turn-on-visual-line-mode)
-              (face-remap-add-relative 'header-line `(:background ,(doom-color 'bg)
-                                                                  :foreground ,(doom-color 'fg)))
-              ))
+              (turn-on-visual-line-mode)))
   )
 
 (after! files
@@ -254,7 +255,7 @@ if running under WSL")
   (setq geiser-default-implementation 'guile))
 
 (after! help
-  (set-popup-rule! "*help\*"           :vslot 2 :size 0.32 :side 'left :select t))
+  (set-popup-rule! "*Help\*"           :vslot 2 :size 0.32 :side 'left :select t))
 
 (after! helpful
   (set-popup-rule! "*helpful\*"        :vslot 2 :size 0.32 :side 'left :select t)
@@ -282,6 +283,11 @@ if running under WSL")
   (ivy-add-actions
    #'ivy-yasnippet
    '(("e" aj-ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own"))))
+
+(after! ivy-posframe
+  (setf (alist-get t ivy-posframe-display-functions-alist)
+        #'ivy-posframe-display-at-frame-top-center)
+  )
 
 (after! ivy-prescient
   (add-to-list 'ivy-prescient-sort-commands 'counsel-outline t)
@@ -722,10 +728,8 @@ if running under WSL")
   )
 
 (after! pdf-view
-  (setq pdf-view-midnight-colors (cond ((eq doom-theme 'aj-dark+)
-                                        `(,(doom-color 'fg) . ,(doom-color 'bg)))
-                                       ((eq doom-theme 'doom-one)
-                                        `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))))
+  (setq pdf-view-midnight-colors
+        `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   "Set up pdf-view to my liking."
                                   (hide-mode-line-mode)
@@ -856,6 +860,7 @@ if running under WSL")
   )
 
 (use-package! company-posframe
+  :disabled
   :after company
   :config
   (company-posframe-mode 1)
@@ -1005,7 +1010,7 @@ if running under WSL")
                                       "*****"
                                       "******")
         shrface-paragraph-indentation 0
-        shrface-paragraph-fill-column 120)
+        shrface-paragraph-fill-column 80)
   (add-to-list 'shr-external-rendering-functions 
                '(code . shrface-tag-code))
   )
@@ -1030,8 +1035,6 @@ if running under WSL")
                              (visual-line-mode)
                              (visual-fill-column-mode)
                              (hide-mode-line-mode)
-                             (face-remap-add-relative 'header-line `(:background ,(doom-color 'bg)
-                                                                                 :foreground ,(doom-color 'fg)))
                              (doom-mark-buffer-as-real-h)
                              (setq org-link-parameters
                                    (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
@@ -1070,10 +1073,6 @@ if running under WSL")
 (use-package! org-ql
   :after org
   :config
-  (add-hook 'org-agenda-mode-hook
-            (lambda ()
-              (face-remap-add-relative 'header-line `(:background ,(doom-color 'bg)
-                                                                  :foreground ,(doom-color 'fg)))))
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
   (advice-add #'org-ql-view-refresh :around #'doom-shut-up-a)
   (advice-add #'org-ql-view-refresh :after (lambda (&rest _)
@@ -1178,11 +1177,27 @@ if running under WSL")
     )
   )
 
+(add-hook! 'doom-load-theme-hook :append
+  (defun +doom-solaire-mode-swap-bg-maybe-h ()
+    (when (string-prefix-p "aj-" (symbol-name doom-theme))
+      (require 'solaire-mode)
+      (solaire-mode-swap-bg))))
+
 (custom-theme-set-faces! 'aj-dark+
+  `(default :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
+  `(fringe :background ,(doom-color 'bg) :foreground ,(doom-color 'fg))
+  `(solaire-default-face :background ,(doom-color 'bg))
+  `(ivy-posframe :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
   `(show-paren-match :foreground "#F426A5" :underline t)
+  `(doom-dashboard-banner :foreground ,(doom-color 'base4))
+  `(doom-dashboard-loaded :foreground ,(doom-color 'base4))
+  `(header-line :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
   )
 
 (when (eq doom-theme 'aj-dark+)
+  (after! solaire-mode
+    (setq solaire-mode-remap-line-numbers t))
+
   (after! json-mode
     (add-hook 'json-mode-hook
               (lambda ()
@@ -1202,6 +1217,14 @@ if running under WSL")
                                          `(:background ,(doom-color 'bg-alt) :foreground ,(doom-color 'fg)))
                 (face-remap-add-relative 'hl-line
                                          `(:background ,(doom-color 'dark-blue) :foreground "white")))))
+  (after! pdf-view
+    (setq pdf-view-midnight-colors `(,(doom-color 'fg) . ,(doom-color 'base2)))
+    (add-hook 'pdf-view-mode-hook
+              (lambda ()
+                (face-remap-add-relative 'default
+                                         `(:background ,(doom-color 'base2)))
+                (face-remap-add-relative 'fringe
+                                         `(:background ,(doom-color 'base2))))))
   )
 
 (if (aj-wsl-p)

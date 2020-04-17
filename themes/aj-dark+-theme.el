@@ -189,7 +189,7 @@ Can be an integer to determine the exact padding."
    (js2-jsdoc-value            :foreground cyan)
 
    ;; line-number
-   (line-number :background bg :foreground base7)
+   (line-number :foreground base7)
 
    ;; lsp-mode
    (lsp-lens-face              :foreground base7 :height 0.8)

@@ -6,7 +6,7 @@
 
        :completion
        (company
-        ;; +childframe
+        +childframe
         )
        ;; (helm
        ;;  +childframe)
@@ -14,7 +14,7 @@
        (ivy
         +icons
         +prescient
-        ;; +childframe
+        +childframe
         )
 
        :ui
