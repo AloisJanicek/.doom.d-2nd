@@ -373,19 +373,6 @@ if running under WSL")
   )
 
 (after! org
-  ;; autoload missing encrypt / decrypt commands
-  (unless
-      (fboundp 'org-decrypt-entries)
-    (autoload
-      (function org-decrypt-entries)
-      "org-crypt" nil t))
-
-  (unless
-      (fboundp 'org-encrypt-entry)
-    (autoload
-      (function org-encrypt-entry)
-      "org-crypt" nil t))
-
   (set-popup-rule! "^\\*org-brain\\*$" :vslot 3 :size 0.22 :side 'left :select t :quit nil        :ttl nil               :autosave t)
   (set-popup-rule! "^CAPTURE.*\\.org$"          :size 0.4  :side 'bottom          :select t                              :autosave t)
   (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t                          :autosave t)
