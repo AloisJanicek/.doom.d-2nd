@@ -111,7 +111,7 @@ Can be an integer to determine the exact padding."
     :background modeline-bg-alt :foreground modeline-fg-alt
     :box (if -modeline-pad `(:line-width ,-modeline-pad :color ,modeline-bg-alt)))
 
-   (fringe :foreground fg-alt :background bg)
+   (fringe :foreground fg-alt :background base2)
 
    (font-lock-regexp-grouping-construct :foreground yellow)
 

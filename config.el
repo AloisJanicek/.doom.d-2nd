@@ -1179,19 +1179,29 @@ if running under WSL")
 
 (custom-theme-set-faces! 'aj-dark+
   `(default :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
-  `(fringe :background ,(doom-color 'bg) :foreground ,(doom-color 'fg))
-  `(solaire-default-face :background ,(doom-color 'bg))
-  `(ivy-posframe :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
-  `(show-paren-match :foreground "#F426A5" :underline t)
   `(doom-dashboard-banner :foreground ,(doom-color 'base4))
   `(doom-dashboard-loaded :foreground ,(doom-color 'base4))
-  `(header-line :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
+  `(fringe :background ,(doom-color 'base2) :foreground ,(doom-color 'base7))
+  `(header-line :background ,(doom-color 'base2) :foreground ,(doom-color 'base7))
+  `(ivy-posframe :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
+  `(mode-line-inactive :background ,(doom-color 'base2) :foreground ,(doom-color 'fg-alt))
+  `(solaire-default-face :background ,(doom-color 'bg) :foreground ,(doom-color 'fg))
+  `(solaire-fringe-face :background ,(doom-color 'bg) :foreground ,(doom-color 'fg-alt))
+  `(show-paren-match :foreground "#F426A5" :underline t)
+  `(solaire-mode-line-inactive-face :background ,(doom-color 'bg) :foreground ,(doom-color 'fg-alt))
   )
 
 (when (eq doom-theme 'aj-dark+)
   (after! solaire-mode
     (setq solaire-mode-remap-line-numbers t)
+
+    (setq solaire-mode-remap-fringe nil)
+    (add-to-list 'solaire-mode-remap-alist '((fringe solaire-fringe-face) . t))
+
+    (remove-hook 'focus-in-hook #'solaire-mode-reset)
+    (remove-hook! '(doom-load-theme-hook doom-reload-hook) #'solaire-mode-reset)
     (remove-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
+
     (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
     )
 
