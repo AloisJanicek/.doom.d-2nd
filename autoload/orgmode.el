@@ -1013,7 +1013,9 @@ split current window and displays `BUFFER' on the left."
                         (or (when from-agenda start-win)
                             (some-window not-special-windows)))))))
 
-          (switch-to-buffer buffer)))
+          (switch-to-buffer buffer)
+          (with-current-buffer buffer
+            (turn-off-solaire-mode))))
     (message "this is not buffer: %s" buffer)))
 
 ;;;###autoload
@@ -1023,19 +1025,23 @@ Similar to `aj-get-window-for-org-buffer' but displays org buffer
 in temporarily popup window on the right side of the frame.
 "
   (if (bufferp buffer)
-      (+popup-buffer buffer
-                     '((side . right)
-                       (size . 86)
-                       (window-width . 40)
-                       (window-height . 0.16)
-                       (slot)
-                       (vslot . 1)
-                       (window-parameters
-                        (ttl)
-                        (quit . t)
-                        (select . t)
-                        (modeline)
-                        (autosave . t))))
+      (progn
+        (+popup-buffer buffer
+                       '((side . right)
+                         (size . 86)
+                         (window-width . 40)
+                         (window-height . 0.16)
+                         (slot)
+                         (vslot . 1)
+                         (window-parameters
+                          (ttl)
+                          (quit . t)
+                          (select . t)
+                          (modeline)
+                          (autosave . t))))
+        (with-current-buffer buffer
+          (turn-off-solaire-mode)))
+
     (message "this is not buffer: %s" buffer)))
 
 ;;;###autoload

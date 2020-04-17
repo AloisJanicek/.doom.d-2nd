@@ -469,7 +469,8 @@ if running under WSL")
                 "Narrow and show children after switching."
                 (widen)
                 (org-narrow-to-subtree)
-                (org-show-children)))
+                (org-show-children)
+                (turn-off-solaire-mode)))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-exit :after #'aj-org-buffers-respect-sanity-a)
@@ -1197,7 +1198,10 @@ if running under WSL")
 
 (when (eq doom-theme 'aj-dark+)
   (after! solaire-mode
-    (setq solaire-mode-remap-line-numbers t))
+    (setq solaire-mode-remap-line-numbers t)
+    (remove-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
+    (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
+    )
 
   (after! json-mode
     (add-hook 'json-mode-hook
