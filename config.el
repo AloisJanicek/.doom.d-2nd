@@ -227,6 +227,7 @@ if running under WSL")
   (add-hook 'eww-after-render-hook
             (lambda ()
               (eww-readable)
+              (recenter 0 t)
               (turn-on-visual-line-mode)))
   )
 

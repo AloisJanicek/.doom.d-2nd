@@ -58,6 +58,7 @@
    :map eww-mode-map
    :n "<tab>" #'org-cycle
    :n "S-<tab>" #'org-shifttab
+   :n "f" #'link-hint-open-link
    )
 
  (:after emmet-mode
