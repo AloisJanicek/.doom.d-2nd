@@ -224,15 +224,14 @@ if running under WSL")
 
 (after! eww
   (set-popup-rule! "*eww\*"            :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil)
-  (setq eww-after-render-hook nil)
   (add-hook 'eww-after-render-hook
             (lambda ()
+              (shrface-mode)
               (eww-readable)
               (recenter 0 t)
               (turn-on-visual-line-mode)
               (xah-rename-eww-buffer)
               (doom-mark-buffer-as-real-h)
-              (shrface-mode)
               (persp-add-buffer (current-buffer))
               ))
   )
