@@ -222,7 +222,7 @@ if running under WSL")
   )
 
 (after! eww
-  (set-popup-rule! "*eww\*"            :vslot 1 :size 80  :side 'left :select t :quit nil :ttl nil)
+  (set-popup-rule! "*eww\*"            :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil)
   (setq eww-after-render-hook nil)
   (add-hook 'eww-after-render-hook
             (lambda ()
