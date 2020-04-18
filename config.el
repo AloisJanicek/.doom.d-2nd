@@ -294,6 +294,14 @@ if running under WSL")
 (after! ivy-posframe
   (setf (alist-get t ivy-posframe-display-functions-alist)
         #'ivy-posframe-display-at-frame-top-center)
+  (setq ivy-posframe-size-function
+        (lambda ()
+          (list
+           :height (+ ivy-height 1)
+           :width (round (* (frame-width) 0.72))
+           :min-height (+ ivy-height 1)
+           :min-width (round (* (frame-width) 0.72))))
+        )
   )
 
 (after! ivy-prescient
