@@ -1148,7 +1148,9 @@ Otherwise dispatch default commands.
   (require 'nov)
   (let* ((file (or nov-file-name
                    (buffer-file-name)
-                   (buffer-file-name (buffer-base-buffer))))
+                   (buffer-file-name (buffer-base-buffer))
+                   ""
+                   ))
          (epub (string-suffix-p "epub" file t))
          (pdf (string-suffix-p "pdf" file t))
          (calibre (file-in-directory-p file
