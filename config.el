@@ -101,7 +101,7 @@ if running under WSL")
 
 (setq-default tab-width 4)
 
-(set-popup-rule! "*backtrace\*"                  :size 0.5  :side 'bottom :select t)
+(set-popup-rule! "*backtrace\*"                  :size 0.5  :side 'bottom :select t :quit t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
 
 (after! alert
@@ -262,10 +262,10 @@ if running under WSL")
   (setq geiser-default-implementation 'guile))
 
 (after! help
-  (set-popup-rule! "*Help\*"           :vslot 2 :size 0.32 :side 'left :select t))
+  (set-popup-rule! "*Help\*"           :vslot 2 :size 82 :side 'left :select t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"        :vslot 2 :size 0.32 :side 'left :select t)
+  (set-popup-rule! "*helpful\*"        :vslot 2 :size 82 :side 'left :select t)
   (add-hook 'helpful-mode-hook #'visual-line-mode)
   )
 
@@ -273,7 +273,7 @@ if running under WSL")
   (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! info
-  (set-popup-rule! "*info*"            :vslot 2 :size 0.32 :side 'left :select t :transient nil :quit nil)
+  (set-popup-rule! "*info*"            :vslot 2 :size 80 :side 'left :select t :transient nil :quit nil)
   (require 'ol-info)
   )
 
