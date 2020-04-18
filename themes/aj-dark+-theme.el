@@ -242,6 +242,7 @@ Can be an integer to determine the exact padding."
    (tooltip :background base2 :foreground fg)
 
    ;; web-mode
+   (web-mode-css-selector-face :foreground yellow)
    (web-mode-html-tag-face :foreground blue)
    (web-mode-html-attr-name-face :foreground cyan)
    (web-mode-html-attr-equal-face :foreground fg)
