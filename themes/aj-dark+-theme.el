@@ -78,7 +78,7 @@ Can be an integer to determine the exact padding."
 
    ;; custom categories
    (modeline-bg     (if aj-dark+-blue-modeline base6 dark-violet))
-   (modeline-bg-alt bg)
+   (modeline-bg-alt base2)
    (modeline-fg     "#ffffff")
    (modeline-fg-alt fg-alt)
 
@@ -87,7 +87,8 @@ Can be an integer to determine the exact padding."
       (if (integerp aj-dark+-padded-modeline) aj-dark+-padded-modeline 4))))
 
   ;; --- base faces ------------------------
-  ((highlight            :background highlight  :foreground base8 :distant-foreground base8)
+  ((header-line :background base2 :foreground base7)
+   (highlight            :background highlight  :foreground base8 :distant-foreground base8)
    ((lazy-highlight &override) :background base4 :foreground fg :distant-foreground fg :bold bold)
    (doom-modeline-buffer-path       :foreground green :weight 'bold)
    (doom-modeline-buffer-major-mode :inherit 'doom-modeline-buffer-path)
@@ -108,10 +109,10 @@ Can be an integer to determine the exact padding."
     :background modeline-bg :foreground modeline-fg
     :box (if -modeline-pad `(:line-width ,-modeline-pad :color ,modeline-bg)))
    (solaire-mode-line-inactive-face
-    :background modeline-bg-alt :foreground modeline-fg-alt
+    :background bg :foreground modeline-fg-alt
     :box (if -modeline-pad `(:line-width ,-modeline-pad :color ,modeline-bg-alt)))
 
-   (fringe :foreground fg-alt :background base2)
+   (fringe :background base2 :foreground base3)
 
    (font-lock-regexp-grouping-construct :foreground yellow)
 
@@ -176,7 +177,12 @@ Can be an integer to determine the exact padding."
    (dired-k-ignored :foreground cyan)
    (dired-k-added    :foreground vc-added)
 
+   ;; doom-dashboard
+   (doom-dashboard-banner :foreground base4)
+   (doom-dashboard-loaded :foreground base4)
+
    ;; ivy
+   (ivy-posframe :background base2 :foreground fg)
    (counsel-active-mode :foreground (doom-lighten base6 0.1))
    (ivy-minibuffer-match-face-2 :foreground (doom-lighten base6 0.1) :weight 'extra-bold)
 

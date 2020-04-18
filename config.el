@@ -1183,31 +1183,32 @@ if running under WSL")
 
 (custom-theme-set-faces! 'aj-dark+
   `(default :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
-  `(doom-dashboard-banner :foreground ,(doom-color 'base4))
-  `(doom-dashboard-loaded :foreground ,(doom-color 'base4))
-  `(fringe :background ,(doom-color 'base2) :foreground ,(doom-color 'base2))
-  `(header-line :background ,(doom-color 'base2) :foreground ,(doom-color 'base7))
-  `(ivy-posframe :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
-  `(mode-line-inactive :background ,(doom-color 'base2) :foreground ,(doom-color 'fg-alt))
   `(solaire-default-face :background ,(doom-color 'bg) :foreground ,(doom-color 'fg))
-  `(solaire-fringe-face :background ,(doom-color 'bg) :foreground ,(doom-color 'bg))
+  `(solaire-fringe-face :background ,(doom-color 'bg) :foreground ,(doom-color 'base4))
   `(show-paren-match :foreground "#F426A5" :underline t)
-  `(solaire-mode-line-inactive-face :background ,(doom-color 'bg) :foreground ,(doom-color 'fg-alt))
+  )
+
+(after! solaire-mode
+  (setq solaire-mode-remap-line-numbers t)
+
+  (setq solaire-mode-remap-fringe nil)
+  (add-to-list 'solaire-mode-remap-alist '((fringe solaire-fringe-face) . t))
+
+  (defadvice! redraw-after-solaire-mode (&rest _)
+    :after #'solaire-mode
+    (if solaire-mode (force-mode-line-update)))
+
+  (remove-hook 'focus-in-hook #'solaire-mode-reset)
+  (remove-hook! '(doom-load-theme-hook doom-reload-hook) #'solaire-mode-reset)
+  (remove-hook 'solaire-mode-hook #'+doom-disable-fringes-in-minibuffer-h)
+  (advice-remove #'which-key--show-buffer-side-window #'+doom--no-fringes-in-which-key-buffer-a)
+  (remove-hook! '(minibuffer-setup-hook window-configuration-change-hook) #'+doom-disable-fringes-in-minibuffer-h)
+  (remove-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
+
+  (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
   )
 
 (when (eq doom-theme 'aj-dark+)
-  (after! solaire-mode
-    (setq solaire-mode-remap-line-numbers t)
-
-    (setq solaire-mode-remap-fringe nil)
-    (add-to-list 'solaire-mode-remap-alist '((fringe solaire-fringe-face) . t))
-
-    (remove-hook 'focus-in-hook #'solaire-mode-reset)
-    (remove-hook! '(doom-load-theme-hook doom-reload-hook) #'solaire-mode-reset)
-    (remove-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
-
-    (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
-    )
 
   (after! json-mode
     (add-hook 'json-mode-hook
@@ -1228,6 +1229,7 @@ if running under WSL")
                                          `(:background ,(doom-color 'bg-alt) :foreground ,(doom-color 'fg)))
                 (face-remap-add-relative 'hl-line
                                          `(:background ,(doom-color 'dark-blue) :foreground "white")))))
+
   (after! pdf-view
     (setq pdf-view-midnight-colors `(,(doom-color 'fg) . ,(doom-color 'base2)))
     (add-hook 'pdf-view-mode-hook
@@ -1236,6 +1238,7 @@ if running under WSL")
                                          `(:background ,(doom-color 'base2)))
                 (face-remap-add-relative 'fringe
                                          `(:background ,(doom-color 'base2))))))
+
   )
 
 (if (aj-wsl-p)
