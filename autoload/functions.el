@@ -718,20 +718,25 @@ Just one window displaying browser."
   )
 
 ;;;###autoload
-(defun aj/eaf-browser-pop-buffers ()
-  "Pop eaf browser buffers.
+(defun aj/eaf-eww-browser-pop-buffers ()
+  "Pop to buffer eaf or eww browser buffers.
 With this popup rules will apply to them."
   (interactive)
-  (ivy-read "EAF buffer: "
+  (ivy-read "EAF or eww buffer: "
             (mapcar (lambda (buf)
                       (with-current-buffer buf
-                        (cons eaf--bookmark-title buf)))
+                        (cond ((eq major-mode 'eaf-mode)
+                               (cons eaf--bookmark-title buf))
+                              ((eq major-mode 'eww-mode)
+                               (cons (plist-get eww-data :title) buf)) (t))))
                     (seq-filter
                      (lambda (buf)
                        (with-current-buffer buf
-                         (if (and (eq major-mode 'eaf-mode)
-                                  (string-equal eaf--buffer-app-name "browser")
-                                  (not (persp-buffer-in-other-p buf (get-current-persp))))
+                         (if (or (and (eq major-mode 'eaf-mode)
+                                      (string-equal eaf--buffer-app-name "browser")
+                                      (not (persp-buffer-in-other-p buf (get-current-persp))))
+                                 (and (eq major-mode 'eww-mode)
+                                      (not (persp-buffer-in-other-p buf (get-current-persp)))))
                              t nil)))
                      (buffer-list)))
             :keymap ivy-switch-buffer-map
@@ -825,6 +830,18 @@ https://github.com/Konfekt/wsl-gui-bins/blob/master/zeal
     (insert (make-string shrface-paragraph-indentation ?\ )) ; make indent string
     (insert (propertize "#+END_SRC" 'face 'org-block-end-line ) )
     (shr-ensure-newline)))
+
+;;;###autoload
+(defun xah-rename-eww-buffer ()
+  "Rename `eww-mode' buffer so sites open in new page.
+URL `http://ergoemacs.org/emacs/emacs_eww_web_browser.html'
+Version 2017-11-10"
+  (let (($title (plist-get eww-data :title)))
+    (when (eq major-mode 'eww-mode )
+      (if $title
+          (rename-buffer (concat "*eww* " $title ) t)
+        (rename-buffer "*eww*" t)))))
+
 
 (provide 'functions)
 

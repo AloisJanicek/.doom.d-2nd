@@ -720,7 +720,7 @@
                                                        (eq major-mode 'debugger-mode))
                                                    (helpful-at-point)
                                                  (counsel-dash-at-point)))
-        :desc "eaf browser buffers"     "," #'aj/eaf-browser-pop-buffers
+        :desc "eaf browser buffers"     "," #'aj/eaf-eww-browser-pop-buffers
 
         )
 
