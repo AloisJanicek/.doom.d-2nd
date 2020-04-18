@@ -145,11 +145,12 @@ Which operation will be executed depends on value of ENCRYPT."
       (message "%s => kill-ring" val))))
 
 ;;;###autoload
-(defun aj-eaf-browse-url-maybe (url &optional _new-window)
+(defun aj-eaf-browse-url-maybe (url &rest _)
   "Open URL with eaf browser unless running under wsl."
   (if (aj-wsl-p)
-      (wsl-browse-url url _new-window)
-    (eaf-open-browser url _new-window)))
+      (wsl-browse-url url)
+    (eaf-open-browser url)
+    ))
 
 ;;;###autoload
 (defun aj-chromium-browse-url-dispatch (url &optional _new-window)
@@ -159,7 +160,7 @@ Which operation will be executed depends on value of ENCRYPT."
     (browse-url-chromium url _new-window)))
 
 ;;;###autoload
-(defun wsl-browse-url (url &optional _new-window)
+(defun wsl-browse-url (url &rest _)
   "Opens link via powershell.exe"
   (interactive (browse-url-interactive-arg "URL: "))
   (let ((quotedUrl (format "start '%s'" url)))
@@ -179,6 +180,31 @@ Optional argument ARGS represents arguments passed to advised function."
          #'aj-eaf-browse-url-maybe
        #'aj-chromium-browse-url-dispatch)
      args)))
+
+;;;###autoload
+(defun aj-browse-zeal-local-file (url &rest _)
+  "Browse dash docs / zeal local html file.
+Open files coming from Zeal directory hosting dash docs
+in eww browser. Otherwise open file maybe in eaf browser."
+  (let* ((path url)
+         ;; eaf needs file:/// ..., won't open file://
+         (url (concat "file://" path)))
+    (if (string-match "Zeal" url)
+        (let ((already-opened
+               (catch 'already-opened
+                 (mapcar
+                  (lambda (buffer)
+                    (with-current-buffer buffer
+                      (when (eq major-mode 'eww-mode)
+                        (when (string-equal
+                               path
+                               (string-trim-left (plist-get eww-data :url) "file://"))
+                          (throw 'already-opened buffer)))))
+                  (buffer-list)))))
+          (if (bufferp already-opened)
+              (pop-to-buffer already-opened)
+            (eww-open-file path)))
+      (aj-eaf-browse-url-maybe url))))
 
 ;;;###autoload
 (defun aj-add-thing-at-point-to-url (url)
@@ -726,9 +752,9 @@ With this popup rules will apply to them."
             (mapcar (lambda (buf)
                       (with-current-buffer buf
                         (cond ((eq major-mode 'eaf-mode)
-                               (cons eaf--bookmark-title buf))
+                               (cons (concat "*eaf* " eaf--bookmark-title) buf))
                               ((eq major-mode 'eww-mode)
-                               (cons (plist-get eww-data :title) buf)) (t))))
+                               (cons (concat "*eww* " (plist-get eww-data :title)) buf)) (t))))
                     (seq-filter
                      (lambda (buf)
                        (with-current-buffer buf
@@ -795,7 +821,7 @@ Use `call-process' instead of `start-process'.
 Use in conjunction with
 https://github.com/Konfekt/wsl-gui-bins/blob/master/zeal
 "
-    (call-process (executable-find "zeal") nil 0 nil search))
+  (call-process (executable-find "zeal") nil 0 nil search))
 
 ;;;###autoload
 (defun shrface-shr-tag-pre-highlight (pre)

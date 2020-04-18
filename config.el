@@ -73,6 +73,7 @@ if running under WSL")
 (make-variable-buffer-local 'aj-nov-menu-links)
 
 (add-to-list 'org-modules 'ol-info)
+(add-to-list 'org-modules 'ol-eww)
 
 (setq user-mail-address "janicek.dev@gmail.com"
       user-full-name    "Alois Janíček"
@@ -231,6 +232,7 @@ if running under WSL")
               (turn-on-visual-line-mode)
               (xah-rename-eww-buffer)
               (doom-mark-buffer-as-real-h)
+              (shrface-mode)
               (persp-add-buffer (current-buffer))
               ))
   )
@@ -400,6 +402,7 @@ if running under WSL")
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
 
+  (setcdr (assoc "\\.x?html?\\'" org-file-apps) #'aj-browse-zeal-local-file)
   (org-link-set-parameters "calibre" :follow #'aj-org-calibre-follow :store #'aj-org-calibre-store)
 
   (setq
@@ -1033,6 +1036,7 @@ if running under WSL")
                              (visual-fill-column-mode)
                              (hide-mode-line-mode)
                              (doom-mark-buffer-as-real-h)
+                             (shrface-mode)
                              (setq org-link-parameters
                                    (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
                              (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
@@ -1161,7 +1165,10 @@ if running under WSL")
     (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
     (when (featurep! :editor evil)
       (evil-set-initial-state 'eaf-mode 'insert))
-    (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir))
+    (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir)
+          eaf-buffer-title-format "*eaf* %s"
+          )
+    (eaf-setq eaf-browser-dark-mode "false")
     (add-to-list 'eaf-app-display-function-alist
                  '("browser" . aj-eaf--browser-display))
 
