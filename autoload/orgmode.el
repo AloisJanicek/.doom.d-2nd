@@ -1019,30 +1019,32 @@ split current window and displays `BUFFER' on the left."
     (message "this is not buffer: %s" buffer)))
 
 ;;;###autoload
-(defun aj-display-org-buffer-popup (buffer &rest _)
-  "Display org buffer in popup window.
+(defun aj-display-org-buffer-popup (buffer-or-name &rest _)
+  "Display org-mode BUFFER-OR-NAME in popup window.
 Similar to `aj-get-window-for-org-buffer' but displays org buffer
 in temporarily popup window on the right side of the frame.
 "
-  (if (bufferp buffer)
-      (progn
-        (+popup-buffer buffer
-                       '((side . right)
-                         (size . 86)
-                         (window-width . 40)
-                         (window-height . 0.16)
-                         (slot)
-                         (vslot . 1)
-                         (window-parameters
-                          (ttl)
-                          (quit . t)
-                          (select . t)
-                          (modeline)
-                          (autosave . t))))
-        (with-current-buffer buffer
-          (turn-off-solaire-mode)))
+  (let ((buffer (or (when (bufferp buffer-or-name) buffer-or-name)
+                    (get-buffer buffer-or-name))))
+    (if (bufferp buffer)
+        (progn
+          (+popup-buffer buffer
+                         '((side . left)
+                           (size . 82)
+                           (window-width . 40)
+                           (window-height . 0.16)
+                           (slot)
+                           (vslot . 1)
+                           (window-parameters
+                            (ttl)
+                            (quit . t)
+                            (select . t)
+                            (modeline)
+                            (autosave . t))))
+          (with-current-buffer buffer
+            (turn-off-solaire-mode)))
 
-    (message "this is not buffer: %s" buffer)))
+      (message "this is not buffer: %s" buffer-or-name))))
 
 ;;;###autoload
 (defun aj-org-buffer-to-popup-a (orig-fun &rest args)
