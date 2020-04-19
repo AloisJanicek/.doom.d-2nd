@@ -150,7 +150,7 @@ if running under WSL")
   )
 
 (after! cus-edit
-  (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t :transient nil))
+  (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! company
   (setq company-idle-delay 0.5
@@ -246,7 +246,7 @@ if running under WSL")
   (add-hook 'after-save-hook #'aj-web-mode-html-beautify-h)
   (setq large-file-warning-threshold 30000000)
   (add-to-list 'safe-local-variable-values '(org-src-fontify-natively))
-  (advice-add #'find-file :around #'aj-pdf-epub-find-file-other-window-reuse-a)
+  (advice-add #'find-file :around #'aj-pdf-epub-pop-to-buffer-a)
   )
 
 (after! format-all
@@ -277,7 +277,7 @@ if running under WSL")
   (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! info
-  (set-popup-rule! "*info*"            :vslot 2 :size 80 :side 'left :select t :transient nil :quit nil)
+  (set-popup-rule! "*info*"            :vslot 2 :size 80 :side 'left :select t :quit nil)
   (require 'ol-info)
   (add-hook 'Info-mode-hook 'shrface-plus)
   )
@@ -400,13 +400,12 @@ if running under WSL")
   )
 
 (after! org
-  (set-popup-rule! "^\\*org-brain\\*$" :vslot 3 :size 0.22 :side 'left :select t :quit nil        :ttl nil               :autosave t)
-  (set-popup-rule! "^CAPTURE.*\\.org$"          :size 0.4  :side 'bottom          :select t                              :autosave t)
-  (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t                          :autosave t)
-  (set-popup-rule! "^\\*Org Agenda.*\\*$"    :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
-  (set-popup-rule! "^\\*Org QL Search.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
-  (set-popup-rule! "^\\*Org QL View.*\\*$"   :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
-  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
+  (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t)
+  (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t)
+  (set-popup-rule! "^\\*Org Agenda.*\\*$"    :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil )
+  (set-popup-rule! "^\\*Org QL Search.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil )
+  (set-popup-rule! "^\\*Org QL View.*\\*$"   :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil )
+  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil )
 
   (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
   (add-hook 'org-capture-mode-hook #'flyspell-mode)
@@ -754,7 +753,7 @@ if running under WSL")
                      (with-current-buffer buf
                        (if (eq major-mode 'pdf-view-mode)
                            t nil)))
-    :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil)
+    :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil)
 
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   "Set up pdf-view to my liking."
@@ -1060,7 +1059,7 @@ if running under WSL")
                      (with-current-buffer buf
                        (if (eq major-mode 'nov-mode)
                            t nil)))
-    :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil)
+    :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil)
 
   (setq nov-shr-rendering-functions
         (append nov-shr-rendering-functions shr-external-rendering-functions))
@@ -1092,6 +1091,7 @@ if running under WSL")
   (when (featurep! :editor evil)
     (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode))
   :config
+  (set-popup-rule! "^\\*org-brain\\*$" :vslot -1 :size 0.22 :side 'left :select t :quit nil :ttl nil)
   (add-hook 'org-brain-visualize-mode-hook #'visual-line-mode)
   (advice-add #'org-brain-visualize :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt-a)
@@ -1100,7 +1100,7 @@ if running under WSL")
                                         "Recenter visited heading to the top of the buffer."
                                         (recenter 0 t)
                                         (turn-off-solaire-mode)))
-  (advice-add #'org-brain-goto-current :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
         org-brain-path aj-org-technical-dir
@@ -1216,7 +1216,7 @@ if running under WSL")
                          (if (and (eq major-mode 'eaf-mode)
                                   (string-equal eaf--buffer-app-name "browser"))
                              t nil)))
-      :vslot 2 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil :autosave t)
+      :vslot 2 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil)
     )
   )
 

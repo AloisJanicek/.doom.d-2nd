@@ -1031,10 +1031,8 @@ in temporarily popup window on the right side of the frame.
           (+popup-buffer buffer
                          '((side . left)
                            (size . 82)
-                           (window-width . 40)
-                           (window-height . 0.16)
                            (slot)
-                           (vslot . 1)
+                           (vslot . 3)
                            (window-parameters
                             (ttl)
                             (quit . t)
@@ -1194,35 +1192,6 @@ Otherwise dispatch default commands.
        :type "nov"
        :link (format "calibre:%s::%d:%d" path nov-documents-index (point))
        :description (format "EPUB file from Calibre Library: %s" file-name)))))
-
-;;;###autoload
-(defun my-nov--find-file-a (file index point)
-  "Open FILE(nil means current buffer) in nov-mode and go to the specified INDEX and POSITION.
-Prevent opening same FILE into multiple windows or buffers. Always reuse them if possible."
-  (let ((same-epub
-         (car (remove nil
-                      (mapcar
-                       (lambda (buf)
-                         (with-current-buffer buf
-                           (if (and (eq major-mode 'nov-mode)
-                                    (string-equal nov-file-name file))
-                               (if (get-buffer-window)
-                                   (cons buf (get-buffer-window))
-                                 buf))))
-                       (buffer-list))))))
-    (if (consp same-epub)
-        (select-window (cdr same-epub))
-      (if same-epub
-          (switch-to-buffer-other-window same-epub)
-        (when file
-          (find-file-other-window file))))
-    (unless (eq major-mode 'nov-mode)
-      (nov-mode))
-    (unless (nov--index-valid-p nov-documents index)
-      (error "Invalid documents index"))
-    (setq nov-documents-index index)
-    (nov-render-document)
-    (goto-char point)))
 
 ;;;###autoload
 (defun aj/org-id-update-recursively ()
