@@ -1040,7 +1040,7 @@ if running under WSL")
         shrface-paragraph-fill-column 80)
   )
 
-(use-package shrface+
+(use-package shrface-plus
   :after shr
   )
 
