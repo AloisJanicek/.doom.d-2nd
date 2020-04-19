@@ -61,6 +61,7 @@
    :n "f" #'link-hint-open-link
    :n "o" #'eww-browse-with-external-browser
    :n "O" #'eww
+   :nv "Y" #'org-eww-copy-for-org-mode
    )
 
  (:after emmet-mode
