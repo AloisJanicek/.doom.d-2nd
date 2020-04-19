@@ -93,7 +93,7 @@
 
  (:after info
    :map Info-mode-map
-   :nemv "o"      #'ace-link-info
+   :nemv "o"      #'link-hint-open-link
    :nemv "q"      #'quit-window
    :nemv "m"      #'Info-menu
    )
