@@ -59,6 +59,11 @@
    :n "<tab>" #'org-cycle
    :n "S-<tab>" #'org-shifttab
    :n "f" #'link-hint-open-link
+   :nv "F" (lambda ()
+             (interactive)
+             (let ((browse-url-secondary-browser-function #'eww))
+               (eww-follow-link t)
+               (message "New eww buffer: \"%s\"" (plist-get eww-data :title))))
    :n "o" #'eww-browse-with-external-browser
    :n "O" #'eww
    :nv "Y" #'org-eww-copy-for-org-mode
