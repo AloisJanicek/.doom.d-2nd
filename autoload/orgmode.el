@@ -1296,6 +1296,7 @@ Optionally specify heading LEVEL. Default is 3.
         (level (or level 3))
         (headings (lambda ()
                     (aj-org-get-pretty-heading-path t t nil nil)))
+        (ivy-height (round (* (frame-height) 0.80)))
         ivy-sort-functions-alist)
     (ivy-read
      "Go to: "
@@ -1303,6 +1304,7 @@ Optionally specify heading LEVEL. Default is 3.
        :select headings
        :from files
        :where `(level <= ,level))
+     :update-fn 'auto
      :action #'aj-org-jump-to-heading-action
      :caller 'aj/org-heading-jump)))
 
