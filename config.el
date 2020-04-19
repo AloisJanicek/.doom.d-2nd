@@ -282,6 +282,7 @@ if running under WSL")
 (after! info
   (set-popup-rule! "*info*"            :vslot 2 :size 80 :side 'left :select t :transient nil :quit nil)
   (require 'ol-info)
+  (add-hook 'Info-mode-hook 'shrface-plus)
   )
 
 (after! ispell
@@ -1031,6 +1032,8 @@ if running under WSL")
 (use-package shrface
   :after shr
   :config
+  (shrface-basic)
+  (shrface-trial)
   (setq shrface-bullets-bullet-list '("*"
                                       "**"
                                       "***"
@@ -1039,8 +1042,10 @@ if running under WSL")
                                       "******")
         shrface-paragraph-indentation 0
         shrface-paragraph-fill-column 80)
-  (add-to-list 'shr-external-rendering-functions 
-               '(code . shrface-tag-code))
+  )
+
+(use-package shrface+
+  :after shr
   )
 
 (use-package shr-tag-pre-highlight
