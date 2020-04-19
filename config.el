@@ -232,7 +232,9 @@ if running under WSL")
   (add-hook 'eww-after-render-hook
             (lambda ()
               (shrface-mode)
-              (eww-readable)
+              (unless
+                  (string-match "cppreference.com" (plist-get eww-data :url))
+                (eww-readable))
               (recenter 0 t)
               (turn-on-visual-line-mode)
               (xah-rename-eww-buffer)
