@@ -69,6 +69,10 @@ if running under WSL")
   "List of Org mode code block language identifiers.
  Useful when capturing code snippets.")
 
+(defvar aj-help-buffer-modes
+  '(nov-mode eww-mode eaf-mode pdf-view-mode org-mode)
+  "List of major modes for buffers to be consider as help buffers.")
+
 (make-variable-buffer-local 'er/try-expand-list)
 (make-variable-buffer-local 'aj-nov-menu-links)
 
@@ -181,7 +185,11 @@ if running under WSL")
   (setq counsel-dash-docsets-path (if (aj-wsl-p)
                                       (expand-file-name  "AppData/Local/Zeal/Zeal/docsets" aj-home-base-dir)
                                     (expand-file-name ".local/share/Zeal" aj-home-base-dir)))
-  (setq counsel-dash-browser-func 'eww-browse-url)
+  (setq counsel-dash-browser-func (lambda (url &rest _)
+                                    "Open CSS and HTML docs in graphical browser by default."
+                                    (if (string-match "CSS.docset\\|HTML.docset" url)
+                                        (aj-eaf-browse-url-maybe url)
+                                      (eww-browse-url url))))
   )
 
 (after! elisp-mode
@@ -288,7 +296,10 @@ if running under WSL")
      ("r" bookmark-rename "rename")))
   (ivy-add-actions
    #'ivy-yasnippet
-   '(("e" aj-ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own"))))
+   '(("e" aj-ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own")))
+
+  (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
+  )
 
 (after! ivy-posframe
   (setf (alist-get t ivy-posframe-display-functions-alist)
@@ -349,6 +360,7 @@ if running under WSL")
           ("dictionary\\.com" . eww-browse-url)
           ("merriam-webster\\.com" . eww-browse-url)
           ("wikipedia" . eww-browse-url)
+          ("developer.mozilla.org" . aj-eaf-browse-url-maybe)
           ("." . gk-browse-url)
           )
         browse-url-secondary-browser-function (lambda (url &rest _)
@@ -738,6 +750,14 @@ if running under WSL")
 (after! pdf-view
   (setq pdf-view-midnight-colors
         `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))
+
+  (set-popup-rule! (lambda (buf &rest _)
+                     "Find pdf-view-mode browser buffer."
+                     (with-current-buffer buf
+                       (if (eq major-mode 'pdf-view-mode)
+                           t nil)))
+    :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil)
+
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   "Set up pdf-view to my liking."
                                   (hide-mode-line-mode)
@@ -1032,6 +1052,14 @@ if running under WSL")
 (use-package! nov
   :after org
   :config
+
+  (set-popup-rule! (lambda (buf &rest _)
+                     "Find nov-mode browser buffer."
+                     (with-current-buffer buf
+                       (if (eq major-mode 'nov-mode)
+                           t nil)))
+    :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil)
+
   (setq nov-shr-rendering-functions
         (append nov-shr-rendering-functions shr-external-rendering-functions))
   (setq nov-text-width t

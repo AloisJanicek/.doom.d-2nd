@@ -868,6 +868,21 @@ Version 2017-11-10"
           (rename-buffer (concat "*eww* " $title ) t)
         (rename-buffer "*eww*" t)))))
 
+;;;###autoload
+(defun aj--switch-buffer-maybe-pop-action-a (orig-fun buffer)
+  "Pop BUFFER if its major mode is one of `aj-help-buffer-modes'.
+Around advice for `ivy--switch-buffer-action'.
+"
+  (let ((mode (with-current-buffer buffer
+                major-mode)))
+    (if (memq mode aj-help-buffer-modes)
+        (cl-letf (((symbol-function 'switch-to-buffer)
+                   (lambda (buffer &rest _)
+                     (cond ((eq mode 'org-mode)
+                            (aj-display-org-buffer-popup buffer))
+                           (t (pop-to-buffer buffer))))))
+          (funcall orig-fun buffer))
+      (funcall orig-fun buffer))))
 
 (provide 'functions)
 
