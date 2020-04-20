@@ -742,7 +742,9 @@ if running under WSL")
   )
 
 (after! org-clock
-  (add-hook! 'kill-emacs-hook #'org-clock-out)
+  (add-hook! 'kill-emacs-hook (lambda ()
+                                (when (bound-and-true-p org-clock-current-task)
+                                  (org-clock-out))))
 
   (advice-add #'org-clock-in :after (lambda (&rest _)
                                       "Save all opened org-mode files."
