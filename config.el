@@ -67,7 +67,7 @@ if running under WSL")
  Useful when capturing code snippets.")
 
 (defvar aj-help-buffer-modes
-  '(nov-mode eww-mode eaf-mode pdf-view-mode org-mode Info-mode)
+  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode org-mode Info-mode)
   "List of major modes for buffers to be consider as help buffers.")
 
 (make-variable-buffer-local 'er/try-expand-list)
@@ -271,8 +271,16 @@ if running under WSL")
   (set-popup-rule! "*Help\*"           :vslot 2 :size 82 :side 'left :select t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"        :vslot 2 :size 82 :side 'left :select t)
-  (add-hook 'helpful-mode-hook #'visual-line-mode)
+  (set-popup-rule! "*helpful\*"        :vslot 2 :size 82 :side 'left :select t :quit t :ttl nil)
+  (setq helpful-mode-hook nil)
+  (add-hook 'helpful-mode-hook (lambda ()
+                                 (doom-mark-buffer-as-real-h)
+                                 (persp-add-buffer (current-buffer))
+                                 (visual-line-mode)
+                                 ))
+  (advice-add #'helpful-at-point :around (lambda (orig-fn &rest args)
+                                           (let (Info-selection-hook)
+                                             (apply orig-fn args))))
   )
 
 (after! ibuffer
@@ -1001,7 +1009,7 @@ if running under WSL")
   :demand t
   :config
   (setq hungry-delete-except-modes
-        '(term-mode help-mode minibuffer-inactive-mode calc-mode))
+        '(term-mode help-mode helpful-mode minibuffer-inactive-mode calc-mode))
   (global-hungry-delete-mode 1))
 
 (use-package! howdoyou
