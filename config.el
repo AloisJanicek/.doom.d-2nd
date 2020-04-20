@@ -820,6 +820,7 @@ if running under WSL")
    treemacs-project-follow-cleanup t
    treemacs-width 25
    )
+  (treemacs-follow-mode +1)
   )
 
 (after! undo-tree
