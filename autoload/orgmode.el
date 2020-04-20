@@ -1036,12 +1036,13 @@ in temporarily popup window on the right side of the frame.
                                  (mapcar #'file-truename
                                          (aj-org-combined-agenda-files))))
                  (edge (if agenda-buffer
-                           'right 'left)))
+                           'right 'left))
+                 (vslot-num (if agenda-buffer 1 3)))
             (+popup-buffer buffer
                            `((side . ,edge)
                              (size . 82)
                              (slot)
-                             (vslot . 3)
+                             (vslot . ,vslot-num)
                              (window-parameters
                               (ttl)
                               (quit . t)
