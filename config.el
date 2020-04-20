@@ -282,13 +282,18 @@ if running under WSL")
   (set-popup-rule! "*info*"            :vslot 2 :size 80 :side 'left :select t :quit t :ttl nil)
   (require 'ol-info)
   (add-hook 'Info-selection-hook (lambda ()
-                                   (let ((info-filename
-                                          (string-trim-right
-                                           (capitalize
-                                            (file-name-nondirectory Info-current-file))
-                                           ".info")))
-                                     (rename-buffer
-                                      (concat "*info*-" info-filename "::" Info-current-node) t))))
+                                   (let* ((info-filename
+                                           (string-trim-right
+                                            (capitalize
+                                             (file-name-nondirectory Info-current-file))
+                                            ".info"))
+                                          (new-buffer-name (concat "*info*-" info-filename "::" Info-current-node)))
+                                     (if (get-buffer new-buffer-name)
+                                         (progn
+                                           (kill-buffer (current-buffer))
+                                           (pop-to-buffer new-buffer-name))
+                                       (rename-buffer
+                                        new-buffer-name t)))))
   (add-hook 'Info-mode-hook (lambda ()
                               (doom-mark-buffer-as-real-h)
                               (persp-add-buffer (current-buffer))
