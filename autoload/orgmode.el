@@ -1099,19 +1099,19 @@ got renamed while clock were running.
                                        (org-clock-goto))
                                      )
   "Clock:"
-  ("c" #'aj/org-clock-menu "in" )
-  ("p" #'org-pomodoro "pomodoro" )
+  ("c" #'aj/org-clock-menu "in")
+  ("p" #'org-pomodoro "pomodoro")
   ("C" #'org-clock-out "out")
   ("g" #'counsel-org-clock-goto "goto")
   ("k" #'counsel-org-clock-context "context")
   ("h" #'counsel-org-clock-history "history")
-  ("U" #'aj/org-clock-update-heading "update" )
+  ("U" #'aj/org-clock-update-heading "update")
   ("r" (lambda ()
          (interactive)
          (with-current-buffer (marker-buffer org-clock-marker)
            (goto-char org-clock-marker)
            (org-edit-headline (ivy-read "Change title: " nil)))
-         (aj/org-clock-update-heading)) "rename" )
+         (aj/org-clock-update-heading)) "rename")
   )
 
 ;;;###autoload
