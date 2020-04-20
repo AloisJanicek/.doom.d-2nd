@@ -54,8 +54,6 @@
                  :branch "fix-yas-snippet-dirs"
                  ))
 
-(package! link-hint)
-
 (package! ob-javascript
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*")))
 
