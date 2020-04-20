@@ -1019,15 +1019,6 @@ if running under WSL")
   :after yasnippet
   )
 
-(use-package! link-hint
-  :commands (link-hint-open-all-links
-             link-hint-copy-all-links
-             link-hint-open-link
-             link-hint-copy-link)
-  :config
-  (setq link-hint-avy-all-windows nil)
-  )
-
 (use-package shrface
   :after shr
   :config
