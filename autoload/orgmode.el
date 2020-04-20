@@ -1301,9 +1301,8 @@ path is colorized according to outline faces.
                 (nth 5 heading)))
          (depth (length outline))
          (level (nth 0 heading))
-         (filename
-          (when filename
-            (string-remove-suffix ".org" (file-relative-name (buffer-file-name)))))
+         (filename (when filename
+                     (+org-get-global-property "TITLE")))
          (colorize-keyword (lambda (color)
                              (add-face-text-property 0 (length keyword) 'bold t keyword)
                              (add-face-text-property 0 (length keyword) `(:foreground ,color) t keyword)))
