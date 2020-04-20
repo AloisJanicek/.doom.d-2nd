@@ -67,7 +67,7 @@ if running under WSL")
  Useful when capturing code snippets.")
 
 (defvar aj-help-buffer-modes
-  '(nov-mode eww-mode eaf-mode pdf-view-mode org-mode)
+  '(nov-mode eww-mode eaf-mode pdf-view-mode org-mode Info-mode)
   "List of major modes for buffers to be consider as help buffers.")
 
 (make-variable-buffer-local 'er/try-expand-list)
@@ -279,9 +279,21 @@ if running under WSL")
   (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! info
-  (set-popup-rule! "*info*"            :vslot 2 :size 80 :side 'left :select t :quit nil)
+  (set-popup-rule! "*info*"            :vslot 2 :size 80 :side 'left :select t :quit t :ttl nil)
   (require 'ol-info)
-  (add-hook 'Info-mode-hook 'shrface-plus)
+  (add-hook 'Info-selection-hook (lambda ()
+                                   (let ((info-filename
+                                          (string-trim-right
+                                           (capitalize
+                                            (file-name-nondirectory Info-current-file))
+                                           ".info")))
+                                     (rename-buffer
+                                      (concat "*info*-" info-filename "::" Info-current-node) t))))
+  (add-hook 'Info-mode-hook (lambda ()
+                              (doom-mark-buffer-as-real-h)
+                              (persp-add-buffer (current-buffer))
+                              (shrface-plus)
+                              ))
   )
 
 (after! ispell
