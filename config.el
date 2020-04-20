@@ -742,6 +742,8 @@ if running under WSL")
   )
 
 (after! org-clock
+  (add-hook! 'kill-emacs-hook #'org-clock-out)
+
   (advice-add #'org-clock-in :after (lambda (&rest _)
                                       "Save all opened org-mode files."
                                       (org-save-all-org-buffers)))
@@ -763,6 +765,7 @@ if running under WSL")
    org-clock-in-resume t
    org-clock-out-remove-zero-time-clocks t
    org-clock-persist t
+   org-clock-persist-query-resume nil
    org-clock-report-include-clocking-task t
    )
 
