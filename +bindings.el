@@ -99,7 +99,7 @@
 
  (:after info
    :map Info-mode-map
-   :nemv "o"      #'link-hint-open-link
+   :nemv "f"      #'link-hint-open-link
    :nemv "q"      #'quit-window
    :nemv "m"      #'Info-menu
    )
@@ -626,7 +626,6 @@
         :desc "all agenda tasks"         "H" #'aj/org-agenda-headlines
         :desc "imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "NEXT agenda tasks"        "n" (λ! (aj/org-agenda-headlines '(todo "NEXT")))
-        :desc "link"                     "o" #'link-hint-open-link
         :desc "sidebar"                  "s" #'+treemacs/toggle
         )
 
