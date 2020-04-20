@@ -1331,7 +1331,7 @@ if running under WSL")
       (set-frame-size (selected-frame) 120 42))
   (pushnew! default-frame-alist '(fullscreen . maximized)))
 
-(set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono NL 1.1" :slant 'italic :height 105 :weight 'bold)
+(set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono NL 1.1" :slant 'italic :height 105 :weight 'medium)
 
 (load! "+bindings")
 (load! "+local")
