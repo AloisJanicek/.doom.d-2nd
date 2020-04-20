@@ -294,6 +294,7 @@ If HEADLINE, capture under it instead of top level."
                                            :where '(level 1)))))) "Yankpad" )
   ("k" (org-capture nil "k") "inbox")
   ("t" (org-capture nil "t") "task")
+  ("T" (org-capture nil "T") "task clock-in")
   ("j" (aj-org-capture-into-journal-in
         (aj/choose-file-from
          (seq-filter

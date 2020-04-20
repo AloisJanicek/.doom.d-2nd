@@ -544,6 +544,7 @@ if running under WSL")
 (after! org-capture
   (require 'yankpad)
   (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
+  (add-hook 'org-capture-after-finalize-hook #'aj/org-clock-update-heading)
   (setq
    org-capture-templates `(("p" "Protocol" entry (file ,aj-org-inbox-file)
                             ,(concat
@@ -650,6 +651,24 @@ if running under WSL")
                               "%?"
                               )
                             :empty-lines 1
+                            :prepend t
+                            )
+
+                           ("T" "Task clocked-in" entry (file
+                                                         (lambda ()
+                                                           (aj/choose-file-from org-agenda-files)))
+                            ,(concat
+                              "* TO" "DO %^{PROMPT} \n"
+                              ":PROPERTIES:\n"
+                              ":CREATED: %U\n"
+                              ":END:\n"
+                              "\n"
+                              "%i\n"
+                              "%?"
+                              )
+                            :empty-lines 1
+                            :clock-in t
+                            :clock-keep t
                             :prepend t
                             )
 
