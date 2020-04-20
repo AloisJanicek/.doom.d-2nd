@@ -1028,19 +1028,28 @@ in temporarily popup window on the right side of the frame.
                     (get-buffer buffer-or-name))))
     (if (bufferp buffer)
         (progn
-          (+popup-buffer buffer
-                         '((side . left)
-                           (size . 82)
-                           (slot)
-                           (vslot . 3)
-                           (window-parameters
-                            (ttl)
-                            (quit . t)
-                            (select . t)
-                            (modeline)
-                            (autosave . t))))
-          (with-current-buffer buffer
-            (turn-off-solaire-mode)))
+          (let* ((agenda-buffer (member
+                                 (with-current-buffer
+                                     (or (buffer-base-buffer buffer)
+                                         buffer)
+                                   (file-truename buffer-file-name))
+                                 (mapcar #'file-truename
+                                         (aj-org-combined-agenda-files))))
+                 (edge (if agenda-buffer
+                           'right 'left)))
+            (+popup-buffer buffer
+                           `((side . ,edge)
+                             (size . 82)
+                             (slot)
+                             (vslot . 3)
+                             (window-parameters
+                              (ttl)
+                              (quit . t)
+                              (select . t)
+                              (modeline)
+                              (autosave . t))))
+            (with-current-buffer buffer
+              (turn-off-solaire-mode))))
 
       (message "this is not buffer: %s" buffer-or-name))))
 
