@@ -1119,14 +1119,14 @@ got renamed while clock were running.
 (defun my-org-pomodoro-text-time ()
   "Return status info about `org-pomodoro'.
 If `org-pomodoro' is not running, try to print info about org-clock.
-If either `org-pomodoro' or org-clock aren't active, print \"No Active Task \""
+If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
   (when (featurep 'org)
     (require 'org-pomodoro)
     (cond ((equal :none org-pomodoro-state)
            (if (org-clock-is-active)
                (format "⏲ %d m - %s"
                        (org-clock-get-clocked-time) (substring-no-properties org-clock-heading))
-             "No Active task"))
+             "- no active task -"))
           ((equal :pomodoro org-pomodoro-state)
            (format "⦿ %d m / %d - %s"
                    (/ (org-pomodoro-remaining-seconds) 60) org-pomodoro-count (substring-no-properties org-clock-heading)))
