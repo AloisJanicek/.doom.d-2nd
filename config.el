@@ -216,7 +216,10 @@ if running under WSL")
 (after! evil
   (setq evil-move-cursor-back nil
         evil-want-fine-undo t
-        ))
+        )
+  (advice-add #'evil-goto-mark-line :after (lambda (&rest _)
+                                             (recenter)))
+  )
 
 (after! evil-snipe
   (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
