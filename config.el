@@ -305,7 +305,7 @@ if running under WSL")
   (add-hook 'Info-mode-hook (lambda ()
                               (doom-mark-buffer-as-real-h)
                               (persp-add-buffer (current-buffer))
-                              (shrface-plus)
+                              (inherit-org-mode )
                               ))
   )
 
@@ -1083,7 +1083,7 @@ if running under WSL")
         shrface-paragraph-fill-column 80)
   )
 
-(use-package shrface-plus
+(use-package inherit-org
   :after shr
   )
 

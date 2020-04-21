@@ -82,7 +82,7 @@
 
 (package! shrface :recipe (:host github :repo "chenyanming/shrface"))
 
-(package! shrface-plus :recipe (:host github :repo "chenyanming/shrface-plus"))
+(package! inherit-org :recipe (:host github :repo "chenyanming/inherit-org"))
 
 (package! shr-tag-pre-highlight :recipe (:host github :repo "xuchunyang/shr-tag-pre-highlight.el"))
 
