@@ -735,6 +735,7 @@
         :desc "directory"                "d" #'counsel-dired-jump
         :desc "file"                     "f" #'counsel-file-jump
         :desc "line"                     "l" #'evil-avy-goto-line
+        :desc "mark"                     "m" #'counsel-evil-marks
         :desc "project bookmark"         "p" #'counsel-projectile-bookmark
         :desc "shell-buffer"             "s" #'counsel-switch-to-shell-buffer
         :desc "view"                     "v" #'ivy-switch-view

@@ -219,6 +219,20 @@ if running under WSL")
         )
   (advice-add #'evil-goto-mark-line :after (lambda (&rest _)
                                              (recenter)))
+
+  (advice-add #'counsel-mark--ivy-read :after (lambda (&rest _)
+                                                (recenter)))
+
+  (advice-add
+   #'counsel--mark-ring-update-fn
+   :override
+   (lambda ()
+     (let ((pos (get-text-property 0 'point (ivy-state-current ivy-last))))
+       (counsel--mark-ring-delete-highlight)
+       (with-ivy-window
+         (goto-char pos)
+         (recenter)
+         (counsel--mark-ring-add-highlight)))))
   )
 
 (after! evil-snipe
