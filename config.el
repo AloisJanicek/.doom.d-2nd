@@ -163,7 +163,7 @@ if running under WSL")
 
 (after! company
   (setq company-idle-delay 0.5
-        company-minimum-prefix-length 2
+        company-minimum-prefix-length 3
         company-tooltip-timer 0.5
         )
   )
@@ -419,8 +419,11 @@ if running under WSL")
         )
   )
 
+(setq read-process-output-max (* 1024 1024))
 (after! lsp
-  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-sideline-enable nil
+        lsp-semantic-highlighting :deferred
+        )
   )
 
 (after! magit
