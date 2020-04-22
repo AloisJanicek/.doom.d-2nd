@@ -150,6 +150,12 @@ if running under WSL")
     ["Sass" (memq major-mode '(scss-mode))])
   (setq css-indent-offset 2)
   (add-hook! '(css-mode-hook scss-mode-hook) #'stylelintd-fix-mode)
+  (add-hook 'css-mode-local-vars-hook
+            (lambda ()
+              (flycheck-select-checker 'css-stylelint)))
+  (add-hook 'scss-mode-local-vars-hook
+            (lambda ()
+              (flycheck-select-checker 'scss-stylelint)))
   )
 
 (after! cus-edit
@@ -277,9 +283,9 @@ if running under WSL")
   (flycheck-add-mode 'html-tidy 'web-mode)
   (setq flycheck-tidyrc (expand-file-name "~/.tidyrc")
         flycheck-javascript-eslint-executable "eslint_d"
+        flycheck-stylelintrc ".stylelintrc.json"
         flycheck-global-modes '(not org-mode)
         )
-  (setq-default flycheck-disabled-checkers '(css-csslint scss sass/scss-sass-lint))
   )
 
 (after! geiser
