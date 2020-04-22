@@ -44,7 +44,7 @@
 
 ;;; Code:
 (defgroup stylelintd-fix nil
-  "Fix javascript code with stylelint_d"
+  "Fix CSS code with stylelint_d"
   :group 'tools)
 
 (defcustom stylelintd-fix-executable "stylelint_d"
@@ -180,13 +180,13 @@ function."
 
 ;;;###autoload
 (define-minor-mode stylelintd-fix-mode
-  "Use stylelint_d to automatically fix javascript before saving."
+  "Use stylelint_d to automatically fix CSS before saving."
   :lighter " fix"
   (if stylelintd-fix-mode
       (if (stylelintd-fix--compatible-versionp)
           (add-hook 'before-save-hook #'stylelintd-fix nil t)
         (setq stylelintd-fix-mode nil)
-        (message "stylelintd-fix: Could not find stylelint_d or it does not have the `--fix-to-stdout' feature."))
+        (message "stylelintd-fix: Could not find stylelint_d or it does not support `--fix' feature."))
     (remove-hook 'before-save-hook #'stylelintd-fix t)))
 
 (provide 'stylelintd-fix)
