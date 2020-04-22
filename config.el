@@ -1189,6 +1189,25 @@ if running under WSL")
         )
   )
 
+(use-package! org-pretty-tags
+  :after org
+  :config
+  (org-pretty-tags-global-mode +1)
+  (setq org-pretty-tags-surrogate-strings
+        `(
+          ;; ("tag" . icon)
+          ("inbox" . ,(all-the-icons-faicon  "envelope" :face 'all-the-icons-lblue :height 1.0))
+          ("personal" . ,(all-the-icons-material  "person" :face 'all-the-icons-lpink :v-adjust -0.2 :height 1.1))
+          ("environment" . ,(all-the-icons-faicon  "cogs" :face 'all-the-icons-purple :height 1.1))
+          ("job" . ,(all-the-icons-material  "monetization_on" :face 'all-the-icons-green :height 1.1))
+          ("education" . ,(all-the-icons-faicon  "graduation-cap" :face 'all-the-icons-orange :height 1.1))
+          ("book" . ,(all-the-icons-faicon  "book" :face 'all-the-icons-dyellow :v-adjust 0.1 :height 1.1))
+          ("link" . ,(all-the-icons-octicon  "link" :face 'all-the-icons-dblue :v-adjust 0.1 :height 1.1))
+          ("bug" . ,(all-the-icons-octicon  "bug" :face 'all-the-icons-red :height 1.1))
+          )
+        )
+  )
+
 (use-package! org-ql
   :after org
   :config
@@ -1310,6 +1329,7 @@ if running under WSL")
   `(solaire-default-face :background ,(doom-color 'bg) :foreground ,(doom-color 'fg))
   `(solaire-fringe-face :background ,(doom-color 'bg) :foreground ,(doom-color 'base4))
   `(show-paren-match :foreground "#F426A5" :underline t)
+  `(org-super-agenda-header :foreground ,(doom-color 'fg-alt))
   )
 
 (after! solaire-mode

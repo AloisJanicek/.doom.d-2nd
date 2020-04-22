@@ -65,6 +65,9 @@
 (package! org-sidebar
   :recipe (:host github :repo "alphapapa/org-sidebar"))
 
+(package! org-pretty-tags
+  :recipe (:host gitlab :repo "marcowahl/org-pretty-tags"))
+
 (package! org-ql)
 
 (package! org-super-agenda)
