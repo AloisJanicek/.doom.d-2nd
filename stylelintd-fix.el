@@ -10,7 +10,7 @@
 
 ;; This package is basically nothing more then a copy of eslintd-fix
 ;; (https://github.com/aaronjensen/eslintd-fix/blob/555fdad8ebee4ca0d990b8c80151c77c8bd6b773/eslintd-fix.el)
-;; version 1.0.0 with unnecessary adjustments for `stylelint_d'.
+;; version 1.0.0 with necessary adjustments for `stylelint_d'.
 
 ;; This package provides the stylelintd-fix minor mode, which will use stylelint_d
 ;; (https://github.com/jo-sm/stylelint_d) to automatically fix CSS code
