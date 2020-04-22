@@ -48,7 +48,7 @@
        file-templates
        fold
        (format
-        ;; +onsave
+        +onsave
         )
        ;;god
        ;;lispy

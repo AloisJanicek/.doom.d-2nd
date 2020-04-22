@@ -1,5 +1,7 @@
 ;;;  -*- lexical-binding: t; -*-
 
+(load! "stylelintd-fix")
+
 (defvar aj-home-base-dir nil
   "Variable which equals to ~ on linux or to a specified host home directory
 if running under WSL")
@@ -147,6 +149,7 @@ if running under WSL")
     "CSS" "HTML"
     ["Sass" (memq major-mode '(scss-mode))])
   (setq css-indent-offset 2)
+  (add-hook! '(css-mode-hook scss-mode-hook) #'stylelintd-fix-mode)
   )
 
 (after! cus-edit
@@ -261,15 +264,13 @@ if running under WSL")
   )
 
 (after! files
-  (add-hook 'after-save-hook #'aj-css-mode-css-autofix-h)
-  (add-hook 'after-save-hook #'aj-web-mode-html-beautify-h)
   (setq large-file-warning-threshold 30000000)
   (add-to-list 'safe-local-variable-values '(org-src-fontify-natively))
   (advice-add #'find-file :around #'aj-pdf-epub-pop-to-buffer-a)
   )
 
 (after! format-all
-  (dolist (mode '(css-mode js2-mode scss-mode yaml-mode html-mode web-mode))
+  (dolist (mode '(css-mode scss-mode js2-mode js-mode yaml-mode))
     (add-to-list '+format-on-save-enabled-modes mode t)))
 
 (after! flycheck
