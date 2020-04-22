@@ -386,6 +386,9 @@ if running under WSL")
   (add-hook 'js2-mode-hook #'eslintd-fix-mode)
   (setq-default indent-tabs-mode nil)
   (setq-default js2-basic-offset 2)
+  (add-hook 'js2-mode-local-vars-hook
+            (lambda ()
+              (flycheck-select-checker 'javascript-eslint)))
   )
 
 (after! js-mode
@@ -897,6 +900,12 @@ if running under WSL")
    treemacs-width 25
    )
   (treemacs-follow-mode +1)
+  )
+
+(after! typescript-mode
+  (add-hook 'typescript-mode-local-vars-hook
+            (lambda ()
+              (flycheck-select-checker 'javascript-eslint)))
   )
 
 (after! undo-tree
