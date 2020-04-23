@@ -1063,7 +1063,8 @@ if running under WSL")
   )
 
 (use-package! highlight-escape-sequences
-  :hook ((prog-mode conf-mode) . highlight-escape-sequences-mode))
+  :commands highlight-escape-sequences-mode
+  )
 
 (use-package! hungry-delete
   :demand t
