@@ -108,6 +108,9 @@ if running under WSL")
 (set-popup-rule! "*backtrace\*"                  :size 0.5  :side 'bottom :select t :quit t)
 (set-popup-rule! "^ \\*company-box-" :ignore t)
 
+(dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
+  (remove-hook hook 'highlight-indent-guides-mode))
+
 (after! alert
   (setq alert-default-style 'libnotify)
   (setq alert-libnotify-command (if (aj-wsl-p)
@@ -489,6 +492,7 @@ if running under WSL")
   (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
   (add-hook 'org-capture-mode-hook #'flyspell-mode)
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
+  (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (advice-add #'org-refile :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
