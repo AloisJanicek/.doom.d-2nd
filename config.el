@@ -305,7 +305,8 @@ if running under WSL")
                                  ))
   (advice-add #'helpful--in-manual-p :around (lambda (orig-fn &rest args)
                                                (let (Info-selection-hook)
-                                                 (apply orig-fn args))))
+                                                 (unless Info-selection-hook
+                                                   (apply orig-fn args)))))
   )
 
 (after! ibuffer
@@ -1266,7 +1267,7 @@ if running under WSL")
              powerthesaurus-lookup-word-at-point))
 
 (use-package! robots-txt-mode
-  :mode (("/robots\\.txt\\'" . robots-txt-mode)))
+  )
 
 (use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)
