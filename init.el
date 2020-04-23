@@ -83,7 +83,7 @@
        :checkers
        syntax
        (spell
-        +everywhere
+        ;; +everywhere
         )
        grammar
 

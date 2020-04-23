@@ -472,6 +472,9 @@ if running under WSL")
    )
   )
 
+
+(remove-hook 'org-mode-hook #'flyspell-mode)
+
 (after! org
   (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t)
   (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t)
