@@ -116,7 +116,15 @@
 
  (:after man
    :map Man-mode-map
-   :nm "f" #'ace-link-woman
+   :nm "f" #'link-hint-open-link
+   :nm "J" #'Man-next-section
+   :nm "K" #'Man-previous-section
+   :nm "o" #'Man-goto-section
+   )
+
+ (:after woman
+   :map woman-mode-map
+   :nm "f" #'link-hint-open-link
    :nm "J" #'Man-next-section
    :nm "K" #'Man-previous-section
    :nm "o" #'Man-goto-section
@@ -706,7 +714,7 @@
         :desc "echo"                     "e" #'view-echo-area-messages
         :desc "info"                     "i" #'info
         :desc "info on symbol"           "I" #'counsel-info-lookup-symbol
-        :desc "manual"                   "m" #'man
+        :desc "manual"                   "m" #'woman
         :desc "pop on error"             "P" #'toggle-debug-on-error
         :desc "search Web"               "S" #'counsel-web-search
         ;; :desc "zeal search"              "s" #'zeal-at-point-search
@@ -725,7 +733,7 @@
                                                        (eq major-mode 'debugger-mode))
                                                    (helpful-at-point)
                                                  (counsel-dash-at-point)))
-        :desc "eaf browser buffers"     "," #'aj/eaf-eww-browser-pop-buffers
+        :desc "switch helper buffers"    "," (λ! (aj/switch-buffers t))
 
         )
 
@@ -816,9 +824,7 @@
 
       ;; "m" :localleader
 
-      ;; switch buffer          ","
-
-      :desc "switch buffer"            "," #'persp-switch-to-buffer
+      :desc "switch buffer"            "," #'aj/switch-buffers
 
       ;; find file              "."
 

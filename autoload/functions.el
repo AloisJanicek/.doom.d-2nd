@@ -727,51 +727,7 @@ using a visual block/rectangle selection."
 (defun aj-eaf--browser-display (buf)
   "Given BUF, find suitable window for it.
 Just one window displaying browser."
-  (pop-to-buffer buf)
-  ;; (let ((eaf-win
-  ;;        (car (seq-filter
-  ;;              (lambda (win)
-  ;;                (with-selected-window win
-  ;;                  (if (and (eq major-mode 'eaf-mode)
-  ;;                           (string-equal eaf--buffer-app-name "browser"))
-  ;;                      t nil)))
-  ;;              (window-list)))))
-  ;;   (if (not eaf-win)
-  ;;       (switch-to-buffer-other-window buf)
-  ;;     (progn
-  ;;       (select-window eaf-win)
-  ;;       (switch-to-buffer buf))))
-  )
-
-;;;###autoload
-(defun aj/eaf-eww-browser-pop-buffers ()
-  "Pop to buffer eaf or eww browser buffers.
-With this popup rules will apply to them."
-  (interactive)
-  (ivy-read "EAF or eww buffer: "
-            (mapcar (lambda (buf)
-                      (with-current-buffer buf
-                        (cond ((eq major-mode 'eaf-mode)
-                               (cons (concat "*eaf* " eaf--bookmark-title) buf))
-                              ((eq major-mode 'eww-mode)
-                               (cons (concat "*eww* " (plist-get eww-data :title)) buf)) (t))))
-                    (seq-filter
-                     (lambda (buf)
-                       (with-current-buffer buf
-                         (if (or (and (eq major-mode 'eaf-mode)
-                                      (string-equal eaf--buffer-app-name "browser")
-                                      (not (persp-buffer-in-other-p buf (get-current-persp))))
-                                 (and (eq major-mode 'eww-mode)
-                                      (not (persp-buffer-in-other-p buf (get-current-persp)))))
-                             t nil)))
-                     (buffer-list)))
-            :keymap ivy-switch-buffer-map
-            :preselect (buffer-name (other-buffer (current-buffer)))
-            :action
-            (lambda (x)
-              (pop-to-buffer (cdr x)))
-            :matcher #'ivy--switch-buffer-matcher
-            :caller 'ivy-switch-buffer))
+  (pop-to-buffer buf))
 
 ;;;###autoload
 (defun my-nov--find-file-a (file index point)
@@ -869,10 +825,10 @@ https://github.com/Konfekt/wsl-gui-bins/blob/master/zeal
   "Rename `eww-mode' buffer so sites open in new page.
 URL `http://ergoemacs.org/emacs/emacs_eww_web_browser.html'
 Version 2017-11-10"
-  (let (($title (plist-get eww-data :title)))
+  (let ((title (plist-get eww-data :title)))
     (when (eq major-mode 'eww-mode )
-      (if $title
-          (rename-buffer (concat "*eww* " $title ) t)
+      (if title
+          (rename-buffer (concat "*eww " title "*") t)
         (rename-buffer "*eww*" t)))))
 
 ;;;###autoload
@@ -890,6 +846,37 @@ Around advice for `ivy--switch-buffer-action'.
                            (t (pop-to-buffer buffer))))))
           (funcall orig-fun buffer))
       (funcall orig-fun buffer))))
+
+;;;###autoload
+(defun aj/switch-buffers (&optional help)
+  "Switch perspective buffers.
+
+When HELP, switch only help buffers.
+See variable `aj-help-buffer-modes' for more details.
+"
+  (interactive)
+  (ivy-read "Switch to helper buffer: " 'internal-complete-buffer
+            :action #'ivy--switch-buffer-action
+            :predicate (lambda (buffer)
+                         (let ((buffer (car buffer)))
+                           (when (stringp buffer)
+                             (setq buffer (get-buffer buffer)))
+                           (and (not (eq buffer (current-buffer)))
+                                (+workspace-contains-buffer-p buffer)
+                                (if help
+                                    (memq (with-current-buffer buffer major-mode)
+                                          aj-help-buffer-modes)
+                                  (not (memq (with-current-buffer buffer major-mode)
+                                             aj-help-buffer-modes))))))
+            :update-fn (lambda ()
+                         (let (ivy-use-virtual-buffers ivy--virtual-buffers)
+                           (counsel--switch-buffer-update-fn)))
+            :unwind #'counsel--switch-buffer-unwind
+            :preselect (buffer-name (other-buffer (current-buffer)))
+            :matcher #'ivy--switch-buffer-matcher
+            :keymap ivy-switch-buffer-map
+            ;; NOTE A clever disguise, needed for virtual buffers.
+            :caller #'ivy-switch-buffer))
 
 (provide 'functions)
 

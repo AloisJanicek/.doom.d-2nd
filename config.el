@@ -69,7 +69,8 @@ if running under WSL")
  Useful when capturing code snippets.")
 
 (defvar aj-help-buffer-modes
-  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode org-mode Info-mode)
+  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode org-mode Info-mode
+             Man-mode woman-mode org-mode)
   "List of major modes for buffers to be consider as help buffers.")
 
 (make-variable-buffer-local 'er/try-expand-list)
@@ -254,7 +255,7 @@ if running under WSL")
   )
 
 (after! eww
-  (set-popup-rule! "*eww\*"            :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil)
+  (set-popup-rule! "*eww"            :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil)
   (add-hook 'eww-after-render-hook
             (lambda ()
               (shrface-mode)
@@ -302,16 +303,16 @@ if running under WSL")
                                  (persp-add-buffer (current-buffer))
                                  (visual-line-mode)
                                  ))
-  (advice-add #'helpful-at-point :around (lambda (orig-fn &rest args)
-                                           (let (Info-selection-hook)
-                                             (apply orig-fn args))))
+  (advice-add #'helpful--in-manual-p :around (lambda (orig-fn &rest args)
+                                               (let (Info-selection-hook)
+                                                 (apply orig-fn args))))
   )
 
 (after! ibuffer
   (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! info
-  (set-popup-rule! "*info*"            :vslot 2 :size 80 :side 'left :select t :quit t :ttl nil)
+  (set-popup-rule! "*Info\\|*info"            :vslot 2 :size 80 :side 'left :select t :quit t :ttl nil)
   (require 'ol-info)
   (add-hook 'Info-selection-hook (lambda ()
                                    (let* ((info-filename
@@ -319,7 +320,7 @@ if running under WSL")
                                             (capitalize
                                              (file-name-nondirectory Info-current-file))
                                             ".info"))
-                                          (new-buffer-name (concat "*info*-" info-filename "::" Info-current-node)))
+                                          (new-buffer-name (concat "*Info - " info-filename "::" Info-current-node "*")))
                                      (if (get-buffer new-buffer-name)
                                          (progn
                                            (kill-buffer (current-buffer))
@@ -436,12 +437,27 @@ if running under WSL")
   (magit-todos-mode)
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
+(after! woman
+  (setq woman-fill-column 80
+        woman-ll-fill-column 80
+        )
+  (set-popup-rule! "*WoMan"            :vslot 1 :size 82  :side 'left :select t :ttl nil)
+  (add-hook 'woman-post-format-hook (lambda ()
+                                      (doom-mark-buffer-as-real-h)
+                                      (persp-add-buffer (current-buffer)))))
+
 (after! man
   (custom-theme-set-faces! 'doom-one
     `(Man-overstrike :inherit 'bold :foreground ,(doom-lighten 'red 0.1))
     `(Man-underline :inherit 'underline :foreground ,(doom-lighten 'green 0.1)))
-  (set-popup-rule! "*Man\*"            :vslot 1 :size 0.4  :side 'left :select t)
-  (set-popup-rule! "*man\*"            :vslot 1 :size 0.4  :side 'left :select t))
+  (set-popup-rule! "*Man\\|*man"            :vslot 1 :size 0.4  :side 'left :select t :ttl nil)
+  (add-hook 'Man-mode-hook (lambda ()
+                             (doom-mark-buffer-as-real-h)
+                             (persp-add-buffer (current-buffer))))
+  (advice-add #'Man-goto-section :after (lambda (&rest _)
+                                          "Move current line to the top of the buffer."
+                                          (recenter 0 t)))
+  )
 
 (after! ob-core
   (setq
@@ -1302,11 +1318,11 @@ if running under WSL")
     (when (featurep! :editor evil)
       (evil-set-initial-state 'eaf-mode 'insert))
     (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir)
-          eaf-buffer-title-format "*eaf* %s"
+          eaf-buffer-title-format "*eaf %s*"
           )
     (eaf-setq eaf-browser-dark-mode "false")
     (add-to-list 'eaf-app-display-function-alist
-                 '("browser" . aj-eaf--browser-display))
+                 '("browser" . pop-to-buffer))
 
     (set-popup-rule! (lambda (buf &rest _)
                        "Find EAF browser buffer."
