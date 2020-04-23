@@ -611,10 +611,6 @@ if running under WSL")
   (setq org-archive-location "./archive/%s_archive::")
   )
 
-(after! org-superstar
-  (setq org-superstar-headline-bullets-list
-        '("*")))
-
 (after! org-capture
   (require 'yankpad)
   (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
