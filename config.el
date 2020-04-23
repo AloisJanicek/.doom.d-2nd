@@ -183,6 +183,7 @@ if running under WSL")
         counsel-projectile-sort-projects t
         )
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
+  (add-hook 'counsel-grep-post-action-hook  #'recenter)
   (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'counsel-org-clock--run-context-action :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'counsel-org-clock--run-context-action :around #'aj-org-buffer-to-popup-a)
