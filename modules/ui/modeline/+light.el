@@ -498,7 +498,7 @@ lines are selected, or the NxM dimensions of a block selection.")
     ,(all-the-icons-octicon
       "file-directory"
       :v-adjust -0.05
-      :height 1.1)
+      :height 0.9)
     (" " (:eval (abbreviate-file-name default-directory))))
   '("" mode-line-misc-info +modeline-modes))
 
