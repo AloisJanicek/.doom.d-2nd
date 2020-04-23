@@ -116,6 +116,10 @@ if running under WSL")
   (setq alert-libnotify-command (if (aj-wsl-p)
                                     (executable-find "notify-wsl")
                                   (executable-find "notify-send"))))
+(after! all-the-icons
+  (add-to-list 'all-the-icons-mode-icon-alist
+               '(eaf-mode all-the-icons-faicon "chrome" :v-adjust -0.1 :face all-the-icons-red))
+  )
 
 (after! all-the-icons-ivy
   (dolist (cmd '( counsel-dired-jump

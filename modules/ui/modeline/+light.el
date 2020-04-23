@@ -365,7 +365,7 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
                   ((+modeline-active)
                    'mode-line-buffer-id))
       'help-echo buffer-file-name))
-    (buffer-read-only (:propertize " RO" face warning))))
+    (buffer-read-only (:propertize " RO" face bold))))
 
 
 ;;; `+modeline-position'
