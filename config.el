@@ -391,7 +391,8 @@ if running under WSL")
   (setq-default js2-basic-offset 2)
   (add-hook 'js2-mode-local-vars-hook
             (lambda ()
-              (flycheck-select-checker 'javascript-eslint)))
+              (when (flycheck-may-enable-checker 'javascript-eslint)
+                (flycheck-select-checker 'javascript-eslint))))
   )
 
 (after! js-mode
@@ -926,7 +927,8 @@ if running under WSL")
 (after! typescript-mode
   (add-hook 'typescript-mode-local-vars-hook
             (lambda ()
-              (flycheck-select-checker 'javascript-eslint)))
+              (when (flycheck-may-enable-checker 'javascript-eslint)
+                (flycheck-select-checker 'javascript-eslint))))
   )
 
 (after! undo-tree
