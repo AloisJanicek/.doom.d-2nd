@@ -163,9 +163,9 @@ if running under WSL")
   (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t))
 
 (after! company
-  (setq company-idle-delay 0.5
+  (setq company-idle-delay 1
         company-minimum-prefix-length 3
-        company-tooltip-timer 0.5
+        company-tooltip-timer 1
         )
   )
 
