@@ -1280,14 +1280,28 @@ Optionally specify heading LEVEL. Default is 3.
         (headings (lambda ()
                     (aj-org-get-pretty-heading-path t t nil nil)))
         (ivy-height (round (* (frame-height) 0.80)))
-        ivy-sort-functions-alist)
+        ivy-sort-functions-alist timer)
     (ivy-read
      "Go to: "
      (org-ql-query
        :select headings
        :from files
        :where `(level <= ,level))
-     :update-fn 'auto
+     :update-fn (lambda ()
+                  (when timer
+                    (cancel-timer timer))
+                  (setq timer
+                        (run-with-timer
+                         0.2
+                         nil
+                         `(lambda ()
+                            (with-ivy-window
+                              (funcall
+                               (ivy--get-action ivy-last)
+                               (if (consp (car-safe (ivy-state-collection ivy-last)))
+                                   (assoc (ivy-state-current ivy-last)
+                                          (ivy-state-collection ivy-last))
+                                 (ivy-state-current ivy-last))))))))
      :action #'aj-org-jump-to-heading-action
      :caller 'aj/org-heading-jump)))
 
