@@ -435,9 +435,10 @@ and all its children are revealed."
         (point-min)
         (search-forward "* ")
         (funcall menu)
-        (org-show-children)
+        (org-narrow-to-subtree)
         (org-show-entry)
-        (org-narrow-to-subtree)))))
+        (outline-show-branches)
+        ))))
 
 ;;;###autoload
 (defun my-transform-square-brackets-to-round-ones (string-to-transform)
@@ -1257,8 +1258,10 @@ Filters todo headlines according to `aj-org-agenda-filter'.
     (aj-open-file-switch-create-indirect-buffer-per-persp buffer)
     (widen)
     (goto-char marker)
-    (org-show-subtree)
-    (org-narrow-to-subtree)))
+    (org-narrow-to-subtree)
+    (org-show-entry)
+    (outline-show-branches)
+    ))
 
 ;;;###autoload
 (defun aj-org-jump-to-headline-at (list-or-dir &optional level)

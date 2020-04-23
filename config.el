@@ -563,8 +563,10 @@ if running under WSL")
                 "Narrow and show children after switching."
                 (widen)
                 (org-narrow-to-subtree)
-                (org-show-children)
-                (turn-off-solaire-mode)))
+                (org-show-entry)
+                (outline-show-branches)
+                (turn-off-solaire-mode)
+                ))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-exit :after #'aj-org-buffers-respect-sanity-a)
@@ -807,7 +809,10 @@ if running under WSL")
                                         "Narrow view after switching."
                                         (interactive)
                                         (widen)
-                                        (org-narrow-to-subtree)))
+                                        (org-narrow-to-subtree)
+                                        (org-show-entry)
+                                        (outline-show-branches)
+                                        ))
 
   (setq
    org-clock-clocked-in-display nil
@@ -1310,7 +1315,10 @@ if running under WSL")
 (advice-add #'aj/org-notes-search-no-link :after (lambda (&rest _)
                                                    "Narrow view after switching."
                                                    (interactive)
-                                                   (org-narrow-to-subtree)))
+                                                   (org-narrow-to-subtree)
+                                                   (org-show-entry)
+                                                   (outline-show-branches)
+                                                   ))
 
 (advice-add #'aj/org-agenda-headlines :around #'aj-org-buffer-to-popup-a)
 (advice-add #'aj-org-jump-to-headline-at :around #'aj-org-buffer-to-popup-a)
