@@ -792,9 +792,9 @@ if running under WSL")
   )
 
 (after! org-clock
-  (add-hook! 'kill-emacs-hook (lambda ()
-                                (when (bound-and-true-p org-clock-current-task)
-                                  (org-clock-out))))
+  (add-hook 'kill-emacs-hook (lambda ()
+                               (when (bound-and-true-p org-clock-current-task)
+                                 (org-clock-out))))
 
   (advice-add #'org-clock-in :after (lambda (&rest _)
                                       "Save all opened org-mode files."
@@ -817,7 +817,7 @@ if running under WSL")
   (setq
    org-clock-clocked-in-display nil
    org-clock-history-length 20
-   org-clock-in-resume t
+   org-clock-in-resume nil
    org-clock-out-remove-zero-time-clocks t
    org-clock-persist t
    org-clock-persist-query-resume nil
