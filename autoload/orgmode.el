@@ -419,7 +419,8 @@ and all its children are revealed."
   (interactive)
   (when (eq major-mode 'org-mode)
     (with-current-buffer (current-buffer)
-      (let* ((menu
+      (let* ((timer nil)
+             (menu
               (lambda ()
                 (ivy-read
                  "Go to: "
@@ -427,17 +428,35 @@ and all its children are revealed."
                    :select (lambda () (aj-org-get-pretty-heading-path nil t nil nil))
                    :from (current-buffer)
                    :where '(level <= 9))
+                 :update-fn (lambda ()
+                              (when timer
+                                (cancel-timer timer))
+                              (setq timer
+                                    (run-with-timer
+                                     0.2
+                                     nil
+                                     `(lambda ()
+                                        (with-ivy-window
+                                          (funcall
+                                           (ivy--get-action ivy-last)
+                                           (if (consp (car-safe (ivy-state-collection ivy-last)))
+                                               (assoc (ivy-state-current ivy-last)
+                                                      (ivy-state-collection ivy-last))
+                                             (ivy-state-current ivy-last))))))))
+                 :caller 'aj/org-mode-menu
                  :action (lambda (headline)
-                           (goto-char (get-text-property 0 'marker headline))))))
+                           (goto-char (get-text-property 0 'marker headline))
+
+                           (org-narrow-to-subtree)
+                           (org-show-entry)
+                           (outline-show-branches)
+                           ))))
              ivy-sort-functions-alist)
 
         (widen)
         (point-min)
         (search-forward "* ")
         (funcall menu)
-        (org-narrow-to-subtree)
-        (org-show-entry)
-        (outline-show-branches)
         ))))
 
 ;;;###autoload
@@ -1303,7 +1322,7 @@ Optionally specify heading LEVEL. Default is 3.
                                           (ivy-state-collection ivy-last))
                                  (ivy-state-current ivy-last))))))))
      :action #'aj-org-jump-to-heading-action
-     :caller 'aj/org-heading-jump)))
+     :caller 'aj-org-jump-to-headline-at)))
 
 (defun aj-org-get-pretty-heading-path (&optional filename outline keyword tag)
   "Get nice org heading path.
