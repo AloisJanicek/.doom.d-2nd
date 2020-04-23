@@ -216,7 +216,7 @@ Can be an integer to determine the exact padding."
    (rainbow-delimiters-depth-9-face :foreground dark-cyan)
 
    ;; outline
-   (outline-3 :foreground (doom-lighten dark-violet 0.3) :weight 'bold)
+   (outline-3 :foreground (doom-lighten dark-violet 0.35) :weight 'bold)
 
    ;; org
    (org-done :foreground base7)
