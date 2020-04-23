@@ -26,14 +26,17 @@
        hl-todo
        ;;hydra
        indent-guides
+       (
        modeline
+       +light
+        )
        nav-flash
        ;;neotree
        ophints
        (popup
         +all
         +defaults)
-       ;;pretty-code
+       pretty-code
        ;;tabbar
        treemacs
        ;;unicode
