@@ -590,6 +590,7 @@
         :desc "colors"            "c" #'rainbow-mode
         :desc "escape sequence"   "e" #'highlight-escape-sequences-mode
         :desc "modeline"          "m" #'hide-mode-line-mode
+        :desc "pretty symbols"    "p" #'prettify-symbols-mode
         :desc "re-builder"        "R" #'regexp-builder
         :desc "flyspell"          "s" #'aj/flyspell-enable
         :desc "swap dictionaries" "S" (λ! (aj-ispell-swap-two-dicts "english" "czech"))
