@@ -186,6 +186,7 @@ if running under WSL")
   (advice-add #'counsel-org-clock--run-history-action :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'counsel-org-clock--run-history-action :around #'aj-org-buffer-to-popup-a)
   (advice-add #'aj-org-find-file :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-goto-action :after (lambda (&rest _) (recenter 0 t)))
   )
 
 (after! counsel-dash
