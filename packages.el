@@ -72,6 +72,8 @@
 
 (package! org-super-agenda)
 
+(package! org-superstar :disable t)
+
 (package! powershell
   :recipe (:host github :repo "jschaf/powershell.el"))
 
