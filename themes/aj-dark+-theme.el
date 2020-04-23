@@ -92,6 +92,7 @@ Can be an integer to determine the exact padding."
    ((lazy-highlight &override) :background base4 :foreground fg :distant-foreground fg :bold bold)
    (doom-modeline-buffer-path       :foreground green :weight 'bold)
    (doom-modeline-buffer-major-mode :inherit 'doom-modeline-buffer-path)
+   (mode-line-buffer-id :foreground modeline-fg)
 
    (mode-line
     :background modeline-bg :foreground modeline-fg

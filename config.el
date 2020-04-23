@@ -888,6 +888,10 @@ if running under WSL")
 (after! prog-mode
   (add-hook 'prog-mode-hook #'goto-address-mode)
   (add-hook 'prog-mode-hook #'which-function-mode)
+
+  (set-pretty-symbols! 'emacs-lisp-mode
+    :def "defun")
+
   )
 
 (after! python
