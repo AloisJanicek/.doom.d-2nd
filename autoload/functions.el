@@ -631,39 +631,6 @@ present, then search Stack Overflow with `howdoyou-query'.
       (browse-url (concat google-base (replace-regexp-in-string " " "+" query))))))
 
 ;;;###autoload
-(defun aj/nov-mode-menu ()
-  "Chapter menu for nov-mode.
-Onced executed on Table of Content page,
-it will save list of links into buffer local
-variable to make it accessible from any place
-in the book (buffer).
-"
-  (interactive)
-  (aj-shr-link-menu
-   (lambda (item)
-     (let ((url (nth 1 item ))
-           (buff (nth 3 item ))
-           (pos (nth 2 item )))
-       (with-current-buffer buff
-         (let ((location (nov-url-filename-and-target url)))
-           (nov-visit-relative-file (car location) (car (cdr location)))))))))
-
-;;;###autoload
-(defun aj-collect-all-links-in-buffer ()
-  "Collect all links in the current buffer.
-Coppie from `link-hint--collect-visible-links' of `link-hint'.
-"
-  (let (all-link-positions)
-    (dolist (type '(link-hint-shr-url link-hint-nov-link))
-      (setq all-link-positions
-            (append all-link-positions
-                    (link-hint--collect (point-min) (point-max) type))))
-    (sort (cl-delete-duplicates all-link-positions
-                                :test #'link-hint--equal
-                                :from-end t)
-          #'link-hint--<)))
-
-;;;###autoload
 (defun spacemacs/sort-lines-by-column (&optional reverse)
   "Sort lines by the selected column,
 using a visual block/rectangle selection.
@@ -842,6 +809,21 @@ See variable `aj-help-buffer-modes' for more details.
             :caller #'ivy-switch-buffer))
 
 ;;;###autoload
+(defun aj-collect-all-links-in-buffer ()
+  "Collect all links in the current buffer.
+Coppie from `link-hint--collect-visible-links' of `link-hint'.
+"
+  (let (all-link-positions)
+    (dolist (type '(link-hint-shr-url link-hint-nov-link))
+      (setq all-link-positions
+            (append all-link-positions
+                    (link-hint--collect (point-min) (point-max) type))))
+    (sort (cl-delete-duplicates all-link-positions
+                                :test #'link-hint--equal
+                                :from-end t)
+          #'link-hint--<)))
+
+;;;###autoload
 (defun aj-shr-link-menu (fn)
   "Collect, display and act on links from shr buffers.
 
@@ -861,29 +843,29 @@ FN takes list in form of ( title url position buffer ).
                             (plist-get x :pos)
                             (current-buffer)))
                          collected)))
-        ivy-sort-functions-alist
-        collection)
-
-    (when (with-current-buffer buffer
-            (eq major-mode 'nov-mode))
-      (unless aj-nov-menu-links
-        (setq-local aj-nov-menu-links
-                    (funcall prepare-list (aj-collect-all-links-in-buffer)))))
-
-    (setq collection (or aj-nov-menu-links
-                         (funcall prepare-list (aj-collect-all-links-in-buffer))))
+        ivy-sort-functions-alist)
 
     (ivy-read "Link: "
-              collection
+              (funcall prepare-list (aj-collect-all-links-in-buffer))
               :action (lambda (x)
                         (funcall fn x)))))
+
+;;;###autoload
+(defun aj/nov-mode-menu ()
+  "Chapter menu for nov-mode.
+"
+  (interactive)
+  (nov-goto-toc)
+  (aj-shr-link-menu
+   (lambda (item)
+     (let ((location (nov-url-filename-and-target (nth 1 item))))
+       (nov-visit-relative-file (car location) (car (cdr location)))))))
 
 ;;;###autoload
 (defun aj-eww-link-menu (fun)
   "Link menu for eww buffers.
 FUN is function which takes string representing
 url as its argument."
-  (interactive)
   (aj-shr-link-menu
    (lambda (item)
      (funcall fun (nth 1 item)))))

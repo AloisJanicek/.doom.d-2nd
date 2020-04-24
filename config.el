@@ -57,9 +57,6 @@ if running under WSL")
 (defvar aj-org-agenda-similar-modes '(org-agenda-mode org-ql-view-mode)
   "List of org-agenda like modes for purpose of running commands from their buffers.")
 
-(defvar aj-nov-menu-links nil
-  "List of chapter links for `nov-mode'.")
-
 (defvar aj-org-src-block-identifiers
   '("awk" "C" "C++" "clojure" "css" "ditaa" "calc" "elisp" "eshell" "html" "php" "go" "rust"
     "fortran" "gnuplot" "screen" "dot" "haskell" "java" "js" "latex" "ledger" "racket"
@@ -72,9 +69,6 @@ if running under WSL")
   '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode
              Man-mode woman-mode org-mode)
   "List of major modes for buffers to be consider as help buffers.")
-
-(make-variable-buffer-local 'er/try-expand-list)
-(make-variable-buffer-local 'aj-nov-menu-links)
 
 (add-to-list 'org-modules 'ol-info)
 (add-to-list 'org-modules 'ol-eww)
