@@ -59,8 +59,8 @@
    :n "<tab>" #'org-cycle
    :n "S-<tab>" #'org-shifttab
    :n "f" #'link-hint-open-link
-   :nv "F" (λ! (aj/eww-menu-link #'eww))
-   :n "a" (λ! (aj/eww-menu-link #'eww-browse-with-external-browser))
+   :n "F" (λ! (aj-eww-link-menu #'eww-browse-with-external-browser))
+   :n "a" (λ! (aj-eww-link-menu #'eww))
    :n "o" #'imenu
    :n "t" (lambda ()
             "Internal"
@@ -137,6 +137,7 @@
  (:after nov
    :map nov-mode-map
    :nm "o" #'aj/nov-mode-menu
+   :nm "f" #'link-hint-open-link
    :nm "q" #'kill-this-buffer
    :nm "<tab>" #'org-cycle
    :nm "S-<tab>" #'org-shifttab
@@ -642,6 +643,7 @@
         :desc "imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "NEXT agenda tasks"        "n" (λ! (aj/org-agenda-headlines '(todo "NEXT")))
         :desc "sidebar"                  "s" #'+treemacs/toggle
+        :desc "url"                      "u" #'eww
         )
 
       (:prefix ("p" . "project")
