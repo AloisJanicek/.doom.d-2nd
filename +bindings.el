@@ -105,7 +105,7 @@
    :map Info-mode-map
    :nemv "f"      #'link-hint-open-link
    :nemv "q"      #'quit-window
-   :nemv "m"      #'Info-menu
+   :nemv "o"      #'Info-menu
    )
 
  (:after magit
