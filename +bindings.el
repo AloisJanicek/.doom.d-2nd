@@ -59,13 +59,17 @@
    :n "<tab>" #'org-cycle
    :n "S-<tab>" #'org-shifttab
    :n "f" #'link-hint-open-link
-   :nv "F" (lambda ()
-             (interactive)
-             (let ((browse-url-secondary-browser-function #'eww))
-               (eww-follow-link t)
-               (message "New eww buffer: \"%s\"" (plist-get eww-data :title))))
-   :n "o" #'eww-browse-with-external-browser
-   :n "O" #'eww
+   :nv "F" (λ! (aj/eww-menu-link #'eww))
+   :n "a" (λ! (aj/eww-menu-link #'eww-browse-with-external-browser))
+   :n "o" #'imenu
+   :n "t" (lambda ()
+            "Internal"
+            (interactive)
+            (eww-follow-link '(16)))
+   :n "T" (lambda ()
+            "External"
+            (interactive)
+            (eww-follow-link '(4)))
    :nv "Y" #'org-eww-copy-for-org-mode
    )
 
@@ -790,6 +794,7 @@
 
       (:prefix ("b" . "buffer")
         :desc "list"                     "l" #'ibuffer-list-buffers
+        :desc "kill buffer"              "k" (λ! (kill-buffer (current-buffer)))
         :desc "kill buffers"             "K" #'kill-buffer
         )
 

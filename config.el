@@ -69,7 +69,7 @@ if running under WSL")
  Useful when capturing code snippets.")
 
 (defvar aj-help-buffer-modes
-  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode org-mode Info-mode
+  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode
              Man-mode woman-mode org-mode)
   "List of major modes for buffers to be consider as help buffers.")
 
@@ -118,7 +118,17 @@ if running under WSL")
                                   (executable-find "notify-send"))))
 (after! all-the-icons
   (add-to-list 'all-the-icons-mode-icon-alist
-               '(eaf-mode all-the-icons-faicon "chrome" :v-adjust -0.1 :face all-the-icons-red))
+               '(eaf-mode all-the-icons-faicon "chrome" :v-adjust -0.1 :face all-the-icons-blue))
+  (add-to-list 'all-the-icons-mode-icon-alist
+               '(nov-mode all-the-icons-faicon "book" :v-adjust -0.1 :face all-the-icons-green))
+  (add-to-list 'all-the-icons-mode-icon-alist
+               '(helpful-mode all-the-icons-fileicon "emacs" :v-adjust -0.1 :face all-the-icons-purple))
+  (add-to-list 'all-the-icons-mode-icon-alist
+               '(woman-mode all-the-icons-octicon "book" :v-adjust -0.1 :face all-the-icons-orange))
+  (add-to-list 'all-the-icons-mode-icon-alist
+               '(Man-mode all-the-icons-octicon "book" :v-adjust -0.1 :face all-the-icons-orange))
+  (add-to-list 'all-the-icons-mode-icon-alist
+               '(Info-mode all-the-icons-octicon "book" :v-adjust -0.1 :face all-the-icons-lblue))
   )
 
 (after! all-the-icons-ivy
@@ -1147,16 +1157,28 @@ if running under WSL")
   :config
   (shrface-basic)
   (shrface-trial)
-  (setq shrface-bullets-bullet-list '("*"
-                                      "**"
-                                      "***"
-                                      "****"
-                                      "*****"
-                                      "******")
+  (setq shrface-bullets-bullet-list '("*")
         shrface-paragraph-indentation 0
-        shrface-paragraph-fill-column 80)
+        shrface-paragraph-fill-column 80
+        shrface-href-versatile nil
+        shrface-outline-regexp (concat " ?+"
+                                       (regexp-opt
+                                        shrface-bullets-bullet-list
+                                        t) " +")
+        shrface-outline-regexp-bol (concat " ?+"
+                                           (regexp-opt
+                                            shrface-bullets-bullet-list
+                                            t) "\\( +\\)")
+
+        shrface-imenu-regexp-bol (concat "^\\(?: ?+\\)"
+                                         (regexp-opt
+                                          shrface-bullets-bullet-list
+                                          t) "\\( .*\\)$"))
   )
 
+(after! occur
+  (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil)
+  )
 (use-package inherit-org
   :after shr
   )
@@ -1179,10 +1201,14 @@ if running under WSL")
     :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil)
 
   (setq nov-shr-rendering-functions
+        '((img . nov-render-img) (title . nov-render-title)))
+  (setq nov-shr-rendering-functions
         (append nov-shr-rendering-functions shr-external-rendering-functions))
+
   (setq nov-text-width t
         visual-fill-column-center-text t
         nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
+
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
   (add-hook 'nov-mode-hook (lambda ()
                              "Setup nov-mode to my liking."

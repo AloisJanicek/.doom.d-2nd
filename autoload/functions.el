@@ -662,10 +662,9 @@ from anywhere in the document after.
 Coppie from `link-hint--collect-visible-links' of `link-hint'.
 "
   (let (all-link-positions)
-    (dolist (type link-hint-types)
-      (setq all-link-positions
-            (append all-link-positions
-                    (aj-nov-mode-link-collect (point-min) (point-max) type))))
+    (setq all-link-positions
+          (append all-link-positions
+                  (aj-nov-mode-link-collect (point-min) (point-max) 'link-hint-shr-url)))
     (sort (cl-delete-duplicates all-link-positions
                                 :test #'link-hint--equal
                                 :from-end t)
@@ -877,6 +876,27 @@ See variable `aj-help-buffer-modes' for more details.
             :keymap ivy-switch-buffer-map
             ;; NOTE A clever disguise, needed for virtual buffers.
             :caller #'ivy-switch-buffer))
+
+;;;###autoload
+(defun aj/eww-menu-link (fn)
+  "Collect aand display links in eww buffer.
+Open link by FN function."
+  (interactive)
+  (require 'link-hint)
+  (let ((buffer (current-buffer))
+        ivy-sort-functions-alist)
+    (ivy-read "Link: "
+              (mapcar
+               (lambda (x)
+                 (cons
+                  (let ((start (plist-get x :pos)))
+                    (buffer-substring
+                     start
+                     (next-single-property-change start 'shr-url)))
+                  (plist-get x :args)))
+               (aj-collect-all-links-in-buffer))
+              :action (lambda (x)
+                        (funcall fn (cdr x))))))
 
 (provide 'functions)
 
