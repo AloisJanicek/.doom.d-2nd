@@ -445,14 +445,13 @@ and all its children are revealed."
                                              (ivy-state-current ivy-last))))))))
                  :caller 'aj/org-mode-menu
                  :action (lambda (headline)
+                           (widen)
                            (goto-char (get-text-property 0 'marker headline))
-
                            (org-narrow-to-subtree)
                            (org-show-entry)
                            (outline-show-branches)
                            ))))
              ivy-sort-functions-alist)
-
         (widen)
         (point-min)
         (search-forward "* ")
