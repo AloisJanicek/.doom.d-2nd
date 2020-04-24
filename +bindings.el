@@ -59,9 +59,9 @@
    :n "<tab>" #'org-cycle
    :n "S-<tab>" #'org-shifttab
    :n "f" #'link-hint-open-link
-   :n "F" (λ! (aj-eww-link-menu #'eww-browse-with-external-browser))
-   :n "a" (λ! (aj-eww-link-menu #'eww))
+   :n "F" (λ! (aj-eww-link-menu #'eww))
    :n "o" #'imenu
+   :n "O" (λ! (aj-eww-link-menu #'eww-browse-with-external-browser))
    :n "t" (lambda ()
             "Internal"
             (interactive)

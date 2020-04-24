@@ -827,21 +827,19 @@ Coppie from `link-hint--collect-visible-links' of `link-hint'.
 (defun aj-shr-link-menu (fn)
   "Collect, display and act on links from shr buffers.
 
-FN takes list in form of ( title url position buffer ).
+FN takes cons pair in form of (title . url).
 "
   (require 'link-hint)
   (let ((buffer (current-buffer))
         (prepare-list (lambda (collected)
                         (mapcar
                          (lambda (x)
-                           (list
+                           (cons
                             (let ((start (plist-get x :pos)))
                               (buffer-substring
                                start
                                (next-single-property-change start 'shr-url)))
-                            (plist-get x :args)
-                            (plist-get x :pos)
-                            (current-buffer)))
+                            (plist-get x :args)))
                          collected)))
         ivy-sort-functions-alist)
 
@@ -858,7 +856,7 @@ FN takes list in form of ( title url position buffer ).
   (nov-goto-toc)
   (aj-shr-link-menu
    (lambda (item)
-     (let ((location (nov-url-filename-and-target (nth 1 item))))
+     (let ((location (nov-url-filename-and-target (cdr item))))
        (nov-visit-relative-file (car location) (car (cdr location)))))))
 
 ;;;###autoload
@@ -868,7 +866,7 @@ FUN is function which takes string representing
 url as its argument."
   (aj-shr-link-menu
    (lambda (item)
-     (funcall fun (nth 1 item)))))
+     (funcall fun (cdr item)))))
 
 (provide 'functions)
 
