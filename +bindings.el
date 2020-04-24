@@ -169,6 +169,7 @@
    :ni "C-j" nil
    :ni "C-k" nil
    :ni "C-l" nil
+   :n "z w" #'widen
 
    (:prefix "g"
      :n "h" #'org-up-element
