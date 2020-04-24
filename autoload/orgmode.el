@@ -1090,18 +1090,19 @@ Manually update title of running clock task which
 got renamed while clock were running.
 "
   (interactive)
-  (with-current-buffer (marker-buffer org-clock-marker)
-    (goto-char org-clock-marker)
-    (setq org-clock-heading
-          (cond ((and org-clock-heading-function
-                      (functionp org-clock-heading-function))
-                 (funcall org-clock-heading-function))
+  (when (bound-and-true-p org-clock-current-task)
+    (with-current-buffer (marker-buffer org-clock-marker)
+      (goto-char org-clock-marker)
+      (setq org-clock-heading
+            (cond ((and org-clock-heading-function
+                        (functionp org-clock-heading-function))
+                   (funcall org-clock-heading-function))
 
-                ((nth 4 (org-heading-components))
-                 (replace-regexp-in-string
-                  "\\[\\[.,?\\]\\[\\(.,?\\)\\]\\]" "\\1"
-                  (match-string-no-properties 4)))
-                (t "???")))))
+                  ((nth 4 (org-heading-components))
+                   (replace-regexp-in-string
+                    "\\[\\[.,?\\]\\[\\(.,?\\)\\]\\]" "\\1"
+                    (match-string-no-properties 4)))
+                  (t "???"))))))
 
 ;;;###autoload
 (defun aj/org-clock-menu ()
