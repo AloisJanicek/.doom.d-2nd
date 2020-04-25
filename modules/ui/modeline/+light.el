@@ -487,8 +487,7 @@ lines are selected, or the NxM dimensions of a block selection.")
     +modeline-modes
     (vc-mode ("  "
               ,(all-the-icons-octicon "git-branch" :v-adjust 0.0)
-              " "
-              ,(string-trim-left (or vc-mode "") " Git:") " "))
+              vc-mode " "))
     "  "
     +modeline-encoding
     "  "

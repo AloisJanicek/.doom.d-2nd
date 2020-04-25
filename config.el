@@ -954,6 +954,12 @@ if running under WSL")
   (advice-add #'undo-tree-save-history :around #'doom-shut-up-a)
   (advice-add #'undo-tree-load-history :around #'doom-shut-up-a))
 
+(after! vc-git
+  (define-advice vc-git-mode-line-string (:around (orig-fn args) downcase-output)
+    "Downcase output of this function"
+    (downcase (funcall orig-fn args)))
+  )
+
 (after! web-mode
   (set-docsets! 'web-mode "HTML" "CSS" "WordPress")
 
