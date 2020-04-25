@@ -136,7 +136,8 @@
 
  (:after nov
    :map nov-mode-map
-   :nm "o" #'aj/nov-mode-menu
+   :nm "o" #'imenu
+   :nm "t" #'aj/nov-mode-menu
    :nm "f" #'link-hint-open-link
    :nm "q" #'kill-this-buffer
    :nm "<tab>" #'org-cycle
