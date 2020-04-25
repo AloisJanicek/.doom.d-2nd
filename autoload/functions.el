@@ -689,7 +689,7 @@ Prevent opening same FILE into multiple windows or buffers. Always reuse them if
     (goto-char point)))
 
 ;;;###autoload
-(defun aj-pdf-epub-pop-to-buffer-a (orig-fun &rest args)
+(defun aj-pdf-epub-pop-to-buffer-a (orig-fn &rest args)
   "Pop-to-buffer pdf or epub files.
 Intended as an advice for `find-file'.
 "
@@ -697,8 +697,8 @@ Intended as an advice for `find-file'.
           (string-suffix-p "epub" (nth 0 args) t))
       (cl-letf (((symbol-function 'pop-to-buffer-same-window)
                  #'pop-to-buffer))
-        (apply orig-fun args))
-    (apply orig-fun args)))
+        (apply orig-fn args))
+    (apply orig-fn args)))
 
 ;;;###autoload
 (defun aj/choose-file-from (dir)
@@ -762,7 +762,7 @@ Version 2017-11-10"
         (rename-buffer "*eww*" t)))))
 
 ;;;###autoload
-(defun aj--switch-buffer-maybe-pop-action-a (orig-fun buffer)
+(defun aj--switch-buffer-maybe-pop-action-a (orig-fn buffer)
   "Pop BUFFER if its major mode is one of `aj-help-buffer-modes'.
 Around advice for `ivy--switch-buffer-action'.
 "
@@ -774,8 +774,8 @@ Around advice for `ivy--switch-buffer-action'.
                      (cond ((eq mode 'org-mode)
                             (aj-display-org-buffer-popup buffer))
                            (t (pop-to-buffer buffer))))))
-          (funcall orig-fun buffer))
-      (funcall orig-fun buffer))))
+          (funcall orig-fn buffer))
+      (funcall orig-fn buffer))))
 
 ;;;###autoload
 (defun aj/switch-buffers (&optional help)

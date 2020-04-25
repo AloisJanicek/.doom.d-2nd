@@ -907,18 +907,18 @@ which one is currently active."
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
 
 ;;;###autoload
-(defun aj-org-open-file-respect-sanity-a (orig-fun &rest args)
+(defun aj-org-open-file-respect-sanity-a (orig-fn &rest args)
   "Advice any command opening `org-mode' files.
 For execution of advised command this functions overrides
 `pop-to-buffer-same-window' and `pop-to-buffer' with heavily
 customized alternative `aj-open-file-switch-create-indirect-buffer-per-persp'.
-Argument ORIG-FUN represents advised function.
-Optional argument ARGS are argument passed to `ORIG-FUN'."
+Argument ORIG-FN represents advised function.
+Optional argument ARGS are argument passed to `ORIG-FN'."
   (cl-letf (((symbol-function 'pop-to-buffer-same-window)
              #'aj-open-file-switch-create-indirect-buffer-per-persp)
             ((symbol-function 'pop-to-buffer)
              #'aj-open-file-switch-create-indirect-buffer-per-persp))
-    (apply orig-fun args)))
+    (apply orig-fn args)))
 
 ;;;###autoload
 (defun aj-org-buffers-respect-sanity-a (&rest _)
@@ -1075,13 +1075,13 @@ in temporarily popup window on the right side of the frame.
       (message "this is not buffer: %s" buffer-or-name))))
 
 ;;;###autoload
-(defun aj-org-buffer-to-popup-a (orig-fun &rest args)
+(defun aj-org-buffer-to-popup-a (orig-fn &rest args)
   "Override `aj-get-window-for-org-buffer' with `aj-display-org-buffer-popup'.
 Intended for overriding default behavior of `aj-open-file-switch-create-indirect-buffer-per-persp'
 to allow pop org buffer into popup window."
   (cl-letf (((symbol-function 'aj-get-window-for-org-buffer)
              #'aj-display-org-buffer-popup))
-    (apply orig-fun args)))
+    (apply orig-fn args)))
 
 ;; ORG-CLOCK AND ORG-POMODORO
 (defun aj/org-clock-update-heading ()
@@ -1387,14 +1387,14 @@ path is colorized according to outline faces.
   "Remove org link syntax from grep search results."
   (interactive)
   (require 'org)
-  (let ((orig-fun (symbol-function 'counsel-git-grep-transformer))
+  (let ((orig-fn (symbol-function 'counsel-git-grep-transformer))
         (dir (or directory
                  (read-directory-name "Search directory: " org-directory)))
         (counsel-rg-base-command
          "rg -M 300 --no-heading --line-number --color never %s"))
     (cl-letf (((symbol-function 'counsel-git-grep-transformer)
                (lambda (str)
-                 (funcall orig-fun (org-link-display-format str)))))
+                 (funcall orig-fn (org-link-display-format str)))))
       (counsel-rg nil dir))))
 
 (provide 'orgmode)
