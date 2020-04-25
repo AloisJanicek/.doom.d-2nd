@@ -155,8 +155,6 @@ if running under WSL")
   (setq calendar-week-start-day 1))
 
 (after! (:any css-mode scss-mode)
-  (custom-theme-set-faces! 'doom-one
-    `(css-selector :foreground ,(doom-lighten 'red 0.1)))
   (set-docsets! '(css-mode scss-mode)
     "CSS" "HTML"
     ["Sass" (memq major-mode '(scss-mode))])
@@ -463,9 +461,6 @@ if running under WSL")
                                       (persp-add-buffer (current-buffer)))))
 
 (after! man
-  (custom-theme-set-faces! 'doom-one
-    `(Man-overstrike :inherit 'bold :foreground ,(doom-lighten 'red 0.1))
-    `(Man-underline :inherit 'underline :foreground ,(doom-lighten 'green 0.1)))
   (set-popup-rule! "*Man\\|*man"            :vslot 1 :size 0.4  :side 'left :select t :ttl nil)
   (add-hook 'Man-mode-hook (lambda ()
                              (doom-mark-buffer-as-real-h)
@@ -968,13 +963,6 @@ if running under WSL")
   (setq web-mode-enable-current-element-highlight t
         web-mode-auto-close-style 1
         )
-
-  (custom-theme-set-faces! 'doom-one
-    `(web-mode-current-element-highlight-face :background ,(doom-color 'bg-alt) :foreground ,(doom-color 'blue))
-    `(web-mode-html-attr-equal-face :foreground ,(doom-color 'base5))
-    `(web-mode-html-tag-bracket-face :foreground ,(doom-color 'base5))
-    `(web-mode-html-tag-face :foreground ,(doom-lighten 'red 0.2))
-    `(web-mode-html-tag-unclosed-face :inherit 'web-mode-html-tag-face :underline '(:color ,(doom-lighten 'red 0.1) :style wave)))
   )
 
 (after! which-func
@@ -1078,7 +1066,7 @@ if running under WSL")
 (use-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now)
   :config
-  (custom-theme-set-faces! 'doom-one
+  (custom-theme-set-faces! nil
     `(highlight-blocks-depth-1-face :background ,(doom-color 'base1))
     `(highlight-blocks-depth-2-face :background ,(doom-lighten 'base1 0.03))
     `(highlight-blocks-depth-3-face :background ,(doom-lighten 'base1 0.06))
@@ -1359,38 +1347,19 @@ if running under WSL")
 (advice-add #'aj/org-agenda-headlines :around #'aj-org-buffer-to-popup-a)
 (advice-add #'aj-org-jump-to-headline-at :around #'aj-org-buffer-to-popup-a)
 
-
-
-(unless (aj-wsl-p)
-  (add-to-list 'load-path (expand-file-name "emacs-application-framework" aj-repos-dir))
-  (require 'eaf)
-
-  (after! eaf
-    (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
-    (when (featurep! :editor evil)
-      (evil-set-initial-state 'eaf-mode 'insert))
-    (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir)
-          eaf-buffer-title-format "*eaf %s*"
-          )
-    (eaf-setq eaf-browser-dark-mode "false")
-    (add-to-list 'eaf-app-display-function-alist
-                 '("browser" . pop-to-buffer))
-
-    (set-popup-rule! (lambda (buf &rest _)
-                       "Find EAF browser buffer."
-                       (with-current-buffer buf
-                         (if (and (eq major-mode 'eaf-mode)
-                                  (string-equal eaf--buffer-app-name "browser"))
-                             t nil)))
-      :vslot 2 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil)
-    )
-  )
-
 (add-hook! 'doom-load-theme-hook :append
   (defun +doom-solaire-mode-swap-bg-maybe-h ()
     (when (string-prefix-p "aj-" (symbol-name doom-theme))
       (require 'solaire-mode)
       (solaire-mode-swap-bg))))
+
+(after! solaire-mode
+  (setq solaire-mode-remap-line-numbers t)
+  (remove-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
+  (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
+  )
+
+(set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono NL 1.1" :slant 'italic :height 105 :weight 'medium)
 
 (custom-theme-set-faces! 'aj-dark+
   `(default :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
@@ -1400,10 +1369,15 @@ if running under WSL")
   `(org-super-agenda-header :foreground ,(doom-color 'fg-alt))
   )
 
-(after! solaire-mode
-  (setq solaire-mode-remap-line-numbers t)
-  (remove-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
-  (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
+(custom-theme-set-faces! 'doom-one
+  `(css-selector :foreground ,(doom-lighten 'red 0.1))
+  `(Man-overstrike :inherit 'bold :foreground ,(doom-lighten 'red 0.1))
+  `(Man-underline :inherit 'underline :foreground ,(doom-lighten 'green 0.1))
+  `(web-mode-current-element-highlight-face :background ,(doom-color 'bg-alt) :foreground ,(doom-color 'blue))
+  `(web-mode-html-attr-equal-face :foreground ,(doom-color 'base5))
+  `(web-mode-html-tag-bracket-face :foreground ,(doom-color 'base5))
+  `(web-mode-html-tag-face :foreground ,(doom-lighten 'red 0.2))
+  `(web-mode-html-tag-unclosed-face :inherit 'web-mode-html-tag-face :underline '(:color ,(doom-lighten 'red 0.1) :style wave))
   )
 
 (when (eq doom-theme 'aj-dark+)
@@ -1446,7 +1420,30 @@ if running under WSL")
       (set-frame-size (selected-frame) 120 42))
   (pushnew! default-frame-alist '(fullscreen . maximized)))
 
-(set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono NL 1.1" :slant 'italic :height 105 :weight 'medium)
+(unless (aj-wsl-p)
+  (add-to-list 'load-path (expand-file-name "emacs-application-framework" aj-repos-dir))
+  (require 'eaf)
+
+  (after! eaf
+    (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
+    (when (featurep! :editor evil)
+      (evil-set-initial-state 'eaf-mode 'insert))
+    (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir)
+          eaf-buffer-title-format "*eaf %s*"
+          )
+    (eaf-setq eaf-browser-dark-mode "false")
+    (add-to-list 'eaf-app-display-function-alist
+                 '("browser" . pop-to-buffer))
+
+    (set-popup-rule! (lambda (buf &rest _)
+                       "Find EAF browser buffer."
+                       (with-current-buffer buf
+                         (if (and (eq major-mode 'eaf-mode)
+                                  (string-equal eaf--buffer-app-name "browser"))
+                             t nil)))
+      :vslot 2 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil)
+    )
+  )
 
 (load! "+bindings")
 (load! "+local")
