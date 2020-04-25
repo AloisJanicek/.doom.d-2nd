@@ -731,24 +731,31 @@ https://github.com/Konfekt/wsl-gui-bins/blob/master/zeal
                      (setq-local fill-column shrface-paragraph-fill-column)
                      (indent-rigidly (point-min) (point-max) shrface-paragraph-indentation)))
                  (buffer-string)))
-         (lang (or (shr-tag-pre-highlight-guess-language-attr pre)
-                   (let ((sym (language-detection-string code)))
-                     (and sym (symbol-name sym)))))
-         (mode (and lang
-                    (shr-tag-pre-highlight--get-lang-mode lang))))
+         ;; (lang (or (shr-tag-pre-highlight-guess-language-attr pre)
+         ;;           (let ((sym (language-detection-string code)))
+         ;;             (and sym (symbol-name sym)))))
+         ;; (mode (and lang
+         ;;            (shr-tag-pre-highlight--get-lang-mode lang)))
+         )
     (shr-ensure-newline)
     (insert (make-string shrface-paragraph-indentation ?\ )) ; make indent string
-    (insert (propertize (concat "#+BEGIN_SRC " lang) 'face 'org-block-begin-line))
+    ;; (insert (propertize (concat "#+BEGIN_SRC " lang) 'face 'org-block-begin-line))
     (shr-ensure-newline)
+    (setq start (point))
     (insert
-     (or (and (fboundp mode)
-              (with-demoted-errors "Error while fontifying: %S"
-                (shr-tag-pre-highlight-fontify code mode)))
-         code))
+     (or ;; (and (fboundp mode)
+      ;;      (with-demoted-errors "Error while fontifying: %S"
+      ;;        (shr-tag-pre-highlight-fontify code mode)))
+      code))
     (shr-ensure-newline)
+    (setq end (point))
     (insert (make-string shrface-paragraph-indentation ?\ )) ; make indent string
-    (insert (propertize "#+END_SRC" 'face 'org-block-end-line ) )
-    (shr-ensure-newline)))
+    ;; (insert (propertize "#+END_SRC" 'face 'org-block-end-line ) )
+    (let* ((beg start)
+           (xx (make-overlay beg end)))
+      (overlay-put xx 'face '(:inherit 'org-code)))
+    (shr-ensure-newline)
+    (insert "\n")))
 
 ;;;###autoload
 (defun xah-rename-eww-buffer ()
