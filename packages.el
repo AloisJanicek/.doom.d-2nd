@@ -32,6 +32,9 @@
 
 (package! esqlite)
 
+(package! eslintd-fix
+  :recipe (:host github :repo "aaronjensen/eslintd-fix"))
+
 (package! highlight-blocks)
 
 (package! highlight-escape-sequences

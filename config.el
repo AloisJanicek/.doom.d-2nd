@@ -1154,6 +1154,10 @@ if running under WSL")
 (use-package! esqlite
   :commands (esqlite-stream-open esqlite-read))
 
+(use-package! eslintd-fix
+  :commands eslintd-fix-mode
+  )
+
 (use-package! google-translate
   :commands (google-translate-at-point
              google-translate-at-point-reverse)
