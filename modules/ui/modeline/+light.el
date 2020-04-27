@@ -509,19 +509,25 @@ lines are selected, or the NxM dimensions of a block selection.")
 (def-modeline! :main
   `(""
     +modeline-matches
-    (vc-mode (" ",(all-the-icons-octicon "git-branch" :v-adjust 0.0 :height 0.9)
-              vc-mode " "))
-    +modeline-buffer-identification
-    +modeline-position)
-  `(""
-    (+modeline-checker ("" +modeline-checker " "))
-    mode-line-misc-info
     " "
     +modeline-modes
+    +modeline-buffer-identification
+    +modeline-position
+    )
+  `(""
+    mode-line-misc-info
+    " "
+    +modeline-checker
+    " "
+    (vc-mode (" ",(all-the-icons-octicon "git-branch" :v-adjust 0.0 :height 0.9)
+              vc-mode " "))
+    ;; " "
+    ;; +modeline-modes
     " "
     +modeline-encoding
-    "  "
-    ))
+    "   "
+    )
+  )
 
 (def-modeline! 'project
   `(" "
