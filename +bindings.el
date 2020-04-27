@@ -113,6 +113,7 @@
    :nemv "q"      #'quit-window
    :nemv "o"      #'Info-menu
    :nemv "m"      #'Info-menu
+   :nmv  "e"      #'evil-forward-word-end
    )
 
  (:after magit
