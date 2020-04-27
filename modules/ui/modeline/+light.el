@@ -353,19 +353,25 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
 ;;; `+modeline-buffer-identification'
 (def-modeline-var! +modeline-buffer-identification ; slightly more informative buffer id
   '((:eval
-     (propertize
-      (let ((buffer-file-name (buffer-file-name (buffer-base-buffer))))
-        (or (when buffer-file-name
-              (if-let (project (doom-project-root buffer-file-name))
-                  (let ((filename (or buffer-file-truename (file-truename buffer-file-name))))
-                    (file-relative-name filename (concat project "..")))))
-            "%b"))
-      'face (cond ((buffer-modified-p)
-                   '(bold-italic mode-line-buffer-id))
-                  ((+modeline-active)
-                   'mode-line-buffer-id))
-      'help-echo buffer-file-name))
-    (buffer-read-only (:propertize " RO" face bold))))
+     (concat
+      (propertize
+       (let ((buffer-file-name (buffer-file-name (buffer-base-buffer))))
+         (or (when buffer-file-name
+               (if-let (project (doom-project-root buffer-file-name))
+                   (let ((filename (or buffer-file-truename (file-truename buffer-file-name))))
+                     (file-relative-name filename (concat project "..")))))
+             "%b"))
+       'face (cond ((and (buffer-modified-p)
+                         (not (doom-special-buffer-p (current-buffer))))
+                    (if (+modeline-active)
+                        '(:inherit mode-line :slant italic)
+                      '(:inherit mode-line-inactive :slant italic)))
+                   ((+modeline-active)
+                    'mode-line-buffer-id))
+       'help-echo buffer-file-name)
+      (unless  (doom-special-buffer-p (current-buffer))
+        (propertize
+         (if buffer-read-only " RO" "") 'face 'bold))))))
 
 
 ;;; `+modeline-position'
