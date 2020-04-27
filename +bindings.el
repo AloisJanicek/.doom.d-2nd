@@ -96,6 +96,12 @@
    [mouse-1] nil
    )
 
+ (:after helpful
+   :map helpful-mode-map
+   :nm "f" #'link-hint-open-link
+   :nm "o" #'imenu
+   )
+
  (:after inferior-python
    :map inferior-python-mode-map
    :ienv "C-l" #'evil-window-right
@@ -106,6 +112,7 @@
    :nemv "f"      #'link-hint-open-link
    :nemv "q"      #'quit-window
    :nemv "o"      #'Info-menu
+   :nemv "m"      #'Info-menu
    )
 
  (:after magit

@@ -23,6 +23,9 @@
 (package! counsel-web
   :recipe (:host github :repo "mnewt/counsel-web"))
 
+(package! cyphejor
+  :recipe (:host github :repo "mrkkrp/cyphejor"))
+
 (package! define-word)
 
 (package! google-translate)
@@ -86,8 +89,6 @@
   :recipe (:host github :repo "stardiviner/sdcv.el" :files ("sdcv.el")))
 
 (package! shrface :recipe (:host github :repo "chenyanming/shrface"))
-
-(package! inherit-org :recipe (:host github :repo "chenyanming/inherit-org"))
 
 (package! shr-tag-pre-highlight :recipe (:host github :repo "xuchunyang/shr-tag-pre-highlight.el"))
 

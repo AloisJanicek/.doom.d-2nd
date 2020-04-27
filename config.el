@@ -66,8 +66,9 @@ if running under WSL")
  Useful when capturing code snippets.")
 
 (defvar aj-help-buffer-modes
+
   '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode
-             Man-mode woman-mode org-mode)
+             Man-mode woman-mode org-mode org-brain-visualize-mode)
   "List of major modes for buffers to be consider as help buffers.")
 
 (add-to-list 'org-modules 'ol-info)
@@ -90,8 +91,8 @@ if running under WSL")
       doom-modeline-height 22
       aj-dark+-blue-modeline t
       doom-theme 'aj-dark+
-      doom-font                   (font-spec :family "JetBrains Mono NL 1.1" :size 14)
-      doom-big-font               (font-spec :family "JetBrains Mono NL 1.1" :size 24)
+      doom-font                   (font-spec :family "JetBrains Mono 1.1" :size 14)
+      doom-big-font               (font-spec :family "JetBrains Mono 1.1" :size 24)
       doom-variable-pitch-font    (font-spec :family "Noto Sans" :size 14)
       doom-unicode-font           "Noto Color Emoji"
       all-the-icons-scale-factor 1
@@ -99,8 +100,8 @@ if running under WSL")
 
 (setq-default tab-width 4)
 
-(set-popup-rule! "*backtrace\*"                  :size 0.5  :side 'bottom :select t :quit t)
-(set-popup-rule! "^ \\*company-box-" :ignore t)
+(set-popup-rule! "*backtrace\*"      :size 0.5            :side 'bottom :select t :quit t :modeline t)
+(set-popup-rule! "*doom:scratch"     :size 0.25 :vslot -4 :side 'bottom :select t :quit t :ttl nil :modeline nil)
 
 (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
   (remove-hook hook 'highlight-indent-guides-mode))
@@ -134,14 +135,14 @@ if running under WSL")
     (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
 (after! ansible-doc
-  (set-popup-rule! "*ansible-doc "     :vslot 2 :size 0.32 :side 'left :select t :ttl t)
+  (set-popup-rule! "*ansible-doc "     :vslot 2 :size 0.32 :side 'left :select t :ttl t :modeline t)
   (when (featurep! :editor evil)
     (add-hook 'ansible-doc-module-mode-hook #'evil-motion-state))
   (add-hook 'ansible-doc-module-mode-hook #'visual-line-mode))
 
 (after! apropos
-  (set-popup-rule! "*apropos\*"        :vslot 1 :size 0.4  :side 'left :select t)
-  (set-popup-rule! "*Apropos\*"        :vslot 1 :size 0.4  :side 'left :select t))
+  (set-popup-rule! "*apropos\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t)
+  (set-popup-rule! "*Apropos\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t))
 
 (after! auth-source
   (setq auth-sources '("~/.authinfo.gpg"))
@@ -169,7 +170,7 @@ if running under WSL")
   )
 
 (after! cus-edit
-  (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t))
+  (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t :modeline t))
 
 (after! company
   (setq company-idle-delay 1
@@ -188,7 +189,7 @@ if running under WSL")
         counsel-org-tags t
         counsel-projectile-sort-projects t
         )
-  (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil)
+  (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil :modeline t)
   (add-hook 'counsel-grep-post-action-hook  #'recenter)
   (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'counsel-org-clock--run-context-action :around #'aj-org-open-file-respect-sanity-a)
@@ -238,6 +239,7 @@ if running under WSL")
 (after! evil
   (setq evil-move-cursor-back nil
         evil-want-fine-undo t
+        evil-visual-state-cursor 'hbar
         )
   (advice-add #'evil-goto-mark-line :after (lambda (&rest _)
                                              (recenter)))
@@ -267,13 +269,14 @@ if running under WSL")
   )
 
 (after! eww
-  (set-popup-rule! "*eww"            :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil)
+  (set-popup-rule! "*eww"            :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
   (add-hook 'eww-after-render-hook
             (lambda ()
               (shrface-mode)
               (unless
                   (string-match "cppreference.com\\|WordPress" (plist-get eww-data :url))
                 (eww-readable))
+              (setq-local header-line-format nil)
               (recenter 0 t)
               (turn-on-visual-line-mode)
               (xah-rename-eww-buffer)
@@ -305,10 +308,10 @@ if running under WSL")
   (setq geiser-default-implementation 'guile))
 
 (after! help
-  (set-popup-rule! "*Help\*"           :vslot 2 :size 82 :side 'left :select t))
+  (set-popup-rule! "*Help\*"           :vslot 2 :size 82 :side 'left :select t :modeline t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"        :vslot 2 :size 82 :side 'left :select t :quit t :ttl nil)
+  (set-popup-rule! "*helpful\*"        :vslot 2 :size 82 :side 'left :select t :quit t :ttl nil :modeline t)
   (setq helpful-mode-hook nil)
   (add-hook 'helpful-mode-hook (lambda ()
                                  (doom-mark-buffer-as-real-h)
@@ -316,16 +319,22 @@ if running under WSL")
                                  (visual-line-mode)
                                  ))
   (advice-add #'helpful--in-manual-p :around (lambda (orig-fn &rest args)
+                                               "Don't run `Info-selection-hook'."
                                                (let (Info-selection-hook)
                                                  (unless Info-selection-hook
                                                    (apply orig-fn args)))))
+
+  (advice-add #'helpful--heading :around (lambda (orig-fn &rest args)
+                                           "Add leading star to helpful heading"
+                                           (funcall orig-fn (concat "* " (car args)))))
   )
 
 (after! ibuffer
-  (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t))
+  (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t))
 
 (after! info
-  (set-popup-rule! "*Info\\|*info"            :vslot 2 :size 80 :side 'left :select t :quit t :ttl nil)
+  (set-popup-rule! "*Info\\|*info"            :vslot 2 :size 80 :side 'left :select t :quit t :ttl nil :modeline t)
+  (setq Info-use-header-line nil)
   (require 'ol-info)
   (add-hook 'Info-selection-hook (lambda ()
                                    (let* ((info-filename
@@ -343,7 +352,8 @@ if running under WSL")
   (add-hook 'Info-mode-hook (lambda ()
                               (doom-mark-buffer-as-real-h)
                               (persp-add-buffer (current-buffer))
-                              (inherit-org-mode )
+                              (visual-line-mode)
+                              (mixed-pitch-mode)
                               ))
   )
 
@@ -451,23 +461,39 @@ if running under WSL")
   (magit-todos-mode)
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
+(remove-hook 'Man-mode-hook #'hide-mode-line-mode)
+
 (after! woman
   (setq woman-fill-column 80
-        woman-ll-fill-column 80
-        )
-  (set-popup-rule! "*WoMan"            :vslot 1 :size 82  :side 'left :select t :ttl nil)
-  (add-hook 'woman-post-format-hook (lambda ()
-                                      (doom-mark-buffer-as-real-h)
-                                      (persp-add-buffer (current-buffer)))))
+        woman-ll-fill-column 80)
+
+  (set-popup-rule! "^\\*\\(?:Wo\\)?Man "
+    :vslot 1 :size 82  :side 'left :select t :ttl nil :modeline t)
+  (setq woman-mode-hook nil)
+
+  (add-hook 'woman-pre-format-hook (lambda ()
+                                     (set-modeline! :main)
+                                     ))
+  (add-hook 'woman-mode-hook (lambda ()
+                               (doom-mark-buffer-as-real-h)
+                               (persp-add-buffer (current-buffer))
+                               (mixed-pitch-mode)
+                               ))
+  )
 
 (after! man
-  (set-popup-rule! "*Man\\|*man"            :vslot 1 :size 0.4  :side 'left :select t :ttl nil)
+  (set-popup-rule! "*Man\\|*man"            :vslot 1 :size 0.4  :side 'left :select t :ttl nil :modeline t)
   (add-hook 'Man-mode-hook (lambda ()
                              (doom-mark-buffer-as-real-h)
                              (persp-add-buffer (current-buffer))))
+
   (advice-add #'Man-goto-section :after (lambda (&rest _)
                                           "Move current line to the top of the buffer."
                                           (recenter 0 t)))
+  )
+
+(after! nav-flash
+  (setq nav-flash-delay 0.33)
   )
 
 (after! ob-core
@@ -483,16 +509,15 @@ if running under WSL")
    )
   )
 
-
 (remove-hook 'org-mode-hook #'flyspell-mode)
 
 (after! org
-  (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t)
-  (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t)
-  (set-popup-rule! "^\\*Org Agenda.*\\*$"    :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil )
-  (set-popup-rule! "^\\*Org QL Search.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil )
-  (set-popup-rule! "^\\*Org QL View.*\\*$"   :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil )
-  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil )
+  (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
+  (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
+  (set-popup-rule! "^\\*Org Agenda.*\\*$"    :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
+  (set-popup-rule! "^\\*Org QL Search.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
+  (set-popup-rule! "^\\*Org QL View.*\\*$"   :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
+  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
 
   (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
   (add-hook 'org-capture-mode-hook #'flyspell-mode)
@@ -563,6 +588,7 @@ if running under WSL")
 
 (after! org-agenda
   (add-hook 'org-agenda-mode-hook #'aj-org-complete-all-tags-h)
+  (add-hook 'org-agenda-mode-hook #'hl-line-mode)
   (add-hook 'org-agenda-finalize-hook (lambda ()
                                         "Complete tags from all org-agenda files across each other."
                                         (setq-local org-global-tags-completion-table
@@ -580,6 +606,9 @@ if running under WSL")
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-exit :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-agenda-filter-apply :after #'aj-org-agenda-copy-set-filter-a)
+  (advice-add #'org-agenda-set-mode-name :after (lambda (&rest _)
+                                                  "Ensure modes are formated with cyphejor."
+                                                  (cyphejor--hook)))
   (advice-add #'org-agenda-refile :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-agenda-refile :after (lambda (&rest _)
                                            "Refresh view."
@@ -866,11 +895,10 @@ if running under WSL")
                      (with-current-buffer buf
                        (if (eq major-mode 'pdf-view-mode)
                            t nil)))
-    :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil)
+    :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
 
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   "Set up pdf-view to my liking."
-                                  (hide-mode-line-mode)
                                   (pdf-view-auto-slice-minor-mode)
                                   (pdf-view-midnight-minor-mode)
                                   (pdf-outline-imenu-enable)
@@ -894,7 +922,7 @@ if running under WSL")
   )
 
 (after! profiler
-  (set-popup-rule! "^.*-Profiler-Report.*$"  :vslot 2 :size 0.4  :side 'right :select t))
+  (set-popup-rule! "^.*-Profiler-Report.*$"  :vslot 2 :size 0.4  :side 'right :select t :modeline t))
 
 (after! projectile
   (setq projectile-track-known-projects-automatically nil
@@ -915,7 +943,7 @@ if running under WSL")
   (set-docsets! 'python-mode "Python_3"))
 
 (after! racket-mode
-  (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil))
+  (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil :modeline t))
 
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
@@ -924,10 +952,10 @@ if running under WSL")
   )
 
 (after! scheme
-  (set-popup-rule! "^\\* Guile REPL *"          :size 10 :select t :quit nil))
+  (set-popup-rule! "^\\* Guile REPL *"          :size 10 :select t :quit nil :modeline t))
 
 (after! synosaurus
-  (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t))
+  (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t :modeline t))
 
 (after! treemacs
   (setq
@@ -950,9 +978,18 @@ if running under WSL")
   (advice-add #'undo-tree-load-history :around #'doom-shut-up-a))
 
 (after! vc-git
-  (define-advice vc-git-mode-line-string (:around (orig-fn args) downcase-output)
-    "Downcase output of this function"
-    (downcase (funcall orig-fn args)))
+  (define-advice vc-git-mode-line-string (:around (orig-fn args) remove-git-name)
+    "Remove \"Git\" from output."
+    (replace-regexp-in-string "^Git." "" (funcall orig-fn args))))
+
+
+(after! warnings
+  (add-to-list 'warning-suppress-types '(defvaralias))
+  )
+
+(after! vterm
+  (remove-hook 'vterm-mode-hook #'hide-mode-line-mode)
+  (set-popup-rule! "*doom:vterm-popup" :size 0.25 :vslot -5 :select t :quit t :ttl nil :modeline nil)
   )
 
 (after! web-mode
@@ -976,7 +1013,8 @@ if running under WSL")
         ))
 
 (after! wordnut
-  (set-popup-rule! "*WordNut\*"                 :size 0.4  :side 'top :select t))
+  (set-popup-rule! "*WordNut\*"                 :size 0.4  :side 'top :select t :modeline t)
+  )
 
 (after! yasnippet
   (setq yas-wrap-around-region t
@@ -1044,6 +1082,33 @@ if running under WSL")
    )
   )
 
+(use-package! cyphejor
+  :config
+  (setq
+   cyphejor-rules
+   `(:upcase
+     ("emacs" ,(all-the-icons-fileicon "emacs" :v-adjust -0.1 :height 0.95) :prefix)
+     ("helpful" ,(all-the-icons-material "help_outline" :v-adjust -0.2 :height 1.2) :prefix)
+     ("brain" ,(all-the-icons-fileicon "brain" :v-adjust -0.1) :postfix)
+     ("agenda" ,(all-the-icons-faicon "calendar-check-o" :v-adjust 0.05 :height 0.95) :postfix)
+     ("woman" ,(all-the-icons-fileicon "man-page" :v-adjust -0.1) :postfix)
+     ("man" ,(all-the-icons-fileicon "man-page" :v-adjust -0.1) :postfix)
+     ("pdf" ,(all-the-icons-octicon "file-pdf" :v-adjust -0.1) :postfix)
+     ("nov" ,(all-the-icons-faicon "book" :v-adjust -0.1) :postfix)
+     ("eww" ,(all-the-icons-faicon "firefox" :v-adjust -0.1) :postfix)
+     ("eaf" ,(all-the-icons-faicon "chrome" :v-adjust -0.1) :postfix)
+     ("vterm" ,(all-the-icons-faicon "terminal" :v-adjust -0.1) :postfix)
+     ("info" ,(all-the-icons-fileicon "man-page" :v-adjust -0.1) :postfix)
+     ("visualize" "")
+     ("lisp"        "")
+     ("mode"        "")
+     ("view"        "")
+     ("org" ,(concat (all-the-icons-fileicon "org" :v-adjust -0.1) " ") :prefix)
+     ))
+
+  (cyphejor-mode 1)
+  )
+
 (use-package! define-word
   :commands (define-word  define-word-at-point))
 
@@ -1061,7 +1126,7 @@ if running under WSL")
         )
   )
 
-(set-popup-rule! "*Google Translate*"        :size 0.4  :side 'top :select t)
+(set-popup-rule! "*Google Translate*"        :size 0.4  :side 'top :select t :modeline t)
 
 (use-package! highlight-blocks
   :commands (highlight-blocks-mode highlight-blocks-now)
@@ -1093,7 +1158,7 @@ if running under WSL")
 (use-package! howdoyou
   :commands (howdoyou-query aj/howdoyou-hydra/body)
   :config
-  (set-popup-rule! "*How Do You*"      :vslot 1 :size 0.4  :side 'left :select t :ttl nil)
+  (set-popup-rule! "*How Do You*"      :vslot 1 :size 0.4  :side 'left :select t :ttl nil :modeline t)
   )
 
 (use-package! indium
@@ -1142,6 +1207,7 @@ if running under WSL")
   )
 
 (use-package shrface
+  :load-path "~/repos/shrface"
   :after shr
   :config
   (shrface-basic)
@@ -1150,26 +1216,11 @@ if running under WSL")
         shrface-paragraph-indentation 0
         shrface-paragraph-fill-column 80
         shrface-href-versatile nil
-        shrface-outline-regexp (concat " ?+"
-                                       (regexp-opt
-                                        shrface-bullets-bullet-list
-                                        t) " +")
-        shrface-outline-regexp-bol (concat " ?+"
-                                           (regexp-opt
-                                            shrface-bullets-bullet-list
-                                            t) "\\( +\\)")
-
-        shrface-imenu-regexp-bol (concat "^\\(?: ?+\\)"
-                                         (regexp-opt
-                                          shrface-bullets-bullet-list
-                                          t) "\\( .*\\)$"))
+        )
   )
 
 (after! occur
-  (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil)
-  )
-(use-package inherit-org
-  :after shr
+  (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
   )
 
 (use-package shr-tag-pre-highlight
@@ -1187,7 +1238,7 @@ if running under WSL")
                      (with-current-buffer buf
                        (if (eq major-mode 'nov-mode)
                            t nil)))
-    :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil)
+    :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
 
   (setq nov-shr-rendering-functions
         '((img . nov-render-img) (title . nov-render-title)))
@@ -1199,11 +1250,12 @@ if running under WSL")
         nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
 
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  (add-hook 'nov-post-html-render-hook (lambda ()
+                                         (setq-local header-line-format nil)))
   (add-hook 'nov-mode-hook (lambda ()
                              "Setup nov-mode to my liking."
                              (visual-line-mode)
                              (visual-fill-column-mode)
-                             (hide-mode-line-mode)
                              (doom-mark-buffer-as-real-h)
                              (shrface-mode)
                              (setq org-link-parameters
@@ -1223,14 +1275,19 @@ if running under WSL")
   (when (featurep! :editor evil)
     (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode))
   :config
-  (set-popup-rule! "^\\*org-brain\\*$" :vslot -1 :size 0.22 :side 'left :select t :quit nil :ttl nil)
-  (add-hook 'org-brain-visualize-mode-hook #'visual-line-mode)
+  (set-popup-rule! "^\\*org-brain\\*$" :vslot -1 :size 60 :side 'left :select t :quit t :ttl nil :modeline t)
+  (add-hook 'org-brain-visualize-mode-hook (lambda ()
+                                             (doom-mark-buffer-as-real-h)
+                                             (persp-add-buffer (current-buffer))
+                                             (visual-line-mode)))
   (advice-add #'org-brain-visualize :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt-a)
   (advice-add #'org-brain-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-brain-goto :after (lambda (&rest _)
                                         "Recenter visited heading to the top of the buffer."
                                         (recenter 0 t)
+                                        (org-narrow-to-subtree)
+                                        (outline-show-branches)
                                         (turn-off-solaire-mode)))
   (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
   (setq org-brain-visualize-default-choices 'all
@@ -1275,6 +1332,7 @@ if running under WSL")
                                                            (string-match "ARCHIVED" buffer))
                                                  (org-agenda-filter-apply aj-org-agenda-filter 'tag)))))
   (advice-add #'org-ql-view--format-element :override #'aj-org-ql-view--format-element-a)
+  (advice-add #'org-ql-view--display :after #'aj-org-ql-hide-header-a)
   )
 
 (use-package! org-sidebar
@@ -1305,7 +1363,7 @@ if running under WSL")
   :commands (sdcv-search-input sdcv-search-pointer)
   :config
   (setq sdcv-dictionary-simple-list '("WordNet"))
-  (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t)
+  (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t :modeline t)
   (when (featurep! :editor evil)
     (add-hook #'sdcv-mode-hook (lambda ()
                                  (evil-set-initial-state 'sdcv-mode 'motion))))
@@ -1359,7 +1417,7 @@ if running under WSL")
   (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
   )
 
-(set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono NL 1.1" :slant 'italic :height 105 :weight 'medium)
+(set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono 1.1" :slant 'italic :height 105 :weight 'medium)
 
 (custom-theme-set-faces! 'aj-dark+
   `(default :background ,(doom-color 'base2) :foreground ,(doom-color 'fg))
@@ -1367,6 +1425,18 @@ if running under WSL")
   `(solaire-fringe-face :background ,(doom-color 'bg) :foreground ,(doom-color 'base4))
   `(show-paren-match :foreground "#F426A5" :underline t)
   `(org-super-agenda-header :foreground ,(doom-color 'fg-alt))
+  `(org-code :foreground ,(doom-lighten 'orange 0.1))
+  `(woman-bold :foreground ,(doom-lighten 'red 0.1) :family "JetBrains Mono Medium 1.1")
+  `(woman-italic :foreground ,(doom-lighten 'green 0.1) :family "JetBrains Mono Medium Italic 1.1" :slant italic)
+  `(woman-unknown :inherit 'org-code)
+  `(Info-quoted  :inherit 'org-code)
+  `(helpful-heading  :inherit 'outline-1)
+  `(info-title-1 :inherit 'outline-1)
+  `(info-header-node :inherit 'default :weight bold :slant italic)
+  `(info-node :inherit 'default :weight bold :slant italic)
+  `(info-title-2 :inherit 'outline-2)
+  `(info-title-3 :inherit 'outline-3)
+  `(info-title-4 :inherit 'outline-4)
   )
 
 (custom-theme-set-faces! 'doom-one
@@ -1441,9 +1511,10 @@ if running under WSL")
                          (if (and (eq major-mode 'eaf-mode)
                                   (string-equal eaf--buffer-app-name "browser"))
                              t nil)))
-      :vslot 2 :size 86   :side 'right :select t :quit t   :ttl nil :modeline nil)
+      :vslot 2 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
     )
   )
 
 (load! "+bindings")
 (load! "+local")
+;; (load! "+JetBrainsMono.el")

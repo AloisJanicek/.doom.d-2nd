@@ -438,7 +438,7 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
                      (when (derived-mode-p 'text-mode)
                        (format " %dW" (count-words beg end)))
                      " "))
-           'face (if (+modeline-active) 'success)))))
+           'face (if (+modeline-active) 'mode-line)))))
     "Information about the current selection, such as how many characters and
 lines are selected, or the NxM dimensions of a block selection.")
 
@@ -454,6 +454,30 @@ lines are selected, or the NxM dimensions of a block selection.")
     (add-hook 'activate-mark-hook #'+modeline-add-selection-segment-h)
     (add-hook 'deactivate-mark-hook #'+modeline-remove-selection-segment-h)))
 
+;;; `+org-brain-line'
+(def-modeline-var! +org-brain-line
+  '(:eval
+    (let* ((justfile (unless (listp org-brain--vis-entry) org-brain--vis-entry))
+           (file
+            (concat (or justfile
+                        (capitalize (file-name-nondirectory
+                                     (nth 0 org-brain--vis-entry)))) ".org"))
+           (entry (unless justfile (nth 1 org-brain--vis-entry))))
+      (if entry
+          (concat file "::" entry)
+        file))))
+
+;;; `+org-agenda-line'
+(def-modeline-var! +org-agenda-line
+  '(:eval
+    (let ((title (or org-ql-view-title
+                     "Org Agenda"))
+          (filter (car aj-org-agenda-filter)))
+      (if org-ql-view-title
+          (concat title
+                  (when filter
+                    (concat "::" filter)))
+        title))))
 
 ;;; `+modeline-encoding'
 (def-modeline-var! +modeline-encoding
@@ -505,7 +529,17 @@ lines are selected, or the NxM dimensions of a block selection.")
 (def-modeline! 'special
   '("" +modeline-matches
     " " +modeline-buffer-identification)
-  '("" +modeline-modes))
+  '("" +modeline-modes " "))
+
+(def-modeline! 'org-brain
+  '("" +modeline-matches
+    " " +org-brain-line)
+  '("" +modeline-modes " "))
+
+(def-modeline! 'org-agenda
+  '("" +modeline-matches
+    " " +org-agenda-line)
+  '("" +modeline-modes " "))
 
 ;; TODO (def-modeline! pdf ...)
 ;; TODO (def-modeline! helm ...)
@@ -536,6 +570,8 @@ lines are selected, or the NxM dimensions of a block selection.")
 (set-modeline! :main 'default)
 (set-modeline-hook! '+doom-dashboard-mode-hook 'project)
 ;; (set-modeline-hook! 'pdf-tools-enabled-hook 'pdf)
+(set-modeline-hook! 'org-brain-visualize-mode-hook 'org-brain)
+(set-modeline-hook! 'org-agenda-finalize-hook 'org-agenda)
 (set-modeline-hook! '(special-mode-hook
                       image-mode-hook
                       circe-mode-hook)

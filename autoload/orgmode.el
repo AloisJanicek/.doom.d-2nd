@@ -786,7 +786,9 @@ which one is currently active."
                                                           '(and (todo "NEXT")
                                                                 (not (ts-active)))
                                                           :sort '(date priority todo)
-                                                          :super-groups '((:auto-category t))))
+                                                          :super-groups '((:auto-category t))
+                                                          :title "NEXT action"
+                                                          ))
                                                     (if (let* ((tags (when aj-org-agenda-filter
                                                                        `(tags ,(string-remove-prefix
                                                                                 "+" (car aj-org-agenda-filter)))))
@@ -876,14 +878,18 @@ which one is currently active."
            (aj-org-combined-agenda-files)
            '(ts :from -7 :to today)
            :sort '(date priority todo)
-           :super-groups '((:auto-ts t)))) "recent")
+           :super-groups '((:auto-ts t))
+           :title "Recent"
+           )) "recent")
 
   ("R" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
            (aj-get-all-archived-org-files)
            '(ts :from -21 :to today)
            :sort '(date priority todo)
-           :super-groups '((:auto-ts t)))) "Archived Recent")
+           :super-groups '((:auto-ts t))
+           :title "Archived Recent"
+           )) "Archived Recent")
 
   ("T" (org-ql-search
          (aj-org-combined-agenda-files)
@@ -1067,7 +1073,7 @@ in temporarily popup window on the right side of the frame.
                               (ttl)
                               (quit . t)
                               (select . t)
-                              (modeline)
+                              (modeline . t)
                               (autosave . t))))
             (with-current-buffer buffer
               (turn-off-solaire-mode))))
@@ -1396,6 +1402,13 @@ path is colorized according to outline faces.
                (lambda (str)
                  (funcall orig-fn (org-link-display-format str)))))
       (counsel-rg nil dir))))
+
+;; HACKS
+;;;###autoload
+(cl-defun aj-org-ql-hide-header-a (&key (buffer org-ql-view-buffer) header string)
+  "Advice for removing headerline in org-ql buffers."
+  (with-current-buffer buffer
+    (setq-local header-line-format nil)))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

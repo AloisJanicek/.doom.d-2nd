@@ -26,10 +26,8 @@
        hl-todo
        ;;hydra
        indent-guides
-       (
-        modeline
-        +light
-        )
+       (modeline
+        +light)
        nav-flash
        ;;neotree
        ophints
@@ -37,7 +35,7 @@
         +all
         +defaults)
        pretty-code
-       ;;tabbar
+       ;;tabs
        treemacs
        ;;unicode
        vc-gutter
@@ -89,7 +87,7 @@
 
        :tools
        ansible
-       ;; debugger
+       debugger
        direnv
        docker
        editorconfig
@@ -124,7 +122,7 @@
        ;;coq
        ;;crystal
        (csharp +lsp)
-                                        ; data
+       data
        ;;elixir
        ;;elm
        emacs-lisp
@@ -161,16 +159,18 @@
         )
        ;;qt
        racket
-                                        ; rest
-       ;;rst
+       rest
+       ;; rst
        (ruby +lsp)
        (rust +lsp)
        ;;scala
        scheme
        (sh +lsp)
+       ;;sml
        ;;solidity
        ;;swift
        ;;terra
+       yaml
        (web +lsp)
 
        :email
