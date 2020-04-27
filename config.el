@@ -199,6 +199,16 @@ if running under WSL")
   (advice-add #'aj-org-find-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'aj-org-find-file :around #'aj-org-buffer-to-popup-a)
   (advice-add #'counsel-org-goto-action :after (lambda (&rest _) (recenter 0 t)))
+  (advice-add
+   #'counsel--mark-ring-update-fn
+   :override
+   (lambda ()
+     (let ((pos (get-text-property 0 'point (ivy-state-current ivy-last))))
+       (counsel--mark-ring-delete-highlight)
+       (with-ivy-window
+         (goto-char pos)
+         (recenter)
+         (counsel--mark-ring-add-highlight)))))
   )
 
 (after! counsel-dash
@@ -241,22 +251,18 @@ if running under WSL")
         evil-want-fine-undo t
         evil-visual-state-cursor 'hbar
         )
-  (advice-add #'evil-goto-mark-line :after (lambda (&rest _)
-                                             (recenter)))
 
-  (advice-add #'counsel-mark--ivy-read :after (lambda (&rest _)
-                                                (recenter)))
-
-  (advice-add
-   #'counsel--mark-ring-update-fn
-   :override
-   (lambda ()
-     (let ((pos (get-text-property 0 'point (ivy-state-current ivy-last))))
-       (counsel--mark-ring-delete-highlight)
-       (with-ivy-window
-         (goto-char pos)
-         (recenter)
-         (counsel--mark-ring-add-highlight)))))
+  (dolist (fn '(+evil/next-comment
+                +evil/previous-comment
+                evil-next-close-brace
+                evil-previous-open-brace
+                evil-forward-section-end
+                evil-forward-section-begin
+                evil-backward-section-end
+                evil-backward-section-begin
+                evil-goto-mark-line
+                counsel-mark--ivy-read))
+    (advice-add fn :after #'doom-recenter-a))
   )
 
 (after! evil-snipe
@@ -307,6 +313,11 @@ if running under WSL")
 (after! geiser
   (setq geiser-default-implementation 'guile))
 
+(after! git-gutter
+  (advice-add #'git-gutter:previous-hunk :after #'doom-recenter-a)
+  (advice-add #'git-gutter:next-hunk :after #'doom-recenter-a)
+  )
+
 (after! help
   (set-popup-rule! "*Help\*"           :vslot 2 :size 82 :side 'left :select t :modeline t))
 
@@ -327,6 +338,11 @@ if running under WSL")
   (advice-add #'helpful--heading :around (lambda (orig-fn &rest args)
                                            "Add leading star to helpful heading"
                                            (funcall orig-fn (concat "* " (car args)))))
+  )
+
+(after! hl-todo
+  (advice-add #'hl-todo-next :after #'doom-recenter-a)
+  (advice-add #'hl-todo-previous :after #'doom-recenter-a)
   )
 
 (after! ibuffer
@@ -864,6 +880,11 @@ if running under WSL")
 
   )
 
+(after! outline
+  (advice-add #'outline-next-visible-heading :after #'doom-recenter-a)
+  (advice-add #'outline-previous-visible-heading :after #'doom-recenter-a)
+  )
+
 (after! org-crypt
   org-crypt-tag-matcher "+crypt-nocrypt"
   )
@@ -953,6 +974,10 @@ if running under WSL")
 
 (after! scheme
   (set-popup-rule! "^\\* Guile REPL *"          :size 10 :select t :quit nil :modeline t))
+
+(after! siple
+  (advice-add #'next-error :after #'doom-recenter-a)
+  (advice-add #'previous-error :after #'doom-recenter-a))
 
 (after! synosaurus
   (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t :modeline t))
