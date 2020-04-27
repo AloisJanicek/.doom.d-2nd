@@ -507,22 +507,21 @@ lines are selected, or the NxM dimensions of a block selection.")
 ;;; Default modeline
 
 (def-modeline! :main
-  '(""
+  `(""
     +modeline-matches
-    " "
+    (vc-mode (" ",(all-the-icons-octicon "git-branch" :v-adjust 0.0 :height 0.9)
+              vc-mode " "))
     +modeline-buffer-identification
     +modeline-position)
   `(""
+    (+modeline-checker ("" +modeline-checker " "))
     mode-line-misc-info
-    (vc-mode ("  "
-              ,(all-the-icons-octicon "git-branch" :v-adjust 0.0)
-              vc-mode " "))
     " "
     +modeline-modes
     " "
     +modeline-encoding
     "  "
-    (+modeline-checker ("" +modeline-checker "   "))))
+    ))
 
 (def-modeline! 'project
   `(" "
@@ -531,7 +530,7 @@ lines are selected, or the NxM dimensions of a block selection.")
       :v-adjust -0.05
       :height 0.9)
     (" " (:eval (abbreviate-file-name default-directory))))
-  '("" mode-line-misc-info +modeline-modes))
+  '("" mode-line-misc-info +modeline-modes " "))
 
 (def-modeline! 'special
   '("" +modeline-matches
