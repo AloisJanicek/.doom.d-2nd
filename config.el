@@ -295,6 +295,15 @@ if running under WSL")
   (setq large-file-warning-threshold 30000000)
   (add-to-list 'safe-local-variable-values '(org-src-fontify-natively))
   (advice-add #'find-file :around #'aj-pdf-epub-pop-to-buffer-a)
+  (add-hook 'find-file-hook
+            (lambda ()
+              "Recenter after opening file."
+              (run-with-timer 0 nil
+                              (lambda (buf)
+                                (with-selected-window
+                                    (get-buffer-window buf)
+                                  (recenter)))
+                              (current-buffer))))
   )
 
 (after! format-all
