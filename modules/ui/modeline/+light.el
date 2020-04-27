@@ -152,7 +152,7 @@ LHS and RHS will accept."
         (lambda (&rest _) (set-modeline! name))))
 
 (defmacro def-modeline-var! (name body &optional docstring &rest plist)
-  "TODO"
+  ""
   (unless (stringp docstring)
     (push docstring plist)
     (setq docstring nil))
@@ -478,11 +478,11 @@ lines are selected, or the NxM dimensions of a block selection.")
   '(:eval
     (let ((title (or org-ql-view-title
                      "Org Agenda"))
-          (filter (car aj-org-agenda-filter)))
+          (filter (string-trim-left (car aj-org-agenda-filter) "+")))
       (if org-ql-view-title
           (concat title
                   (when filter
-                    (concat "::" filter)))
+                    (concat " [" filter "]")))
         title))))
 
 ;;; `+modeline-encoding'
@@ -546,10 +546,6 @@ lines are selected, or the NxM dimensions of a block selection.")
   '("" +modeline-matches
     " " +org-agenda-line)
   '("" +modeline-modes " "))
-
-;; TODO (def-modeline! pdf ...)
-;; TODO (def-modeline! helm ...)
-
 
 ;;
 ;;; Bootstrap
