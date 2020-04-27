@@ -129,7 +129,7 @@
        ;;erlang
        ;;ess
        ;;faust
-       fsharp
+       ;; fsharp
        ;;fstar
        (go +lsp)
        (haskell +lsp)
@@ -154,7 +154,7 @@
        ;;plantuml
        ;;purescript
        (python
-        ;;+lsp
+        +lsp
         ;;+conda
         )
        ;;qt
