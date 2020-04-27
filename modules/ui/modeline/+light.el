@@ -514,11 +514,12 @@ lines are selected, or the NxM dimensions of a block selection.")
     +modeline-position)
   `(""
     mode-line-misc-info
-    +modeline-modes
     (vc-mode ("  "
               ,(all-the-icons-octicon "git-branch" :v-adjust 0.0)
               vc-mode " "))
-    "  "
+    " "
+    +modeline-modes
+    " "
     +modeline-encoding
     "  "
     (+modeline-checker ("" +modeline-checker "   "))))
