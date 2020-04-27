@@ -1403,7 +1403,7 @@ path is colorized according to outline faces.
                  (funcall orig-fn (org-link-display-format str)))))
       (counsel-rg nil dir))))
 
-;; HACKS
+
 ;;;###autoload
 (cl-defun aj-org-ql-hide-header-a (&key (buffer org-ql-view-buffer) header string)
   "Advice for removing headerline in org-ql buffers."
