@@ -6,3 +6,16 @@ This is my private module for [[https://github.com/hlissner/doom-emacs][doom-ema
 You maybe saw [[https://github.com/AloisJanicek/.doom.d][first generation]] of this config, which I archived prematurely.
 
 [[screenshot.png]]
+
+** Font
+I am using JetBrains Mono font with increasted line height to 1.1 via [[https://github.com/tam5/font-patcher][tam5/font-patcher]].
+You can find tar archive with the font in =extras= folder.
+
+Patching font as opposite to customization of =line-spacing= emacs variable ([[https://www.gnu.org/software/emacs/manual/html_node/elisp/Line-Height.html][39.11 Line Height]])
+is essential if you want to maintain font characters exactly in the middle of the line.
+
+** Theme
+My theme setup is based on =dark+= from [[https://github.com/hlissner/emacs-doom-themes][doom-themes]].
+Since vscode displays its own color theme incorrectly (see [[https://github.com/hlissner/emacs-doom-themes/issues/427][emacs-doom-themes/issue#427]]), using
+RGB values from original =dark_plus.json= results in more vibrant colors. To ensure as identical look
+as possible, I manually color-picked colors from vscode and remapped and customized several faces.
