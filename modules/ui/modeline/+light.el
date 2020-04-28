@@ -498,10 +498,11 @@ lines are selected, or the NxM dimensions of a block selection.")
 ;;; `+lsp'
 (def-modeline-var! +lsp
   '(:eval
-    (when lsp-mode
-      (concat
-       " "
-       (all-the-icons-faicon "rocket" :v-adjust 0.0 :height 0.9) " "))))
+    (ignore-errors
+      (when lsp-mode
+        (concat
+         " "
+         (all-the-icons-faicon "rocket" :v-adjust 0.0 :height 0.9) " ")))))
 
 ;;; `+modeline-encoding'
 (def-modeline-var! +modeline-encoding
@@ -542,8 +543,6 @@ lines are selected, or the NxM dimensions of a block selection.")
     +lsp
     (vc-mode (" ",(all-the-icons-octicon "git-branch" :v-adjust 0.0 :height 0.9)
               vc-mode " "))
-    ;; " "
-    ;; +modeline-modes
     " "
     +modeline-encoding
     "   "
