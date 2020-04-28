@@ -906,6 +906,32 @@ url as its argument."
   (when (window-live-p (get-buffer-window (current-buffer)))
     (recenter)))
 
+;;;###autoload
+(defun my/counsel-man-apropos (&optional initial-input)
+  "Apropos search the man pages with \"man -k\" shell command."
+  (interactive)
+  (ivy-read "Search in man: "
+            (lambda (str)
+              (or
+               (ivy-more-chars)
+               (progn
+                 (counsel--async-command
+                  (format "man -k %s" str))
+                 ;; (format "man -k %s" "asdf"))
+                 '("" "working..."))))
+            :initial-input initial-input
+            :dynamic-collection t
+            :history 'my/counsel-man-apropos
+            :action (lambda (x)
+                      (let* ((result-list (split-string x))
+                             (manual (nth 0 result-list))
+                             (matched-line (nth 3 result-list)))
+                        (woman manual)
+                        (forward-line 2)
+                        (search-forward matched-line)))
+            :unwind #'counsel-delete-process
+            :caller 'my/counsel-man-aprops))
+
 (provide 'functions)
 
 ;;; functions.el ends here
