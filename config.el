@@ -300,9 +300,10 @@ if running under WSL")
               "Recenter after opening file."
               (run-with-timer 0 nil
                               (lambda (buf)
-                                (with-selected-window
-                                    (get-buffer-window buf)
-                                  (recenter)))
+                                (let ((window (get-buffer-window buf)))
+                                  (when (window-live-p window)
+                                    (with-selected-window window
+                                      (recenter)))))
                               (current-buffer))))
   )
 
