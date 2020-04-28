@@ -495,6 +495,14 @@ lines are selected, or the NxM dimensions of a block selection.")
        (or ispell-current-dictionary
            "en")))))
 
+;;; `+lsp'
+(def-modeline-var! +lsp
+  '(:eval
+    (when lsp-mode
+      (concat
+       " "
+       (all-the-icons-faicon "rocket" :v-adjust 0.0 :height 0.9) " "))))
+
 ;;; `+modeline-encoding'
 (def-modeline-var! +modeline-encoding
   '(:eval
@@ -531,6 +539,7 @@ lines are selected, or the NxM dimensions of a block selection.")
     " "
     +modeline-checker
     " "
+    +lsp
     (vc-mode (" ",(all-the-icons-octicon "git-branch" :v-adjust 0.0 :height 0.9)
               vc-mode " "))
     ;; " "
