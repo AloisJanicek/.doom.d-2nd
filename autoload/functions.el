@@ -900,6 +900,12 @@ url as its argument."
     (cl-assert (eq (point) (point-min)))
     (read (current-buffer))))
 
+;;;###autoload
+(defun aj-recenter-only-live-win-a (&rest _)
+  "`recenter' only if current buffer is displayed in live window."
+  (when (window-live-p (get-buffer-window (current-buffer)))
+    (recenter)))
+
 (provide 'functions)
 
 ;;; functions.el ends here

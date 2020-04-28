@@ -891,8 +891,8 @@ if running under WSL")
   )
 
 (after! outline
-  (advice-add #'outline-next-visible-heading :after #'doom-recenter-a)
-  (advice-add #'outline-previous-visible-heading :after #'doom-recenter-a)
+  (advice-add #'outline-next-visible-heading :after #'aj-recenter-only-live-win-a)
+  (advice-add #'outline-previous-visible-heading :after #'aj-recenter-only-live-win-a)
   )
 
 (after! org-crypt
