@@ -886,6 +886,20 @@ url as its argument."
         (eq major-mode 'helpful-mode)))
     (buffer-list))))
 
+;;;###autoload
+(defun print-to-file (filename data)
+  "Print DATA to FILENAME."
+  (with-temp-file filename
+    (prin1 data (current-buffer))))
+
+;;;###autoload
+(defun read-from-file (filename)
+  "Read data directly from FILENAME."
+  (with-temp-buffer
+    (insert-file-contents filename)
+    (cl-assert (eq (point) (point-min)))
+    (read (current-buffer))))
+
 (provide 'functions)
 
 ;;; functions.el ends here

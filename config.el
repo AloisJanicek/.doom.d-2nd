@@ -915,6 +915,12 @@ if running under WSL")
   (setq alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
         org-pomodoro-ask-upon-killing nil
         org-pomodoro-mode-line nil)
+  (defvar aj-org-pomodoro-persist-count-file (expand-file-name "pomodoro-count.el" doom-cache-dir)
+    "File where save pomodoro countrs between sessions")
+  (add-hook! 'org-pomodoro-finished-hook (lambda ()
+                                           (print-to-file aj-org-pomodoro-persist-count-file org-pomodoro-count)))
+  (setq org-pomodoro-count (read-from-file aj-org-pomodoro-persist-count-file))
+  (add-hook! 'org-clock-out-hook #'org-pomodoro-kill)
   )
 
 (after! pdf-view
