@@ -875,6 +875,17 @@ url as its argument."
    (lambda (item)
      (funcall fun (cdr item)))))
 
+;;;###autoload
+(defun aj/cleanup-helpful-buffers ()
+  "Kill all helpful buffers."
+  (mapcar
+   #'kill-buffer
+   (seq-filter
+    (lambda (buf)
+      (with-current-buffer buf
+        (eq major-mode 'helpful-mode)))
+    (buffer-list))))
+
 (provide 'functions)
 
 ;;; functions.el ends here

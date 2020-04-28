@@ -62,6 +62,7 @@
    :n "F" (λ! (aj-eww-link-menu #'eww))
    :n "o" #'imenu
    :n "O" (λ! (aj-eww-link-menu #'eww-browse-with-external-browser))
+   :n "a" #'eww-browse-with-external-browser
    :n "t" (lambda ()
             "Internal"
             (interactive)
