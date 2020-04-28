@@ -549,6 +549,11 @@
    :desc "docsets at point" ">" #'+lookup/in-devdocs
    )
 
+ (:after wordnut
+   :map wordnut-mode-map
+   :nm "o" #'imenu
+   )
+
  (:after css-mode
    :map css-mode-map
    :localleader
@@ -704,7 +709,7 @@
         :desc "google at point reverse:" "G" #'google-translate-at-point-reverse
         :desc "powerthesaurus synonym"   "j" #'powerthesaurus-lookup-word
         :desc "wordnet synonym"          "J" #'synosaurus-lookup
-        :desc "wordnut"                  "k" #'wordnut-lookup-current-word
+        :desc "wordnut"                  "k" #'wordnut-search
         :desc "powerthesaurus replace"   "r" #'powerthesaurus-lookup-word-dwim
         :desc "wordnet synonym replace"  "R" #'synosaurus-choose-and-replace
         :desc "input/stardict"           "i" #'sdcv-search-input
