@@ -648,12 +648,13 @@
 
         :desc "agenda"                   "A" #'org-agenda
         :desc "agenda"                   "a" #'aj/org-agenda-gtd-hydra/body
+        :desc "browse eww"               "b" #'eww
+        :desc "browse eaf"               "B" #'eaf-open-browser
         :desc "agenda tasks"             "h" (λ! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT")))
         :desc "all agenda tasks"         "H" #'aj/org-agenda-headlines
         :desc "imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "NEXT agenda tasks"        "n" (λ! (aj/org-agenda-headlines '(todo "NEXT")))
         :desc "sidebar"                  "s" #'+treemacs/toggle
-        :desc "url"                      "u" #'eww
         )
 
       (:prefix ("p" . "project")
