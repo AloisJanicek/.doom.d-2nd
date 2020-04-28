@@ -610,8 +610,8 @@
         :desc "re-builder"        "R" #'regexp-builder
         :desc "flyspell"          "s" #'aj/flyspell-enable
         :desc "swap dictionaries" "S" (λ! (aj-ispell-swap-two-dicts "english" "czech"))
-        :desc "light/dark theme"  "t" (λ! (aj-doom-themes-swap-two-themes 'doom-solarized-dark 'doom-solarized-light))
-        :desc "themes"            "T" #'counsel-load-theme
+        :desc "treemacs"          "t" #'+treemacs/toggle
+        :desc "light/dark theme"  "T" (λ! (aj-doom-themes-swap-two-themes 'doom-solarized-dark 'doom-solarized-light))
         :desc "undo-tree"         "u" #'undo-tree-visualize
         :desc "visual-line-mode"  "v" #'visual-line-mode
         :desc "whitespace-mode"   "w" #'whitespace-mode
@@ -654,7 +654,8 @@
         :desc "all agenda tasks"         "H" #'aj/org-agenda-headlines
         :desc "imenu-list"               "i" #'imenu-list-smart-toggle
         :desc "NEXT agenda tasks"        "n" (λ! (aj/org-agenda-headlines '(todo "NEXT")))
-        :desc "sidebar"                  "s" #'+treemacs/toggle
+        :desc "search eww"               "s" (λ! (counsel-web-search nil "Search web with eww: " nil #'eww))
+        :desc "search eaf"               "S" (λ! (counsel-web-search nil "Search web with eaf: " nil #'eaf-open-browser))
         )
 
       (:prefix ("p" . "project")
@@ -736,8 +737,7 @@
         :desc "info on symbol"           "I" #'counsel-info-lookup-symbol
         :desc "manual"                   "m" #'woman
         :desc "pop on error"             "P" #'toggle-debug-on-error
-        :desc "search Web"               "S" #'counsel-web-search
-        ;; :desc "zeal search"              "s" #'zeal-at-point-search
+        :desc "zeal search"              "S" #'zeal-at-point-search
         :desc "stack Overflow"           "s" #'aj/howdoyou-hydra/body
         :desc "update-diff"              "u" (λ! (ediff-files
                                                   "~/.doom.d/init.el"
