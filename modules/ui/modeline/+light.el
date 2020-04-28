@@ -485,6 +485,16 @@ lines are selected, or the NxM dimensions of a block selection.")
                     (concat " [" filter "]")))
         title))))
 
+;;; `+flyspell'
+(def-modeline-var! +flyspell
+  '(:eval
+    (when flyspell-mode
+      (concat
+       (all-the-icons-faicon "language" :v-adjust 0.0 :height 0.9)
+       " "
+       (or ispell-current-dictionary
+           "en")))))
+
 ;;; `+modeline-encoding'
 (def-modeline-var! +modeline-encoding
   '(:eval
@@ -516,6 +526,8 @@ lines are selected, or the NxM dimensions of a block selection.")
     )
   `(""
     mode-line-misc-info
+    " "
+    +flyspell
     " "
     +modeline-checker
     " "
