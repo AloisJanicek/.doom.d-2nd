@@ -369,7 +369,9 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
                    ((+modeline-active)
                     'mode-line-buffer-id))
        'help-echo buffer-file-name)
-      (unless  (doom-special-buffer-p (current-buffer))
+      (unless (or
+               (doom-special-buffer-p (current-buffer))
+               (derived-mode-p 'vterm-mode))
         (propertize
          (if buffer-read-only " RO" "") 'face 'bold))))))
 
@@ -604,6 +606,8 @@ lines are selected, or the NxM dimensions of a block selection.")
 (set-modeline-hook! 'eaf-mode-hook 'eaf)
 (set-modeline-hook! 'org-brain-visualize-mode-hook 'org-brain)
 (set-modeline-hook! 'org-agenda-finalize-hook 'org-agenda)
+(set-modeline-hook! 'vterm-mode-hook 'special)
+(set-modeline-hook! 'Info-mode-hook 'special)
 (set-modeline-hook! '(special-mode-hook
                       image-mode-hook
                       circe-mode-hook)
