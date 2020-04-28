@@ -565,6 +565,10 @@ lines are selected, or the NxM dimensions of a block selection.")
     " " +org-agenda-line)
   '("" +modeline-modes " "))
 
+(def-modeline! 'eaf
+  '("  " +modeline-buffer-identification)
+  '("" +modeline-modes " "))
+
 ;;
 ;;; Bootstrap
 
@@ -589,7 +593,7 @@ lines are selected, or the NxM dimensions of a block selection.")
 ;; Other modes
 (set-modeline! :main 'default)
 (set-modeline-hook! '+doom-dashboard-mode-hook 'project)
-;; (set-modeline-hook! 'pdf-tools-enabled-hook 'pdf)
+(set-modeline-hook! 'eaf-mode-hook 'eaf)
 (set-modeline-hook! 'org-brain-visualize-mode-hook 'org-brain)
 (set-modeline-hook! 'org-agenda-finalize-hook 'org-agenda)
 (set-modeline-hook! '(special-mode-hook

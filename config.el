@@ -1151,7 +1151,8 @@ if running under WSL")
      ("pug" ,(all-the-icons-fileicon "pug") :postfix)
      ("perl" ,(all-the-icons-alltheicon "perl" :v-adjust 0.1) :postfix)
      ("json" ,(all-the-icons-octicon "settings" :v-adjust 0.1) :postfix)
-     ("visualize" "")
+     ("eaf" ,(all-the-icons-faicon "chrome") :postfix)
+     ("visualize"   "")
      ("lisp"        "")
      ("mode"        "")
      ("view"        "")
@@ -1264,7 +1265,7 @@ if running under WSL")
   )
 
 (use-package shrface
-  :load-path "~/repos/shrface"
+  ;; :load-path "~/repos/shrface"
   :after shr
   :config
   (shrface-basic)
@@ -1553,11 +1554,24 @@ if running under WSL")
 
   (after! eaf
     (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
+    (advice-add #'eaf--update-buffer-details :after (lambda (&rest _)
+                                                      "Prettify `mode-name' with cyphejor"
+                                                      (when (bound-and-true-p cyphejor-mode)
+                                                        (cyphejor--hook))))
     (when (featurep! :editor evil)
-      (evil-set-initial-state 'eaf-mode 'insert))
+      (evil-set-initial-state 'eaf-mode 'emacs))
+
+    (map!
+     :map eaf-mode-map*
+     "C-h" #'evil-window-left
+     :ie "C-h" #'evil-window-left
+     )
+
     (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir)
           eaf-buffer-title-format "*eaf %s*"
           )
+
+    (eaf-bind-key nil "C-h" eaf-browser-keybinding)
     (eaf-setq eaf-browser-dark-mode "false")
     (add-to-list 'eaf-app-display-function-alist
                  '("browser" . pop-to-buffer))
@@ -1568,7 +1582,7 @@ if running under WSL")
                          (if (and (eq major-mode 'eaf-mode)
                                   (string-equal eaf--buffer-app-name "browser"))
                              t nil)))
-      :vslot 2 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
+      :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)
     )
   )
 
