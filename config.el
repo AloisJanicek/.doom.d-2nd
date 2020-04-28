@@ -1552,43 +1552,48 @@ if running under WSL")
   (pushnew! default-frame-alist '(fullscreen . maximized)))
 
 (unless (aj-wsl-p)
-  (add-to-list 'load-path (expand-file-name "emacs-application-framework" aj-repos-dir))
-  (require 'eaf)
+  (let ((eaf-path (expand-file-name "emacs-application-framework" aj-repos-dir)))
+    (if (ignore-errors (directory-files eaf-path))
+        (progn
+          (add-to-list 'load-path eaf-path)
+          (require 'eaf)
 
-  (after! eaf
-    (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
-    (advice-add #'eaf--update-buffer-details :after (lambda (&rest _)
-                                                      "Prettify `mode-name' with cyphejor"
-                                                      (when (bound-and-true-p cyphejor-mode)
-                                                        (cyphejor--hook))))
-    (when (featurep! :editor evil)
-      (evil-set-initial-state 'eaf-mode 'emacs))
+          (after! eaf
+            (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
+            (advice-add #'eaf--update-buffer-details :after (lambda (&rest _)
+                                                              "Prettify `mode-name' with cyphejor"
+                                                              (when (bound-and-true-p cyphejor-mode)
+                                                                (cyphejor--hook))))
+            (when (featurep! :editor evil)
+              (evil-set-initial-state 'eaf-mode 'emacs))
 
-    (map!
-     :map eaf-mode-map*
-     "C-h" #'evil-window-left
-     :ie "C-h" #'evil-window-left
-     )
+            (map!
+             :map eaf-mode-map*
+             "C-h" #'evil-window-left
+             :ie "C-h" #'evil-window-left
+             )
 
-    (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir)
-          eaf-buffer-title-format "*eaf %s*"
-          )
+            (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir)
+                  eaf-buffer-title-format "*eaf %s*"
+                  )
 
-    (eaf-bind-key nil "C-h" eaf-browser-keybinding)
-    (eaf-setq eaf-browser-dark-mode "false")
-    (add-to-list 'eaf-app-display-function-alist
-                 '("browser" . pop-to-buffer))
+            (eaf-bind-key nil "C-h" eaf-browser-keybinding)
+            (eaf-setq eaf-browser-dark-mode "false")
+            (add-to-list 'eaf-app-display-function-alist
+                         '("browser" . pop-to-buffer))
 
-    (set-popup-rule! (lambda (buf &rest _)
-                       "Find EAF browser buffer."
-                       (with-current-buffer buf
-                         (if (and (eq major-mode 'eaf-mode)
-                                  (string-equal eaf--buffer-app-name "browser"))
-                             t nil)))
-      :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)
-    )
-  )
+            (set-popup-rule! (lambda (buf &rest _)
+                               "Find EAF browser buffer."
+                               (with-current-buffer buf
+                                 (if (and (eq major-mode 'eaf-mode)
+                                          (string-equal eaf--buffer-app-name "browser"))
+                                     t nil)))
+              :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)))
+      (message "no emacs-application-framework repository found at %s" eaf-path))))
 
 (load! "+bindings")
-(load! "+local")
+
+(when (file-readable-p (expand-file-name "+local.el" doom-private-dir))
+  (load! "+local"))
+
 ;; (load! "+JetBrainsMono.el")
