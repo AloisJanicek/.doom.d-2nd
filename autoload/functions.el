@@ -885,7 +885,9 @@ Other org-mode files will be considered as regular files and buffers.
 "
 
   (with-current-buffer (or (buffer-base-buffer buffer) buffer)
-    (let* ((special (doom-special-buffer-p buffer))
+    (let* ((special (or (doom-special-buffer-p buffer)
+                        (derived-mode-p 'nov-mode)
+                        (derived-mode-p 'pdf-view-mode)))
            (buffer-file (unless special
                           (buffer-file-name)))
            (org-to-keep
