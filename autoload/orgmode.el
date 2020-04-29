@@ -425,7 +425,7 @@ and all its children are revealed."
                 (ivy-read
                  "Go to: "
                  (org-ql-query
-                   :select (lambda () (aj-org-get-pretty-heading-path nil t nil nil))
+                   :select (lambda () (aj-org-get-pretty-heading-path nil t nil t))
                    :from (current-buffer)
                    :where '(level <= 9))
                  :update-fn (lambda ()
@@ -1312,7 +1312,7 @@ Optionally specify heading LEVEL. Default is 3.
              (aj-get-all-org-files))))
         (level (or level 3))
         (headings (lambda ()
-                    (aj-org-get-pretty-heading-path t t nil nil)))
+                    (aj-org-get-pretty-heading-path t t nil t)))
         (ivy-height (round (* (frame-height) 0.80)))
         ivy-sort-functions-alist timer)
     (ivy-read
