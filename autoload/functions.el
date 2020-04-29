@@ -773,16 +773,17 @@ Version 2017-11-10"
   "Pop BUFFER if its major mode is one of `aj-help-buffer-modes'.
 Around advice for `ivy--switch-buffer-action'.
 "
-  (let ((mode (with-current-buffer buffer
-                major-mode)))
-    (if (memq mode aj-help-buffer-modes)
-        (cl-letf (((symbol-function 'switch-to-buffer)
-                   (lambda (buffer &rest _)
-                     (cond ((eq mode 'org-mode)
-                            (aj-display-org-buffer-popup buffer))
-                           (t (pop-to-buffer buffer))))))
-          (funcall orig-fn buffer))
-      (funcall orig-fn buffer))))
+  (if (aj-help-buffer-p
+       (if (not (bufferp buffer))
+           (get-buffer buffer))
+       aj-org-help-files)
+      (cl-letf (((symbol-function 'switch-to-buffer)
+                 (lambda (buffer &rest _)
+                   (cond ((eq (with-current-buffer buffer major-mode) 'org-mode)
+                          (aj-display-org-buffer-popup buffer))
+                         (t (pop-to-buffer buffer))))))
+        (funcall orig-fn buffer))
+    (funcall orig-fn buffer)))
 
 ;;;###autoload
 (defun aj/switch-buffers (&optional help)
@@ -801,10 +802,8 @@ See variable `aj-help-buffer-modes' for more details.
                            (and (not (eq buffer (current-buffer)))
                                 (+workspace-contains-buffer-p buffer)
                                 (if help
-                                    (memq (with-current-buffer buffer major-mode)
-                                          aj-help-buffer-modes)
-                                  (not (memq (with-current-buffer buffer major-mode)
-                                             aj-help-buffer-modes))))))
+                                    (aj-help-buffer-p buffer aj-org-help-files)
+                                  (not (aj-help-buffer-p buffer aj-org-help-files))))))
             :update-fn (lambda ()
                          (let (ivy-use-virtual-buffers ivy--virtual-buffers)
                            (counsel--switch-buffer-update-fn)))
@@ -874,6 +873,29 @@ url as its argument."
   (aj-shr-link-menu
    (lambda (item)
      (funcall fun (cdr item)))))
+
+;;;###autoload
+(defun aj-help-buffer-p (buffer org-files-to-keep)
+  "Returns true if BUFFER is to be considered help buffer.
+
+Either file's major-mode is one of defined in `aj-help-buffer-modes'
+or in case of org-mode files, file must be one of ORG-FILES-TO-KEEP.
+
+Other org-mode files will be considered as regular files and buffers.
+"
+
+  (with-current-buffer (or (buffer-base-buffer buffer) buffer)
+    (let* ((special (doom-special-buffer-p buffer))
+           (buffer-file (unless special
+                          (buffer-file-name)))
+           (org-to-keep
+            (unless special
+              (member buffer-file
+                      org-files-to-keep)))
+           (help-buff (memq major-mode aj-help-buffer-modes)))
+      (or (and help-buff special)
+          (unless special
+            (and help-buff org-to-keep))))))
 
 ;;;###autoload
 (defun aj/kill-helpful-buffers (&rest _)

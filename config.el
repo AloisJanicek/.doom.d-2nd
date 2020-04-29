@@ -76,7 +76,12 @@ if running under WSL")
   "List of major modes for buffers to be consider as help buffers.")
 
 (defvar aj-last-popup-win nil
-  "Last popup window")
+  "Last popup window.")
+
+(defvar aj-org-help-files  nil
+  "List of special org files.
+Either they are contributing to org-agenda or are notes files from org-directory.
+")
 
 (add-to-list 'org-modules 'ol-info)
 (add-to-list 'org-modules 'ol-eww)
@@ -566,6 +571,16 @@ if running under WSL")
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (add-hook 'org-mode-hook #'mixed-pitch-mode)
+  (add-hook 'org-mode-hook (lambda ()
+                             "Update `aj-org-help-files'."
+                             (setq aj-org-help-files (mapcar
+                                                      #'file-truename
+                                                      (delq
+                                                       nil
+                                                       (delete-dups
+                                                        (append
+                                                         (directory-files-recursively org-directory ".org")
+                                                         (aj-org-combined-agenda-files))))))))
   (advice-add #'org-refile :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
