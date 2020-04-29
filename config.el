@@ -153,7 +153,7 @@ if running under WSL")
   )
 
 (after! avy
-  (setq avy-all-windows t
+  (setq avy-all-windows nil
         avy-background t))
 
 (after! calendar
