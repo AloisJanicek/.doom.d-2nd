@@ -457,19 +457,19 @@
 
  (:after pdf-tools
    :map pdf-view-mode-map
-   :n "C-h" #'evil-window-left
-   :n "C-j" #'evil-window-down
-   :n "C-k" #'evil-window-up
-   :n "C-l" #'evil-window-right
-   :n "M-f" #'pdf-occur
-   :n "j" #'pdf-view-next-line-or-next-page
-   :n "k" #'pdf-view-previous-line-or-previous-page
-   :n "l" #'org-store-link
-   :n "o" #'counsel-imenu
-   :n "O" #'pdf-outline
-   :n "R" (λ! (brds/pdf-jump-last-viewed-bookmark))
-   :n "y" #'pdf-view-kill-ring-save
-   :n "q" (λ! (progn (brds-pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
+   :nm "C-h" #'evil-window-left
+   :nm "C-j" #'evil-window-down
+   :nm "C-k" #'evil-window-up
+   :nm "C-l" #'evil-window-right
+   :nm "M-f" #'pdf-occur
+   :nm "j" #'pdf-view-next-line-or-next-page
+   :nm "k" #'pdf-view-previous-line-or-previous-page
+   :nm "l" #'org-store-link
+   :nm "o" #'counsel-imenu
+   :nm "O" #'pdf-outline
+   :nm "R" (λ! (brds/pdf-jump-last-viewed-bookmark))
+   :nm "y" #'pdf-view-kill-ring-save
+   :nm "q" (λ! (progn (brds-pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
    )
 
  (:after pdf-occur

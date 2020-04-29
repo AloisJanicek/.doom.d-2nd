@@ -371,7 +371,9 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
        'help-echo buffer-file-name)
       (unless (or
                (doom-special-buffer-p (current-buffer))
-               (derived-mode-p 'vterm-mode))
+               (derived-mode-p 'vterm-mode)
+               (derived-mode-p 'pdf-view-mode)
+               (derived-mode-p 'nov-mode))
         (propertize
          (if buffer-read-only " RO" "") 'face 'bold))))))
 
@@ -497,6 +499,14 @@ lines are selected, or the NxM dimensions of a block selection.")
        (or ispell-current-dictionary
            "en")))))
 
+;;; `+pdf-page-number'
+(def-modeline-var! +pdf-page-number
+  '(:eval
+    (concat
+     (number-to-string (pdf-view-current-page))
+     "/"
+     (number-to-string (pdf-cache-number-of-pages)))))
+
 ;;; `+lsp'
 (def-modeline-var! +lsp
   '(:eval
@@ -579,6 +589,12 @@ lines are selected, or the NxM dimensions of a block selection.")
   '("  " +modeline-buffer-identification)
   '("" +modeline-modes " "))
 
+(def-modeline! 'pdf
+  '("" +modeline-matches
+    " " +modeline-buffer-identification
+    " " +pdf-page-number)
+  '("" +modeline-modes " "))
+
 ;;
 ;;; Bootstrap
 
@@ -608,6 +624,7 @@ lines are selected, or the NxM dimensions of a block selection.")
 (set-modeline-hook! 'org-agenda-finalize-hook 'org-agenda)
 (set-modeline-hook! 'vterm-mode-hook 'special)
 (set-modeline-hook! 'Info-mode-hook 'special)
+(set-modeline-hook! 'pdf-view-mode-hook 'pdf)
 (set-modeline-hook! '(special-mode-hook
                       image-mode-hook
                       circe-mode-hook)

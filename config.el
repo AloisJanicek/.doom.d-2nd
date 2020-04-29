@@ -963,7 +963,7 @@ Either they are contributing to org-agenda or are notes files from org-directory
                      (with-current-buffer buf
                        (if (eq major-mode 'pdf-view-mode)
                            t nil)))
-    :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
+    :vslot 2 :size 110  :side 'left :select t :quit t :ttl nil :modeline t)
 
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   "Set up pdf-view to my liking."
