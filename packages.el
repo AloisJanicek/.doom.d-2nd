@@ -97,6 +97,8 @@
 
 (package! systemd)
 
+(package! tldr)
+
 (package! vimrc-mode)
 
 (package! yankpad)

@@ -66,9 +66,8 @@ if running under WSL")
  Useful when capturing code snippets.")
 
 (defvar aj-help-buffer-modes
-
   '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode
-             Man-mode woman-mode org-mode org-brain-visualize-mode)
+             Man-mode woman-mode org-mode org-brain-visualize-mode tldr-mode)
   "List of major modes for buffers to be consider as help buffers.")
 
 (add-to-list 'org-modules 'ol-info)
@@ -1140,6 +1139,7 @@ if running under WSL")
      ("eaf" ,(all-the-icons-faicon "chrome" :v-adjust -0.1) :postfix)
      ("vterm" ,(all-the-icons-faicon "terminal" :v-adjust -0.1) :postfix)
      ("info" ,(all-the-icons-fileicon "man-page" :v-adjust -0.1) :postfix)
+     ("tldr" ,(all-the-icons-fileicon "man-page" :v-adjust -0.1) :postfix)
      ("dired" ,(all-the-icons-octicon "file-directory" :v-adjust 0.1) :postfix)
      ("fundamental" ,(all-the-icons-faicon "file-text" :v-adjust 0.1) :postfix)
      ("yaml" ,(all-the-icons-octicon "settings" :v-adjust -0.1) :postfix)
@@ -1439,6 +1439,29 @@ if running under WSL")
 (use-package! systemd
   :commands (systemd-mode))
 
+(use-package! tldr
+  :commands tldr
+  :config
+  (setq tldr-directory-path (expand-file-name "tldr" doom-cache-dir))
+  (setq tldr-mode-hook nil)
+  (add-hook 'tldr-mode-hook (lambda ()
+                              (doom-mark-buffer-as-real-h)
+                              (persp-add-buffer (current-buffer))
+                              (mixed-pitch-mode)
+                              ))
+  (advice-add #'tldr :after (lambda (&rest _)
+                              (rename-buffer (concat "*tldr "
+                                                     (progn
+                                                       (string-trim
+                                                        (buffer-substring-no-properties
+                                                         (point-min)
+                                                         (search-forward " "))))
+                                                     "*")
+                                             t)))
+  (set-popup-rule! "*tldr"
+    :vslot 1 :size 82  :side 'left :select t :ttl nil :modeline t)
+  )
+
 (use-package! vimrc-mode
   :commands vimrc-mode
   )
@@ -1504,6 +1527,18 @@ if running under WSL")
   `(info-title-2 :inherit 'outline-2)
   `(info-title-3 :inherit 'outline-3)
   `(info-title-4 :inherit 'outline-4)
+  `(tldr-code-block :foreground ,(doom-lighten 'orange 0.1))
+  `(tldr-command-itself :foreground ,(doom-lighten 'orange 0.1) :family "JetBrains Mono Medium 1.1")
+  `(tldr-command-argument :foreground ,(doom-lighten 'orange 0.1) :family "JetBrains Mono Medium Italic 1.1" :slant italic)
+  `(tldr-description :inherit 'base)
+  `(tldr-introduction :inherit 'base)
+  `(tldr-title :foreground ,(doom-lighten 'red 0.1) :family "JetBrains Mono Medium 1.1")
+  )
+
+(after! mixed-pitch
+  (dolist (face '(tldr-code-block tldr-command-itself tldr-command-argument))
+    (add-to-list 'mixed-pitch-fixed-pitch-faces face)
+    )
   )
 
 (custom-theme-set-faces! 'doom-one

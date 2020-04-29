@@ -744,6 +744,7 @@
         :desc "pop on error"             "P" #'toggle-debug-on-error
         :desc "zeal search"              "S" #'zeal-at-point-search
         :desc "stack Overflow"           "s" #'aj/howdoyou-hydra/body
+        :desc "tldr;"                    "t" #'tldr
         :desc "update-diff"              "u" (λ! (ediff-files
                                                   "~/.doom.d/init.el"
                                                   "~/.emacs.d/init.example.el"))
