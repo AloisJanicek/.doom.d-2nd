@@ -328,6 +328,10 @@
             (interactive)
             (let ((aj-org-agenda-gtd-hydra-no-auto t))
               (aj/org-agenda-gtd-hydra/body)))
+   :m "C-j"   #'org-agenda-next-line
+   :m "j"     #'org-agenda-next-item
+   :m "C-k"   #'org-agenda-previous-line
+   :m "k"     #'org-agenda-previous-item
    :localleader
    :desc "refile" "r" #'aj/org-refile-hydra/body
    )
@@ -352,10 +356,6 @@
 
    :m "C-h" #'evil-window-left
    :m "C-l" #'evil-window-right
-   ;; :m "j"   #'org-agenda-next-line
-   ;; :m "C-j" #'org-agenda-next-item
-   ;; :m "k"   #'org-agenda-previous-line
-   ;; :m "C-k" #'org-agenda-previous-item
    :m "o"   #'org-agenda-open-link
    :m "t"   #'org-agenda-todo
    :m "z"   #'org-agenda-view-mode-dispatch
