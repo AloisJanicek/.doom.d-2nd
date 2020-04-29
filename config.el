@@ -400,6 +400,10 @@ if running under WSL")
   (ivy-add-actions
    #'ivy-yasnippet
    '(("e" aj-ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own")))
+  (ivy-add-actions
+   #'ivy-switch-buffer
+   '(("c" aj/kill-helpful-buffers "kill helpful-mode buffers")
+     ("C" aj/kill-all-help-buffers "kill all help modes buffers")))
 
   (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
   )

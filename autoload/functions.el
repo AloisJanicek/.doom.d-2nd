@@ -876,14 +876,28 @@ url as its argument."
      (funcall fun (cdr item)))))
 
 ;;;###autoload
-(defun aj/cleanup-helpful-buffers ()
-  "Kill all helpful buffers."
+(defun aj/kill-helpful-buffers (&rest _)
+  "Kill all `helpful-mode' buffers."
+  (interactive)
   (mapcar
    #'kill-buffer
    (seq-filter
     (lambda (buf)
       (with-current-buffer buf
         (eq major-mode 'helpful-mode)))
+    (buffer-list))))
+
+;;;###autoload
+(defun aj/kill-all-help-buffers (&rest _)
+  "Kill all `aj-help-buffer-modes' buffers exept from `org-mode'."
+  (interactive)
+  (mapcar
+   #'kill-buffer
+   (seq-filter
+    (lambda (buf)
+      (with-current-buffer buf
+        (and (memq major-mode aj-help-buffer-modes)
+             (not (eq major-mode 'org-mode)))))
     (buffer-list))))
 
 ;;;###autoload
