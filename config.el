@@ -689,7 +689,7 @@ Either they are contributing to org-agenda or are notes files from org-directory
                               (tags      . "  %-6t %6e ")
                               (search    . "%l")
                               )
-   org-agenda-tags-column 68
+   org-agenda-tags-column 72
    org-agenda-todo-list-sublevels t
    org-agenda-log-mode-items '(closed clock state)
    org-agenda-start-with-log-mode nil

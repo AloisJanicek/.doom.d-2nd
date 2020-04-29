@@ -352,10 +352,10 @@
 
    :m "C-h" #'evil-window-left
    :m "C-l" #'evil-window-right
-   :m "j"   #'org-agenda-next-line
-   :m "C-j" #'org-agenda-next-item
-   :m "k"   #'org-agenda-previous-line
-   :m "C-k" #'org-agenda-previous-item
+   ;; :m "j"   #'org-agenda-next-line
+   ;; :m "C-j" #'org-agenda-next-item
+   ;; :m "k"   #'org-agenda-previous-line
+   ;; :m "C-k" #'org-agenda-previous-item
    :m "o"   #'org-agenda-open-link
    :m "t"   #'org-agenda-todo
    :m "z"   #'org-agenda-view-mode-dispatch
