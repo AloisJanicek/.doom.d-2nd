@@ -91,7 +91,7 @@
 (package! sdcv
   :recipe (:host github :repo "stardiviner/sdcv.el" :files ("sdcv.el")))
 
-(package! shrface :recipe (:host github :repo "chenyanming/shrface"))
+(package! shrface :recipe (:host github :repo "AloisJanicek/shrface"))
 
 (package! shr-tag-pre-highlight :recipe (:host github :repo "xuchunyang/shr-tag-pre-highlight.el"))
 
