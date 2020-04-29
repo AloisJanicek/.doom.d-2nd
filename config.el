@@ -565,6 +565,7 @@ if running under WSL")
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)
+  (add-hook 'org-mode-hook #'mixed-pitch-mode)
   (advice-add #'org-refile :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
@@ -607,7 +608,7 @@ if running under WSL")
    org-hierarchical-todo-statistics t
 
    org-startup-with-inline-images t
-   org-hide-emphasis-markers nil
+   org-hide-emphasis-markers t
    org-fontify-whole-heading-line nil
    org-src-fontify-natively t
    org-imenu-depth 9
@@ -1511,6 +1512,7 @@ if running under WSL")
 (advice-add #'aj/org-agenda-headlines :around #'aj-org-buffer-to-popup-a)
 (advice-add #'aj-org-jump-to-headline-at :around #'aj-org-buffer-to-popup-a)
 
+;;; theme-settings
 (add-hook! 'doom-load-theme-hook :append
   (defun +doom-solaire-mode-swap-bg-maybe-h ()
     (when (string-prefix-p "aj-" (symbol-name doom-theme))
@@ -1532,6 +1534,7 @@ if running under WSL")
   `(show-paren-match :foreground "#F426A5" :underline t)
   `(org-super-agenda-header :foreground ,(doom-color 'fg-alt))
   `(org-code :foreground ,(doom-lighten 'orange 0.1))
+  `(org-block :foreground ,(doom-lighten 'orange 0.1))
   `(woman-bold :foreground ,(doom-lighten 'red 0.1) :family "JetBrains Mono Medium 1.1")
   `(woman-italic :foreground ,(doom-lighten 'green 0.1) :family "JetBrains Mono Medium Italic 1.1" :slant italic)
   `(woman-unknown :inherit 'org-code)
