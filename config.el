@@ -1,5 +1,10 @@
 ;;;  -*- lexical-binding: t; -*-
 
+;; Font locking is the source of much slowness in Emacs. jit-lock-mode tries to
+;; defer fontification until the user is idle. This should help... in theory.
+(setq jit-lock-defer-time 0    ; only defer while processing input
+      jit-lock-stealth-time 2) ; fontify the rest of the buffer after a delay
+
 (load! "stylelintd-fix")
 
 (defvar aj-home-base-dir nil
