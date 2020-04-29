@@ -250,6 +250,10 @@ if running under WSL")
 (after! epa
   (setq epa-pinentry-mode 'ask))
 
+(after! elisp-demos
+  (advice-add #'elisp-demos-advice-helpful-update :override #'aj-elisp-demos-advice-helpful-update)
+  )
+
 (after! evil
   (setq evil-move-cursor-back nil
         evil-want-fine-undo t

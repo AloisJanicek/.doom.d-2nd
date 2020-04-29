@@ -946,6 +946,26 @@ url as its argument."
             :unwind #'counsel-delete-process
             :caller 'my/counsel-man-aprops))
 
+(defun aj-elisp-demos-advice-helpful-update ()
+  "Override advice of `elisp-demos-advice-helpful-update'.
+Me prefixing helpful headings with asterisk makes the original fn fail.
+"
+  (let ((src (and (symbolp helpful--sym)
+                  (elisp-demos--search helpful--sym))))
+    (when src
+      (save-excursion
+        (goto-char (point-min))
+        (when (re-search-forward "* References$")
+          (goto-char (line-beginning-position))
+          (let ((inhibit-read-only t))
+            (insert
+             (helpful--heading "Demos")
+             (propertize (elisp-demos--syntax-highlight src)
+                         'start (point)
+                         'symbol helpful--sym
+                         'keymap elisp-demos-help-keymap)
+             "\n\n")))))))
+
 (provide 'functions)
 
 ;;; functions.el ends here
