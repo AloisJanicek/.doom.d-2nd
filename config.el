@@ -75,6 +75,9 @@ if running under WSL")
              Man-mode woman-mode org-mode org-brain-visualize-mode tldr-mode)
   "List of major modes for buffers to be consider as help buffers.")
 
+(defvar aj-last-popup-win nil
+  "Last popup window")
+
 (add-to-list 'org-modules 'ol-info)
 (add-to-list 'org-modules 'ol-eww)
 

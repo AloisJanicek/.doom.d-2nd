@@ -936,7 +936,8 @@ Optional argument ARGS are argument passed to `ORIG-FN'."
 ;;;###autoload
 (defun aj-org-find-file (dir)
   "Wrapper for `counsel-find-file' so it can be advised."
-  (counsel-find-file dir))
+  (counsel-find-file dir)
+  (select-window aj-last-popup-win))
 
 ;;;###autoload
 (defun aj-open-file-switch-create-indirect-buffer-per-persp (buffer-or-path &rest _)
@@ -1076,7 +1077,9 @@ in temporarily popup window on the right side of the frame.
                               (modeline . t)
                               (autosave . t))))
             (with-current-buffer buffer
-              (turn-off-solaire-mode))))
+              (turn-off-solaire-mode)
+              (setq aj-last-popup-win
+                    (get-buffer-window (current-buffer))))))
 
       (message "this is not buffer: %s" buffer-or-name))))
 
