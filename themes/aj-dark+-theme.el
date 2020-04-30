@@ -17,7 +17,7 @@ Can be an integer to determine the exact padding."
   :group 'aj-dark+-theme
   :type '(choice integer boolean))
 
-;;
+;;; colors definition
 (def-doom-theme aj-dark+
   "A dark theme inspired by dark+ Theme by equinusocio"
 
@@ -52,7 +52,7 @@ Can be an integer to determine the exact padding."
    (cyan         '("#9CDCFE" "#5FD7FF" "brightcyan"))
    (dark-cyan    '("#207FA1" "#2277AA" "cyan"))
 
-   ;; face categories -- required for all themes
+   ;;; face categories -- required for all themes
    (highlight      base6)
    (vertical-bar   bg-alt)
    (selection      base4)
@@ -86,8 +86,9 @@ Can be an integer to determine the exact padding."
     (when aj-dark+-padded-modeline
       (if (integerp aj-dark+-padded-modeline) aj-dark+-padded-modeline 4))))
 
-  ;; --- base faces ------------------------
-  ((header-line :background base2 :foreground base7)
+  ;;; --- base faces ------------------------
+  ((default :background bg :foreground fg)
+   (header-line :background base2 :foreground base7)
    (highlight            :background highlight  :foreground base8 :distant-foreground base8)
    ((lazy-highlight &override) :background base4 :foreground fg :distant-foreground fg :bold bold)
    (doom-modeline-buffer-path       :foreground green :weight 'bold)
@@ -117,7 +118,7 @@ Can be an integer to determine the exact padding."
 
    (font-lock-regexp-grouping-construct :foreground yellow)
 
-   ;; --- major-mode faces ------------------------
+   ;;; --- major-mode faces ------------------------
    ;; all-the-icons
    (all-the-icons-dblue    :foreground blue)
 
@@ -158,12 +159,24 @@ Can be an integer to determine the exact padding."
    (doom-modeline-evil-insert-state :foreground cyan)
    (doom-modeline-evil-visual-state :foreground yellow)
 
+   ;; Info
+   (info-header-node :inherit 'default :weight bold :slant italic)
+   (info-node :inherit 'default :weight bold :slant italic)
+   (Info-quoted  :inherit 'org-code)
+   (info-title-1 :inherit 'outline-1)
+   (info-title-2 :inherit 'outline-2)
+   (info-title-3 :inherit 'outline-3)
+   (info-title-4 :inherit 'outline-4)
+
    ;; org-mode
    ((org-block &override) :background base2)
    ((org-block-background &override) :background base2)
    ((org-block-begin-line &override) :background base2)
+   (org-block :foreground (doom-lighten orange 0.1))
+   (org-code :foreground (doom-lighten orange 0.1) :background (doom-lighten base2 0.05))
+   (org-verbatim :foreground (doom-lighten green 0.1) :background (doom-lighten base2 0.05))
 
-   ;; --- plugin faces -------------------
+   ;;; --- plugin faces -------------------
    ;; company
    (company-tooltip-selection     :background region)
 
@@ -181,6 +194,9 @@ Can be an integer to determine the exact padding."
    ;; doom-dashboard
    (doom-dashboard-banner :foreground base4)
    (doom-dashboard-loaded :foreground base4)
+
+   ;; helpful
+   (helpful-heading  :inherit 'outline-1)
 
    ;; ivy
    (ivy-posframe :background base2 :foreground fg)
@@ -227,9 +243,16 @@ Can be an integer to determine the exact padding."
    (org-pomodoro-mode-line-overtime :inherit 'org-pomodoro-mode-line)
    (org-pomodoro-mode-line-break :inherit 'org-pomodoro-mode-line)
 
+   ;; org-super-agenda
+   (org-super-agenda-header :foreground (doom-color fg-alt))
+
    ;; rjsx-mode
    (rjsx-tag :foreground blue)
    (rjsx-attr :foreground cyan :slant 'italic :weight 'medium)
+
+   ;; solaire
+   (solaire-default-face :background base2 :foreground fg)
+   (solaire-fringe-face :background bg :foreground base4)
 
    ;; treemacs
    (treemacs-root-face :foreground fg :weight 'bold)
@@ -237,7 +260,12 @@ Can be an integer to determine the exact padding."
    (doom-themes-treemacs-file-face :foreground fg)
    (treemacs-directory-face :foreground fg)
    (treemacs-git-modified-face :foreground yellow)
-   (treemacs-git-untracked-face :foreground "#5FA076")
+   (treemacs-git-untracked-face :foreground (doom-lighten green 0.2))
+
+   ;; tldr
+   (tldr-code-block :foreground (doom-lighten orange 0.1))
+   (tldr-description :inherit 'base)
+   (tldr-introduction :inherit 'base)
 
    ;; tooltip
    (tooltip :background base2 :foreground fg)
@@ -249,6 +277,9 @@ Can be an integer to determine the exact padding."
    (web-mode-html-attr-equal-face :foreground fg)
    (web-mode-html-tag-bracket-face :foreground base7)
    (web-mode-current-element-highlight-face :background bg-alt :foreground blue :underline t)
+
+   ;; woman
+   (woman-unknown :inherit 'org-code)
    ))
 
 (provide 'aj-dark+-theme)
