@@ -160,9 +160,9 @@ Can be an integer to determine the exact padding."
    (doom-modeline-evil-visual-state :foreground yellow)
 
    ;; Info
-   (info-header-node :inherit 'default :weight bold :slant italic)
-   (info-node :inherit 'default :weight bold :slant italic)
-   (Info-quoted  :inherit 'org-code)
+   (info-header-node :inherit 'default :weight 'bold :slant 'italic)
+   (info-node :inherit 'default :weight 'bold :slant 'italic)
+   (Info-quoted :foreground (doom-lighten orange 0.1) :background (doom-lighten base2 0.05))
    (info-title-1 :inherit 'outline-1)
    (info-title-2 :inherit 'outline-2)
    (info-title-3 :inherit 'outline-3)
