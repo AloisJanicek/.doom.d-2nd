@@ -279,7 +279,7 @@ Can be an integer to determine the exact padding."
    (web-mode-current-element-highlight-face :background bg-alt :foreground blue :underline t)
 
    ;; woman
-   (woman-unknown :inherit 'org-code)
+   (woman-unknown :foreground (doom-lighten orange 0.1) :background (doom-lighten base2 0.05))
    ))
 
 (provide 'aj-dark+-theme)

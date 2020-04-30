@@ -767,9 +767,10 @@ https://github.com/Konfekt/wsl-gui-bins/blob/master/zeal
     ;; (insert (propertize "#+END_SRC" 'face 'org-block-end-line ) )
     (let* ((beg start)
            (xx (make-overlay beg end)))
-      (overlay-put xx 'face '(:inherit 'org-code)))
+      (overlay-put xx 'face `(:foreground ,(doom-lighten `orange 0.1))))
     (shr-ensure-newline)
     (insert "\n")))
+
 
 ;;;###autoload
 (defun xah-rename-eww-buffer ()
