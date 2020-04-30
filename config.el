@@ -1491,14 +1491,20 @@ Either they are contributing to org-agenda or are notes files from org-directory
                               (mixed-pitch-mode)
                               ))
   (advice-add #'tldr :after (lambda (&rest _)
-                              (rename-buffer (concat "*tldr "
-                                                     (progn
-                                                       (string-trim
-                                                        (buffer-substring-no-properties
-                                                         (point-min)
-                                                         (search-forward " "))))
-                                                     "*")
-                                             t)))
+                              "Rename or switch to tldr buffer to prevent duplicates."
+                              (let ((new-buffer-name
+                                     (concat "*tldr "
+                                             (progn
+                                               (string-trim
+                                                (buffer-substring-no-properties
+                                                 (point-min)
+                                                 (search-forward " "))))
+                                             "*")))
+                                (if (get-buffer new-buffer-name)
+                                    (progn
+                                      (kill-buffer (current-buffer))
+                                      (pop-to-buffer new-buffer-name))
+                                  (rename-buffer new-buffer-name t)))))
   (set-popup-rule! "*tldr"
     :vslot 1 :size 82  :side 'left :select t :ttl nil :modeline t)
   )
