@@ -141,6 +141,19 @@
    :nm "J" #'Man-next-section
    :nm "K" #'Man-previous-section
    :nm "o" #'Man-goto-section
+   :nm "t" (lambda ()
+             (interactive)
+             (goto-char (point-min))
+             (let ((command (downcase
+                             (buffer-substring-no-properties
+                              (point)
+                              (- (search-forward "(") 1)))))
+               (if (catch 'exists
+                     (dolist (category tldr-enabled-categories)
+                       (if  (tldr-page-exists-p command category)
+                           (throw 'exists t))))
+                   (tldr command)
+                 (message "No tldr; for %s" command))))
    )
 
  (:after nov
@@ -520,6 +533,17 @@
    :i "M-9"   (λ! (+workspace/switch-to 8))
    :i "M-0"   #'+workspace/switch-to-last
    :in "M-t"   #'+workspace/new
+   )
+
+ (:after tldr
+   :map tldr-mode-map
+   :nm "m" (lambda ()
+             (interactive)
+             (goto-char (point-min))
+             (woman (string-trim
+                     (buffer-substring-no-properties
+                      (point)
+                      (search-forward " ")))))
    )
 
  (:after vterm
