@@ -612,7 +612,21 @@ Epub files often has very poor quality."
   ("f" #'howdoyou-go-back-to-first-link "first")
   ("n" #'howdoyou-next-link "next")
   ("p" #'howdoyou-previous-link "previous")
-  ("r" #'howdoyou-reload-link "refresh"))
+  ("r" #'howdoyou-reload-link "refresh")
+  ("S" #'aj-howdoyou-rename-buffer "Save")
+  )
+
+;;;###autoload
+(defun aj-howdoyou-rename-buffer ()
+  (interactive)
+  (let* ((file-name (concat (file-name-nondirectory
+                             (nth howdoyou--current-link-index howdoyou--links)) ".org"))
+         (dir "/tmp/howdoyou/")
+         (full-path (expand-file-name file-name dir))
+         (new-buffer-name (concat "*How Do You " (file-name-sans-extension file-name) "*")))
+    (mkdir dir t)
+    (setq-local buffer-file-name full-path)
+    (rename-buffer new-buffer-name)))
 
 ;;;###autoload
 (defun aj/flycheck-error-search (&optional howdoyou)

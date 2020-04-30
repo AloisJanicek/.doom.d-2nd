@@ -1257,7 +1257,16 @@ Either they are contributing to org-agenda or are notes files from org-directory
 (use-package! howdoyou
   :commands (howdoyou-query aj/howdoyou-hydra/body)
   :config
-  (set-popup-rule! "*How Do You*"      :vslot 1 :size 0.4  :side 'left :select t :ttl nil :modeline t)
+  (set-popup-rule! "*How Do You"      :vslot 1 :size 82  :side 'left :select t :ttl nil :modeline t :autosave t :quit t)
+
+  (add-hook 'howdoyou-mode-hook (lambda ()
+                                  (doom-mark-buffer-as-real-h)
+                                  (persp-add-buffer (current-buffer))
+                                  (turn-off-solaire-mode)
+                                  (mkdir "/tmp/howdoyou" t)
+                                  (setq-local org-src-fontify-natively nil)
+                                  (setq-local buffer-file-name "/tmp/howdoyou/latest.org")
+                                  ))
   )
 
 (use-package! indium
