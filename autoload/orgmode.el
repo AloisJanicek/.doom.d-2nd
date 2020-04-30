@@ -149,9 +149,9 @@ Works also in `org-agenda'."
 
 ;;;###autoload (autoload 'aj/org-refile-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-refile-hydra (:color blue
-                                      :hint nil
-                                      :idle which-key-idle-delay
-                                      )
+                               :hint nil
+                               :idle which-key-idle-delay
+                               )
   "
 _r_efile targets            _t_op level
 _f_ile                      _o_ther window
@@ -261,9 +261,9 @@ If HEADLINE, capture under it instead of top level."
 
 ;;;###autoload (autoload 'aj/org-capture-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-capture-hydra (:color blue
-                                       :hint nil
-                                       :idle which-key-idle-delay
-                                       )
+                                :hint nil
+                                :idle which-key-idle-delay
+                                )
   "Capture:"
   ("d" #'aj/org-capture-calendar "calendar date")
   ("C" (let ((hydra-hint-display-type 'message))
@@ -695,129 +695,129 @@ which one is currently active."
 
 ;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-agenda-gtd-hydra (:color blue
-                                          :hint nil
-                                          :idle which-key-idle-delay
-                                          :body-pre
+                                   :hint nil
+                                   :idle which-key-idle-delay
+                                   :body-pre
 
-                                          ;; Don't auto-pop following if true
-                                          (unless aj-org-agenda-gtd-hydra-no-auto
+                                   ;; Don't auto-pop following if true
+                                   (unless aj-org-agenda-gtd-hydra-no-auto
 
-                                            (let* ((today (format-time-string "%F" (current-time)))
-                                                   (now (format-time-string "%F %H:%M" (current-time)))
-                                                   (space " ")
-                                                   (start (concat today space "00:01"))
-                                                   (end (concat today space "23:59"))
-                                                   (past-dues `(and (ts-active :from ,start :to ,now)
-                                                                    (not (habit))
-                                                                    (not (todo "DONE")))))
+                                     (let* ((today (format-time-string "%F" (current-time)))
+                                            (now (format-time-string "%F %H:%M" (current-time)))
+                                            (space " ")
+                                            (start (concat today space "00:01"))
+                                            (end (concat today space "23:59"))
+                                            (past-dues `(and (ts-active :from ,start :to ,now)
+                                                             (not (habit))
+                                                             (not (todo "DONE")))))
 
-                                              (cond
+                                       (cond
 
-                                               ;; Visit running clock if any
-                                               ((bound-and-true-p org-clock-current-task)
-                                                (org-clock-goto))
+                                        ;; Visit running clock if any
+                                        ((bound-and-true-p org-clock-current-task)
+                                         (org-clock-goto))
 
-                                               ;; Show past scheduled / deadline items if any
-                                               ((org-ql-select (org-agenda-files) past-dues)
-                                                (org-ql-search (org-agenda-files) past-dues))
+                                        ;; Show past scheduled / deadline items if any
+                                        ((org-ql-select (org-agenda-files) past-dues)
+                                         (org-ql-search (org-agenda-files) past-dues))
 
-                                               ;; Show today's scheduled / deadline items without "HH:MM" if any
-                                               ((let* ((scheduled-today (org-ql-select
-                                                                          (org-agenda-files)
-                                                                          '(and (ts-active :on today)
-                                                                                (not (habit))
-                                                                                (not (todo "DONE")))))
-                                                       (scheduled-today-hm (org-ql-select
-                                                                             (org-agenda-files)
-                                                                             `(and (ts-active :from ,start :to ,end)
-                                                                                   (not (habit))
-                                                                                   (not (todo "DONE")))))
-                                                       (scheduled-today-without-hm (seq-filter
-                                                                                    (lambda (x)
-                                                                                      (not (member x scheduled-today-hm)))
-                                                                                    scheduled-today)))
-                                                  (when scheduled-today-without-hm t))
-                                                (let ((org-agenda-start-with-log-mode t)
-                                                      (org-agenda-span 1)
-                                                      (org-agenda-start-day nil)
-                                                      (org-agenda-use-time-grid t)
-                                                      (org-agenda-time-grid '((daily today require-timed)
-                                                                              (700 800 900 1000 1100 1200
-                                                                                   1300 1400 1500 1600 1700
-                                                                                   1800 1900 2000 2100)
-                                                                              "......" "----------------")))
-                                                  (org-agenda nil "a")))
+                                        ;; Show today's scheduled / deadline items without "HH:MM" if any
+                                        ((let* ((scheduled-today (org-ql-select
+                                                                   (org-agenda-files)
+                                                                   '(and (ts-active :on today)
+                                                                         (not (habit))
+                                                                         (not (todo "DONE")))))
+                                                (scheduled-today-hm (org-ql-select
+                                                                      (org-agenda-files)
+                                                                      `(and (ts-active :from ,start :to ,end)
+                                                                            (not (habit))
+                                                                            (not (todo "DONE")))))
+                                                (scheduled-today-without-hm (seq-filter
+                                                                             (lambda (x)
+                                                                               (not (member x scheduled-today-hm)))
+                                                                             scheduled-today)))
+                                           (when scheduled-today-without-hm t))
+                                         (let ((org-agenda-start-with-log-mode t)
+                                               (org-agenda-span 1)
+                                               (org-agenda-start-day nil)
+                                               (org-agenda-use-time-grid t)
+                                               (org-agenda-time-grid '((daily today require-timed)
+                                                                       (700 800 900 1000 1100 1200
+                                                                            1300 1400 1500 1600 1700
+                                                                            1800 1900 2000 2100)
+                                                                       "......" "----------------")))
+                                           (org-agenda nil "a")))
 
-                                               ;; Show stucked projects if any
-                                               ((catch 'heading
-                                                  (org-ql-select
-                                                    (aj-org-combined-agenda-files)
-                                                    (aj-org-ql-search-stucked-project)
-                                                    :action (lambda ()
-                                                              (when (org-get-heading)
-                                                                (throw 'heading t)))))
-                                                (org-ql-search
-                                                  (aj-org-combined-agenda-files)
-                                                  (aj-org-ql-search-stucked-project)
-                                                  :super-groups '((:auto-category t))
-                                                  :title "Stucked Projects"))
+                                        ;; Show stucked projects if any
+                                        ((catch 'heading
+                                           (org-ql-select
+                                             (aj-org-combined-agenda-files)
+                                             (aj-org-ql-search-stucked-project)
+                                             :action (lambda ()
+                                                       (when (org-get-heading)
+                                                         (throw 'heading t)))))
+                                         (org-ql-search
+                                           (aj-org-combined-agenda-files)
+                                           (aj-org-ql-search-stucked-project)
+                                           :super-groups '((:auto-category t))
+                                           :title "Stucked Projects"))
 
-                                               ;; otherwise default to showing "NEXT" tasks
-                                               ;; if there are no "NEXT" tasks for current filtered view (or at all)
-                                               ;; show normal tasks instead
-                                               ;; if there are no "normal tasks" for current filtered view (or at all)
-                                               ;; show "SOMEDAY" tasks
-                                               (t (if (let* ((tags (when aj-org-agenda-filter
-                                                                     `(tags ,(string-remove-prefix
-                                                                              "+" (car aj-org-agenda-filter)))))
-                                                             (query (if tags
-                                                                        `(and (todo "NEXT") ,tags (not (ts-active)))
-                                                                      `(and (todo "NEXT") (not (ts-active))))))
-                                                        (catch 'heading
-                                                          (org-ql-select
-                                                            (aj-org-combined-agenda-files)
-                                                            query
-                                                            :action (lambda ()
-                                                                      (when (org-get-heading)
-                                                                        (throw 'heading t))))))
-                                                      (let ((org-agenda-tag-filter aj-org-agenda-filter))
-                                                        (org-ql-search
-                                                          (aj-org-combined-agenda-files)
-                                                          '(and (todo "NEXT")
-                                                                (not (ts-active)))
-                                                          :sort '(date priority todo)
-                                                          :super-groups '((:auto-category t))
-                                                          :title "NEXT action"
-                                                          ))
-                                                    (if (let* ((tags (when aj-org-agenda-filter
-                                                                       `(tags ,(string-remove-prefix
-                                                                                "+" (car aj-org-agenda-filter)))))
-                                                               (query (if tags
-                                                                          `(and (or (todo "TODO")
-                                                                                    (todo "PROJECT"))
-                                                                                ,tags
-                                                                                (not (ts-active))
-                                                                                (not (children (todo)))
-                                                                                (not (parent (todo))))
-                                                                        (and (or (todo "TODO")
-                                                                                 (todo "PROJECT"))
-                                                                             (not (ts-active))
-                                                                             (not (children (todo)))
-                                                                             (not (parent (todo)))))))
-                                                          (catch 'heading
-                                                            (org-ql-select
-                                                              (aj-org-combined-agenda-files)
-                                                              query
-                                                              :action (lambda ()
-                                                                        (when (org-get-heading)
-                                                                          (throw 'heading t))))))
-                                                        (aj-org-ql-custom-task-search)
-                                                      (aj-org-ql-simple-taks-search "SOMEDAY")))
-                                                  )
-                                               )
-                                              )
-                                            )
-                                          )
+                                        ;; otherwise default to showing "NEXT" tasks
+                                        ;; if there are no "NEXT" tasks for current filtered view (or at all)
+                                        ;; show normal tasks instead
+                                        ;; if there are no "normal tasks" for current filtered view (or at all)
+                                        ;; show "SOMEDAY" tasks
+                                        (t (if (let* ((tags (when aj-org-agenda-filter
+                                                              `(tags ,(string-remove-prefix
+                                                                       "+" (car aj-org-agenda-filter)))))
+                                                      (query (if tags
+                                                                 `(and (todo "NEXT") ,tags (not (ts-active)))
+                                                               `(and (todo "NEXT") (not (ts-active))))))
+                                                 (catch 'heading
+                                                   (org-ql-select
+                                                     (aj-org-combined-agenda-files)
+                                                     query
+                                                     :action (lambda ()
+                                                               (when (org-get-heading)
+                                                                 (throw 'heading t))))))
+                                               (let ((org-agenda-tag-filter aj-org-agenda-filter))
+                                                 (org-ql-search
+                                                   (aj-org-combined-agenda-files)
+                                                   '(and (todo "NEXT")
+                                                         (not (ts-active)))
+                                                   :sort '(date priority todo)
+                                                   :super-groups '((:auto-category t))
+                                                   :title "NEXT action"
+                                                   ))
+                                             (if (let* ((tags (when aj-org-agenda-filter
+                                                                `(tags ,(string-remove-prefix
+                                                                         "+" (car aj-org-agenda-filter)))))
+                                                        (query (if tags
+                                                                   `(and (or (todo "TODO")
+                                                                             (todo "PROJECT"))
+                                                                         ,tags
+                                                                         (not (ts-active))
+                                                                         (not (children (todo)))
+                                                                         (not (parent (todo))))
+                                                                 (and (or (todo "TODO")
+                                                                          (todo "PROJECT"))
+                                                                      (not (ts-active))
+                                                                      (not (children (todo)))
+                                                                      (not (parent (todo)))))))
+                                                   (catch 'heading
+                                                     (org-ql-select
+                                                       (aj-org-combined-agenda-files)
+                                                       query
+                                                       :action (lambda ()
+                                                                 (when (org-get-heading)
+                                                                   (throw 'heading t))))))
+                                                 (aj-org-ql-custom-task-search)
+                                               (aj-org-ql-simple-taks-search "SOMEDAY")))
+                                           )
+                                        )
+                                       )
+                                     )
+                                   )
   "agenda"
   ("a" (let ((org-agenda-start-day "today"))
          (org-agenda nil "a")) "agenda")
@@ -1122,12 +1122,12 @@ got renamed while clock were running.
 
 ;;;###autoload (autoload 'aj/org-clock-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-clock-hydra (:color blue
-                                     :hint nil
-                                     :idle which-key-idle-delay
-                                     :body-pre
-                                     (when (bound-and-true-p org-clock-current-task)
-                                       (org-clock-goto))
-                                     )
+                              :hint nil
+                              :idle which-key-idle-delay
+                              :body-pre
+                              (when (bound-and-true-p org-clock-current-task)
+                                (org-clock-goto))
+                              )
   "Clock:"
   ("c" #'aj/org-clock-menu "in")
   ("p" #'org-pomodoro "pomodoro")

@@ -591,16 +591,16 @@ Epub files often has very poor quality."
 
 ;;;###autoload (autoload 'aj/howdoyou-hydra/body "autoload/functions" nil t)
 (defhydra aj/howdoyou-hydra (:color blue
-                                    :hint nil
-                                    :idle which-key-idle-delay
-                                    :body-pre
-                                    (if (get-buffer "*How Do You*")
-                                        (pop-to-buffer "*How Do You*")
-                                      (counsel-web-suggest nil
-                                                           "How Do You: "
-                                                           #'counsel-web-suggest--google
-                                                           (lambda (x)
-                                                             (howdoyou-query x)))))
+                             :hint nil
+                             :idle which-key-idle-delay
+                             :body-pre
+                             (if (get-buffer "*How Do You*")
+                                 (pop-to-buffer "*How Do You*")
+                               (counsel-web-suggest nil
+                                                    "How Do You: "
+                                                    #'counsel-web-suggest--google
+                                                    (lambda (x)
+                                                      (howdoyou-query x)))))
   "How do you:"
   ("s" (counsel-web-suggest nil
                             "How Do You: "
