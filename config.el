@@ -1257,7 +1257,7 @@ Either they are contributing to org-agenda or are notes files from org-directory
 (use-package! howdoyou
   :commands (howdoyou-query aj/howdoyou-hydra/body)
   :config
-  (set-popup-rule! "*How Do You"      :vslot 1 :size 82  :side 'left :select t :ttl nil :modeline t :autosave t :quit t)
+  (set-popup-rule! "*How Do You"      :vslot 3 :size 82  :side 'left :select t :ttl nil :modeline t :autosave t :quit t)
 
   (add-hook 'howdoyou-mode-hook (lambda ()
                                   (doom-mark-buffer-as-real-h)
