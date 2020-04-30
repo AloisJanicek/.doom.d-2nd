@@ -1395,7 +1395,9 @@ Either they are contributing to org-agenda or are notes files from org-directory
                                         "Recenter visited heading to the top of the buffer."
                                         (recenter 0 t)
                                         (org-narrow-to-subtree)
+                                        (org-cycle)
                                         (outline-show-branches)
+                                        (org-show-entry)
                                         (turn-off-solaire-mode)))
   (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
   (setq org-brain-visualize-default-choices 'all
