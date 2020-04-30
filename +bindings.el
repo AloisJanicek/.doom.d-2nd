@@ -611,6 +611,7 @@
         :desc "colors"            "c" #'rainbow-mode
         :desc "escape sequence"   "e" #'highlight-escape-sequences-mode
         :desc "modeline"          "m" #'hide-mode-line-mode
+        :desc "mixed pitch"       "M" #'mixed-pitch-mode
         :desc "pretty symbols"    "p" #'prettify-symbols-mode
         :desc "re-builder"        "R" #'regexp-builder
         :desc "flyspell"          "s" #'aj/flyspell-enable
