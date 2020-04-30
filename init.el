@@ -189,13 +189,6 @@
  ;;literate
  (default +bindings +smartparens))
 
-(use-package-hook! langtool
-  :pre-config
-  (setq langtool-language-tool-jar t)
-  (setq langtool-java-classpath
-        "/usr/share/languagetool:/usr/share/java/languagetool/*")
-  nil)
-
 (setq +doom-dashboard-functions
       '(doom-dashboard-widget-banner
         doom-dashboard-widget-loaded
