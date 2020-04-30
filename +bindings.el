@@ -143,6 +143,7 @@
    :nm "o" #'Man-goto-section
    :nm "t" (lambda ()
              (interactive)
+             (require 'tldr)
              (goto-char (point-min))
              (let ((command (downcase
                              (buffer-substring-no-properties
