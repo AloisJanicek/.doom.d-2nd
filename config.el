@@ -1678,3 +1678,12 @@ Either they are contributing to org-agenda or are notes files from org-directory
   (load! "+local"))
 
 ;; (load! "+JetBrainsMono.el")
+
+(make-thread (lambda ()
+               "Load org files."
+               (run-with-idle-timer 2 nil (lambda ()
+                                            (message "Loading org files...")
+                                            (mapc (lambda (file)
+                                                    (find-file-noselect file))
+                                                  (directory-files-recursively aj-org-technical-dir ".org$"))
+                                            (message "Loading org files DONE!")))))
