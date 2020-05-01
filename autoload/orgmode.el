@@ -1307,23 +1307,27 @@ LIST-OR-DIR can be either list of files or directory path.
 Optionally specify heading LEVEL. Default is 3.
 "
   (require 'org)
-  (let ((files
-         (if (listp list-or-dir)
-             list-or-dir
-           (if (file-directory-p list-or-dir)
-               (directory-files-recursively list-or-dir org-agenda-file-regexp)
-             (aj-get-all-org-files))))
-        (level (or level 3))
-        (headings (lambda ()
-                    (aj-org-get-pretty-heading-path t t nil t)))
-        (ivy-height (round (* (frame-height) 0.80)))
-        ivy-sort-functions-alist timer)
+  (let* ((files
+          (if (listp list-or-dir)
+              list-or-dir
+            (if (file-directory-p list-or-dir)
+                (directory-files-recursively list-or-dir org-agenda-file-regexp)
+              (aj-get-all-org-files))))
+         (query (if aj-org-technical-notes-filter-preset
+                    `(and (level <= ,(or level 3))
+                          ,(append (list 'tags) aj-org-technical-notes-filter-preset))
+                  `(level <= ,(or level 3))))
+         (headings (lambda ()
+                     (aj-org-get-pretty-heading-path t t nil t)))
+         (ivy-height (round (* (frame-height) 0.80)))
+         ivy-sort-functions-alist timer)
     (ivy-read
      "Go to: "
      (org-ql-query
        :select headings
        :from files
-       :where `(level <= ,level))
+       :where query
+       )
      :update-fn (lambda ()
                   (when timer
                     (cancel-timer timer))
@@ -1399,6 +1403,56 @@ path is colorized according to outline faces.
         (when filename (concat filename "/"))
         (when keyword (concat keyword spc)) text (when tag (concat spc tag))))
      'marker (copy-marker (point)))))
+
+;;;###autoload
+(defun aj-org-technical-notes-update-filetags ()
+  "Collect all org file filetags in `aj-org-technical-dir' and save them into `aj-org-technical-notes-filetags'."
+  (setq aj-org-technical-notes-filetags
+        (delete-dups
+         (flatten-list
+          (mapcar (lambda (file)
+                    (when (+org-get-global-property "FILETAGS" file)
+                      (split-string
+                       (+org-get-global-property "FILETAGS" file) ":" t)))
+                  (directory-files-recursively aj-org-technical-dir ".org$"))))))
+
+;;;###autoload
+(defun aj/org-technical-notes-set-filter-preset ()
+  "Set value of `aj-org-technical-notes-filter-preset'."
+  (interactive)
+
+  (unless aj-org-technical-notes-filter-preset
+    (when (file-readable-p aj-org-technical-notes-filter-preset-file)
+      (setq aj-org-technical-notes-filter-preset
+            (read-from-file aj-org-technical-notes-filter-preset-file))))
+
+  (unless aj-org-technical-notes-filetags
+    (aj-org-technical-notes-update-filetags))
+  (let ((prompt (lambda ()
+                  (format "Tags (%s): "
+                          (mapconcat #'identity aj-org-technical-notes-filter-preset ", ")))))
+    (ivy-read (funcall prompt)
+              aj-org-technical-notes-filetags
+              :action (lambda  (x)
+                        "Adopted from `counsel-org-tag-action'."
+                        (if (member x aj-org-technical-notes-filter-preset)
+                            (progn
+                              (setq aj-org-technical-notes-filter-preset
+                                    (delete x aj-org-technical-notes-filter-preset)))
+                          (unless (equal x "")
+                            (setq aj-org-technical-notes-filter-preset
+                                  (append aj-org-technical-notes-filter-preset (list x)))
+                            (unless (member x ivy--all-candidates)
+                              (setq ivy--all-candidates (append ivy--all-candidates (list x))))))
+                        ;; (setf (ivy-state-prompt ivy-last) (funcall prompt))
+                        (setq ivy--prompt (concat "%-4d " (funcall prompt)))
+                        (if (eq this-command 'ivy-call)
+                            (with-selected-window (active-minibuffer-window)
+                              (delete-minibuffer-contents))))
+              :caller 'aj/org-technical-notes-set-filter-preset
+              )
+    )
+  )
 
 ;;;###autoload
 (defun aj/org-notes-search-no-link (&optional directory)
