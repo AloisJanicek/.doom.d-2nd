@@ -481,12 +481,11 @@ lines are selected, or the NxM dimensions of a block selection.")
 (def-modeline-var! +org-agenda-line
   '(:eval
     (let ((title (or org-ql-view-title
-                     "Org Agenda"))
-          (filter (string-trim-left (car aj-org-agenda-filter) "+")))
+                     "Org Agenda")))
       (if org-ql-view-title
           (concat title
-                  (when filter
-                    (concat " [" filter "]")))
+                  (when (stringp (car aj-org-agenda-filter))
+                    (concat " [" (string-trim-left (car aj-org-agenda-filter) "+") "]")))
         title))))
 
 ;;; `+flyspell'
