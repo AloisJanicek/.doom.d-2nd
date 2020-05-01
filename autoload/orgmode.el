@@ -1442,10 +1442,16 @@ path is colorized according to outline faces.
                         (if (member x aj-org-technical-notes-filter-preset)
                             (progn
                               (setq aj-org-technical-notes-filter-preset
-                                    (delete x aj-org-technical-notes-filter-preset)))
+                                    (delete x aj-org-technical-notes-filter-preset))
+                              (print-to-file
+                               aj-org-technical-notes-filter-preset-file
+                               aj-org-technical-notes-filter-preset))
                           (unless (equal x "")
                             (setq aj-org-technical-notes-filter-preset
                                   (append aj-org-technical-notes-filter-preset (list x)))
+                            (print-to-file
+                             aj-org-technical-notes-filter-preset-file
+                             aj-org-technical-notes-filter-preset)
                             (unless (member x ivy--all-candidates)
                               (setq ivy--all-candidates (append ivy--all-candidates (list x))))))
                         ;; (setf (ivy-state-prompt ivy-last) (funcall prompt))
