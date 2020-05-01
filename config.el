@@ -947,7 +947,7 @@ Either they are contributing to org-agenda or are notes files from org-directory
         org-pomodoro-ask-upon-killing nil
         org-pomodoro-mode-line nil)
   (defvar aj-org-pomodoro-persist-count-file (expand-file-name "pomodoro-count.el" doom-cache-dir)
-    "File where save pomodoro countrs between sessions")
+    "File where to save pomodoro counts between sessions")
   (add-hook! 'org-pomodoro-finished-hook (lambda ()
                                            (print-to-file aj-org-pomodoro-persist-count-file org-pomodoro-count)))
   (setq org-pomodoro-count (read-from-file aj-org-pomodoro-persist-count-file))
