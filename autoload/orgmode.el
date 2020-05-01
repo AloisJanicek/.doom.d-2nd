@@ -1414,7 +1414,8 @@ path is colorized according to outline faces.
                     (when (+org-get-global-property "FILETAGS" file)
                       (split-string
                        (+org-get-global-property "FILETAGS" file) ":" t)))
-                  (directory-files-recursively aj-org-technical-dir ".org$"))))))
+                  (directory-files-recursively aj-org-technical-dir ".org$")))))
+  (message "Updated `aj-org-technical-notes-filetags' definition."))
 
 ;;;###autoload
 (defun aj/org-technical-notes-set-filter-preset ()
@@ -1469,6 +1470,20 @@ path is colorized according to outline faces.
                  (funcall orig-fn (org-link-display-format str)))))
       (counsel-rg nil dir))))
 
+;;;###autoload
+(defun aj-org-update-help-files ()
+  "Update definiton of `aj-org-help-files'."
+  (setq aj-org-help-files (mapcar
+                           #'file-truename
+                           (delq
+                            nil
+                            (delete-dups
+                             (append
+                              (directory-files-recursively org-directory ".org")
+                              (aj-org-combined-agenda-files))))))
+
+  (message "Updated `aj-org-help-files' definition.")
+  )
 
 ;;;###autoload
 (cl-defun aj-org-ql-hide-header-a (&key (buffer org-ql-view-buffer) header string)

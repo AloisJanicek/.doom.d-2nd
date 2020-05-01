@@ -573,6 +573,7 @@ Either they are contributing to org-agenda or are notes files from org-directory
 (remove-hook 'org-mode-hook #'flyspell-mode)
 
 (after! org
+  (aj-org-update-help-files)
   (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Agenda.*\\*$"    :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
@@ -586,16 +587,6 @@ Either they are contributing to org-agenda or are notes files from org-directory
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (add-hook 'org-mode-hook #'mixed-pitch-mode)
-  (add-hook 'org-mode-hook (lambda ()
-                             "Update `aj-org-help-files'."
-                             (setq aj-org-help-files (mapcar
-                                                      #'file-truename
-                                                      (delq
-                                                       nil
-                                                       (delete-dups
-                                                        (append
-                                                         (directory-files-recursively org-directory ".org")
-                                                         (aj-org-combined-agenda-files))))))))
   (advice-add #'org-refile :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)

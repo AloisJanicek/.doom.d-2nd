@@ -848,14 +848,15 @@
  (:prefix ("n" . "notes")
   :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp))
   :desc "filter"             "f" #'aj/org-technical-notes-set-filter-preset
-  :desc "filter update"      "F" (lambda ()
-                                   (interactive)
-                                   (aj-org-technical-notes-update-filetags))
   :desc "grep"               "g" (λ! (aj/org-notes-search-no-link aj-org-technical-dir))
   :desc "grep dir"           "G" #'aj/org-notes-search-no-link
   :desc "indirect"           "i" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
                                       (buffer-file-name (current-buffer))))
-  :desc "IDs"                "I" #'aj/org-id-update-recursively
+  :desc "IDs"                "U" (λ!
+                                  (aj/org-id-update-recursively)
+                                  (aj-org-update-help-files)
+                                  (aj-org-technical-notes-update-filetags)
+                                  )
   :desc "notes"              "N" (λ! (aj-org-find-file aj-org-technical-dir))
   :desc "notes headlines"    "n" (λ! (aj-org-jump-to-headline-at aj-org-technical-dir 2))
   :desc "org-dir"            "o" (λ! (aj-org-find-file org-directory))
