@@ -1307,6 +1307,10 @@ LIST-OR-DIR can be either list of files or directory path.
 Optionally specify heading LEVEL. Default is 3.
 "
   (require 'org)
+  (unless aj-org-technical-notes-filter-preset
+    (when (file-readable-p aj-org-technical-notes-filter-preset-file)
+      (setq aj-org-technical-notes-filter-preset
+            (read-from-file aj-org-technical-notes-filter-preset-file))))
   (let* ((files
           (if (listp list-or-dir)
               list-or-dir
@@ -1414,8 +1418,7 @@ path is colorized according to outline faces.
                     (when (+org-get-global-property "FILETAGS" file)
                       (split-string
                        (+org-get-global-property "FILETAGS" file) ":" t)))
-                  (directory-files-recursively aj-org-technical-dir ".org$")))))
-  (message "Updated `aj-org-technical-notes-filetags' definition."))
+                  (directory-files-recursively aj-org-technical-dir ".org$"))))))
 
 ;;;###autoload
 (defun aj/org-technical-notes-set-filter-preset ()
@@ -1480,10 +1483,7 @@ path is colorized according to outline faces.
                             (delete-dups
                              (append
                               (directory-files-recursively org-directory ".org")
-                              (aj-org-combined-agenda-files))))))
-
-  (message "Updated `aj-org-help-files' definition.")
-  )
+                              (aj-org-combined-agenda-files)))))))
 
 ;;;###autoload
 (cl-defun aj-org-ql-hide-header-a (&key (buffer org-ql-view-buffer) header string)

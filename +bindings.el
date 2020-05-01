@@ -852,11 +852,12 @@
   :desc "grep dir"           "G" #'aj/org-notes-search-no-link
   :desc "indirect"           "i" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
                                       (buffer-file-name (current-buffer))))
-  :desc "IDs"                "U" (λ!
-                                  (aj/org-id-update-recursively)
-                                  (aj-org-update-help-files)
-                                  (aj-org-technical-notes-update-filetags)
-                                  )
+  :desc "Update IDs and other" "U" (λ!
+                                    (aj/org-id-update-recursively)
+                                    (aj-org-update-help-files)
+                                    (message "Updated `aj-org-help-files' definition.")
+                                    (aj-org-technical-notes-update-filetags)
+                                    (message "Updated `aj-org-technical-notes-filetags' definition."))
   :desc "notes"              "N" (λ! (aj-org-find-file aj-org-technical-dir))
   :desc "notes headlines"    "n" (λ! (aj-org-jump-to-headline-at aj-org-technical-dir 2))
   :desc "org-dir"            "o" (λ! (aj-org-find-file org-directory))
