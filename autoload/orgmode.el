@@ -818,22 +818,26 @@ which one is currently active."
                                        )
                                      )
                                    )
-  "agenda"
+  "
+_i_nbox     _n_ext       _w_ait       _T_odos All  _r_ecent     _c_ancelled
+_a_genda    _t_odo       _s_tucked    _S_omeday    _R_chived    _d_one
+_l_og       _p_rojects              _M_aybe
+"
   ("a" (let ((org-agenda-start-day "today"))
-         (org-agenda nil "a")) "agenda")
+         (org-agenda nil "a")))
 
   ("l" (let ((org-agenda-start-with-log-mode t)
              (org-agenda-span 1)
              (org-agenda-start-day nil)
              (org-agenda-use-time-grid t)
              )
-         (org-agenda nil "a")) "log")
+         (org-agenda nil "a")))
 
   ("i" (org-ql-search
          `(,aj-org-inbox-file)
          '(level 1)
          :title "Inbox"
-         :sort '(date)) "inbox")
+         :sort '(date)))
 
   ("n" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -842,9 +846,9 @@ which one is currently active."
                  (not (ts-active)))
            :sort '(date priority todo)
            :super-groups '((:auto-category t))
-           :title "Next Action")) "Next")
+           :title "Next Action")))
 
-  ("t" (aj-org-ql-custom-task-search) "tasks")
+  ("t" (aj-org-ql-custom-task-search))
 
   ("p" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -853,13 +857,13 @@ which one is currently active."
                  (children (todo)))
            :sort '(date priority todo)
            :super-groups '((:auto-category t))
-           :title "Projects")) "projects")
+           :title "Projects")))
 
   ("s" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-search-stucked-project)
          :super-groups '((:auto-category t))
-         :title "Stucked Projects") "stucked projects")
+         :title "Stucked Projects"))
 
   ("w" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search (aj-org-combined-agenda-files)
@@ -867,11 +871,11 @@ which one is currently active."
                  (not (children (todo))))
            :sort '(date priority todo)
            :super-groups '((:auto-parent t))
-           :title "WAIT")) "Wait")
+           :title "WAIT")))
 
-  ("c" (aj-org-ql-simple-taks-search "CANCELLED") "Cancelled")
+  ("c" (aj-org-ql-simple-taks-search "CANCELLED"))
 
-  ("d" (aj-org-ql-simple-taks-search "DONE") "Done")
+  ("d" (aj-org-ql-simple-taks-search "DONE"))
 
   ("r" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -880,7 +884,7 @@ which one is currently active."
            :sort '(date priority todo)
            :super-groups '((:auto-ts t))
            :title "Recent"
-           )) "recent")
+           )))
 
   ("R" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -889,25 +893,25 @@ which one is currently active."
            :sort '(date priority todo)
            :super-groups '((:auto-ts t))
            :title "Archived Recent"
-           )) "Archived Recent")
+           )))
 
   ("T" (org-ql-search
          (aj-org-combined-agenda-files)
          '(todo)
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
-         :title "All Todos") "ALL Todos")
+         :title "All Todos"))
 
   ("A" (org-ql-search
          (aj-get-all-archived-org-files)
          '(todo "DONE")
          :sort '(date priority todo)
          :super-groups '((:auto-category t))
-         :title "ARCHIVED") "Archived")
+         :title "ARCHIVED"))
 
-  ("S" (aj-org-ql-simple-taks-search "SOMEDAY") "Someday")
+  ("S" (aj-org-ql-simple-taks-search "SOMEDAY"))
 
-  ("M" (aj-org-ql-simple-taks-search "MAYBE") "Maybe")
+  ("M" (aj-org-ql-simple-taks-search "MAYBE"))
   )
 
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
