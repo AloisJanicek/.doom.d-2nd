@@ -45,6 +45,9 @@
 (package! howdoyou
   :recipe (:host github :repo "thanhvg/emacs-howdoyou"))
 
+(package! hydra-posframe
+  :recipe (:host github :repo "Ladicle/hydra-posframe")
+  )
 (package! indium)
 
 (package! imenu-list)
@@ -100,6 +103,9 @@
 (package! tldr)
 
 (package! vimrc-mode)
+
+(package! which-key-posframe
+  :recipe (:host github :repo "yanghaoxie/which-key-posframe"))
 
 (package! yankpad)
 

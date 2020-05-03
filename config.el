@@ -1181,6 +1181,13 @@
                                   ))
   )
 
+(use-package! hydra-posframe
+  :after hydra
+  :config
+  (hydra-posframe-mode +1)
+  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center)
+  )
+
 (use-package! indium
   :commands indium-connect
   )
@@ -1428,6 +1435,13 @@
   :commands vimrc-mode
   )
 
+(use-package which-key-posframe
+  :after which-key
+  :config
+  (which-key-posframe-mode)
+  (setq which-key-posframe-poshandler #'posframe-poshandler-frame-top-center)
+  )
+
 (use-package! yankpad
   :after org
   :config
@@ -1585,11 +1599,11 @@
 
 ;; (load! "+JetBrainsMono.el")
 
-(make-thread (lambda ()
-               "Load org files."
-               (run-with-idle-timer 2 nil (lambda ()
-                                            (message "Loading org files...")
-                                            (mapc (lambda (file)
-                                                    (find-file-noselect file))
-                                                  (directory-files-recursively aj-org-technical-dir ".org$"))
-                                            (message "Loading org files DONE!")))))
+;; (make-thread (lambda ()
+;;                "Load org files."
+;;                (run-with-idle-timer 2 nil (lambda ()
+;;                                             (message "Loading org files...")
+;;                                             (mapc (lambda (file)
+;;                                                     (find-file-noselect file))
+;;                                                   (directory-files-recursively aj-org-technical-dir ".org$"))
+;;                                             (message "Loading org files DONE!")))))
