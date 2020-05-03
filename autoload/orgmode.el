@@ -1298,10 +1298,12 @@ Filters todo headlines according to `aj-org-agenda-filter'.
     ))
 
 ;;;###autoload
-(defun aj-org-jump-to-headline-at (list-or-dir &optional level)
+(defun aj-org-jump-to-headline-at (list-or-dir &optional level preset)
   "Jump to org mode heading of any file of LIST-OR-DIR.
+
 LIST-OR-DIR can be either list of files or directory path.
-Optionally specify heading LEVEL. Default is 3.
+Optionally specify heading LEVEL (default is 3) and PRESET which
+is a list of string representing org mode tags to which should search be narrowed.
 "
   (require 'org)
   (let* ((files
@@ -1310,9 +1312,9 @@ Optionally specify heading LEVEL. Default is 3.
             (if (file-directory-p list-or-dir)
                 (directory-files-recursively list-or-dir org-agenda-file-regexp)
               (aj-get-all-org-files))))
-         (query (if aj-org-technical-notes-filter-preset
+         (query (if preset
                     `(and (level <= ,(or level 3))
-                          ,(append (list 'tags) aj-org-technical-notes-filter-preset))
+                          ,(append (list 'tags) preset))
                   `(level <= ,(or level 3))))
          (headings (lambda ()
                      (aj-org-get-pretty-heading-path t t nil t)))
