@@ -1414,9 +1414,11 @@ path is colorized according to outline faces.
                  (directory-files-recursively dir ".org$"))))))
 
 ;;;###autoload
-(defun aj/org-notes-set-filter-preset (dir filetags preset)
-  "Set value of one of the 'aj-org-*-notes-filter-preset' variables.
-DIR FILETAGS PRESET
+(defun aj/org-notes-set-filter-preset (filetags preset)
+  "Set value of PRESET according to FILETAGS.
+
+FILETAGS is list of strings representing file tags collected from org files.
+PRESET is a subset of FILETAGS used for filtering when searching org files.
 "
   (interactive)
   (let ((prompt (lambda ()
@@ -1441,7 +1443,7 @@ DIR FILETAGS PRESET
                         (if (eq this-command 'ivy-call)
                             (with-selected-window (active-minibuffer-window)
                               (delete-minibuffer-contents))))
-              :caller 'aj/org-technical-notes-set-filter-preset
+              :caller 'aj/org-notes-set-filter-preset
               )
     )
   )
