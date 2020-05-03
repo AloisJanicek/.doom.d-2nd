@@ -153,12 +153,8 @@ Works also in `org-agenda'."
                                :idle which-key-idle-delay
                                )
   "
-_r_efile targets            _t_op level
-_f_ile                      _o_ther window
-_v_isible heading           _O_ther buffer
-_._this file                _j_ournal
-_l_ast location             _p_roject
-_c_lock                     _P_roject journal      _x_private
+_t_op level   _j_ournal     _r_efile targets   _v_isible heading   _O_ther buffer     _p_roject             _x_private
+_f_ile        _c_lock       _l_ast location    _._this file        _o_ther window     _P_roject journal
 "
   ("r" (lambda (arg)
          (interactive "P")
@@ -821,10 +817,10 @@ which one is currently active."
                                    )
   "
 _i_nbox   _a_genda   _n_ext       _w_ait       _T_odos All  _r_ecent     _c_ancelled   _S_omeday
-_t_odo    _l_og      _p_rojects   _s_tucked    _R_chived    _d_one                   _M_aybe
+_t_odo    _l_og      _p_rojects   _s_tucked               _R_chived      _d_one        _M_aybe
 "
 
-   ("a" (let ((org-agenda-start-day "today"))
+  ("a" (let ((org-agenda-start-day "today"))
          (org-agenda nil "a")))
 
   ("l" (let ((org-agenda-start-with-log-mode t)
