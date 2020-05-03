@@ -1474,7 +1474,7 @@ PRESET is a subset of FILETAGS used for filtering when searching org files.
                             nil
                             (delete-dups
                              (append
-                              (directory-files-recursively org-directory ".org")
+                              (directory-files-recursively org-directory ".org$")
                               (aj-org-combined-agenda-files)))))))
 
 ;;;###autoload
