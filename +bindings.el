@@ -857,7 +857,22 @@
 
  (:prefix ("n" . "notes")
   :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp))
-  :desc "filter"             "f" #'aj/org-technical-notes-set-filter-preset
+  :desc "filter"             "f" (lambda ()
+                                   (interactive)
+                                   (unless aj-org-technical-notes-filetags
+                                     (aj-org-notes-update-filetags aj-org-technical-dir 'aj-org-technical-notes-filetags))
+                                   (aj/org-notes-set-filter-preset aj-org-technical-dir aj-org-technical-notes-filetags 'aj-org-technical-notes-filter-preset))
+  "F" nil
+  :desc "personal filter"      "Fp" (lambda ()
+                                      (interactive)
+                                      (unless aj-org-personal-notes-filetags
+                                        (aj-org-notes-update-filetags aj-org-personal-dir 'aj-org-personal-notes-filetags))
+                                      (aj/org-notes-set-filter-preset aj-org-personal-dir aj-org-personal-notes-filetags 'aj-org-personal-notes-filter-preset))
+  :desc "private filter"      "Fr" (lambda ()
+                                     (interactive)
+                                     (unless aj-org-private-notes-filetags
+                                       (aj-org-notes-update-filetags aj-org-private-dir 'aj-org-private-notes-filetags))
+                                     (aj/org-notes-set-filter-preset aj-org-private-dir aj-org-private-notes-filetags 'aj-org-private-notes-filter-preset))
   :desc "grep"               "g" (λ! (aj/org-notes-search-no-link aj-org-technical-dir))
   :desc "grep dir"           "G" #'aj/org-notes-search-no-link
   :desc "indirect"           "i" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
@@ -866,7 +881,9 @@
                                     (aj/org-id-update-recursively)
                                     (aj-org-update-help-files)
                                     (message "Updated `aj-org-help-files' definition.")
-                                    (aj-org-technical-notes-update-filetags)
+                                    (aj-org-notes-update-filetags aj-org-technical-dir 'aj-org-technical-notes-filetags)
+                                    (aj-org-notes-update-filetags aj-org-personal-dir 'aj-org-personal-notes-filetags)
+                                    (aj-org-notes-update-filetags aj-org-private-dir 'aj-org-private-notes-filetags)
                                     (message "Updated `aj-org-technical-notes-filetags' definition."))
   :desc "notes"              "N" (λ! (aj-org-find-file aj-org-technical-dir))
   :desc "notes headlines"    "n" (λ! (aj-org-jump-to-headline-at aj-org-technical-dir 2))

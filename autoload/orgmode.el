@@ -1144,10 +1144,7 @@ got renamed while clock were running.
          (aj/org-clock-update-heading)) "rename")
   ("R" (lambda ()
          (interactive)
-         (setq org-pomodoro-count 0)
-         (print-to-file
-          aj-org-pomodoro-persist-count-file
-          org-pomodoro-count)) "RESET")
+         (setq org-pomodoro-count 0)) "RESET")
   )
 
 ;;;###autoload
@@ -1307,10 +1304,6 @@ LIST-OR-DIR can be either list of files or directory path.
 Optionally specify heading LEVEL. Default is 3.
 "
   (require 'org)
-  (unless aj-org-technical-notes-filter-preset
-    (when (file-readable-p aj-org-technical-notes-filter-preset-file)
-      (setq aj-org-technical-notes-filter-preset
-            (read-from-file aj-org-technical-notes-filter-preset-file))))
   (let* ((files
           (if (listp list-or-dir)
               list-or-dir
@@ -1409,52 +1402,41 @@ path is colorized according to outline faces.
      'marker (copy-marker (point)))))
 
 ;;;###autoload
-(defun aj-org-technical-notes-update-filetags ()
-  "Collect all org file filetags in `aj-org-technical-dir' and save them into `aj-org-technical-notes-filetags'."
-  (setq aj-org-technical-notes-filetags
-        (delete-dups
-         (flatten-list
-          (mapcar (lambda (file)
-                    (when (+org-get-global-property "FILETAGS" file)
-                      (split-string
-                       (+org-get-global-property "FILETAGS" file) ":" t)))
-                  (directory-files-recursively aj-org-technical-dir ".org$"))))))
+(defun aj-org-notes-update-filetags (dir filetags)
+  "Collect all org file filetags in DIR and save them into FILETAGS variable."
+  (set filetags
+       (delete-dups
+        (flatten-list
+         (mapcar (lambda (file)
+                   (when (+org-get-global-property "FILETAGS" file)
+                     (split-string
+                      (+org-get-global-property "FILETAGS" file) ":" t)))
+                 (directory-files-recursively dir ".org$"))))))
 
 ;;;###autoload
-(defun aj/org-technical-notes-set-filter-preset ()
-  "Set value of `aj-org-technical-notes-filter-preset'."
+(defun aj/org-notes-set-filter-preset (dir filetags preset)
+  "Set value of one of the 'aj-org-*-notes-filter-preset' variables.
+DIR FILETAGS PRESET
+"
   (interactive)
-
-  (unless aj-org-technical-notes-filter-preset
-    (when (file-readable-p aj-org-technical-notes-filter-preset-file)
-      (setq aj-org-technical-notes-filter-preset
-            (read-from-file aj-org-technical-notes-filter-preset-file))))
-
-  (unless aj-org-technical-notes-filetags
-    (aj-org-technical-notes-update-filetags))
   (let ((prompt (lambda ()
                   (format "Tags (%s): "
-                          (mapconcat #'identity aj-org-technical-notes-filter-preset ", ")))))
+                          (mapconcat #'identity (eval preset) ", ")))))
     (ivy-read (funcall prompt)
-              aj-org-technical-notes-filetags
+              filetags
               :action (lambda  (x)
                         "Adopted from `counsel-org-tag-action'."
-                        (if (member x aj-org-technical-notes-filter-preset)
+                        (if (member x (eval preset))
                             (progn
-                              (setq aj-org-technical-notes-filter-preset
-                                    (delete x aj-org-technical-notes-filter-preset))
-                              (print-to-file
-                               aj-org-technical-notes-filter-preset-file
-                               aj-org-technical-notes-filter-preset))
+                              (set preset
+                                   (delete x (eval preset)))
+                              (doom-store-put preset (eval preset)))
                           (unless (equal x "")
-                            (setq aj-org-technical-notes-filter-preset
-                                  (append aj-org-technical-notes-filter-preset (list x)))
-                            (print-to-file
-                             aj-org-technical-notes-filter-preset-file
-                             aj-org-technical-notes-filter-preset)
+                            (set preset
+                                 (append (eval preset) (list x)))
+                            (doom-store-put preset (eval preset))
                             (unless (member x ivy--all-candidates)
                               (setq ivy--all-candidates (append ivy--all-candidates (list x))))))
-                        ;; (setf (ivy-state-prompt ivy-last) (funcall prompt))
                         (setq ivy--prompt (concat "%-4d " (funcall prompt)))
                         (if (eq this-command 'ivy-call)
                             (with-selected-window (active-minibuffer-window)

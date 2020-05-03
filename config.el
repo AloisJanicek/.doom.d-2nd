@@ -8,11 +8,6 @@
 (load! "stylelintd-fix")
 (load! "vars")
 
-(add-hook 'kill-emacs-hook (lambda ()
-                             (print-to-file
-                              aj-org-technical-notes-filter-preset-file
-                              aj-org-technical-notes-filter-preset)))
-
 (add-to-list 'org-modules 'ol-info)
 (add-to-list 'org-modules 'ol-eww)
 
@@ -867,11 +862,7 @@
   (setq alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
         org-pomodoro-ask-upon-killing nil
         org-pomodoro-mode-line nil)
-  (defvar aj-org-pomodoro-persist-count-file (expand-file-name "pomodoro-count.el" doom-cache-dir)
-    "File where to save pomodoro counts between sessions")
-  (add-hook! 'org-pomodoro-finished-hook (lambda ()
-                                           (print-to-file aj-org-pomodoro-persist-count-file org-pomodoro-count)))
-  (setq org-pomodoro-count (read-from-file aj-org-pomodoro-persist-count-file))
+  (doom-store-persist doom-store-location '(org-pomodoro-count))
   (add-hook! 'org-clock-out-hook #'org-pomodoro-kill)
   )
 

@@ -82,6 +82,20 @@ Either they are contributing to org-agenda or are notes files from org-directory
 (defvar aj-org-technical-notes-filter-preset nil
   "List of strings represeting tags for filtering search of technical notes.")
 
-(defvar aj-org-technical-notes-filter-preset-file
-  (expand-file-name "technical-notes-filter-preset.el" doom-cache-dir)
-  "File where to save technical notes filter preset.")
+(doom-store-persist doom-store-location '(aj-org-technical-notes-filter-preset))
+
+(defvar aj-org-personal-notes-filetags nil
+  "Variable storing list of all filetags from org files in `aj-org-personal-dir'.")
+
+(defvar aj-org-personal-notes-filter-preset nil
+  "List of strings represeting tags for filtering search of personal notes.")
+
+(doom-store-persist doom-store-location '(aj-org-personal-notes-filter-preset))
+
+(defvar aj-org-private-notes-filetags nil
+  "Variable storing list of all filetags from org files in `aj-org-private-dir'.")
+
+(defvar aj-org-private-notes-filter-preset nil
+  "List of strings represeting tags for filtering search of private notes.")
+
+(doom-store-persist doom-store-location '(aj-org-private-notes-filter-preset))
