@@ -601,19 +601,22 @@ Epub files often has very poor quality."
                                                     #'counsel-web-suggest--google
                                                     (lambda (x)
                                                       (howdoyou-query x)))))
-  "How do you:"
+  "
+_s_earch   _a_nswers    _p_revious   _r_efresh
+_q_uery    _f_irst      _n_ext       _S_ave
+"
   ("s" (counsel-web-suggest nil
                             "How Do You: "
                             #'counsel-web-suggest--google
                             (lambda (x)
-                              (howdoyou-query x))) "query suggest" :exit t)
-  ("q" (call-interactively #'howdoyou-query) "query" :exit t)
-  ("a" (call-interactively #'aj/counsel-howdoyou) "search answers" :exit t)
-  ("f" #'howdoyou-go-back-to-first-link "first")
-  ("n" #'howdoyou-next-link "next")
-  ("p" #'howdoyou-previous-link "previous")
-  ("r" #'howdoyou-reload-link "refresh")
-  ("S" #'aj-howdoyou-rename-buffer "Save")
+                              (howdoyou-query x))) :exit t)
+  ("q" (call-interactively #'howdoyou-query) :exit t)
+  ("a" (call-interactively #'aj/counsel-howdoyou) :exit t)
+  ("f" #'howdoyou-go-back-to-first-link)
+  ("n" #'howdoyou-next-link)
+  ("p" #'howdoyou-previous-link)
+  ("r" #'howdoyou-reload-link)
+  ("S" #'aj-howdoyou-rename-buffer)
   )
 
 ;;;###autoload

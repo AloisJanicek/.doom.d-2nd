@@ -179,7 +179,7 @@ _c_lock                     _P_roject journal      _x_private
         (aj/choose-file-from (aj-get-all-projectile-README-org-files t))))
   ("P" (aj-org-refile-to-datetree
         (aj/choose-file-from (aj-get-all-projectile-README-org-files t))))
-  ("x" (let ((hydra-hint-display-type 'message)) (aj/private-refile/body)))
+  ("x" #'aj/private-refile/body)
   ("o" #'+org/refile-to-other-window)
   ("O" #'+org/refile-to-other-buffer)
   ("." #'+org/refile-to-current-file)
@@ -264,12 +264,13 @@ If HEADLINE, capture under it instead of top level."
                                 :hint nil
                                 :idle which-key-idle-delay
                                 )
-  "Capture:"
-  ("d" #'aj/org-capture-calendar "calendar date")
-  ("C" (let ((hydra-hint-display-type 'message))
-         (aj/org-capture-code-hydra/body)) "code:")
-  ("c" (let ((hydra-hint-display-type 'message))
-         (aj/org-capture-under-clock/body)) "clock:")
+  "
+_k_inbox   _j_ournal  _C_ode:   _y_ankpad   _c_lock:
+_t_ask     _d_ate             _Y_ankpad   _T_ask clocked
+"
+  ("d" #'aj/org-capture-calendar)
+  ("C" #'aj/org-capture-code-hydra/body)
+  ("c" #'aj/org-capture-under-clock/body)
   ("y" (progn
          (require 'yankpad)
          (aj-org-capture-code yankpad-file
@@ -281,7 +282,7 @@ If HEADLINE, capture under it instead of top level."
                                                 :select '(org-get-heading t t t t)
                                                 :from yankpad-file
                                                 :where '(level 1))))
-                                  (prin1-to-string major-mode)))) "yankpad" )
+                                  (prin1-to-string major-mode)))))
   ("Y" (progn
          (require 'yankpad)
          (aj-org-capture-code yankpad-file
@@ -291,17 +292,17 @@ If HEADLINE, capture under it instead of top level."
                                          (org-ql-query
                                            :select '(org-get-heading t t t t)
                                            :from yankpad-file
-                                           :where '(level 1)))))) "Yankpad" )
-  ("k" (org-capture nil "k") "inbox")
-  ("t" (org-capture nil "t") "task")
-  ("T" (org-capture nil "T") "task clock-in")
+                                           :where '(level 1)))))))
+  ("k" (org-capture nil "k"))
+  ("t" (org-capture nil "t"))
+  ("T" (org-capture nil "T"))
   ("j" (aj-org-capture-into-journal-in
         (aj/choose-file-from
          (seq-filter
           (lambda (file)
             (not (string-match "inbox" file)))
-          org-agenda-files))) "journal")
-  ("q" nil "exit")
+          org-agenda-files))))
+  ("q" nil)
   )
 
 ;;;###autoload (autoload 'aj/org-capture-under-clock/body "autoload/orgmode" nil t)
@@ -819,11 +820,11 @@ which one is currently active."
                                      )
                                    )
   "
-_i_nbox     _n_ext       _w_ait       _T_odos All  _r_ecent     _c_ancelled
-_a_genda    _t_odo       _s_tucked    _S_omeday    _R_chived    _d_one
-_l_og       _p_rojects              _M_aybe
+_i_nbox   _a_genda   _n_ext       _w_ait       _T_odos All  _r_ecent     _c_ancelled   _S_omeday
+_t_odo    _l_og      _p_rojects   _s_tucked    _R_chived    _d_one                   _M_aybe
 "
-  ("a" (let ((org-agenda-start-day "today"))
+
+   ("a" (let ((org-agenda-start-day "today"))
          (org-agenda nil "a")))
 
   ("l" (let ((org-agenda-start-with-log-mode t)
@@ -1132,23 +1133,27 @@ got renamed while clock were running.
                               (when (bound-and-true-p org-clock-current-task)
                                 (org-clock-goto))
                               )
-  "Clock:"
-  ("c" #'aj/org-clock-menu "in")
-  ("p" #'org-pomodoro "pomodoro")
-  ("C" #'org-clock-out "out")
-  ("g" #'counsel-org-clock-goto "goto")
-  ("k" #'counsel-org-clock-context "context")
-  ("h" #'counsel-org-clock-history "history")
-  ("U" #'aj/org-clock-update-heading "update")
+  "
+_i_n             _g_oto        _U_pdate
+_o_ut            _k_ontext     _r_ename
+_p_omodoro       _h_istory     _R_eset
+"
+  ("i" #'aj/org-clock-menu)
+  ("o" #'org-clock-out)
+  ("p" #'org-pomodoro)
+  ("g" #'counsel-org-clock-goto)
+  ("k" #'counsel-org-clock-context)
+  ("h" #'counsel-org-clock-history)
+  ("U" #'aj/org-clock-update-heading)
   ("r" (lambda ()
          (interactive)
          (with-current-buffer (marker-buffer org-clock-marker)
            (goto-char org-clock-marker)
            (org-edit-headline (ivy-read "Change title: " nil)))
-         (aj/org-clock-update-heading)) "rename")
+         (aj/org-clock-update-heading)))
   ("R" (lambda ()
          (interactive)
-         (setq org-pomodoro-count 0)) "RESET")
+         (setq org-pomodoro-count 0)))
   )
 
 ;;;###autoload
