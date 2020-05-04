@@ -8,6 +8,11 @@
 (load! "stylelintd-fix")
 (load! "vars")
 
+;; fix void variables errors related to lazy (or explicit) loading
+(setq org-src-lang-modes nil
+      projectile-known-projects nil
+      )
+
 (add-to-list 'org-modules 'ol-info)
 (add-to-list 'org-modules 'ol-eww)
 
