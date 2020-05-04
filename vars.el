@@ -40,6 +40,8 @@ if running under WSL")
 (defvar aj-org-agenda-filter nil
   "Variable for preserving filter choice between agenda views.")
 
+(doom-store-persist doom-store-location '(aj-org-agenda-filter))
+
 (defvar aj-org-agenda-gtd-hydra-no-auto nil
   "When t, do not evaluate \":body-pre\" in `aj/org-agenda-gtd-hydra/body'.")
 
