@@ -804,14 +804,14 @@ Around advice for `ivy--switch-buffer-action'.
     (funcall orig-fn buffer)))
 
 ;;;###autoload
-(defun aj/switch-buffers (&optional help)
+(defun aj/switch-buffers (prompt &optional help)
   "Switch perspective buffers.
 
 When HELP, switch only help buffers.
 See variable `aj-help-buffer-modes' for more details.
 "
   (interactive)
-  (ivy-read "Switch to helper buffer: " 'internal-complete-buffer
+  (ivy-read prompt 'internal-complete-buffer
             :action #'ivy--switch-buffer-action
             :predicate (lambda (buffer)
                          (let ((buffer (car buffer)))

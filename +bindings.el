@@ -796,7 +796,7 @@
                                                  (eq major-mode 'debugger-mode))
                                              (helpful-at-point)
                                            (counsel-dash-at-point)))
-  :desc "switch helper buffers"    "," (λ! (aj/switch-buffers t))
+  :desc "switch helper buffers"    "," (λ! (aj/switch-buffers "Help buffer: " t))
 
   )
 
@@ -911,7 +911,7 @@
 
  ;; "m" :localleader
 
- :desc "switch buffer"            "," #'aj/switch-buffers
+ :desc "switch buffer"            "," (λ! (aj/switch-buffers "Buffer: "))
 
  ;; find file              "."
 
