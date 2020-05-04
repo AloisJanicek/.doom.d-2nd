@@ -1615,4 +1615,4 @@
                                            (aj-org-get-filtered-org-files aj-org-technical-dir aj-org-technical-notes-filter-preset)
                                          (directory-files-recursively aj-org-technical-dir ".org$"))
                                        (directory-files org-directory t ".org$")))
-                                (message "Loading org files DONE!")))))
+                                (message "Loading org files...done")))))
