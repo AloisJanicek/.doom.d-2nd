@@ -1483,6 +1483,7 @@
 
 (advice-add #'aj/org-agenda-headlines :around #'aj-org-buffer-to-popup-a)
 (advice-add #'aj-org-jump-to-headline-at :around #'aj-org-buffer-to-popup-a)
+(advice-add #'aj-org-jump-to-datetree :around #'aj-org-buffer-to-popup-a)
 
 ;;; theme-settings
 (add-hook! 'doom-load-theme-hook :append

@@ -682,6 +682,7 @@
   :desc "set category"    "s"   #'yankpad-set-category
   :desc "expand"          "TAB" #'yankpad-expand
   :desc "insert"          "y"   #'yankpad-insert
+  :desc "yankpad jump"    "j" (λ! (aj-org-jump-to-headline-at (list yankpad-file) 3))
   )
 
  ;; universal argument     "u"
@@ -869,6 +870,23 @@
 
  (:prefix ("n" . "notes")
   :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp))
+  :desc "archive jump"       "A" (λ! (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3))
+  :desc "journal jump"       "j" (λ! (aj-org-jump-to-datetree
+                                      (if aj-org-agenda-filter
+                                          (delq nil
+                                                (mapcar (lambda (file)
+                                                          (catch 'file
+                                                            (when (+org-get-global-property "FILETAGS" file)
+                                                              (when
+                                                                  (cl-member
+                                                                   (string-trim-left (car aj-org-agenda-filter) "+")
+                                                                   (split-string
+                                                                    (+org-get-global-property "FILETAGS" file) ":" t)
+                                                                   :test #'string-match)
+                                                                (throw 'file file)))))
+                                                        org-agenda-files))
+                                        (aj/choose-file-from org-agenda-files))
+                                      "JOURNAL"))
   :desc "filter"             "f" (lambda ()
                                    (interactive)
                                    (unless aj-org-technical-notes-filetags

@@ -1320,6 +1320,24 @@ If there are no matching files, return all org files from DIR instead.
       (directory-files-recursively dir ".org$"))))
 
 ;;;###autoload
+(defun aj-ivy-update-fn-timer ()
+  "Update function for ivy with timer."
+  (when timer
+    (cancel-timer timer))
+  (setq timer
+        (run-with-timer
+         0.2
+         nil
+         `(lambda ()
+            (with-ivy-window
+              (funcall
+               (ivy--get-action ivy-last)
+               (if (consp (car-safe (ivy-state-collection ivy-last)))
+                   (assoc (ivy-state-current ivy-last)
+                          (ivy-state-collection ivy-last))
+                 (ivy-state-current ivy-last))))))))
+
+;;;###autoload
 (defun aj-org-jump-to-headline-at (filelist &optional level)
   "Jump to org mode heading of any file from FILELIST.
 Optionally specify heading LEVEL (default is 3).
@@ -1336,21 +1354,27 @@ Optionally specify heading LEVEL (default is 3).
        :from filelist
        :where `(level <= ,(or level 3))
        )
-     :update-fn (lambda ()
-                  (when timer
-                    (cancel-timer timer))
-                  (setq timer
-                        (run-with-timer
-                         0.2
-                         nil
-                         `(lambda ()
-                            (with-ivy-window
-                              (funcall
-                               (ivy--get-action ivy-last)
-                               (if (consp (car-safe (ivy-state-collection ivy-last)))
-                                   (assoc (ivy-state-current ivy-last)
-                                          (ivy-state-collection ivy-last))
-                                 (ivy-state-current ivy-last))))))))
+     :update-fn #'aj-ivy-update-fn-timer
+     :action #'aj-org-jump-to-heading-action
+     :caller 'aj-org-jump-to-headline-at)))
+
+;;;###autoload
+(defun aj-org-jump-to-datetree (file tag)
+  "Jump to org mode datetree heading under placed under TAG in FILE.
+"
+  (require 'org)
+  (let* ((headings (lambda ()
+                     (aj-org-get-pretty-heading-path t t nil t)))
+         (ivy-height (round (* (frame-height) 0.80)))
+         ivy-sort-functions-alist timer)
+    (ivy-read
+     "Go to: "
+     (org-ql-query
+       :select headings
+       :from file
+       :where `(tags ,tag)
+       )
+     :update-fn #'aj-ivy-update-fn-timer
      :action #'aj-org-jump-to-heading-action
      :caller 'aj-org-jump-to-headline-at)))
 
