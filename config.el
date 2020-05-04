@@ -110,9 +110,9 @@
   (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t :modeline t))
 
 (after! company
-  (setq company-idle-delay 1
+  (setq company-idle-delay 1.25
         company-minimum-prefix-length 3
-        company-tooltip-timer 1
+        company-tooltip-timer 1.25
         )
   )
 
