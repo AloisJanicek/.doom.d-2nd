@@ -1303,25 +1303,29 @@ Filters todo headlines according to `aj-org-agenda-filter'.
     ))
 
 ;;;###autoload
-(defun aj-org-jump-to-headline-at (list-or-dir &optional level preset)
-  "Jump to org mode heading of any file of LIST-OR-DIR.
+(defun aj-org-get-filtered-org-files (dir preset)
+  "Return list of org files from DIR filtered matching filetags specified by PRESET.
+If there are no matching files, return all org files from DIR instead.
+"
+  (let ((files (seq-filter
+                (lambda (file)
+                  (when (+org-get-global-property "FILETAGS" file)
+                    (catch 'tag
+                      (dolist (tag (split-string
+                                    (+org-get-global-property "FILETAGS" file) ":" t))
+                        (when (cl-member tag preset :test #'string-match) (throw 'tag t))))))
+                (directory-files-recursively dir ".org$"))))
+    (if files
+        files
+      (directory-files-recursively dir ".org$"))))
 
-LIST-OR-DIR can be either list of files or directory path.
-Optionally specify heading LEVEL (default is 3) and PRESET which
-is a list of string representing org mode tags to which should search be narrowed.
+;;;###autoload
+(defun aj-org-jump-to-headline-at (filelist &optional level)
+  "Jump to org mode heading of any file from FILELIST.
+Optionally specify heading LEVEL (default is 3).
 "
   (require 'org)
-  (let* ((files
-          (if (listp list-or-dir)
-              list-or-dir
-            (if (file-directory-p list-or-dir)
-                (directory-files-recursively list-or-dir org-agenda-file-regexp)
-              (aj-get-all-org-files))))
-         (query (if preset
-                    `(and (level <= ,(or level 3))
-                          ,(append (list 'tags) preset))
-                  `(level <= ,(or level 3))))
-         (headings (lambda ()
+  (let* ((headings (lambda ()
                      (aj-org-get-pretty-heading-path t t nil t)))
          (ivy-height (round (* (frame-height) 0.80)))
          ivy-sort-functions-alist timer)
@@ -1329,8 +1333,8 @@ is a list of string representing org mode tags to which should search be narrowe
      "Go to: "
      (org-ql-query
        :select headings
-       :from files
-       :where query
+       :from filelist
+       :where `(level <= ,(or level 3))
        )
      :update-fn (lambda ()
                   (when timer
