@@ -1440,14 +1440,11 @@ PRESET is a subset of FILETAGS used for filtering when searching org files.
               :action (lambda  (x)
                         "Adopted from `counsel-org-tag-action'."
                         (if (member x (eval preset))
-                            (progn
-                              (set preset
-                                   (delete x (eval preset)))
-                              (doom-store-put preset (eval preset)))
+                            (set preset
+                                 (delete x (eval preset)))
                           (unless (equal x "")
                             (set preset
                                  (append (eval preset) (list x)))
-                            (doom-store-put preset (eval preset))
                             (unless (member x ivy--all-candidates)
                               (setq ivy--all-candidates (append ivy--all-candidates (list x))))))
                         (setq ivy--prompt (concat "%-4d " (funcall prompt)))
