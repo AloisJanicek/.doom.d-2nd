@@ -494,6 +494,18 @@
   :nm "R" (λ! (brds/pdf-jump-last-viewed-bookmark))
   :nm "y" #'pdf-view-kill-ring-save
   :nm "q" (λ! (progn (brds-pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
+  :map pdf-outline-minor-mode-map
+  :nm "o" (lambda ()
+            (interactive)
+            (let ((ivy-height 42)
+                  (ivy-posframe-size-function
+                   (lambda ()
+                     (list
+                      :height (+ ivy-height 1)
+                      :width (round (* (frame-width) 0.72))
+                      :min-height (+ ivy-height 1)
+                      :min-width (round (* (frame-width) 0.72))))))
+              (counsel-imenu)))
   )
 
  (:after pdf-occur
