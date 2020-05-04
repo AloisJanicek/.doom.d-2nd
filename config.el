@@ -1264,7 +1264,10 @@
 (use-package! nov
   :after org
   :config
-
+  (add-hook 'nov-post-html-render-hook
+            (lambda ()
+              "User shrface imenu function."
+              (setq imenu-create-index-function #'shrface-imenu-get-tree)))
   (set-popup-rule! (lambda (buf &rest _)
                      "Find nov-mode browser buffer."
                      (with-current-buffer buf
@@ -1294,6 +1297,7 @@
                                    (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
                              (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
   (advice-add #'nov--find-file :override #'my-nov--find-file-a)
+  (advice-add #'nov-clean-up :override (lambda () t))
   )
 
 (use-package! ob-javascript
