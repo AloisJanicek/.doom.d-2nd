@@ -1213,7 +1213,9 @@
   :after hydra
   :config
   (hydra-posframe-mode +1)
-  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center)
+  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center
+        hydra-posframe-border-width 10
+        )
   )
 
 (use-package! indium
@@ -1530,6 +1532,7 @@
   `(tldr-title :foreground ,(doom-lighten 'red 0.1) :family "JetBrains Mono Medium 1.1")
   `(woman-bold :foreground ,(doom-lighten 'red 0.1) :family "JetBrains Mono Medium 1.1")
   `(woman-italic :foreground ,(doom-lighten 'green 0.1) :family "JetBrains Mono Medium Italic 1.1" :slant italic)
+  `(hydra-posframe-border-face :background ,(doom-color 'base2))
   )
 
 (after! mixed-pitch
