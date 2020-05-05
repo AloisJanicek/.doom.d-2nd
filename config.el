@@ -488,7 +488,6 @@
 (remove-hook 'org-mode-hook #'flyspell-mode)
 
 (after! org
-  (setq org-crypt-key (car epa-file-encrypt-to))
   (aj-org-update-help-files)
   (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
@@ -849,7 +848,30 @@
   )
 
 (after! org-crypt
-  org-crypt-tag-matcher "+crypt-nocrypt"
+  (setq org-crypt-key (car epa-file-encrypt-to)
+        org-crypt-tag-matcher "+crypt-nocrypt")
+  )
+
+(after! org-datetree
+  (advice-add
+   #'org-datetree--find-create
+   :around
+   (lambda (orig-fn &rest args)
+     "Make sure datetree is decrypted."
+     (let ((regex-template (nth 0 args))
+           (year (nth 1 args))
+           (month (nth 2 args)))
+       ;; month is nil when this fn is used to create YEAR headline
+       ;; which is exactly when we want to decrypt this headline
+       (if (eq month nil)
+           (progn
+             ;; assuming there is only one datetree in the file
+             (re-search-forward (format regex-template year) nil t)
+             (org-decrypt-entry)
+             (when (org-at-encrypted-entry-p)
+               (error "datetree access error: heading is not decrypted"))
+             (apply orig-fn args))
+         (apply orig-fn args)))))
   )
 
 (after! org-id

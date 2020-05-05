@@ -1367,6 +1367,7 @@ Optionally specify heading LEVEL (default is 3).
                      (aj-org-get-pretty-heading-path t t nil t)))
          (ivy-height (round (* (frame-height) 0.80)))
          ivy-sort-functions-alist timer)
+    (aj-org-datetree-access (car file) tag)
     (ivy-read
      "Go to: "
      (org-ql-query
@@ -1512,6 +1513,18 @@ PRESET is a subset of FILETAGS used for filtering when searching org files.
   "Advice for removing headerline in org-ql buffers."
   (with-current-buffer buffer
     (setq-local header-line-format nil)))
+
+;;;###autoload
+(defun aj-org-datetree-access (file tag)
+  "Encrypt org item of TAG in FILE.
+"
+  (let ((buff (find-buffer-visiting file)))
+    (with-current-buffer buff
+      (goto-char
+       (plist-get (nth 1 (car (org-ql-select buff `(tags ,tag)))) :begin))
+      (org-decrypt-entry)
+      (when (org-at-encrypted-entry-p)
+        (error "org-datetree-access error: heading is not decrypted")))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
