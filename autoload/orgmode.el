@@ -293,11 +293,13 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
   ("t" (org-capture nil "t"))
   ("T" (org-capture nil "T"))
   ("j" (aj-org-capture-into-journal-in
-        (aj/choose-file-from
-         (seq-filter
-          (lambda (file)
-            (not (string-match "inbox" file)))
-          org-agenda-files))))
+        (if aj-org-agenda-filter
+            (car (aj-org-return-filtered-agenda-file))
+          (aj/choose-file-from
+           (seq-filter
+            (lambda (file)
+              (not (string-match "inbox" file)))
+            org-agenda-files)))))
   ("q" nil)
   )
 
@@ -1526,6 +1528,22 @@ PRESET is a subset of FILETAGS used for filtering when searching org files.
       (org-decrypt-entry)
       (when (org-at-encrypted-entry-p)
         (error "org-datetree-access error: heading is not decrypted")))))
+
+;;;###autoload
+(defun aj-org-return-filtered-agenda-file ()
+  "Return org-agenda file matching `aj-org-agenda-filter' representing unique filetag."
+  (delq nil
+        (mapcar (lambda (file)
+                  (catch 'file
+                    (when (+org-get-global-property "FILETAGS" file)
+                      (when
+                          (cl-member
+                           (string-trim-left (car aj-org-agenda-filter) "+")
+                           (split-string
+                            (+org-get-global-property "FILETAGS" file) ":" t)
+                           :test #'string-match)
+                        (throw 'file file)))))
+                org-agenda-files)))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

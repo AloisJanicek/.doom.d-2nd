@@ -731,7 +731,13 @@
 
                            ("t" "Task" entry (file
                                               (lambda ()
-                                                (aj/choose-file-from org-agenda-files)))
+                                                (if aj-org-agenda-filter
+                                                    (car (aj-org-return-filtered-agenda-file))
+                                                  (aj/choose-file-from
+                                                   (seq-filter
+                                                    (lambda (file)
+                                                      (not (string-match "inbox" file)))
+                                                    org-agenda-files)))))
                             ,(concat
                               "* TO" "DO %^{PROMPT} \n"
                               ":PROPERTIES:\n"
@@ -747,7 +753,13 @@
 
                            ("T" "Task clocked-in" entry (file
                                                          (lambda ()
-                                                           (aj/choose-file-from org-agenda-files)))
+                                                           (if aj-org-agenda-filter
+                                                               (car (aj-org-return-filtered-agenda-file))
+                                                             (aj/choose-file-from
+                                                              (seq-filter
+                                                               (lambda (file)
+                                                                 (not (string-match "inbox" file)))
+                                                               org-agenda-files)))))
                             ,(concat
                               "* TO" "DO %^{PROMPT} \n"
                               ":PROPERTIES:\n"

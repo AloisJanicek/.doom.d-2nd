@@ -873,18 +873,7 @@
   :desc "archive jump"       "A" (λ! (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3))
   :desc "journal jump"       "j" (λ! (aj-org-jump-to-datetree
                                       (if aj-org-agenda-filter
-                                          (delq nil
-                                                (mapcar (lambda (file)
-                                                          (catch 'file
-                                                            (when (+org-get-global-property "FILETAGS" file)
-                                                              (when
-                                                                  (cl-member
-                                                                   (string-trim-left (car aj-org-agenda-filter) "+")
-                                                                   (split-string
-                                                                    (+org-get-global-property "FILETAGS" file) ":" t)
-                                                                   :test #'string-match)
-                                                                (throw 'file file)))))
-                                                        org-agenda-files))
+                                         (aj-org-return-filtered-agenda-file)
                                         (aj/choose-file-from org-agenda-files))
                                       "JOURNAL"))
   :desc "filter"             "f" (lambda ()
