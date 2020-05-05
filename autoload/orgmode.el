@@ -1516,7 +1516,7 @@ PRESET is a subset of FILETAGS used for filtering when searching org files.
 
 ;;;###autoload
 (defun aj-org-datetree-access (file tag)
-  "Encrypt org item of TAG in FILE.
+  "Decrypt org item of TAG in FILE.
 "
   (let ((buff (find-buffer-visiting file)))
     (with-current-buffer buff
