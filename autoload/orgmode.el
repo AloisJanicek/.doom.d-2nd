@@ -1132,7 +1132,7 @@ got renamed while clock were running.
   "
 _i_n             _g_oto        _U_pdate
 _o_ut            _k_ontext     _r_ename
-_p_omodoro       _h_istory     _R_eset
+_p_omodoro       _h_istory     _R_eset  _C_ancel
 "
   ("i" #'aj/org-clock-menu)
   ("o" #'org-clock-out)
@@ -1150,6 +1150,7 @@ _p_omodoro       _h_istory     _R_eset
   ("R" (lambda ()
          (interactive)
          (setq org-pomodoro-count 0)))
+  ("C" #'org-clock-cancel)
   )
 
 ;;;###autoload
