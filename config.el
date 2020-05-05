@@ -488,6 +488,7 @@
 (remove-hook 'org-mode-hook #'flyspell-mode)
 
 (after! org
+  (setq org-crypt-key (car epa-file-encrypt-to))
   (aj-org-update-help-files)
   (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)

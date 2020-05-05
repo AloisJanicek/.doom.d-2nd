@@ -31,7 +31,7 @@ Which operation will be executed depends on value of ENCRYPT."
         (setq cipher (epg-encrypt-string context
                                          (encode-coding-string
                                           (buffer-substring start end) coding)
-                                         (epg-list-keys context (org-crypt-key-for-heading)) nil)))
+                                         (epg-list-keys context (car epa-file-encrypt-to)) nil)))
       (delete-region start end)
       (goto-char end)
       (if (not encrypt)
