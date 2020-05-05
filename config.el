@@ -6,7 +6,7 @@
       jit-lock-stealth-time 2) ; fontify the rest of the buffer after a delay
 
 (load! "stylelintd-fix")
-(load! "vars")
+(load! "+vars")
 
 ;; fix void variables errors related to lazy (or explicit) loading
 (setq org-src-lang-modes nil
