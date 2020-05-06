@@ -1322,9 +1322,6 @@ If there are no matching files, return all org files from DIR instead.
         files
       (directory-files-recursively dir ".org$"))))
 
-(defvar timer nil
-  "Just timer")
-
 ;;;###autoload
 (defun aj-ivy-update-fn-timer ()
   "Update function for ivy with timer."
@@ -1590,7 +1587,6 @@ Org manual: 8.4.2 The clock table.
          (lambda (file)
            (not (string-match "inbox" file)))
          org-agenda-files)))
-(aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3)
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
