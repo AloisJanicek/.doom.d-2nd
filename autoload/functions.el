@@ -1008,6 +1008,38 @@ Me prefixing helpful headings with asterisk makes the original fn fail.
                          'keymap elisp-demos-help-keymap)
              "\n\n")))))))
 
+;;;###autoload
+(defun elisp-eldoc-documentation-function-with-var-val ()
+     "`eldoc-documentation-function' (which see) for Emacs Lisp.
+This is an override advice of `elisp-eldoc-documentation-function'
+which adds variable value to its docstring.
+"
+     (let ((current-symbol (elisp--current-symbol))
+           (current-fnsym  (elisp--fnsym-in-current-sexp)))
+       (cond ((null current-fnsym)
+              nil)
+             ((eq current-symbol (car current-fnsym))
+              (or (apply #'elisp-get-fnsym-args-string current-fnsym)
+                  (elisp-get-var-docstring current-symbol)))
+             (t
+              (concat
+               (or (elisp-get-var-docstring current-symbol)
+                   (apply #'elisp-get-fnsym-args-string current-fnsym))
+               " "
+               ;; limit length of printed value string
+               (let* ((limit 300)
+                      (str (prin1-to-string (symbol-value current-symbol)))
+                      (str-length (length str))
+                      (short (< str-length limit))
+                      (start (when str 0))
+                      (end (if short str-length limit)))
+                 (concat
+                  (substring
+                   (propertize str 'face 'warning)
+                   start end)
+                  (unless short
+                    " [...]"))))))))
+
 (provide 'functions)
 
 ;;; functions.el ends here

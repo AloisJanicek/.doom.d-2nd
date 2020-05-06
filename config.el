@@ -173,6 +173,7 @@
                                    ("Hydra" "^\\s-*(defhydra +\\([^ ()\n]+\\)" 1)))
                 (add-to-list 'imenu-generic-expression imenu-exp)))
             t)
+  (advice-add #'elisp-eldoc-documentation-function :override #'elisp-eldoc-documentation-function-with-var-val)
   )
 
 (after! smartparens
