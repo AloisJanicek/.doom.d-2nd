@@ -1571,6 +1571,9 @@
   `(woman-bold :foreground ,(doom-lighten 'red 0.1) :family "JetBrains Mono Medium 1.1")
   `(woman-italic :foreground ,(doom-lighten 'green 0.1) :family "JetBrains Mono Medium Italic 1.1" :slant italic)
   `(hydra-posframe-border-face :background ,(doom-color 'base2))
+  `(org-block-begin-line :background ,(doom-color 'bg) :foreground ,(doom-lighten 'base3 0.3))
+  `(org-block-end-line :background ,(doom-color 'bg) :foreground ,(doom-lighten 'base3 0.3))
+  `(org-quote :background ,(doom-color 'bg) :foreground ,(doom-color 'fg-alt) :family "JetBrains Mono Medium Italic 1.1" :slant italic)
   )
 
 (after! mixed-pitch
