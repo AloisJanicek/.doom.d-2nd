@@ -7,6 +7,7 @@
 
 (load! "stylelintd-fix")
 (load! "+vars")
+(load! "+hacks")
 
 ;; fix void variables errors related to lazy (or explicit) loading
 (setq org-src-lang-modes nil
