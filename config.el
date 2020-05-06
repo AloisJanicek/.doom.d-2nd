@@ -947,7 +947,10 @@
   )
 
 (after! profiler
-  (set-popup-rule! "^.*-Profiler-Report.*$"  :vslot 2 :size 0.4  :side 'right :select t :modeline t))
+  (set-popup-rule! "^.*-Profiler-Report.*$"  :size 0.8  :side 'bottom :select t :modeline nil)
+  (setf (caar profiler-report-cpu-line-format) 100
+        (caar profiler-report-memory-line-format) 100)
+  )
 
 (after! projectile
   (setq projectile-track-known-projects-automatically nil
