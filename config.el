@@ -834,6 +834,9 @@
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
   (advice-add #'org-clock-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-clock-goto :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-clock-report :after (lambda (&rest _)
+                                          "Save all opened org-mode files."
+                                          (org-save-all-org-buffers)))
   (advice-add #'org-clock-goto :after (lambda (&rest _)
                                         "Narrow view after switching."
                                         (interactive)
