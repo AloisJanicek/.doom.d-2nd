@@ -873,9 +873,27 @@
   :desc "archive jump"       "A" (λ! (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3))
   :desc "journal jump"       "j" (λ! (aj-org-jump-to-datetree
                                       (if aj-org-agenda-filter
-                                         (aj-org-return-filtered-agenda-file)
+                                          (aj-org-return-filtered-agenda-file)
                                         (aj/choose-file-from org-agenda-files))
                                       "JOURNAL"))
+
+  :desc "clock report at"    "c" (λ! (aj-org-clock-datetree-report
+                                      (if aj-org-agenda-filter
+                                          (car (aj-org-return-filtered-agenda-file))
+                                        (aj/choose-file-from
+                                         (seq-filter
+                                          (lambda (file)
+                                            (not (string-match "inbox" file)))
+                                          org-agenda-files)))
+                                      (ivy-read "Select time block: "
+                                                '(today thisweek thismonth))))
+  :desc "all today clock reports"  "C" (λ!
+                                        (mapc (lambda (file)
+                                                (aj-org-clock-datetree-report file 'today))
+                                              (seq-filter
+                                               (lambda (file)
+                                                 (not (string-match "inbox" file)))
+                                               org-agenda-files)))
   :desc "filter"             "f" (lambda ()
                                    (interactive)
                                    (unless aj-org-technical-notes-filetags

@@ -1322,6 +1322,9 @@ If there are no matching files, return all org files from DIR instead.
         files
       (directory-files-recursively dir ".org$"))))
 
+(defvar timer nil
+  "Just timer")
+
 ;;;###autoload
 (defun aj-ivy-update-fn-timer ()
   "Update function for ivy with timer."
@@ -1370,7 +1373,7 @@ Optionally specify heading LEVEL (default is 3).
                      (aj-org-get-pretty-heading-path t t nil t)))
          (ivy-height (round (* (frame-height) 0.80)))
          ivy-sort-functions-alist timer)
-    (aj-org-datetree-access (car file) tag)
+    (aj-org-datetree-access (if (listp file) (car file) file) tag)
     (ivy-read
      "Go to: "
      (org-ql-query
@@ -1544,6 +1547,50 @@ PRESET is a subset of FILETAGS used for filtering when searching org files.
                            :test #'string-match)
                         (throw 'file file)))))
                 org-agenda-files)))
+
+;;;###autoload
+(defun aj-org-clock-datetree-report (file block &optional week)
+  "For FILE create clock report under datetree.
+BLOCK is time block to consider as described in
+Org manual: 8.4.2 The clock table.
+"
+  (let* ((time-block (if (symbolp block) block (make-symbol block)))
+         (org-clock-clocktable-default-properties `(:maxlevel 2
+                                                    :scope file-with-archives
+                                                    :block ,time-block
+                                                    ))
+         (datetree-date (or (org-entry-get nil "TIMESTAMP" t)
+                            (org-read-date t nil "now")))
+         (date (org-date-to-gregorian datetree-date))
+         (heading-string (concat "Clock report - " (if (symbolp block) (symbol-name block) block))))
+    (with-current-buffer (find-buffer-visiting file)
+      (widen)
+      (if week
+          (org-datetree-find-iso-week-create date)
+        (org-datetree-find-date-create date))
+      (org-back-to-heading)
+      (if (save-excursion
+            (search-forward heading-string nil t))
+          (progn
+            (goto-char (search-forward heading-string nil t))
+            (forward-line)
+            (org-clock-report))
+        (progn
+          (org-insert-subheading t)
+          (insert heading-string)
+          (org-clock-report))))))
+
+;;;###autoload
+(defun aj-org-clock-make-all-reports ()
+  "Create org clock reports in every org-agenda file."
+  (interactive)
+  (mapc (lambda (file)
+          (aj-org-clock-datetree-report file 'today))
+        (seq-filter
+         (lambda (file)
+           (not (string-match "inbox" file)))
+         org-agenda-files)))
+(aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3)
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
