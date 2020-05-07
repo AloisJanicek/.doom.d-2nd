@@ -343,6 +343,11 @@
    #'ivy-switch-buffer
    '(("c" aj/kill-helpful-buffers "kill helpful-mode buffers")
      ("C" aj/kill-all-help-buffers "kill all help modes buffers")))
+  (ivy-add-actions
+   #'counsel-describe-variable
+   '(("v" (lambda (x)
+            (kill-new
+             (prin1-to-string (symbol-value (intern x))))) "Copy value")))
 
   (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
   )
