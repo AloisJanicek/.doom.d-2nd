@@ -819,7 +819,7 @@ which one is currently active."
                                    )
   "
 _i_nbox   _a_genda   _n_ext       _w_ait       _T_odos All  _r_ecent     _c_ancelled   _S_omeday
-_t_odo    _l_og      _p_rojects   _s_tucked               _R_chived      _d_one        _M_aybe
+_t_odo    _l_og      _p_rojects   _s_tucked               _R_chived    _d_one        _M_aybe
 "
 
   ("a" (let ((org-agenda-start-day "today"))
