@@ -1630,6 +1630,9 @@
              :map eaf-mode-map*
              "C-h" #'evil-window-left
              :ie "C-h" #'evil-window-left
+             "C-M-g" #'aj/eaf-browser-org-store-link
+             "C-M-b" #'aj/eaf-browser-org-capture-link
+             "C-;" #'aj/eaf-show-keys-help
              )
 
             (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir)

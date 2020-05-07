@@ -1040,6 +1040,31 @@ which adds variable value to its docstring.
                   (unless short
                     " [...]"))))))))
 
+;;;###autoload
+(defun aj/eaf-browser-org-capture-link ()
+  "Capture web link from eaf browser buffers."
+  (interactive)
+  (when (eq major-mode 'eaf-mode)
+    (when (string-equal "browser" eaf--buffer-app-name)
+      (require 'org-protocol)
+      (let ((protocol-url (concat "template=L&url=" eaf--buffer-url "&title=" eaf--bookmark-title)))
+        (org-protocol-capture (org-protocol-parse-parameters protocol-url t))))))
+
+;;;###autoload
+(defun aj/eaf-browser-org-store-link ()
+  "Store web link from eaf browser buffers."
+  (interactive)
+  (when (eq major-mode 'eaf-mode)
+    (when (string-equal "browser" eaf--buffer-app-name)
+      (require 'org-protocol)
+      (org-protocol-store-link (list :url eaf--buffer-url :title eaf--bookmark-title)))))
+
+;;;###autoload
+(defun aj/eaf-show-keys-help ()
+  (interactive)
+  (which-key--create-buffer-and-show nil nil (lambda (key)
+                                               (string-match "eaf" (cdr key))) "EAF keys"))
+
 (provide 'functions)
 
 ;;; functions.el ends here
