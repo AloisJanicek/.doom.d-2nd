@@ -1015,8 +1015,8 @@ Me prefixing helpful headings with asterisk makes the original fn fail.
   (when (eq major-mode 'eaf-mode)
     (when (string-equal "browser" eaf--buffer-app-name)
       (require 'org-protocol)
-      (let ((protocol-url (concat "template=L&url=" eaf--buffer-url "&title=" eaf--bookmark-title)))
-        (org-protocol-capture (org-protocol-parse-parameters protocol-url t))))))
+      (org-protocol-capture
+       (list :template "L" :url eaf--buffer-url :title eaf--bookmark-title)))))
 
 ;;;###autoload
 (defun aj/eaf-browser-org-store-link ()
