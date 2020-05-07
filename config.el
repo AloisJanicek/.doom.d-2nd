@@ -634,6 +634,7 @@
   (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
   (add-hook 'org-capture-after-finalize-hook #'aj/org-clock-update-heading)
   (setq
+   org-protocol-default-template-key "L"
    org-capture-templates `(("p" "Protocol" entry (file ,aj-org-inbox-file)
                             ,(concat
                               "* [[%:link][%(my-transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
