@@ -169,20 +169,6 @@
                 (add-to-list 'imenu-generic-expression imenu-exp)))
             t)
 
-  (defadvice! prepend-var-value-to-eldoc-a (orig-fn sym)
-    :around #'elisp-get-var-docstring
-    (when-let (ret (funcall orig-fn sym))
-      (concat ret " "
-              (let* ((truncated " [...]")
-                     (limit (- (frame-width) (length ret) (length truncated) 1))
-                     (str (prin1-to-string (symbol-value sym)))
-                     (str-length (length str))
-                     (short (< str-length limit))
-                     (start (if str 0))
-                     (end (if short str-length limit)))
-                (concat (substring (propertize str 'face 'warning)
-                                   start end)
-                        (unless short truncated))))))
   )
 
 (after! smartparens
