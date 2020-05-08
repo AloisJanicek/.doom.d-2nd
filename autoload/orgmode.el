@@ -1168,19 +1168,22 @@ If `org-pomodoro' is not running, try to print info about org-clock.
 If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
   (when (featurep 'org)
     (require 'org-pomodoro)
-    (cond ((equal :none org-pomodoro-state)
-           (if (org-clock-is-active)
-               (format "⏲ %d m – %s "
-                       (org-clock-get-clocked-time)
-                       (substring-no-properties org-clock-heading))
-             "- no active task -"))
-          ((equal :pomodoro org-pomodoro-state)
-           (format "⦿ %d m (%d) - %s"
-                   (/ (org-pomodoro-remaining-seconds) 60)
-                   org-pomodoro-count
-                   (substring-no-properties org-clock-heading)))
-          ((equal :short-break org-pomodoro-state) "Short Break")
-          ((equal :long-break org-pomodoro-state) "Long Break"))))
+    (concat
+     (cond ((equal :none org-pomodoro-state)
+            (if (org-clock-is-active)
+                (format "⏲ %d m – %s "
+                        (org-clock-get-clocked-time)
+                        (substring-no-properties org-clock-heading))
+              "- no active task -"))
+           ((equal :pomodoro org-pomodoro-state)
+            (format "⦿ %d m (%d) - %s"
+                    (/ (org-pomodoro-remaining-seconds) 60)
+                    org-pomodoro-count
+                    (substring-no-properties org-clock-heading)))
+           ((equal :short-break org-pomodoro-state) "Short Break")
+           ((equal :long-break org-pomodoro-state) "Long Break"))
+     (when aj-org-agenda-filter
+       (concat " :" (upcase (substring-no-properties (car aj-org-agenda-filter) 1 4)) ":")))))
 
 ;; ORG LINKS
 ;;;###autoload
