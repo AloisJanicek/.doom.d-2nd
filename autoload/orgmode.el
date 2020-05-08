@@ -293,7 +293,8 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
   ("t" (org-capture nil "t"))
   ("T" (org-capture nil "T"))
   ("j" (aj-org-capture-into-journal-in
-        (if aj-org-agenda-filter
+        (if (and aj-org-agenda-filter
+                 (not current-prefix-arg))
             (car (aj-org-return-filtered-agenda-file))
           (aj/choose-file-from
            (seq-filter
@@ -1281,10 +1282,11 @@ Otherwise dispatch default commands.
 Optionally search for specific list of todo KEYWORDS.
 Filters todo headlines according to `aj-org-agenda-filter'.
 "
-  (interactive)
+  (interactive "P")
   (let* ((keywords (or keywords '(todo)))
-         (tags (when aj-org-agenda-filter
-                 `(tags ,(string-remove-prefix "+" (car aj-org-agenda-filter)))))
+         (tags (unless current-prefix-arg
+                 (when aj-org-agenda-filter
+                   `(tags ,(string-remove-prefix "+" (car aj-org-agenda-filter))))))
          (query (if tags
                     `(and ,keywords ,tags)
                   keywords))

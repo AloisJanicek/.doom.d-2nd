@@ -706,7 +706,7 @@
   :desc "browse eww"               "b" #'eww
   :desc "browse eaf"               "B" #'eaf-open-browser
   :desc "agenda tasks"             "h" (λ! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT")))
-  :desc "all agenda tasks"         "H" #'aj/org-agenda-headlines
+  :desc "all agenda tasks"         "H" (λ! (aj/org-agenda-headlines))
   :desc "imenu-list"               "i" #'imenu-list-smart-toggle
   :desc "NEXT agenda tasks"        "n" (λ! (aj/org-agenda-headlines '(todo "NEXT")))
   :desc "search eww"               "s" (λ! (counsel-web-search nil "Search web with eww: " nil #'eww))
@@ -872,13 +872,15 @@
   :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp))
   :desc "archive jump"       "A" (λ! (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3))
   :desc "journal jump"       "j" (λ! (aj-org-jump-to-datetree
-                                      (if aj-org-agenda-filter
+                                      (if (and aj-org-agenda-filter
+                                               (not current-prefix-arg))
                                           (aj-org-return-filtered-agenda-file)
                                         (aj/choose-file-from org-agenda-files))
                                       "JOURNAL"))
 
   :desc "clock report at"    "c" (λ! (aj-org-clock-datetree-report
-                                      (if aj-org-agenda-filter
+                                      (if (and aj-org-agenda-filter
+                                               (not current-prefix-arg))
                                           (car (aj-org-return-filtered-agenda-file))
                                         (aj/choose-file-from
                                          (seq-filter
