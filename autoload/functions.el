@@ -485,64 +485,6 @@ Optionally create associated repository on `gitlab'."
 
 ;; PDF BOOKMARS
 
-;;;###autoload
-(defun brds/pdf-set-last-viewed-bookmark ()
-  "Set bookmark for current page in pdf-view."
-  (interactive)
-  (when (eq major-mode 'pdf-view-mode)
-    (bookmark-set (brds-pdf-generate-bookmark-name))))
-
-;;;###autoload
-(defun brds/pdf-jump-last-viewed-bookmark ()
-  "Jump to bookmark representing last view position."
-  (interactive)
-  (when
-      (brds-pdf-has-last-viewed-bookmark)
-    (bookmark-jump (brds-pdf-generate-bookmark-name))))
-
-;;;###autoload
-(defun brds-pdf-has-last-viewed-bookmark ()
-  "Verify if current PDF has saved latest position in bookmark."
-  (member (brds-pdf-generate-bookmark-name) (bookmark-all-names)))
-
-;;;###autoload
-(defun brds-pdf-generate-bookmark-name ()
-  "Generate name of bookmark representing latest visited position."
-  (concat "PDF-LAST-VIEWED: " (buffer-file-name)))
-
-;;;###autoload
-(defun brds-pdf-set-all-last-viewed-bookmarks ()
-  "Save latest visited position for all opened PDFs."
-  (dolist (buf (buffer-list))
-    (with-current-buffer buf
-      (brds/pdf-set-last-viewed-bookmark))))
-
-;;;###autoload
-(defun my/counsel-bookmark-without-pdfs ()
-  "Forward to `bookmark-jump' or `bookmark-set' if bookmark doesn't exist."
-  (interactive)
-  (require 'bookmark)
-  (ivy-read "Create or jump to bookmark: "
-            (seq-filter
-             (lambda (bookmark)
-               (not (string-match "PDF-LAST-VIEWED" bookmark)))
-             (bookmark-all-names))
-            :history 'bookmark-history
-            :action (lambda (x)
-                      (cond ((and counsel-bookmark-avoid-dired
-                                  (member x (bookmark-all-names))
-                                  (file-directory-p (bookmark-location x)))
-                             (with-ivy-window
-                               (let ((default-directory (bookmark-location x)))
-                                 (counsel-find-file))))
-                            ((member x
-                                     (bookmark-all-names))
-                             (with-ivy-window
-                               (bookmark-jump x)))
-                            (t
-                             (bookmark-set x))))
-            :caller 'counsel-bookmark))
-
 ;; IVY TWEAKS
 
 ;;;###autoload

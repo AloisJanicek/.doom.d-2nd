@@ -491,9 +491,12 @@
                       :min-width (round (* (frame-width) 0.72))))))
               (counsel-imenu)))
   :nm "O" #'pdf-outline
-  :nm "R" (λ! (brds/pdf-jump-last-viewed-bookmark))
+  :nm "R" (λ! (when-let (page (doom-store-get buffer-file-name "pdf-view-page"))
+                (pdf-view-goto-page page)))
   :nm "y" #'pdf-view-kill-ring-save
-  :nm "q" (λ! (progn (brds-pdf-set-all-last-viewed-bookmarks) (kill-this-buffer)))
+  :nm "q" (λ! (when buffer-file-name
+                (doom-store-put buffer-file-name (pdf-view-current-page) nil "pdf-view-page"))
+              (kill-this-buffer))
   :map pdf-outline-minor-mode-map
   :nm "o" (lambda ()
             (interactive)
@@ -955,7 +958,5 @@
  ;; find file              "."
 
  ;; "/"
-
- :desc "bookmarks"                 "RET" #'my/counsel-bookmark-without-pdfs
 
  )
