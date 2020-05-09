@@ -632,6 +632,7 @@
   :localleader
   :desc "load&close" "f" #'yas-load-snippet-buffer-and-close
   :desc "load"       "l" #'yas-load-snippet-buffer
+  :desc "abort"      "k" #'+snippet--abort
   :desc "tryout"     "t" #'yas-tryout-snippet
   )
 
@@ -695,6 +696,7 @@
   :desc "bash history"             "h" #'counsel-yank-bash-history
   :desc "unicode"                  "u" #'counsel-unicode-char
   :desc "snippet"                  "s" #'ivy-yasnippet
+  :desc "snippet new"              "S" #'+snippets/new
   )
 
  (:prefix ("o" . "open")
