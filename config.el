@@ -922,8 +922,7 @@
   (set-popup-rule! (lambda (buf &rest _)
                      "Find pdf-view-mode browser buffer."
                      (with-current-buffer buf
-                       (if (eq major-mode 'pdf-view-mode)
-                           t nil)))
+                       (when (eq major-mode 'pdf-view-mode) t)))
     :vslot 2 :size 110  :side 'left :select t :quit t :ttl nil :modeline t)
 
   (add-hook 'pdf-view-mode-hook (lambda ()
@@ -1327,8 +1326,7 @@
   (set-popup-rule! (lambda (buf &rest _)
                      "Find nov-mode browser buffer."
                      (with-current-buffer buf
-                       (if (eq major-mode 'nov-mode)
-                           t nil)))
+                       (when (eq major-mode 'nov-mode) t)))
     :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
 
   (setq nov-shr-rendering-functions
@@ -1664,9 +1662,9 @@
             (set-popup-rule! (lambda (buf &rest _)
                                "Find EAF browser buffer."
                                (with-current-buffer buf
-                                 (if (and (eq major-mode 'eaf-mode)
-                                          (string-equal eaf--buffer-app-name "browser"))
-                                     t nil)))
+                                 (when (and (eq major-mode 'eaf-mode)
+                                            (string-equal eaf--buffer-app-name "browser"))
+                                   t)))
               :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)))
       (message "no emacs-application-framework repository found at %s" eaf-path))))
 
