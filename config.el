@@ -993,6 +993,13 @@
 (after! synosaurus
   (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t :modeline t))
 
+(after! sly-mrepl
+  (sly-define-channel-method listener :clear-repl-history ()
+    (with-current-buffer (sly-channel-get self 'buffer)
+      (let ((inhibit-read-only t))
+        (erase-buffer))))
+  )
+
 (after! treemacs
   (setq
    evil-treemacs-state-cursor 'box
@@ -1560,6 +1567,7 @@
   `(org-block-begin-line :foreground ,(doom-lighten 'base3 0.3))
   `(org-block-end-line :foreground ,(doom-lighten 'base3 0.3))
   `(org-quote :foreground ,(doom-color 'fg-alt) :family "JetBrains Mono Medium Italic 1.1" :slant italic)
+  `(sly-mode-line :inherit 'mode-line-buffer-id)
   )
 
 (after! mixed-pitch

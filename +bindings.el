@@ -543,6 +543,14 @@
   :m "s" #'isearch-forward
   :m "v" #'show-entry
   )
+
+ (:after sly-mrepl
+  :map sly-mrepl-mode-map
+  :i "C-l" #'sly-mrepl-clear-repl
+  :i "<up>" #'sly-mrepl-previous-input-or-button
+  :i "<down>" #'sly-mrepl-previous-input-or-button
+  )
+
  (:after term
   :map term-raw-map
   :i "C-h" #'evil-window-left
