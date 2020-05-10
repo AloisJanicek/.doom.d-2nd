@@ -319,7 +319,7 @@ return an empty string."
            (title (--> (org-ql-view--add-faces element)
                        (org-element-property :raw-value it)
                        (org-link-display-format it)
-                       (propertize it 'face '(:inherit 'outline-1) )
+                       (propertize it 'face '(:inherit outline-1))
                        ))
            (todo-keyword (-some--> (org-element-property :todo-keyword element)
                            (org-ql-view--add-todo-face it)))
@@ -357,7 +357,7 @@ return an empty string."
            (concat
             " "
             (if effort
-                (propertize effort 'face '(:inherit 'org-property-value))
+                (propertize effort 'face '(:inherit org-property-value))
 
               "     "
               )
