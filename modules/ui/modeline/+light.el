@@ -362,7 +362,10 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
                      (file-relative-name filename (concat project "..")))))
              "%b"))
        'face (cond ((and (buffer-modified-p)
-                         (not (doom-special-buffer-p (current-buffer))))
+                         (not (or (doom-special-buffer-p (current-buffer))
+                                  (derived-mode-p 'vterm-mode)
+                                  (derived-mode-p 'pdf-view-mode)
+                                  (derived-mode-p 'nov-mode))))
                     (if (+modeline-active)
                         '(:inherit mode-line :slant italic)
                       '(:inherit mode-line-inactive :slant italic)))
@@ -373,7 +376,8 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
                (doom-special-buffer-p (current-buffer))
                (derived-mode-p 'vterm-mode)
                (derived-mode-p 'pdf-view-mode)
-               (derived-mode-p 'nov-mode))
+               (derived-mode-p 'nov-mode)
+               )
         (propertize
          (if buffer-read-only " RO" "") 'face 'bold))))))
 
