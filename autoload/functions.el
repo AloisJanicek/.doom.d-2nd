@@ -318,7 +318,9 @@ return an empty string."
                                 append (list symbol val)))
            (title (--> (org-ql-view--add-faces element)
                        (org-element-property :raw-value it)
-                       (org-link-display-format it)))
+                       (org-link-display-format it)
+                       (propertize it 'face '(:inherit 'outline-1) )
+                       ))
            (todo-keyword (-some--> (org-element-property :todo-keyword element)
                            (org-ql-view--add-todo-face it)))
            (tag-list (if org-use-tag-inheritance
@@ -353,9 +355,11 @@ return an empty string."
       ;; Add all the necessary properties and faces to the whole string
       (--> string
            (concat
+            " "
             (if effort
-                effort
-              "  "
+                (propertize effort 'face '(:inherit 'org-property-value))
+
+              "     "
               )
             " " it)
            (org-add-props it properties
