@@ -264,7 +264,7 @@
         )
   )
 
-(after! geiser
+(after! geiser-impl
   (setq geiser-default-implementation 'guile))
 
 (after! git-gutter
