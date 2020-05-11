@@ -495,9 +495,7 @@
   (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Agenda.*\\*$"    :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
-  (set-popup-rule! "^\\*Org QL Search.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
-  (set-popup-rule! "^\\*Org QL View.*\\*$"   :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
-  (set-popup-rule! "^\\*Org-QL-Agenda.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
+  (set-popup-rule! "^\\*Org QL.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
 
   (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
   (add-hook 'org-capture-mode-hook #'flyspell-mode)
@@ -613,7 +611,7 @@
                               (tags      . "  %-6t %6e ")
                               (search    . "%l")
                               )
-   org-agenda-tags-column 72
+   org-agenda-tags-column 74
    org-agenda-todo-list-sublevels t
    org-agenda-log-mode-items '(closed clock state)
    org-agenda-start-with-log-mode nil
