@@ -84,6 +84,13 @@
   "M-r" #'emmet-preview-accept
   )
 
+ ;;; elisp-mode
+ (:after elisp-mode
+  :map emacs-lisp-mode-map
+  :localleader
+  "t" #'ert-run-tests-interactively
+  )
+
  (:after flycheck
   :map flycheck-error-list-mode-map
   :ne "j" #'flycheck-error-list-next-error

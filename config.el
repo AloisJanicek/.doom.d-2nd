@@ -39,6 +39,7 @@
 (setq-default tab-width 4)
 
 (set-popup-rule! "*backtrace\*"      :size 0.5            :side 'bottom :select t :quit t :modeline t)
+(set-popup-rule! "*ert\*"            :size 12            :side 'bottom :select t :quit t :modeline nil)
 (set-popup-rule! "*doom:scratch"     :size 0.25 :vslot -4 :side 'bottom :select t :quit t :ttl nil :modeline nil)
 
 (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))

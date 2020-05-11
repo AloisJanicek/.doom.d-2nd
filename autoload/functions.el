@@ -978,6 +978,14 @@ Me prefixing helpful headings with asterisk makes the original fn fail.
   (which-key--create-buffer-and-show nil nil (lambda (key)
                                                (string-match "eaf" (cdr key))) "EAF keys"))
 
+;;;###autoload
+(defun exercism-submit ()
+  (interactive)
+  (let* ((file (buffer-file-name))
+         (confirm (y-or-n-p (format "Submit %s to exercism?" file))))
+    (when confirm
+      (shell-command (concat "exercism submit " file)))))
+
 (provide 'functions)
 
 ;;; functions.el ends here
