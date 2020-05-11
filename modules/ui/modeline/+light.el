@@ -358,8 +358,9 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
        (let ((buffer-file-name (buffer-file-name (buffer-base-buffer))))
          (or (when buffer-file-name
                (if-let (project (doom-project-root buffer-file-name))
-                   (let ((filename (or buffer-file-truename (file-truename buffer-file-name))))
-                     (file-relative-name filename (concat project "..")))))
+                   (unless (< (window-width) 104)
+                     (let ((filename (or buffer-file-truename (file-truename buffer-file-name))))
+                       (file-relative-name filename (concat project ".."))))))
              "%b"))
        'face (cond ((and (buffer-modified-p)
                          (not (or (doom-special-buffer-p (current-buffer))
