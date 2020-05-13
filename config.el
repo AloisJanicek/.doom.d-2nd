@@ -515,7 +515,7 @@
   (org-link-set-parameters "calibre" :follow #'aj-org-calibre-follow :store #'aj-org-calibre-store)
 
   (setq
-   org-global-properties '(( "Effort_ALL" . "0:05 0:10 0:15 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00"))
+   org-global-properties '(( "Effort_ALL" . "00:05 00:10 00:15 00:30 01:00 02:00 03:00 04:00 05:00 06:00 07:00"))
    org-icalendar-combined-agenda-file (expand-file-name "agenda.ics" org-directory)
    org-icalendar-combined-name "OrgAgenda"
    org-icalendar-combined-description "export from Org Mode"
