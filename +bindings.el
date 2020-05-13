@@ -89,6 +89,7 @@
   :map emacs-lisp-mode-map
   :localleader
   "t" #'ert-run-tests-interactively
+  "T" #'ert-delete-all-tests
   )
 
  (:after flycheck
