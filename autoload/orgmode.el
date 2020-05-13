@@ -843,7 +843,8 @@ _t_odo    _l_og      _p_rojects   _s_tucked   _W_eek agenda   _A_rchived   _d_on
          `(,aj-org-inbox-file)
          '(level 1)
          :title "Inbox"
-         :sort '(date)))
+         ;; :sort '(date)
+         ))
 
   ("n" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search

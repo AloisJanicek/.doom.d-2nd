@@ -695,7 +695,6 @@
                               "%?"
                               )
                             :empty-lines 1
-                            :prepend t
                             )
 
                            ("y" "Yankpad" entry (file+function ,yankpad-file aj-org-get-yankpad-target)
