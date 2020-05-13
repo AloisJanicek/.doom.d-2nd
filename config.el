@@ -1512,6 +1512,8 @@
   :after org
   :config
   (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
+  (remove-hook 'after-change-major-mode-hook #'yankpad-local-category-to-major-mode)
+  (remove-hook 'projectile-find-file-hook #'yankpad-local-category-to-projectile)
   )
 
 (use-package! zeal-at-point
