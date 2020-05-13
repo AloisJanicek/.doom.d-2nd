@@ -1609,8 +1609,8 @@ Org manual: 8.4.2 The clock table.
 (defun aj-org-ql-sort-by-effort (a b)
   "Return non-nil if effort of the A is lower then effort of the B."
   (<
-   (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT a) "0")))
-   (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT b) "0")))))
+   (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT a) "999")))
+   (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT b) "999")))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
