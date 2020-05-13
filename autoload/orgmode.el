@@ -690,6 +690,7 @@ which one is currently active."
             (not (ts-active))
             (not (children (todo)))
             (not (parent (todo))))
+      :sort #'aj-org-ql-sort-by-effort
       :super-groups '((:auto-category t ))
       :title "Plain Todos")))
 
@@ -785,7 +786,7 @@ which one is currently active."
                                                    (aj-org-combined-agenda-files)
                                                    '(and (todo "NEXT")
                                                          (not (ts-active)))
-                                                   :sort '(date priority todo)
+                                                   :sort #'aj-org-ql-sort-by-effort
                                                    :super-groups '((:auto-category t))
                                                    :title "NEXT action"
                                                    ))
@@ -849,7 +850,7 @@ _t_odo    _l_og      _p_rojects   _s_tucked   _W_eek agenda   _A_rchived   _d_on
            (aj-org-combined-agenda-files)
            '(and (todo "NEXT")
                  (not (ts-active)))
-           :sort '(date priority todo)
+           :sort #'aj-org-ql-sort-by-effort
            :super-groups '((:auto-category t))
            :title "Next Action")))
 
@@ -914,7 +915,13 @@ _t_odo    _l_og      _p_rojects   _s_tucked   _W_eek agenda   _A_rchived   _d_on
          :super-groups '((:auto-category t))
          :title "ARCHIVED"))
 
-  ("S" (aj-org-ql-simple-taks-search "SOMEDAY"))
+  ("S" (let ((org-agenda-tag-filter aj-org-agenda-filter))
+         (org-ql-search (aj-org-combined-agenda-files)
+           `(todo "SOMEDAY")
+           :sort #'aj-org-ql-sort-by-effort
+           :super-groups '((:auto-category t))
+           :title "SOMEDAY"))
+   )
 
   ("M" (aj-org-ql-simple-taks-search "MAYBE"))
   )
@@ -1597,6 +1604,13 @@ Org manual: 8.4.2 The clock table.
          (lambda (file)
            (not (string-match "inbox" file)))
          org-agenda-files)))
+
+;;;###autoload
+(defun aj-org-ql-sort-by-effort (a b)
+  "Return non-nil if effort of the A is lower then effort of the B."
+  (<
+   (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT a) "0")))
+   (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT b) "0")))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
