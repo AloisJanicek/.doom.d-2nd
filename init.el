@@ -187,7 +187,7 @@
 
  :config
  ;;literate
- (default +bindings +smartparens))
+ (default +bindings))
 
 (setq +doom-dashboard-functions
       '(doom-dashboard-widget-banner
