@@ -1146,11 +1146,11 @@ got renamed while clock were running.
                                 (org-clock-goto))
                               )
   "
-_i_n             _g_oto        _U_pdate
-_o_ut            _k_ontext     _r_ename
-_p_omodoro       _h_istory     _R_eset  _C_ancel
+_i_n   _p_omodoro  _g_oto      _U_pdate  _r_ename  _R_eset
+_o_ut            _h_istory   _k_ontext _e_ffort  _C_ancel
 "
   ("i" #'aj/org-clock-menu)
+  ("e" #'org-clock-modify-effort-estimate)
   ("o" #'org-clock-out)
   ("p" #'org-pomodoro)
   ("g" #'counsel-org-clock-goto)
@@ -1179,8 +1179,9 @@ If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
     (concat
      (cond ((equal :none org-pomodoro-state)
             (if (org-clock-is-active)
-                (format "⏲ %d m – %s "
+                (format "⏲ %d m / %s – %s "
                         (org-clock-get-clocked-time)
+                        org-clock-effort
                         (substring-no-properties org-clock-heading))
               "- no active task -"))
            ((equal :pomodoro org-pomodoro-state)

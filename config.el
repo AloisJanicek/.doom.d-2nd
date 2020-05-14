@@ -750,6 +750,7 @@
                               "\n"
                               "%i\n"
                               "%?"
+                              "%^{EFFORT}p"
                               )
                             :empty-lines 1
                             :prepend t
@@ -773,6 +774,7 @@
                               "\n"
                               "%i\n"
                               "%?"
+                              "%^{EFFORT}p"
                               )
                             :empty-lines 1
                             :clock-in t
