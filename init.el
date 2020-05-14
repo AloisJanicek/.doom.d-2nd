@@ -195,7 +195,7 @@
         doom-dashboard-widget-footer)
       +doom-dashboard-banner-file "EmacsIcon.svg"
       +doom-dashboard-banner-dir doom-private-dir
-)
+      )
 
 (add-hook '+doom-dashboard-mode-hook (lambda ()
                                        (hl-line-mode -1)))
