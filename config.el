@@ -224,7 +224,12 @@
             (lambda ()
               (shrface-mode)
               (unless
-                  (string-match "cppreference.com\\|WordPress" (plist-get eww-data :url))
+                  (string-match (rx (or
+                                     "cppreference"
+                                     "wordpress"
+                                     "wikipedia"
+                                     ))
+                                (plist-get eww-data :url))
                 (eww-readable))
               (setq-local header-line-format nil)
               (recenter 0 t)
