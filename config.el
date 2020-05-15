@@ -1089,17 +1089,6 @@
   :commands apache-mode
   )
 
-(use-package! company-posframe
-  :disabled
-  :after company
-  :config
-  (company-posframe-mode 1)
-  (setq company-posframe-quickhelp-delay nil
-        company-posframe-show-indicator nil
-        company-posframe-show-metadata nil
-        )
-  )
-
 (use-package! counsel-org-clock
   :commands (counsel-org-clock-context
              counsel-org-clock-history
