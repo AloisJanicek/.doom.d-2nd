@@ -1138,6 +1138,7 @@
      ("fundamental" ,(all-the-icons-faicon      "file-text"                     :v-adjust 0.1)       :postfix)
      ("helpful"     ,(all-the-icons-material    "help_outline"     :height 1.2  :v-adjust -0.2 )     :prefix)
      ("info"        ,(all-the-icons-fileicon    "man-page"                      :v-adjust -0.1)      :postfix)
+     ("gfm"         ,(all-the-icons-octicon     "markdown"                      :v-adjust -0.1)      :postfix)
      ("js2"         ,(all-the-icons-alltheicon  "javascript-badge"              :v-adjust 0.1)       :postfix)
      ("java"        ,(all-the-icons-alltheicon  "java"             :height 1.1  :v-adjust 0.1 )      :postfix)
      ("json"        ,(all-the-icons-octicon     "settings"                      :v-adjust 0.1)       :postfix)
