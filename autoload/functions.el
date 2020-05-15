@@ -725,11 +725,16 @@ https://github.com/Konfekt/wsl-gui-bins/blob/master/zeal
   "Rename `eww-mode' buffer so sites open in new page.
 URL `http://ergoemacs.org/emacs/emacs_eww_web_browser.html'
 Version 2017-11-10"
-  (let ((title (plist-get eww-data :title)))
-    (when (eq major-mode 'eww-mode )
-      (if title
-          (rename-buffer (concat "*eww " title "*") t)
-        (rename-buffer "*eww*" t)))))
+  (when (eq major-mode 'eww-mode )
+    (let* ((title (plist-get eww-data :title))
+           (name (concat "*eww " title "*")))
+      (if (get-buffer name)
+          (progn
+            (kill-buffer (current-buffer))
+            (pop-to-buffer (get-buffer name)))
+        (if title
+            (rename-buffer name t)
+          (rename-buffer "*eww*" t))))))
 
 ;;;###autoload
 (defun aj--switch-buffer-maybe-pop-action-a (orig-fn buffer)
