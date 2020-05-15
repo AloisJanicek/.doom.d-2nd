@@ -442,6 +442,11 @@
 
 (remove-hook 'Man-mode-hook #'hide-mode-line-mode)
 
+(after! markdown-mode
+  (add-hook 'markdown-mode-hook (lambda ()
+                                  (solaire-mode -1)))
+  )
+
 (after! woman
   (setq woman-fill-column 80
         woman-ll-fill-column 80)
@@ -1558,6 +1563,13 @@
   `(org-block-end-line :foreground ,(doom-lighten 'base3 0.3))
   `(org-quote :foreground ,(doom-color 'fg-alt) :family "JetBrains Mono Medium Italic 1.1" :slant italic)
   `(sly-mode-line :inherit 'mode-line-buffer-id)
+  `(markdown-header-face-1 :inherit 'outline-1)
+  `(markdown-header-face-2 :inherit 'outline-2)
+  `(markdown-header-face-3 :inherit 'outline-3)
+  `(markdown-header-face-4 :inherit 'outline-4)
+  `(markdown-header-face-5 :inherit 'outline-5)
+  `(markdown-header-face-6 :inherit 'outline-6)
+  `(markdown-list-face :foreground ,(doom-color 'blue))
   )
 
 (after! mixed-pitch
