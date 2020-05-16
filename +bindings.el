@@ -521,7 +521,10 @@
 
  (:after pdf-occur
   :map pdf-occur-buffer-mode-map
-  :nm "RET" #'pdf-occur-view-occurrence
+  :nm "RET" (lambda ()
+              (interactive)
+              (save-selected-window
+                (pdf-occur-view-occurrence)))
   )
 
  (:after popup-buffer
