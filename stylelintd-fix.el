@@ -1,4 +1,4 @@
-;;; stylelintd-fix.el --- use stylelint_d to automatically fix js files
+;;; stylelintd-fix.el --- -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016 by Aaron Jensen
 

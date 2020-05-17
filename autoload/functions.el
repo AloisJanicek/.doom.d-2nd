@@ -1,5 +1,5 @@
-;;; functions.el --- Various functions for my emacs configuration
 ;;; ~/.doom.d/autoload/functions.el -*- lexical-binding: t; -*-
+;;; functions.el --- Various functions for my emacs configuration
 
 ;;; Commentary:
 ;; Various functions for my Emacs configuration

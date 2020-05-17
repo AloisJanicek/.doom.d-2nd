@@ -1,6 +1,5 @@
-;;; orgmode.el --- Functions I need for org-mode to work
 ;;; ~/.doom.d/autoload/org.el -*- lexical-binding: t; -*-
-
+;;; orgmode.el --- Functions I need for org-mode to work
 
 ;;; Commentary:
 ;; File represents loose collection of functions related to my
