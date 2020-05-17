@@ -186,6 +186,11 @@
 (after! epa
   (setq epa-pinentry-mode 'ask))
 
+(after! ert
+  (advice-add #'ert-results-next-test :after (lambda () (recenter 0)))
+  (advice-add #'ert-results-previous-test :after (lambda () (recenter 0)))
+  )
+
 (after! elisp-demos
   (advice-add #'elisp-demos-advice-helpful-update :override #'aj-elisp-demos-advice-helpful-update)
   )
