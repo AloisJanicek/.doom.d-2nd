@@ -663,7 +663,7 @@
                               )
                             :immediate-finish t
                             :empty-lines 1
-                            :prepend t
+                            :prepend nil
                             )
 
                            ("L" "Protocol Link" entry (file ,aj-org-inbox-file)
@@ -675,7 +675,7 @@
                               )
                             :immediate-finish t
                             :empty-lines 1
-                            :prepend t
+                            :prepend nil
                             )
 
                            ("w" "Website" entry (file ,aj-org-inbox-file)
