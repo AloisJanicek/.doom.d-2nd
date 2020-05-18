@@ -5,11 +5,10 @@
 
 (package! ahk-mode)
 
-(package! anki-editor)
-
 (package! all-the-icons-ivy-rich
-          :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-          )
+  :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich"))
+
+(package! anki-editor)
 
 (package! apache-mode)
 
@@ -26,60 +25,58 @@
 
 (package! define-word)
 
-(package! google-translate)
+(package! eslintd-fix
+  :recipe (:host github :repo "aaronjensen/eslintd-fix"))
 
 (package! esqlite)
 
-(package! eslintd-fix
-  :recipe (:host github :repo "aaronjensen/eslintd-fix"))
+(package! google-translate)
 
 (package! highlight-blocks)
 
 (package! highlight-escape-sequences
   :recipe (:host github :repo "hlissner/highlight-escape-sequences"))
 
-(package! hungry-delete :pin "0434458d3f6b2b585f332271feaa054bf4ec96d7")
-
 (package! howdoyou
   :recipe (:host github :repo "thanhvg/emacs-howdoyou"))
 
+(package! hungry-delete :pin "0434458d3f6b2b585f332271feaa054bf4ec96d7")
+
 (package! hydra-posframe
-  :recipe (:host github :repo "Ladicle/hydra-posframe")
-  )
+  :recipe (:host github :repo "Ladicle/hydra-posframe"))
+
 (package! indium)
 
 (package! imenu-list)
 
-(package! ivy-pages :recipe (:host github :repo "igorepst/ivy-pages"))
+(package! ivy-pages
+  :recipe (:host github :repo "igorepst/ivy-pages"))
 
 (package! ivy-yasnippet
   :recipe (:host github :repo "mkcms/ivy-yasnippet"))
 
 (package! js-react-redux-yasnippets
-  :recipe (:host github :repo "AloisJanicek/js-react-redux-yasnippets"
-                 :files ("*.el" "snippets")
-                 :branch "fix-yas-snippet-dirs"
-                 ))
+  :recipe (:host github :repo "AloisJanicek/js-react-redux-yasnippets" :files ("*.el" "snippets") :branch "fix-yas-snippet-dirs"))
+
+(package! nov)
 
 (package! ob-javascript
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*")))
 
-(package! nov)
-
 (package! org-brain
   :recipe (:host github :repo "Kungsgeten/org-brain"))
-
-(package! org-sidebar
-  :recipe (:host github :repo "alphapapa/org-sidebar"))
 
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags"))
 
-(package! org-ql)
+(package! org-sidebar
+  :recipe (:host github :repo "alphapapa/org-sidebar"))
 
 (package! org-super-agenda)
 
 (package! org-superstar :disable t)
+
+(package! org-ql)
 
 (package! powershell
   :recipe (:host github :repo "jschaf/powershell.el"))
@@ -92,9 +89,11 @@
 (package! sdcv
   :recipe (:host github :repo "stardiviner/sdcv.el" :files ("sdcv.el")))
 
-(package! shrface :recipe (:host github :repo "AloisJanicek/shrface" :branch "fix-regexp-vars"))
+(package! shrface
+  :recipe (:host github :repo "AloisJanicek/shrface" :branch "fix-regexp-vars"))
 
-(package! shr-tag-pre-highlight :recipe (:host github :repo "xuchunyang/shr-tag-pre-highlight.el"))
+(package! shr-tag-pre-highlight
+  :recipe (:host github :repo "xuchunyang/shr-tag-pre-highlight.el"))
 
 (package! systemd)
 
