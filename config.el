@@ -1316,6 +1316,7 @@
 
 (use-package! js-doc
   :after js2-mode
+  :config
   (set-popup-rule! "JsDocTagDescription" :size 20 :side 'bottom :select t :quit t :modeline nil)
   )
 

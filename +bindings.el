@@ -642,6 +642,7 @@
    :desc "file"             "F" #'js-doc-insert-file-doc
    :desc "function snippet" "s" #'js-doc-insert-function-doc-snippet
    :desc "tag"              "t" #'js-doc-insert-tag
+   :desc "variable"         "v" #'aj/js-doc-insert-variable-doc-snippet
    )
   )
 

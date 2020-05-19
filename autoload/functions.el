@@ -991,6 +991,17 @@ Me prefixing helpful headings with asterisk makes the original fn fail.
     (when confirm
       (shell-command (concat "exercism submit " file)))))
 
+;;;###autoload
+(defun aj/js-doc-insert-variable-doc-snippet ()
+  "Insert jsdoc docstring for current variable.
+Depends on \"jsdv\" yasnippet snippet expanding to jsdoc docstring.
+"
+  (interactive)
+  (beginning-of-defun)
+  (evil-open-above 1)
+  (insert "jsdv")
+  (yas-expand))
+
 (provide 'functions)
 
 ;;; functions.el ends here
