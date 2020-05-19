@@ -1314,6 +1314,11 @@
   (set-popup-rule! "*jest\*"            :size 20            :side 'bottom :select t :quit t :modeline nil)
   )
 
+(use-package! js-doc
+  :after js2-mode
+  (set-popup-rule! "JsDocTagDescription" :size 20 :side 'bottom :select t :quit t :modeline nil)
+  )
+
 (use-package! js-react-redux-yasnippets
   :after yasnippet
   )

@@ -58,6 +58,9 @@
 (package! jest
   :recipe (:host github :repo "xlarsx/emacs-jest"))
 
+(package! js-doc
+  :recipe (:host github :repo "mooz/js-doc"))
+
 (package! js-react-redux-yasnippets
   :recipe (:host github :repo "AloisJanicek/js-react-redux-yasnippets" :files ("*.el" "snippets") :branch "fix-yas-snippet-dirs"))
 

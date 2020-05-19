@@ -636,6 +636,13 @@
   :desc "dash at point" "." #'+lookup/in-docsets
   :desc "docsets at point" ">" #'+lookup/in-devdocs
   :desc "jest test file" "t"  #'jest-file
+  (:prefix ("d" . "js-doc")
+   :desc "describe tag"     "d" #'js-doc-describe-tag
+   :desc "function"         "f" #'js-doc-insert-function-doc
+   :desc "file"             "F" #'js-doc-insert-file-doc
+   :desc "function snippet" "s" #'js-doc-insert-function-doc-snippet
+   :desc "tag"              "t" #'js-doc-insert-tag
+   )
   )
 
  (:after treemacs
