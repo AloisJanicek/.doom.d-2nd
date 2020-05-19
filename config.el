@@ -1295,6 +1295,25 @@
   (advice-add #'ivy-pages-transformer :override #'ivy-pages-transformer-clear-string)
   )
 
+(use-package! jest
+  :after js2-mode
+  :config
+  (advice-add #'jest--project-root :around (lambda (orig-fn &rest args)
+                                             (if (string-match "exercism" (projectile-project-name))
+                                                 (cl-letf (((symbol-function 'projectile-project-root)
+                                                            (lambda (&rest _)
+                                                              (file-name-directory buffer-file-name))))
+                                                   (apply orig-fn args))
+                                               (apply orig-fn args))))
+  (setq jest-pdb-track nil)
+  (add-hook 'jest-mode-hook (lambda ()
+                              (evil-motion-state)
+                              ))
+
+
+  (set-popup-rule! "*jest\*"            :size 20            :side 'bottom :select t :quit t :modeline nil)
+  )
+
 (use-package! js-react-redux-yasnippets
   :after yasnippet
   )
@@ -1321,6 +1340,10 @@
   :config
   (add-to-list 'shr-external-rendering-functions
                '(pre . shrface-shr-tag-pre-highlight)))
+
+(use-package! mocha
+  :after js2-mode
+  )
 
 (use-package! nov
   :after org

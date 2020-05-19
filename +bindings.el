@@ -635,6 +635,7 @@
   :localleader
   :desc "dash at point" "." #'+lookup/in-docsets
   :desc "docsets at point" ">" #'+lookup/in-devdocs
+  :desc "jest test file" "t"  #'jest-file
   )
 
  (:after treemacs

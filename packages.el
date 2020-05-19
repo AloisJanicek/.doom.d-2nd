@@ -55,8 +55,13 @@
 (package! ivy-yasnippet
   :recipe (:host github :repo "mkcms/ivy-yasnippet"))
 
+(package! jest
+  :recipe (:host github :repo "xlarsx/emacs-jest"))
+
 (package! js-react-redux-yasnippets
   :recipe (:host github :repo "AloisJanicek/js-react-redux-yasnippets" :files ("*.el" "snippets") :branch "fix-yas-snippet-dirs"))
+
+(package! mocha)
 
 (package! nov)
 
