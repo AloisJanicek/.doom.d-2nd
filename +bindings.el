@@ -39,6 +39,19 @@
   :nm "C-j" #'evil-window-down
   )
 
+ (:after cc-mode
+  :map c-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific for exercism folder structure."
+                     (interactive)
+                     (let ((default-directory (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory
+                                                 (buffer-file-name))))))
+                       (compile "make test")))
+  )
+
  (:after css-mode
   :map css-mode-map
   :localleader
