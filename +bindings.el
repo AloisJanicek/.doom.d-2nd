@@ -52,6 +52,19 @@
                        (compile "make test")))
   )
 
+ (:after csharp-mode
+  :map csharp-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Just run `dotnet test`."
+                     (interactive)
+                     (shell-command "dotnet test")
+                     (with-current-buffer (get-buffer "*Shell Command Output*")
+                       (end-of-buffer)
+                       )
+                     )
+  )
+
  (:after css-mode
   :map css-mode-map
   :localleader
