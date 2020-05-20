@@ -60,9 +60,16 @@
                      (interactive)
                      (shell-command "dotnet test")
                      (with-current-buffer (get-buffer "*Shell Command Output*")
-                       (end-of-buffer)
-                       )
-                     )
+                       (end-of-buffer)))
+  )
+
+ (:after cc-mode
+  :map c++-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Just run `dotnet test`."
+                     (interactive)
+                     (compile "make"))
   )
 
  (:after css-mode
