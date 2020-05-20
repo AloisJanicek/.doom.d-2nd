@@ -1008,6 +1008,10 @@
 (after! synosaurus
   (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t :modeline t))
 
+(after! lisp-mode
+  (set-docsets! 'lisp-mode "Common_Lisp")
+  )
+
 (after! sly-mrepl
   (sly-define-channel-method listener :clear-repl-history ()
                              (with-current-buffer (sly-channel-get self 'buffer)

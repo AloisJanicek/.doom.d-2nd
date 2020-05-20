@@ -555,6 +555,21 @@
   :m "v" #'show-entry
   )
 
+ (:after lisp-mode
+  :map lisp-mode-map
+  :localleader
+  "t" nil
+  :desc "run test"         "t" (lambda ()
+                                 (interactive)
+                                 (compile (concat (executable-find "sbcl")
+                                                  " --load *-test.lisp --quit")))
+  (:prefix ("R" . "tRace")
+   :desc "Toggle"         "t" #'sly-toggle-trace-fdefinition
+   :desc "Toggle (fancy)" "T" #'sly-toggle-fancy-trace
+   :desc "Untrace all"    "u" #'sly-untrace-all
+   )
+  )
+
  (:after sly-mrepl
   :map sly-mrepl-mode-map
   :i "C-l" #'sly-mrepl-clear-repl
