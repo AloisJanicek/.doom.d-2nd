@@ -14,6 +14,8 @@
 
 (package! bats-mode)
 
+(package! cfml-mode)
+
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock"))
 

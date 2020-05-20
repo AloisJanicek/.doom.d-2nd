@@ -72,6 +72,16 @@
                      (compile "make"))
   )
 
+ (:after cfml-mode
+  :map cfscript-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Just run `dotnet test`."
+                     (interactive)
+                     (shell-command "box task run TestRunner"))
+
+  )
+
  (:after css-mode
   :map css-mode-map
   :localleader
