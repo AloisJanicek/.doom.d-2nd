@@ -1009,7 +1009,8 @@
   (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t :modeline t))
 
 (after! lisp-mode
-  (set-docsets! 'lisp-mode "Common_Lisp")
+  (add-hook 'lisp-mode-hook (lambda ()
+                              (dash-docs-activate-docset "Common_Lisp" )))
   )
 
 (after! sly-mrepl
