@@ -1015,9 +1015,9 @@
 
 (after! sly-mrepl
   (sly-define-channel-method listener :clear-repl-history ()
-                             (with-current-buffer (sly-channel-get self 'buffer)
-                               (let ((inhibit-read-only t))
-                                 (erase-buffer))))
+    (with-current-buffer (sly-channel-get self 'buffer)
+      (let ((inhibit-read-only t))
+        (erase-buffer))))
   )
 
 (after! treemacs
