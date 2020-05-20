@@ -67,7 +67,6 @@
   :map c++-mode-map
   :localleader
   :desc "test" "t" (lambda ()
-                     "Just run `dotnet test`."
                      (interactive)
                      (compile "make"))
   )
@@ -76,9 +75,17 @@
   :map cfscript-mode-map
   :localleader
   :desc "test" "t" (lambda ()
-                     "Just run `dotnet test`."
                      (interactive)
                      (shell-command "box task run TestRunner"))
+
+  )
+
+ (:after coffee-mode
+  :map coffee-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (shell-command "jasmine-node --coffee *.spec.coffee"))
 
   )
 
