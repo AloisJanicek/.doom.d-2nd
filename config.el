@@ -989,6 +989,16 @@
 (after! python
   (set-docsets! 'python-mode "Python_3"))
 
+(after! python-pytest
+  (advice-add #'python-pytest--find-test-file
+              :around
+              (lambda (orig-fn &rest args)
+                (if (string-match "exercism" (projectile-project-name))
+                    (concat (file-name-sans-extension (buffer-file-name))
+                            "_test.py")
+                  (apply orig-fn args))))
+  )
+
 (after! racket-mode
   (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil :modeline t))
 
