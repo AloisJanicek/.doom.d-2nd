@@ -1104,6 +1104,17 @@
   :commands apache-mode
   )
 
+(use-package! bats-mode
+  :after sh-script
+  :config
+  (advice-add #'bats-run-all :override (lambda ()
+                                         "Run bats in the current directory."
+                                         (interactive)
+                                         (if (string-match "exercism" (projectile-project-name))
+                                             (compile (concat bats-program " *_test.sh"))
+                                           (bats-run "."))))
+  )
+
 (use-package! counsel-org-clock
   :commands (counsel-org-clock-context
              counsel-org-clock-history

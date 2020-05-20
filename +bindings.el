@@ -655,6 +655,13 @@
   :iemnv "C-<SPC>" #'treemacs-peek
   )
 
+ (:after sh-script
+  :map sh-mode-map
+  :localleader
+  :desc "bats run all"     "t" #'bats-run-all
+  :desc "bats run current" "T" #'bats-run-current-test
+  )
+
  (:after yasnippet
   :map snippet-mode-map
   :localleader
