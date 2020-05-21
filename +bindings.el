@@ -117,6 +117,19 @@
   "C-;" #'ivy-restrict-to-matches
   )
 
+ (:after d-mode
+  :map d-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                     (let ((default-directory (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory
+                                                 (buffer-file-name))))))
+                       (shell-command "dub test")))
+  )
+
  (:after eww
   :map eww-mode-map
   :n "<tab>" #'org-cycle

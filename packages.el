@@ -16,6 +16,8 @@
 
 (package! cfml-mode)
 
+(package! d-mode)
+
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock"))
 
