@@ -89,6 +89,19 @@
 
   )
 
+(:after crystal-mode
+  :map crystal-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                     (let ((default-directory (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory
+                                                 (buffer-file-name))))))
+                       (shell-command "crystal spec")))
+  )
+
  (:after css-mode
   :map css-mode-map
   :localleader
