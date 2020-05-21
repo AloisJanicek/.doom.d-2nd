@@ -175,6 +175,21 @@
   "T" #'ert-delete-all-tests
   )
 
+;;; alchemist
+ (:after alchemist
+  :map alchemist-mode-map
+  :nm "C-j" nil
+  :nm "C-k" nil
+  :localleader
+  "t" #'alchemist-mix-test
+  )
+
+ (:after alchemist-test-mode
+  :map alchemist-test-report-mode-map
+  :nm "C-j" nil
+  :nm "C-k" nil
+  )
+
  (:after flycheck
   :map flycheck-error-list-mode-map
   :ne "j" #'flycheck-error-list-next-error
