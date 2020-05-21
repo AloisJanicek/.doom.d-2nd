@@ -971,10 +971,26 @@
         (caar profiler-report-memory-line-format) 100)
   )
 
+(after! project
+  (defun project-try-dart (dir)
+    "Help project.el in finding the project root for your dart file."
+    (let ((project (or (locate-dominating-file dir "pubspec.yaml")
+                       (locate-dominating-file dir "BUILD"))))
+      (if project
+          (cons 'dart project)
+        (cons 'transient dir))))
+
+  (add-hook 'project-find-functions #'project-try-dart)
+
+  (cl-defmethod project-roots ((project (head dart)))
+    (list (cdr project))))
+
 (after! projectile
   (setq projectile-track-known-projects-automatically nil
         projectile-project-search-path aj-repos-dir
         )
+  (add-to-list 'projectile-project-root-files-bottom-up "pubspec.yaml")
+  (add-to-list 'projectile-project-root-files-bottom-up "BUILD")
   )
 
 (after! prog-mode
@@ -1209,6 +1225,10 @@
 (use-package! define-word
   :commands (define-word  define-word-at-point))
 
+(use-package! dart-mode
+  :config
+  (add-hook! 'dart-mode-local-vars-hook #'lsp-deferred)
+  )
 (use-package! esqlite
   :commands (esqlite-stream-open esqlite-read))
 

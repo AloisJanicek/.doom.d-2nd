@@ -18,6 +18,10 @@
 
 (package! d-mode)
 
+(package! dart-mode)
+
+(package! lsp-dart)
+
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock"))
 

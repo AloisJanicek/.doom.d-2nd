@@ -130,6 +130,13 @@
                        (shell-command "dub test")))
   )
 
+;;; dart-mode
+ (:after dart-mode
+  :map dart-mode-map
+  :localleader
+  :desc "test" "t" #'lsp-dart-run-all-tests
+  )
+
  (:after eww
   :map eww-mode-map
   :n "<tab>" #'org-cycle
