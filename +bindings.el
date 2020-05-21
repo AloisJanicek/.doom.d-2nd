@@ -190,6 +190,28 @@
   :nm "C-k" nil
   )
 
+;;; elm
+ (:after elm-mode
+  :map elm-mode-map
+  :localleader
+  "t" #'elm-test-project
+  )
+
+ (:after erlang
+  :map erlang-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                     (let ((default-directory (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory
+                                                 (buffer-file-name))))))
+                       (shell-command "rebar3 eunit")
+                       (with-current-buffer (get-buffer "*Shell Command Output*")
+                         (end-of-buffer))))
+  )
+
  (:after flycheck
   :map flycheck-error-list-mode-map
   :ne "j" #'flycheck-error-list-next-error
