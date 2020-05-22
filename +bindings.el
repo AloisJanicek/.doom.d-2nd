@@ -334,6 +334,32 @@
                        (async-shell-command "gradle --warning-mode none test")))
   )
 
+ (:after lfe-mode
+  :map lfe-mode-map
+  :localleader
+  :desc "repl" "r" (lambda ()
+                     (interactive)
+                     (if (get-buffer "*inferior-lfe*")
+                         (pop-to-buffer (get-buffer "*inferior-lfe*"))
+                       (inferior-lfe nil)))
+  :desc "test" "t" (lambda ()
+                     "Specific for exercism folder structure."
+                     (interactive)
+                     (let ((default-directory (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory
+                                                 (buffer-file-name))))))
+                       (compile "make test")))
+  )
+
+ (:after inferior-lfe
+  :map inferior-lfe-mode-map
+  :nemi "C-l" #'inferior-lfe-clear-buffer
+  :nemi "C-h"       #'evil-window-left
+  :nemi "C-j"       #'evil-window-down
+  :nemi "C-k"       #'evil-window-up
+  )
+
  (:after magit
   :map magit-mode-map
   :inv "C-k" #'evil-window-up

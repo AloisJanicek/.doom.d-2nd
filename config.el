@@ -1376,6 +1376,24 @@
   :after yasnippet
   )
 
+(use-package lfe-mode
+  :load-path "~/.emacs.d/.local/straight/repos/lfe-mode"
+  :config
+  (require 'inferior-lfe)
+  (require 'lfe-indent)
+
+  (add-hook 'lfe-mode-hook (lambda ()
+                             "Setup lfe-mode"
+                             (rainbow-delimiters-mode)
+                             (highlight-numbers-mode)))
+
+  (add-hook 'inferior-lfe-mode-hook (lambda ()
+                                      (doom-mark-buffer-as-real-h)
+                                      (persp-add-buffer (current-buffer))))
+
+  (set-popup-rule! "*inferior-lfe\*" :size 14 :side 'bottom :select t :quit t :modeline nil)
+  )
+
 (use-package shrface
   ;; :load-path "~/repos/shrface"
   :after shr

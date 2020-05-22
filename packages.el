@@ -77,6 +77,9 @@
 (package! lsp-julia
   :recipe (:host github :repo "non-Jedi/lsp-julia"))
 
+(package! lfe-mode
+  :recipe (:host github :repo "emacsmirror/lfe-mode"))
+
 (package! mocha)
 
 (package! nov)
