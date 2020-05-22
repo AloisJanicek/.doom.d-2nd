@@ -307,6 +307,15 @@
   :nmv  "e"      #'evil-forward-word-end
   )
 
+ (:after julia-mode
+  :map julia-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                     (async-shell-command "julia runtests.jl"))
+  )
+
  (:after magit
   :map magit-mode-map
   :inv "C-k" #'evil-window-up
