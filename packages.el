@@ -80,6 +80,9 @@
 (package! lfe-mode
   :recipe (:host github :repo "emacsmirror/lfe-mode"))
 
+(package! lsp-lua-emmy
+  :recipe (:host github :repo "phenix3443/lsp-lua-emmy"))
+
 (package! mocha)
 
 (package! nov)

@@ -1394,6 +1394,20 @@
   (set-popup-rule! "*inferior-lfe\*" :size 14 :side 'bottom :select t :quit t :modeline nil)
   )
 
+(use-package lsp-lua-emmy
+  :after lsp-mode
+  :load-path "~/.emacs.d/.local/straight/repos/lsp-lua-emmy"
+  :config
+  (setq lsp-lua-emmy-jar-path
+        (expand-file-name
+         (concat aj-repos-dir
+                 "/EmmyLua-LanguageServer/EmmyLua-LS/build/libs/EmmyLua-LS-all.jar")))
+  )
+
+(after! lua-mode
+  (add-hook! 'lua-mode-local-vars-hook #'lsp-deferred)
+  )
+
 (use-package shrface
   ;; :load-path "~/repos/shrface"
   :after shr

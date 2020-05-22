@@ -360,6 +360,14 @@
   :nemi "C-k"       #'evil-window-up
   )
 
+ (:after lua-mode
+  :map lua-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "busted"))
+  )
+
  (:after magit
   :map magit-mode-map
   :inv "C-k" #'evil-window-up
