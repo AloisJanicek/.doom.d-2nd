@@ -854,6 +854,7 @@
   :desc "decrypt region" "R" #'epa-decrypt-region
   :desc "encrypt file"   "f" #'epa-encrypt-file
   :desc "encrypt region" "r" #'epa-encrypt-region
+  :desc "submit"         "s" #'exercism-submit
   )
 
  ;; (:prefix ("r" . "remote") )
@@ -994,6 +995,7 @@
  (:prefix ("h" . "help")
   :desc "helpful-symbol"           "a" #'helpful-symbol
   :desc "echo"                     "e" #'view-echo-area-messages
+  :desc "Dash set docs"            "D" #'dash-docs-activate-docset
   :desc "info"                     "i" #'info
   :desc "info on symbol"           "I" #'counsel-info-lookup-symbol
   :desc "manual"                   "m" #'woman

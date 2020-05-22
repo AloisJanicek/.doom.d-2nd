@@ -74,6 +74,9 @@
 (package! js-react-redux-yasnippets
   :recipe (:host github :repo "AloisJanicek/js-react-redux-yasnippets" :files ("*.el" "snippets") :branch "fix-yas-snippet-dirs"))
 
+(package! lsp-julia
+  :recipe (:host github :repo "non-Jedi/lsp-julia"))
+
 (package! mocha)
 
 (package! nov)

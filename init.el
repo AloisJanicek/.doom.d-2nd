@@ -88,7 +88,7 @@
 
  :tools
  ansible
- debugger
+ (debugger +lsp)
  direnv
  docker
  editorconfig
@@ -117,19 +117,19 @@
  :lang
  ;;agda
  (cc +lsp)
- clojure
+ (clojure +lsp)
  common-lisp
  ;;coq
  crystal
  (csharp +lsp)
  data
- elixir
- elm
+ (elixir +lsp)
+ (elm +lsp)
  emacs-lisp
- erlang
+ (erlang +lsp)
  ;;ess
  ;;faust
- fsharp
+ (fsharp +lsp)
  ;;fstar
  (go +lsp)
  (haskell +lsp)
@@ -137,8 +137,9 @@
  ;;idris
  (java +lsp)
  (javascript +lsp)
- julia
- ;;kotlin
+ (julia +lsp)
+ (json +lsp)
+ (kotlin +lsp)
  ;;latex
  ;;lean
  ;;factor
@@ -147,7 +148,7 @@
  markdown
  nim
  ;;nix
- ocaml
+ (ocaml +lsp)
  (org +dragndrop +pandoc +hugo +pomodoro)
  perl
  (php +lsp)
@@ -163,14 +164,14 @@
  ;; rst
  (ruby +lsp)
  (rust +lsp)
- scala
+ (scala +lsp)
  scheme
  (sh +lsp)
  ;;sml
  ;;solidity
- swift
+ (swift +lsp)
  ;;terra
- yaml
+ (yaml +lsp)
  (web +lsp)
 
  :email
