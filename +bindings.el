@@ -857,6 +857,15 @@
                      (search-forward " ")))))
   )
 
+ (:after typescript-mode
+  :map typescript-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "yarn test"))
+
+  )
+
  (:after vterm
   :map vterm-mode-map
   ;; Easier window movement

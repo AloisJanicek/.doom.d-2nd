@@ -396,9 +396,9 @@
                        'ivy-switch-buffer))
     '(ivy-rich-switch-buffer-project (:width 15 :face success))))
 
-(after! (:any js-mode js2-mode rjsx-mode web-mode)
-  (set-docsets! '(js2-mode rjsx-mode)
-    "JavaScript" "AngularJS" "Bootstrap_4" "jQuery" "NodeJS" "React" "VueJS"))
+(after! (:any js-mode js2-mode rjsx-mode web-mode typescript-mode)
+  (set-docsets! '(js-mode js2-mode rjsx-mode web-mode typescript-mode)
+    "JavaScript" "AngularJS" "Bootstrap_4" "jQuery" "NodeJS" "React" "VueJS" "TypeScript"))
 
 (after! js2-mode
   (add-hook 'js2-mode-hook #'eslintd-fix-mode)
@@ -1052,6 +1052,10 @@
                                  (erase-buffer))))
   )
 
+(after! shell
+  (add-hook 'shell-mode-hook #'evil-normal-state)
+  )
+
 (after! treemacs
   (setq
    evil-treemacs-state-cursor 'box
@@ -1076,7 +1080,6 @@
   (define-advice vc-git-mode-line-string (:around (orig-fn args) remove-git-name)
     "Remove \"Git\" from output."
     (replace-regexp-in-string "^Git." "" (funcall orig-fn args))))
-
 
 (after! warnings
   (add-to-list 'warning-suppress-types '(defvaralias))
