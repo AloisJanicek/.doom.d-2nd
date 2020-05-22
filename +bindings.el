@@ -256,6 +256,19 @@
                          (end-of-buffer))))
   )
 
+ (:after haskell-mode
+  :map haskell-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                     (let ((default-directory (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory
+                                                 (buffer-file-name))))))
+                       (async-shell-command "stack test")))
+  )
+
  (:after helpful
   :map helpful-mode-map
   :nm "f" #'link-hint-open-link
