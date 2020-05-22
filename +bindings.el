@@ -89,7 +89,7 @@
 
   )
 
-(:after crystal-mode
+ (:after crystal-mode
   :map crystal-mode-map
   :localleader
   :desc "test" "t" (lambda ()
@@ -223,6 +223,17 @@
   "RET"    nil
   [return] nil
   [mouse-1] nil
+  )
+
+ (:after fsharp-mode
+  :map fsharp-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Just run `dotnet test`."
+                     (interactive)
+                     (shell-command "dotnet test")
+                     (with-current-buffer (get-buffer "*Shell Command Output*")
+                       (end-of-buffer)))
   )
 
  (:after helpful
