@@ -269,6 +269,24 @@
                        (async-shell-command "stack test")))
   )
 
+ (:after cc-mode
+  :map java-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                     (let ((default-directory
+                             (file-name-directory
+                              (directory-file-name
+                               (file-name-directory
+                                (directory-file-name
+                                 (file-name-directory
+                                  (directory-file-name
+                                   (file-name-directory
+                                    (buffer-file-name))))))))))
+                       (async-shell-command "gradle --warning-mode none test")))
+  )
+
  (:after helpful
   :map helpful-mode-map
   :nm "f" #'link-hint-open-link
