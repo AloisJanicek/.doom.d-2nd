@@ -316,6 +316,24 @@
                      (async-shell-command "julia runtests.jl"))
   )
 
+ (:after kotlin-mode
+  :map kotlin-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                     (let ((default-directory
+                             (file-name-directory
+                              (directory-file-name
+                               (file-name-directory
+                                (directory-file-name
+                                 (file-name-directory
+                                  (directory-file-name
+                                   (file-name-directory
+                                    (buffer-file-name))))))))))
+                       (async-shell-command "gradle --warning-mode none test")))
+  )
+
  (:after magit
   :map magit-mode-map
   :inv "C-k" #'evil-window-up
