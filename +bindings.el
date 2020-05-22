@@ -39,6 +39,14 @@
   :nm "C-j" #'evil-window-down
   )
 
+ (:after asm-mode
+  :map asm-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "make"))
+  )
+
  (:after cc-mode
   :map c-mode-map
   :localleader
