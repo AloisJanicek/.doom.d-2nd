@@ -236,6 +236,26 @@
                        (end-of-buffer)))
   )
 
+ (:after groovy-mode
+  :map groovy-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                     (let ((default-directory
+                             (file-name-directory
+                              (directory-file-name
+                               (file-name-directory
+                                (directory-file-name
+                                 (file-name-directory
+                                  (directory-file-name
+                                   (file-name-directory
+                                    (buffer-file-name))))))))))
+                       (shell-command "gradle test")
+                       (with-current-buffer (get-buffer "*Shell Command Output*")
+                         (end-of-buffer))))
+  )
+
  (:after helpful
   :map helpful-mode-map
   :nm "f" #'link-hint-open-link

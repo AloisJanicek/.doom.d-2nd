@@ -282,6 +282,11 @@
   (advice-add #'git-gutter:next-hunk :after #'doom-recenter-a)
   )
 
+(after! groovy-mode
+  (add-hook! 'groovy-mode-local-vars-hook #'lsp-deferred)
+  (setq lsp-groovy-server-file "/usr/share/java/groovy-language-server/groovy-language-server-all.jar")
+  )
+
 (after! help
   (set-popup-rule! "*Help\*"           :vslot 2 :size 82 :side 'left :select t :modeline t))
 
@@ -437,6 +442,7 @@
   )
 
 (setq read-process-output-max (* 1024 1024))
+
 (after! lsp
   (setq lsp-ui-sideline-enable nil
         lsp-semantic-highlighting :deferred
@@ -1041,9 +1047,9 @@
 
 (after! sly-mrepl
   (sly-define-channel-method listener :clear-repl-history ()
-    (with-current-buffer (sly-channel-get self 'buffer)
-      (let ((inhibit-read-only t))
-        (erase-buffer))))
+                             (with-current-buffer (sly-channel-get self 'buffer)
+                               (let ((inhibit-read-only t))
+                                 (erase-buffer))))
   )
 
 (after! treemacs
