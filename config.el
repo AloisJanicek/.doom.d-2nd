@@ -978,6 +978,14 @@
     (add-to-list 'aj-persp-blacklist `,(file-name-nondirectory file)))
   )
 
+(after! perl-mode
+  (add-hook! 'perl-mode-local-vars-hook #'lsp-deferred)
+  (add-hook 'perl-mode-local-vars-hook
+            (lambda ()
+              (when (flycheck-may-enable-checker 'perl)
+                (flycheck-select-checker 'perl))))
+  )
+
 (after! profiler
   (set-popup-rule! "^.*-Profiler-Report.*$"  :size 0.8  :side 'bottom :select t :modeline nil)
   (setf (caar profiler-report-cpu-line-format) 100

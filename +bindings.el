@@ -837,6 +837,15 @@
                 (pdf-occur-view-occurrence)))
   )
 
+ ;;; perl
+ (:after perl-mode
+  :map perl-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "prove *.t"))
+  )
+
  ;;; popup-buffer
  (:after popup-buffer
   :map +popup-buffer-mode-map
