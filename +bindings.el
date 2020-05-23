@@ -873,6 +873,16 @@
   :i "<down>" #'sly-mrepl-previous-input-or-button
   )
 
+ ;;; swift
+ (:after swift-mode
+  :map swift-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                       (async-shell-command "swift test"))
+  )
+
  ;;; term
  (:after term
   :map term-raw-map
