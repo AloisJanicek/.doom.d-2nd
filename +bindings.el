@@ -459,6 +459,15 @@
   :nm "C-k" nil
   )
 
+ ;;; nim
+ (:after nim-mode
+  :map nim-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "nim c -r *_test.nim"))
+  )
+
  ;;; occur
  (:after replace
   :map occur-mode-map

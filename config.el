@@ -496,6 +496,13 @@
   (setq nav-flash-delay 0.33)
   )
 
+(after! nim
+  (add-hook 'nim-mode-local-vars-hook
+            (lambda ()
+              (when (flycheck-may-enable-checker 'nim)
+                (flycheck-select-checker 'nim))))
+  )
+
 (after! ob-core
   (setq
    org-babel-default-header-args '((:session . "none")
