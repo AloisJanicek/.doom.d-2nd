@@ -468,6 +468,15 @@
                      (async-shell-command "nim c -r *_test.nim"))
   )
 
+ ;;; ocaml / tuareg
+ (:after tuareg
+  :map tuareg-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "make"))
+  )
+
  ;;; occur
  (:after replace
   :map occur-mode-map
