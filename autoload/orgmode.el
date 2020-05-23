@@ -1343,7 +1343,7 @@ If there are no matching files, return all org files from DIR instead.
 ;;;###autoload
 (defun aj-ivy-update-fn-timer ()
   "Update function for ivy with timer."
-  (when timer
+  (when (ignore-errors timer)
     (cancel-timer timer))
   (setq timer
         (run-with-timer
