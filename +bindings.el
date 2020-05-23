@@ -1,5 +1,6 @@
 ;;; ~/.doom.d/+bindings.el -*- lexical-binding: t; -*-
 
+;;; global
 (map!
  "C-\\"      #'move-to-window-line-top-bottom
  "C-s"       #'ispell-word
@@ -29,9 +30,10 @@
   )
  )
 
-;; modes
+;;; modes
 (map!
 
+ ;;; ansible-mode
  (:after ansible-doc
   :map ansible-doc-module-mode-map
   :nm "o" #'ace-link-woman
@@ -39,6 +41,7 @@
   :nm "C-j" #'evil-window-down
   )
 
+ ;;; asm-mode
  (:after asm-mode
   :map asm-mode-map
   :localleader
@@ -47,6 +50,7 @@
                      (async-shell-command "make"))
   )
 
+ ;;; c-mode
  (:after cc-mode
   :map c-mode-map
   :localleader
@@ -60,6 +64,7 @@
                        (compile "make test")))
   )
 
+ ;;; csharp-mode
  (:after csharp-mode
   :map csharp-mode-map
   :localleader
@@ -71,6 +76,7 @@
                        (end-of-buffer)))
   )
 
+ ;;; c++-mode
  (:after cc-mode
   :map c++-mode-map
   :localleader
@@ -79,6 +85,7 @@
                      (compile "make"))
   )
 
+ ;;; cfscript-mode
  (:after cfml-mode
   :map cfscript-mode-map
   :localleader
@@ -88,6 +95,7 @@
 
   )
 
+ ;;; coffee-mode
  (:after coffee-mode
   :map coffee-mode-map
   :localleader
@@ -97,6 +105,7 @@
 
   )
 
+ ;;; crystal-mode
  (:after crystal-mode
   :map crystal-mode-map
   :localleader
@@ -110,12 +119,14 @@
                        (shell-command "crystal spec")))
   )
 
+ ;;; css-mode
  (:after css-mode
   :map css-mode-map
   :localleader
   :desc "colors"        "c" #'counsel-colors-web
   )
 
+ ;;; counsel, ivy
  (:after counsel
   :map ivy-minibuffer-map
   "TAB" #'ivy-alt-done
@@ -124,7 +135,7 @@
   "C-d" #'ivy-immediate-done
   "C-;" #'ivy-restrict-to-matches
   )
-
+;;; d-mode
  (:after d-mode
   :map d-mode-map
   :localleader
@@ -145,6 +156,7 @@
   :desc "test" "t" #'lsp-dart-run-all-tests
   )
 
+;;; eww
  (:after eww
   :map eww-mode-map
   :n "<tab>" #'org-cycle
@@ -165,6 +177,7 @@
   :nv "Y" #'org-eww-copy-for-org-mode
   )
 
+ ;;; emmet
  (:after emmet-mode
   :map emmet-mode-keymap
   :i "M-r" #'aj/emmet-mark-and-preview
@@ -205,6 +218,7 @@
   "t" #'elm-test-project
   )
 
+ ;;; erlang
  (:after erlang
   :map erlang-mode-map
   :localleader
@@ -220,12 +234,14 @@
                          (end-of-buffer))))
   )
 
+ ;;; flycheck
  (:after flycheck
   :map flycheck-error-list-mode-map
   :ne "j" #'flycheck-error-list-next-error
   :ne "k" #'flycheck-error-list-previous-error
   )
 
+ ;;; flyspell
  (:after flyspell
   :map flyspell-mouse-map
   "RET"    nil
@@ -233,6 +249,7 @@
   [mouse-1] nil
   )
 
+ ;;; fsharp
  (:after fsharp-mode
   :map fsharp-mode-map
   :localleader
@@ -244,6 +261,7 @@
                        (end-of-buffer)))
   )
 
+ ;;; groovy
  (:after groovy-mode
   :map groovy-mode-map
   :localleader
@@ -264,6 +282,7 @@
                          (end-of-buffer))))
   )
 
+ ;;; haskell
  (:after haskell-mode
   :map haskell-mode-map
   :localleader
@@ -277,6 +296,7 @@
                        (async-shell-command "stack test")))
   )
 
+ ;;; java
  (:after cc-mode
   :map java-mode-map
   :localleader
@@ -295,17 +315,20 @@
                        (async-shell-command "gradle --warning-mode none test")))
   )
 
+ ;;; helpful
  (:after helpful
   :map helpful-mode-map
   :nm "f" #'link-hint-open-link
   :nm "o" #'imenu
   )
 
+ ;;; inferior python
  (:after inferior-python
   :map inferior-python-mode-map
   :ienv "C-l" #'evil-window-right
   )
 
+ ;;; Info
  (:after info
   :map Info-mode-map
   :nemv "f"      #'link-hint-open-link
@@ -315,6 +338,7 @@
   :nmv  "e"      #'evil-forward-word-end
   )
 
+ ;;; julia
  (:after julia-mode
   :map julia-mode-map
   :localleader
@@ -324,6 +348,7 @@
                      (async-shell-command "julia runtests.jl"))
   )
 
+ ;;; kotlin
  (:after kotlin-mode
   :map kotlin-mode-map
   :localleader
@@ -342,6 +367,7 @@
                        (async-shell-command "gradle --warning-mode none test")))
   )
 
+ ;;; lfe
  (:after lfe-mode
   :map lfe-mode-map
   :localleader
@@ -368,6 +394,7 @@
   :nemi "C-k"       #'evil-window-up
   )
 
+ ;;; lua
  (:after lua-mode
   :map lua-mode-map
   :localleader
@@ -376,6 +403,7 @@
                      (async-shell-command "busted"))
   )
 
+ ;;; magit
  (:after magit
   :map magit-mode-map
   :inv "C-k" #'evil-window-up
@@ -386,6 +414,7 @@
   :desc "cancel"          "k" #'with-editor-cancel
   )
 
+ ;;; man
  (:after man
   :map Man-mode-map
   :nm "f" #'link-hint-open-link
@@ -394,6 +423,7 @@
   :nm "o" #'Man-goto-section
   )
 
+ ;;; woman
  (:after woman
   :map woman-mode-map
   :nm "f" #'link-hint-open-link
@@ -416,6 +446,7 @@
                 (message "No tldr; for %s" command))))
   )
 
+ ;;; nov
  (:after nov
   :map nov-mode-map
   :nm "o" #'imenu
@@ -428,6 +459,7 @@
   :nm "C-k" nil
   )
 
+ ;;; occur
  (:after replace
   :map occur-mode-map
   :n "i" #'occur-edit-mode
@@ -439,11 +471,13 @@
   :i [escape] #'occur-cease-edit
   )
 
+ ;;; org-colview
  (:after org-colview
   :map org-columns-map
   "O" #'org-open-at-point
   )
 
+ ;;; org
  (:after org
   :map org-mode-map
   :n   "J"     #'outline-next-visible-heading
@@ -573,6 +607,7 @@
    :desc "widen"            "w" #'widen
    )
 
+  ;;; evil-org-mode
   :map evil-org-mode-map
   :localleader
   "d" nil
@@ -595,6 +630,7 @@
   :desc "schedule"     "s" #'org-schedule
   )
 
+ ;;; evil-org-agenda
  (:after evil-org-agenda
   :map evil-org-agenda-mode-map
   :m "." (lambda ()
@@ -609,6 +645,7 @@
   :desc "refile" "r" #'aj/org-refile-hydra/body
   )
 
+;;; org-agenda
  (:after org-agenda
   :map org-agenda-mode-map
   :m "f" (λ! (org-agenda-filter-apply
@@ -645,6 +682,7 @@
    )
   )
 
+ ;;; org-brain
  (:after org-brain
   :map org-brain-visualize-mode-map
   :m "C-h" #'evil-window-left
@@ -712,6 +750,7 @@
   :m  "q" #'org-brain-visualize-quit
   )
 
+ ;;; org-capture
  (:after org-capture
   :map org-capture-mode-map
   :inve [escape]       #'org-capture-finalize
@@ -728,6 +767,7 @@
    )
   )
 
+ ;;; pdf-tools
  (:after pdf-tools
   :map pdf-view-mode-map
   :nm "C-h" #'evil-window-left
@@ -770,6 +810,7 @@
               (counsel-imenu)))
   )
 
+ ;;; pdf-occur
  (:after pdf-occur
   :map pdf-occur-buffer-mode-map
   :nm "RET" (lambda ()
@@ -778,11 +819,13 @@
                 (pdf-occur-view-occurrence)))
   )
 
+ ;;; popup-buffer
  (:after popup-buffer
   :map +popup-buffer-mode-map
   "C-l"  #'evil-window-right
   )
 
+ ;;; sdcv
  (:after sdcv
   :map sdcv-mode-map
   :m "C-n" #'sdcv-next-dictionary
@@ -806,6 +849,7 @@
   :m "v" #'show-entry
   )
 
+ ;;; lisp-mode
  (:after lisp-mode
   :map lisp-mode-map
   :localleader
@@ -821,6 +865,7 @@
    )
   )
 
+ ;;; sly-mrepl
  (:after sly-mrepl
   :map sly-mrepl-mode-map
   :i "C-l" #'sly-mrepl-clear-repl
@@ -828,6 +873,7 @@
   :i "<down>" #'sly-mrepl-previous-input-or-button
   )
 
+ ;;; term
  (:after term
   :map term-raw-map
   :i "C-h" #'evil-window-left
@@ -846,6 +892,7 @@
   :in "M-t"   #'+workspace/new
   )
 
+ ;;; tldr
  (:after tldr
   :map tldr-mode-map
   :nm "m" (lambda ()
@@ -856,7 +903,7 @@
                      (point)
                      (search-forward " ")))))
   )
-
+;;; typescript
  (:after typescript-mode
   :map typescript-mode-map
   :localleader
@@ -866,6 +913,7 @@
 
   )
 
+ ;;; vterm
  (:after vterm
   :map vterm-mode-map
   ;; Easier window movement
@@ -885,6 +933,7 @@
   :in "M-t"   #'+workspace/new
   )
 
+ ;;; web-mode
  (:after web-mode
   :map web-mode-map
   :i "M-r" #'aj/emmet-mark-and-preview
@@ -893,11 +942,13 @@
   :desc "docsets at point" ">" #'+lookup/in-devdocs
   )
 
+ ;;; wordnut
  (:after wordnut
   :map wordnut-mode-map
   :nm "o" #'imenu
   )
 
+ ;;; css-mode
  (:after css-mode
   :map css-mode-map
   :localleader
@@ -905,6 +956,7 @@
   :desc "docsets at point" ">" #'+lookup/in-devdocs
   )
 
+ ;;; js2-mode
  (:after js2-mode
   :map js2-mode-map
   :localleader
@@ -921,6 +973,7 @@
    )
   )
 
+ ;;; treemacs
  (:after treemacs
   :map treemacs-mode-map
   :iemnv "C-k" #'evil-window-up
@@ -930,6 +983,7 @@
   :iemnv "C-<SPC>" #'treemacs-peek
   )
 
+ ;;; sh-script
  (:after sh-script
   :map sh-mode-map
   :localleader
@@ -937,6 +991,7 @@
   :desc "bats run current" "T" #'bats-run-current-test
   )
 
+ ;;; yasnippet
  (:after yasnippet
   :map snippet-mode-map
   :localleader
