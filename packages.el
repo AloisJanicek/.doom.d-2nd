@@ -42,6 +42,9 @@
 
 (package! google-translate)
 
+(package! flycheck-sml
+  :recipe (:host github :repo "creichert/flycheck-sml"))
+
 (package! highlight-blocks)
 
 (package! highlight-escape-sequences

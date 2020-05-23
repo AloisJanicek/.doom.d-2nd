@@ -1438,6 +1438,8 @@
   :after js2-mode
   )
 
+(use-package! flycheck-sml)
+
 (use-package! nov
   :after org
   :config

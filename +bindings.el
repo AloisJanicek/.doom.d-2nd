@@ -883,6 +883,15 @@
                        (async-shell-command "swift test"))
   )
 
+ ;;; sml
+ (:after sml-mode
+  :map sml-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "poly -q --use test.sml"))
+  )
+
  ;;; term
  (:after term
   :map term-raw-map

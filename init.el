@@ -167,7 +167,7 @@
  (scala +lsp)
  scheme
  (sh +lsp)
- ;;sml
+ sml
  ;;solidity
  (swift +lsp)
  ;;terra
