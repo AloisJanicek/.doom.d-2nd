@@ -861,6 +861,15 @@
   "C-l"  #'evil-window-right
   )
 
+ ;;; raku / perl6
+ (:after raku-mode
+  :map raku-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "raku *.t6"))
+  )
+
  ;;; ruby
  (:after ruby-mode
   :map ruby-mode-map
