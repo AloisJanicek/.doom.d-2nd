@@ -451,6 +451,13 @@
 
 (after! lsp-clients
   (setq lsp-clients-php-server-command '("php" "/usr/share/php/php-language-server/bin/php-language-server.php"))
+
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection (executable-find "reason-language-server"))
+                    :major-modes '(reason-mode)
+                    :notification-handlers (ht ("client/registerCapability" 'ignore))
+                    :priority 1
+                    :server-id 'reason-ls))
   )
 
 (after! magit
@@ -1598,6 +1605,8 @@
 
 (use-package! robots-txt-mode
   )
+
+(use-package! reason-mode)
 
 (use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)

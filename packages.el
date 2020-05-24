@@ -114,6 +114,9 @@
 (package! powerthesaurus
   :recipe (:host github :repo "SavchenkoValeriy/emacs-powerthesaurus"))
 
+(package! reason-mode
+  :recipe (:host github :repo "reasonml-editor/reason-mode"))
+
 (package! robots-txt-mode)
 
 (package! sdcv

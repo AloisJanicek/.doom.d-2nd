@@ -870,6 +870,20 @@
                      (async-shell-command "ruby *_test.rb"))
   )
 
+ ;;; reason-ml
+ (:after reason-mode
+  :map reason-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific for exercism folder structure."
+                     (interactive)
+                     (let ((default-directory (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory
+                                                 (buffer-file-name))))))
+                       (async-shell-command "npm test")))
+  )
+
  ;;; sdcv
  (:after sdcv
   :map sdcv-mode-map
