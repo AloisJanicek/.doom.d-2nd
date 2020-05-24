@@ -861,6 +861,15 @@
   "C-l"  #'evil-window-right
   )
 
+ ;;; ruby
+ (:after ruby-mode
+  :map ruby-mode-map
+  :localleader
+  :desc "test" "T" (lambda ()
+                     (interactive)
+                     (async-shell-command "ruby *_test.rb"))
+  )
+
  ;;; sdcv
  (:after sdcv
   :map sdcv-mode-map
