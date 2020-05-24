@@ -846,6 +846,15 @@
                      (async-shell-command "prove *.t"))
   )
 
+ ;;; php
+ (:after php-mode
+  :map php-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "phpunit *_test.php"))
+  )
+
  ;;; popup-buffer
  (:after popup-buffer
   :map +popup-buffer-mode-map
@@ -907,7 +916,7 @@
   :desc "test" "t" (lambda ()
                      "Specific to exercism folder structure."
                      (interactive)
-                       (async-shell-command "swift test"))
+                     (async-shell-command "swift test"))
   )
 
  ;;; sml

@@ -449,6 +449,10 @@
         )
   )
 
+(after! lsp-clients
+  (setq lsp-clients-php-server-command '("php" "/usr/share/php/php-language-server/bin/php-language-server.php"))
+  )
+
 (after! magit
   (setq magit-repository-directories `((,aj-repos-dir . 1))
         magit-clone-default-directory `,aj-repos-dir
