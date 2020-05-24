@@ -885,6 +885,15 @@
   :m "v" #'show-entry
   )
 
+ ;;; scm
+ (:after scheme
+  :map scheme-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "make guile"))
+  )
+
  ;;; lisp-mode
  (:after lisp-mode
   :map lisp-mode-map
