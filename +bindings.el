@@ -894,6 +894,26 @@
                      (async-shell-command "make guile"))
   )
 
+
+ ;;; scala
+ (:after scala-mode
+  :map scala-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     "Specific to exercism folder structure."
+                     (interactive)
+                     (let ((default-directory
+                             (file-name-directory
+                              (directory-file-name
+                               (file-name-directory
+                                (directory-file-name
+                                 (file-name-directory
+                                  (directory-file-name
+                                   (file-name-directory
+                                    (buffer-file-name))))))))))
+                       (async-shell-command "export PATH=\"/usr/lib/jvm/java-8-openjdk/jre/bin/:$PATH\" && sbt test")))
+  )
+
  ;;; lisp-mode
  (:after lisp-mode
   :map lisp-mode-map
