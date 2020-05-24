@@ -870,6 +870,15 @@
                      (async-shell-command "raku *.t6"))
   )
 
+ ;;; raket
+ (:after racket-mode
+  :map racket-mode-map
+  :localleader
+  :desc "test" "T" (lambda ()
+                     (interactive)
+                     (async-shell-command "raco test *-test.rkt"))
+  )
+
  ;;; ruby
  (:after ruby-mode
   :map ruby-mode-map
