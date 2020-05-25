@@ -1843,17 +1843,3 @@
   (load! "+local"))
 
 ;; (load! "+JetBrainsMono.el")
-
-(make-thread
- (lambda ()
-   "Load org files. Only those which are actually needed."
-   (run-with-idle-timer 2 nil (lambda ()
-                                (message "Loading org files...")
-                                (mapc (lambda (file)
-                                        (find-file-noselect file))
-                                      (append
-                                       (if aj-org-technical-notes-filter-preset
-                                           (aj-org-get-filtered-org-files aj-org-technical-dir aj-org-technical-notes-filter-preset)
-                                         (directory-files-recursively aj-org-technical-dir ".org$"))
-                                       (directory-files org-directory t ".org$")))
-                                (message "Loading org files...done")))))
