@@ -875,6 +875,25 @@
                      )
   )
 
+ ;;; prolog
+ (:after prolog
+  :map prolog-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     ;; Assuming there is only one .pl and one .plt file in current directory.
+                     (async-shell-command "swipl -f *.pl -s *.plt -g run_tests,halt -t 'halt(1)'"))
+  )
+
+ ;;; r
+ (:after ess-r-mode
+  :map ess-r-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (async-shell-command "Rscript test*"))
+  )
+
  ;;; raku / perl6
  (:after raku-mode
   :map raku-mode-map

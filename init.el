@@ -127,7 +127,7 @@
  (elm +lsp)
  emacs-lisp
  (erlang +lsp)
- ;;ess
+ (ess +lsp)
  ;;faust
  (fsharp +lsp)
  ;;fstar
