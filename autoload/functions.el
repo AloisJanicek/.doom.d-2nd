@@ -130,7 +130,7 @@ Which operation will be executed depends on value of ENCRYPT."
 (defun counsel-yank-bash-history ()
   "Yank the bash history."
   (interactive)
-  (let (hist-cmd collection val)
+  (let (hist-cmd collection val ivy-sort-functions-alist)
     (shell-command "history -r") ; reload history
     (setq collection
           (nreverse
