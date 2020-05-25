@@ -125,3 +125,6 @@ Override advice fixing issue with indirect buffers and \":scope file-with-archiv
               )
 
   )
+
+;; weird backspace issues
+(advice-remove #'delete-backward-char #'+default--delete-backward-char-a)
