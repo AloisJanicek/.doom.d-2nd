@@ -3,7 +3,7 @@
 ;;; global
 (map!
  "C-\\"      #'move-to-window-line-top-bottom
- "C-s"       #'ispell-word
+ "C-s"       (lambda () (interactive) (ispell-word))
  :i  "C-;"       #'backward-char
  :i  "C-'"       #'forward-char
  :ni "C-h"       #'evil-window-left
