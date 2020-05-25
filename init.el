@@ -153,7 +153,7 @@
  perl
  (php +lsp)
  ;;plantuml
- ;;purescript
+ purescript
  (python
   +lsp
   ;;+conda

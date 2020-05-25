@@ -1034,6 +1034,14 @@
 
   )
 
+(after! purescript-mode
+  (add-hook 'purescript-mode-local-vars-hook (lambda ()
+                                               (let ((dir (file-name-directory
+                                                           (sodaware/file-search-upward default-directory "bower.json"))))
+                                                 (psc-ide-server-start dir)
+                                                 (flycheck-mode))))
+  )
+
 (after! python
   (set-docsets! 'python-mode "Python_3"))
 

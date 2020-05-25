@@ -861,6 +861,20 @@
   "C-l"  #'evil-window-right
   )
 
+ ;;; purescript
+ (:after purescript-mode
+  :map purescript-mode-map
+  :localleader
+  :desc "test" "t" (lambda ()
+                     (interactive)
+                     (let ((default-directory (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory
+                                                 (buffer-file-name))))))
+                       (async-shell-command "pulp test --no-check-main"))
+                     )
+  )
+
  ;;; raku / perl6
  (:after raku-mode
   :map raku-mode-map

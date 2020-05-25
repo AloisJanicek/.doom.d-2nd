@@ -1002,6 +1002,22 @@ Depends on \"jsdv\" yasnippet snippet expanding to jsdoc docstring.
   (insert "jsdv")
   (yas-expand))
 
+;;;###autoload
+(defun sodaware/file-search-upward (directory file)
+  "Search DIRECTORY for FILE and return its full path if found, or NIL if not.
+
+If FILE is not found in DIRECTORY, the parent of DIRECTORY will be searched."
+  (let ((parent-dir (file-truename (concat (file-name-directory directory) "../")))
+        (current-path (if (not (string= (substring directory (- (length directory) 1)) "/"))
+                          (concat directory "/" file)
+                        (concat directory file))))
+    (if (file-exists-p current-path)
+        current-path
+      (when (and (not (string= (file-truename directory) parent-dir))
+                 (< (length parent-dir) (length (file-truename directory))))
+        (sodaware/file-search-upward parent-dir file)))))
+
+
 (provide 'functions)
 
 ;;; functions.el ends here
