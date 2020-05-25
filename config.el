@@ -371,6 +371,9 @@
 (after! ivy-posframe
   (setf (alist-get t ivy-posframe-display-functions-alist)
         #'ivy-posframe-display-at-frame-top-center)
+  (add-to-list
+   'ivy-posframe-display-functions-alist
+   '(ivy-yasnippet . ivy-display-function-fallback))
   (setq ivy-posframe-size-function
         (lambda ()
           (list
