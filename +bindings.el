@@ -2,6 +2,8 @@
 
 ;;; global
 (map!
+ "<C-left>"  #'backward-word
+ "<C-right>" #'forward-word
  "C-\\"      #'move-to-window-line-top-bottom
  "C-s"       (lambda () (interactive) (ispell-word))
  :i  "C-;"       #'backward-char

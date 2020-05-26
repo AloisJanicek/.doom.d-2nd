@@ -1017,6 +1017,14 @@ If FILE is not found in DIRECTORY, the parent of DIRECTORY will be searched."
                  (< (length parent-dir) (length (file-truename directory))))
         (sodaware/file-search-upward parent-dir file)))))
 
+;;;###autoload
+(defun project-try-dart (dir)
+    "Help project.el in finding the project root for your dart file."
+    (let ((project (or (locate-dominating-file dir "pubspec.yaml")
+                       (locate-dominating-file dir "BUILD"))))
+      (if project
+          (cons 'dart project)
+        (cons 'transient dir))))
 
 (provide 'functions)
 

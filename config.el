@@ -45,11 +45,20 @@
 (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
   (remove-hook hook 'highlight-indent-guides-mode))
 
+(use-package! ace-link
+  :commands (ace-link ace-link-woman)
+  )
+
+(use-package! ahk-mode
+  :commands ahk-mode
+  )
+
 (after! alert
   (setq alert-default-style 'libnotify)
   (setq alert-libnotify-command (if (aj-wsl-p)
                                     (executable-find "notify-wsl")
                                   (executable-find "notify-send"))))
+
 (after! all-the-icons
   (add-to-list 'all-the-icons-mode-icon-alist
                '(eaf-mode all-the-icons-faicon "chrome" :v-adjust -0.1 :face all-the-icons-blue))
@@ -73,11 +82,25 @@
                   ))
     (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
+(use-package all-the-icons-ivy-rich
+  :after ivy-rich
+  :init (all-the-icons-ivy-rich-mode 1))
+
+(use-package! anki-editor
+  :commands anki-editor-mode
+  :config
+  (setq anki-editor-create-decks t)
+  )
+
 (after! ansible-doc
   (set-popup-rule! "*ansible-doc "     :vslot 2 :size 0.32 :side 'left :select t :ttl t :modeline t)
   (when (featurep! :editor evil)
     (add-hook 'ansible-doc-module-mode-hook #'evil-motion-state))
   (add-hook 'ansible-doc-module-mode-hook #'visual-line-mode))
+
+(use-package! apache-mode
+  :commands apache-mode
+  )
 
 (after! apropos
   (set-popup-rule! "*apropos\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t)
@@ -90,6 +113,17 @@
 (after! avy
   (setq avy-all-windows nil
         avy-background t))
+
+(use-package! bats-mode
+  :after sh-script
+  :config
+  (advice-add #'bats-run-all :override (lambda ()
+                                         "Run bats in the current directory."
+                                         (interactive)
+                                         (if (string-match "exercism" (projectile-project-name))
+                                             (compile (concat bats-program " *_test.sh"))
+                                           (bats-run "."))))
+  )
 
 (after! calendar
   (setq calendar-week-start-day 1))
@@ -161,24 +195,104 @@
                                       (eww-browse-url url))))
   )
 
+(use-package! counsel-org-clock
+  :commands (counsel-org-clock-context
+             counsel-org-clock-history
+             counsel-org-clock-goto
+             )
+  :config
+  (setq counsel-org-clock-history-limit 20)
+  )
+
+(use-package! counsel-tramp
+  :commands counsel-tramp
+  )
+
+(use-package! counsel-web
+  :commands (counsel-web-search counsel-web-suggest)
+  :config
+  (setq
+   counsel-web-search-function #'counsel-web-search--google
+   counsel-web-search-action #'aj-eaf-browse-url-maybe
+   counsel-web-search-alternate-action #'eww
+   counsel-web-search-dynamic-update t
+   counsel-web-engine 'google
+   )
+  )
+
+(use-package! cyphejor
+  :config
+  (setq
+   cyphejor-rules
+   `(:upcase
+     ("agenda"      ,(all-the-icons-faicon      "calendar-check-o" :height 0.95 :v-adjust 0.05 )     :postfix)
+     ("brain"       ,(all-the-icons-fileicon    "brain"                         :v-adjust -0.1)      :postfix)
+     ("css"         ,(all-the-icons-alltheicon  "css3"                          :v-adjust 0.1)       :postfix)
+     ("c"           ,(all-the-icons-alltheicon  "c"                             :v-adjust 0.1)       :postfix)
+     ("dired"       ,(all-the-icons-octicon     "file-directory"                :v-adjust 0.1)       :postfix)
+     ("doom" "")
+     ("dashboard" "")
+     ("emacs"       ,(all-the-icons-fileicon    "emacs"            :height 0.95 :v-adjust -0.1 )     :prefix)
+     ("eww"         ,(all-the-icons-faicon      "firefox"                       :v-adjust -0.1)      :postfix)
+     ("eaf"         ,(all-the-icons-faicon      "chrome"                        :v-adjust -0.1)      :postfix)
+     ("eaf"         ,(all-the-icons-faicon      "chrome")                                            :postfix)
+     ("fundamental" ,(all-the-icons-faicon      "file-text"                     :v-adjust 0.1)       :postfix)
+     ("helpful"     ,(all-the-icons-material    "help_outline"     :height 1.2  :v-adjust -0.2 )     :prefix)
+     ("info"        ,(all-the-icons-fileicon    "man-page"                      :v-adjust -0.1)      :postfix)
+     ("gfm"         ,(all-the-icons-octicon     "markdown"                      :v-adjust -0.1)      :postfix)
+     ("js2"         ,(all-the-icons-alltheicon  "javascript-badge"              :v-adjust 0.1)       :postfix)
+     ("java"        ,(all-the-icons-alltheicon  "java"             :height 1.1  :v-adjust 0.1 )      :postfix)
+     ("json"        ,(all-the-icons-octicon     "settings"                      :v-adjust 0.1)       :postfix)
+     ("lisp"        "")
+     ("man"         ,(all-the-icons-fileicon    "man-page"                      :v-adjust -0.1)      :postfix)
+     ("magit"       ,(all-the-icons-alltheicon  "git"                           :v-adjust 0.1)       :postfix)
+     ("mode"        "")
+     ("nov"         ,(all-the-icons-faicon      "book"                          :v-adjust -0.1)      :postfix)
+     ("org" ,(concat (all-the-icons-fileicon    "org"                           :v-adjust -0.1) " ") :prefix)
+     ("pdf"         ,(all-the-icons-octicon     "file-pdf"                      :v-adjust -0.1)      :postfix)
+     ("python"      ,(all-the-icons-alltheicon  "python"                        :v-adjust 0.1)       :postfix)
+     ("php"         ,(all-the-icons-fileicon    "php"              :height 1.1)                      :postfix)
+     ("pug"         ,(all-the-icons-fileicon    "pug")                                               :postfix)
+     ("perl"        ,(all-the-icons-alltheicon  "perl"                          :v-adjust 0.1)       :postfix)
+     ("racket"      ,(all-the-icons-fileicon    "racket"           :height 0.9  :v-adjust -0.1 )     :postfix)
+     ("scss"        ,(all-the-icons-alltheicon  "css3"                          :v-adjust 0.1)       :postfix)
+     ("sh"          ,(all-the-icons-octicon     "terminal"                      :v-adjust 0.1)       :postfix)
+     ("status"      "")
+     ("tldr"        ,(all-the-icons-fileicon    "man-page"                      :v-adjust -0.1)      :postfix)
+     ("typescript"  ,(all-the-icons-fileicon    "typescript-alt"   :height 0.8  :v-adjust 0.05 )     :postfix)
+     ("vterm"       ,(all-the-icons-faicon      "terminal"                      :v-adjust -0.1)      :postfix)
+     ("visualize"   "")
+     ("view"        "")
+     ("woman"       ,(all-the-icons-fileicon    "man-page"                      :v-adjust -0.1)      :postfix)
+     ("web"         ,(all-the-icons-alltheicon  "html5"                         :v-adjust 0.1)       :postfix)
+     ("yaml"        ,(all-the-icons-octicon     "settings"                      :v-adjust -0.1)      :postfix)
+     ))
+
+  (cyphejor-mode 1)
+  )
+
+(use-package! define-word
+  :commands (define-word  define-word-at-point))
+
+(use-package! dart-mode
+  :commands dart-mode
+  :config
+  (add-hook! 'dart-mode-local-vars-hook #'lsp-deferred)
+  )
+
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
             (lambda ()
               "Make imenu recognize `after!' and `hydra' keywords."
-              (dolist (imenu-exp '(("After" "^\\s-*(after! +\\([^ ()\n]+\\)" 1)
-                                   ("Hydra" "^\\s-*(defhydra +\\([^ ()\n]+\\)" 1)))
+              (dolist (imenu-exp '(("Hydra" "^\\s-*(defhydra +\\([^ ()\n]+\\)" 1)))
                 (add-to-list 'imenu-generic-expression imenu-exp)))
             t)
 
   )
 
-(after! smartparens
-  (define-key smartparens-mode-map (kbd "<C-left>") nil)
-  (define-key smartparens-mode-map (kbd "<C-right>") nil)
+(after! elisp-demos
+  (advice-add #'elisp-demos-advice-helpful-update :override #'aj-elisp-demos-advice-helpful-update)
   )
-
-(global-set-key (kbd "<C-left>") 'backward-word)
-(global-set-key (kbd "<C-right>") 'forward-word)
 
 (after! epg
   (setq epg-pinentry-mode 'ask))
@@ -191,8 +305,11 @@
   (advice-add #'ert-results-previous-test :after (lambda () (recenter 0)))
   )
 
-(after! elisp-demos
-  (advice-add #'elisp-demos-advice-helpful-update :override #'aj-elisp-demos-advice-helpful-update)
+(use-package! esqlite
+  :commands (esqlite-stream-open esqlite-read))
+
+(use-package! eslintd-fix
+  :commands eslintd-fix-mode
   )
 
 (after! evil
@@ -274,12 +391,28 @@
         )
   )
 
+(use-package! flycheck-sml
+  :after sml-mode
+  )
+
 (after! geiser-impl
   (setq geiser-default-implementation 'guile))
 
 (after! git-gutter
   (advice-add #'git-gutter:previous-hunk :after #'doom-recenter-a)
   (advice-add #'git-gutter:next-hunk :after #'doom-recenter-a)
+  )
+
+(use-package! google-translate
+  :commands (google-translate-at-point
+             google-translate-at-point-reverse)
+  :init
+  (set-popup-rule! "*Google Translate*"        :size 0.4  :side 'top :select t :modeline t)
+  (setq google-translate-default-source-language "en"
+        google-translate-default-target-language "cs"
+        google-translate-listen-program (executable-find "mpv")
+        google-translate-show-phonetic t
+        )
   )
 
 (after! groovy-mode
@@ -309,6 +442,57 @@
                                            (funcall orig-fn (concat "* " (car args)))))
   )
 
+(use-package! highlight-blocks
+  :commands (highlight-blocks-mode highlight-blocks-now)
+  :config
+  (custom-theme-set-faces! nil
+    `(highlight-blocks-depth-1-face :background ,(doom-color 'base1))
+    `(highlight-blocks-depth-2-face :background ,(doom-lighten 'base1 0.03))
+    `(highlight-blocks-depth-3-face :background ,(doom-lighten 'base1 0.06))
+    `(highlight-blocks-depth-4-face :background ,(doom-lighten 'base1 0.09))
+    `(highlight-blocks-depth-5-face :background ,(doom-lighten 'base1 0.12))
+    `(highlight-blocks-depth-6-face :background ,(doom-lighten 'base1 0.15))
+    `(highlight-blocks-depth-7-face :background ,(doom-lighten 'base1 0.17))
+    `(highlight-blocks-depth-8-face :background ,(doom-lighten 'base1 0.2))
+    `(highlight-blocks-depth-9-face :background ,(doom-lighten 'base1 0.23))
+    )
+  )
+
+(use-package! highlight-escape-sequences
+  :commands highlight-escape-sequences-mode
+  )
+
+(use-package! howdoyou
+  :commands (howdoyou-query aj/howdoyou-hydra/body)
+  :config
+  (set-popup-rule! "*How Do You"      :vslot 3 :size 82  :side 'left :select t :ttl nil :modeline t :autosave t :quit t)
+
+  (add-hook 'howdoyou-mode-hook (lambda ()
+                                  (doom-mark-buffer-as-real-h)
+                                  (persp-add-buffer (current-buffer))
+                                  (turn-off-solaire-mode)
+                                  (mkdir "/tmp/howdoyou" t)
+                                  (setq-local org-src-fontify-natively nil)
+                                  (setq-local buffer-file-name "/tmp/howdoyou/latest.org")
+                                  ))
+  )
+
+(use-package! hungry-delete
+  :demand t
+  :config
+  (setq hungry-delete-except-modes
+        '(term-mode help-mode helpful-mode minibuffer-inactive-mode calc-mode))
+  (global-hungry-delete-mode 1))
+
+(use-package! hydra-posframe
+  :after hydra
+  :config
+  (hydra-posframe-mode +1)
+  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center
+        hydra-posframe-border-width 10
+        )
+  )
+
 (after! hl-todo
   (advice-add #'hl-todo-next :after #'doom-recenter-a)
   (advice-add #'hl-todo-previous :after #'doom-recenter-a)
@@ -316,6 +500,38 @@
 
 (after! ibuffer
   (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t))
+
+(use-package! imenu-list
+  :commands imenu-list-smart-toggle
+  :config
+  (set-popup-rule! "^\\*Ilist"
+    :side 'right :size 35 :select nil :ttl nil :quit nil)
+  ;; First create new face which is a copy of hl-line-face
+  (copy-face 'hl-line 'hl-line-imenu-list-face)
+  ;; Change what you want in this new face
+  (set-face-attribute 'hl-line-imenu-list-face nil
+                      :background `,(doom-color 'base4) :weight 'bold :underline t)
+
+  (set-face-attribute 'imenu-list-entry-face-0 nil
+                      :foreground `,(doom-color 'blue))
+  (set-face-attribute 'imenu-list-entry-face-1 nil
+                      :foreground `,(doom-color 'magenta))
+  (set-face-attribute 'imenu-list-entry-face-2 nil
+                      :foreground `,(doom-color 'violet))
+  (set-face-attribute 'imenu-list-entry-face-3 nil
+                      :foreground `,(doom-lighten 'blue 0.25))
+  ;; Finally, the hook
+  (add-hook 'imenu-list-major-mode-hook (lambda ()
+                                          "Customize hl-line-face locally."
+                                          (set (make-local-variable 'hl-line-face)
+                                               'hl-line-imenu-list-face)
+                                          (hl-line-mode)))
+  (add-hook 'imenu-list-major-mode-hook #'variable-pitch-mode)
+  )
+
+(use-package! indium
+  :commands indium-connect
+  )
 
 (after! info
   (set-popup-rule! "*Info\\|*info"            :vslot 2 :size 80 :side 'left :select t :quit t :ttl nil :modeline t)
@@ -388,6 +604,15 @@
   (add-to-list 'ivy-prescient-sort-commands 'counsel-outline t)
   )
 
+(use-package! ivy-yasnippet
+  :commands ivy-yasnippet)
+
+(use-package! ivy-pages
+  :commands ivy-pages
+  :config
+  (advice-add #'ivy-pages-transformer :override #'ivy-pages-transformer-clear-string)
+  )
+
 (defer-until! ivy-rich-mode
   (cl-callf (lambda (from what)
               (delete what from))
@@ -444,12 +669,74 @@
         )
   )
 
+(use-package! jest
+  :after js2-mode
+  :config
+  (advice-add #'jest--project-root :around (lambda (orig-fn &rest args)
+                                             (if (string-match "exercism" (projectile-project-name))
+                                                 (cl-letf (((symbol-function 'projectile-project-root)
+                                                            (lambda (&rest _)
+                                                              (file-name-directory buffer-file-name))))
+                                                   (apply orig-fn args))
+                                               (apply orig-fn args))))
+  (setq jest-pdb-track nil)
+  (add-hook 'jest-mode-hook (lambda ()
+                              (evil-motion-state)
+                              ))
+
+
+  (set-popup-rule! "*jest\*"            :size 20            :side 'bottom :select t :quit t :modeline nil)
+  )
+
+(use-package! js-doc
+  :after js2-mode
+  :config
+  (set-popup-rule! "JsDocTagDescription" :size 20 :side 'bottom :select t :quit t :modeline nil)
+  )
+
+(use-package! js-react-redux-yasnippets
+  :after yasnippet
+  )
+
 (setq read-process-output-max (* 1024 1024))
+
+(use-package lfe-mode
+  :commands lfe-mode
+  :load-path "~/.emacs.d/.local/straight/repos/lfe-mode"
+  :config
+  (require 'inferior-lfe)
+  (require 'lfe-indent)
+
+  (add-hook 'lfe-mode-hook (lambda ()
+                             "Setup lfe-mode"
+                             (rainbow-delimiters-mode)
+                             (highlight-numbers-mode)))
+
+  (add-hook 'inferior-lfe-mode-hook (lambda ()
+                                      (doom-mark-buffer-as-real-h)
+                                      (persp-add-buffer (current-buffer))))
+
+  (set-popup-rule! "*inferior-lfe\*" :size 14 :side 'bottom :select t :quit t :modeline nil)
+  )
+
+(use-package lsp-lua-emmy
+  :after lsp-clients
+  :load-path "~/.emacs.d/.local/straight/repos/lsp-lua-emmy"
+  :config
+  (setq lsp-lua-emmy-jar-path
+        (expand-file-name
+         (concat aj-repos-dir
+                 "/EmmyLua-LanguageServer/EmmyLua-LS/build/libs/EmmyLua-LS-all.jar")))
+  )
 
 (after! lsp
   (setq lsp-ui-sideline-enable nil
         lsp-semantic-highlighting :deferred
         )
+  )
+
+(after! lua-mode
+  (add-hook! 'lua-mode-local-vars-hook #'lsp-deferred)
   )
 
 (after! lsp-clients
@@ -475,6 +762,10 @@
 (after! markdown-mode
   (add-hook 'markdown-mode-hook (lambda ()
                                   (solaire-mode -1)))
+  )
+
+(use-package! mocha
+  :after js2-mode
   )
 
 (after! woman
@@ -517,6 +808,44 @@
                 (flycheck-select-checker 'nim))))
   )
 
+(use-package! nov
+  :after org
+  :config
+  (add-hook 'nov-post-html-render-hook
+            (lambda ()
+              "User shrface imenu function."
+              (setq imenu-create-index-function #'shrface-imenu-get-tree)))
+  (set-popup-rule! (lambda (buf &rest _)
+                     "Find nov-mode browser buffer."
+                     (with-current-buffer buf
+                       (when (eq major-mode 'nov-mode) t)))
+    :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
+
+  (setq nov-shr-rendering-functions
+        '((img . nov-render-img) (title . nov-render-title)))
+  (setq nov-shr-rendering-functions
+        (append nov-shr-rendering-functions shr-external-rendering-functions))
+
+  (setq nov-text-width t
+        visual-fill-column-center-text t
+        nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
+
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  (add-hook 'nov-post-html-render-hook (lambda ()
+                                         (setq-local header-line-format nil)))
+  (add-hook 'nov-mode-hook (lambda ()
+                             "Setup nov-mode to my liking."
+                             (visual-line-mode)
+                             (visual-fill-column-mode)
+                             (doom-mark-buffer-as-real-h)
+                             (shrface-mode)
+                             (setq org-link-parameters
+                                   (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
+                             (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
+  (advice-add #'nov--find-file :override #'my-nov--find-file-a)
+  (advice-add #'nov-clean-up :override (lambda () t))
+  )
+
 (after! ob-core
   (setq
    org-babel-default-header-args '((:session . "none")
@@ -528,6 +857,15 @@
                                    (:tangle . "no")
                                    (:mkdir . "yes"))
    )
+  )
+
+(use-package! ob-javascript
+  :after ob-core
+  :config
+  (advice-add #'ob-javascript--node-path :override #'aj-ob-javascript--node-path-a))
+
+(after! occur
+  (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
   )
 
 (remove-hook 'org-mode-hook #'flyspell-mode)
@@ -606,6 +944,91 @@
 
    org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA"
    )
+  )
+
+(use-package! org-brain
+  :after org
+  :init
+  (when (featurep! :editor evil)
+    (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode))
+  :config
+  (set-popup-rule! "^\\*org-brain\\*$" :vslot -1 :size 60 :side 'left :select t :quit t :ttl nil :modeline t)
+  (add-hook 'org-brain-visualize-mode-hook (lambda ()
+                                             (doom-mark-buffer-as-real-h)
+                                             (persp-add-buffer (current-buffer))
+                                             (visual-line-mode)))
+  (advice-add #'org-brain-visualize :after #'aj-org-buffers-respect-sanity-a)
+  (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt-a)
+  (advice-add #'org-brain-goto :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-brain-goto :after (lambda (&rest _)
+                                        "Recenter visited heading to the top of the buffer."
+                                        (recenter 0 t)
+                                        (when (org-at-heading-p)
+                                          (org-narrow-to-subtree)
+                                          (org-cycle)
+                                          (outline-show-branches)
+                                          (org-show-entry))
+                                        (turn-off-solaire-mode)))
+  (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
+  (setq org-brain-visualize-default-choices 'all
+        org-brain-title-max-length -1
+        org-brain-path aj-org-technical-dir
+        org-brain-data-file (expand-file-name ".org-brain-data.el" doom-cache-dir)
+        org-brain-include-file-entries t
+        org-brain-file-entries-use-title t
+        )
+  )
+
+(use-package! org-pretty-tags
+  :after org
+  :config
+  (org-pretty-tags-global-mode +1)
+  (setq org-pretty-tags-surrogate-strings
+        `(
+          ;; ("tag" . icon)
+          ("inbox" . ,(all-the-icons-faicon  "envelope" :face 'all-the-icons-lblue :height 1.0))
+          ("personal" . ,(all-the-icons-material  "person" :face 'all-the-icons-lpink :v-adjust -0.2 :height 1.1))
+          ("environment" . ,(all-the-icons-faicon  "cogs" :face 'all-the-icons-dsilver :height 1.1))
+          ("emacs" . ,(all-the-icons-fileicon  "emacs" :face 'all-the-icons-purple :height 1.1))
+          ("vscode" . ,(all-the-icons-fileicon  "codekit" :face 'all-the-icons-cyan :height 1.1))
+          ("linux" . ,(all-the-icons-faicon  "linux" :face 'all-the-icons-lorange :height 1.1))
+          ("windows" . ,(all-the-icons-faicon  "windows" :face 'all-the-icons-blue :height 1.1))
+          ("job" . ,(all-the-icons-material  "monetization_on" :face 'all-the-icons-green :height 1.1))
+          ("education" . ,(all-the-icons-faicon  "graduation-cap" :face 'all-the-icons-orange :height 1.1))
+          ("book" . ,(all-the-icons-faicon  "book" :face 'all-the-icons-dyellow :v-adjust 0.1 :height 1.1))
+          ("link" . ,(all-the-icons-octicon  "link" :face 'all-the-icons-dblue :v-adjust 0.1 :height 1.1))
+          ("bug" . ,(all-the-icons-octicon  "bug" :face 'all-the-icons-red :height 1.1))
+          )
+        )
+  )
+
+(use-package! org-ql
+  :after org
+  :config
+  (advice-add #'org-ql--select :around #'doom-shut-up-a)
+  (advice-add #'org-ql-view-refresh :around #'doom-shut-up-a)
+  (advice-add #'org-ql-view-refresh :after (lambda (&rest _)
+                                             "Blacklist certain Org-QL views from re-applying agenda filter."
+                                             (let ((buffer (prin1-to-string (current-buffer))))
+                                               (unless (or (string-match "Inbox" buffer)
+                                                           (string-match "Stucked Projects" buffer)
+                                                           (string-match "All Todos" buffer)
+                                                           (string-match "ARCHIVED" buffer))
+                                                 (org-agenda-filter-apply aj-org-agenda-filter 'tag)))))
+  (advice-add #'org-ql-view--format-element :override #'aj-org-ql-view--format-element-a)
+  (advice-add #'org-ql-view--display :after #'aj-org-ql-hide-header-a)
+  )
+
+(use-package! org-sidebar
+  :commands (org-sidebar org-sidebar-tree org-sidebar-ql)
+  )
+
+(use-package! org-super-agenda
+  :after org
+  :config
+  (advice-add #'org-super-agenda-mode :around #'doom-shut-up-a)
+  (org-super-agenda-mode)
+  (setq org-super-agenda-header-map (make-sparse-keymap))
   )
 
 (after! org-agenda
@@ -1000,6 +1423,15 @@
                 (flycheck-select-checker 'perl))))
   )
 
+(use-package! powershell
+  :commands powershell-mode
+  )
+
+(use-package! powerthesaurus
+  :commands (powerthesaurus-lookup-word
+             powerthesaurus-lookup-word-dwim
+             powerthesaurus-lookup-word-at-point))
+
 (after! profiler
   (set-popup-rule! "^.*-Profiler-Report.*$"  :size 0.8  :side 'bottom :select t :modeline nil)
   (setf (caar profiler-report-cpu-line-format) 100
@@ -1007,18 +1439,7 @@
   )
 
 (after! project
-  (defun project-try-dart (dir)
-    "Help project.el in finding the project root for your dart file."
-    (let ((project (or (locate-dominating-file dir "pubspec.yaml")
-                       (locate-dominating-file dir "BUILD"))))
-      (if project
-          (cons 'dart project)
-        (cons 'transient dir))))
-
-  (add-hook 'project-find-functions #'project-try-dart)
-
-  (cl-defmethod project-roots ((project (head dart)))
-    (list (cdr project))))
+  (add-hook 'project-find-functions #'project-try-dart))
 
 (after! projectile
   (setq projectile-track-known-projects-automatically nil
@@ -1061,18 +1482,59 @@
 (after! racket-mode
   (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil :modeline t))
 
+(use-package! reason-mode
+  :commands reason-mode
+  )
+
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
   (dolist (i '("org/" ".pdf" ".epub" ".db" "/.emacs.d/session" "/workspaces/autosave" "/usr/share/emacs" "README.org"))
     (add-to-list 'recentf-exclude i))
   )
 
+(use-package! robots-txt-mode
+  :commands robots-txt-mode
+  )
+
 (after! scheme
   (set-popup-rule! "^\\* Guile REPL *"          :size 10 :select t :quit nil :modeline t))
+
+(use-package! sdcv
+  :commands (sdcv-search-input sdcv-search-pointer)
+  :config
+  (setq sdcv-dictionary-simple-list '("WordNet"))
+  (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t :modeline t)
+  (when (featurep! :editor evil)
+    (add-hook #'sdcv-mode-hook (lambda ()
+                                 (evil-set-initial-state 'sdcv-mode 'motion))))
+  )
+
+(use-package shrface
+  ;; :load-path "~/repos/shrface"
+  :after shr
+  :config
+  (shrface-basic)
+  (shrface-trial)
+  (setq shrface-bullets-bullet-list '("*")
+        shrface-paragraph-indentation 0
+        shrface-paragraph-fill-column 80
+        shrface-href-versatile nil
+        )
+  )
+
+(use-package shr-tag-pre-highlight
+  :after shr
+  :config
+  (add-to-list 'shr-external-rendering-functions
+               '(pre . shrface-shr-tag-pre-highlight)))
 
 (after! siple
   (advice-add #'next-error :after #'doom-recenter-a)
   (advice-add #'previous-error :after #'doom-recenter-a))
+
+(use-package! systemd
+  :commands systemd-mode
+  )
 
 (after! synosaurus
   (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t :modeline t))
@@ -1089,557 +1551,13 @@
                                  (erase-buffer))))
   )
 
+(after! smartparens
+  (define-key smartparens-mode-map (kbd "<C-left>") nil)
+  (define-key smartparens-mode-map (kbd "<C-right>") nil)
+  )
+
 (after! shell
   (add-hook 'shell-mode-hook #'evil-normal-state)
-  )
-
-(after! treemacs
-  (setq
-   evil-treemacs-state-cursor 'box
-   treemacs-project-follow-cleanup t
-   treemacs-width 25
-   )
-  (treemacs-follow-mode +1)
-  )
-
-(after! typescript-mode
-  (add-hook 'typescript-mode-local-vars-hook
-            (lambda ()
-              (when (flycheck-may-enable-checker 'javascript-eslint)
-                (flycheck-select-checker 'javascript-eslint))))
-  )
-
-(after! undo-tree
-  (advice-add #'undo-tree-save-history :around #'doom-shut-up-a)
-  (advice-add #'undo-tree-load-history :around #'doom-shut-up-a))
-
-(after! vc-git
-  (define-advice vc-git-mode-line-string (:around (orig-fn args) remove-git-name)
-    "Remove \"Git\" from output."
-    (replace-regexp-in-string "^Git." "" (funcall orig-fn args))))
-
-(after! warnings
-  (add-to-list 'warning-suppress-types '(defvaralias))
-  )
-
-(after! vterm
-  (remove-hook 'vterm-mode-hook #'hide-mode-line-mode)
-  (set-popup-rule! "*doom:vterm-popup" :size 0.25 :vslot -5 :select t :quit t :ttl nil :modeline nil)
-  )
-
-(after! web-mode
-  (set-docsets! 'web-mode "HTML" "CSS" "WordPress")
-
-  (add-hook 'web-mode-hook 'flycheck-mode)
-
-  (setq web-mode-enable-current-element-highlight t
-        web-mode-auto-close-style 1
-        )
-  )
-
-(after! which-func
-  (setq which-func-modes nil)
-  )
-
-(after! which-key
-  (setq which-key-idle-delay 0.8
-        which-key-allow-evil-operators t
-        which-key-show-operator-state-maps t
-        ))
-
-(after! wordnut
-  (set-popup-rule! "*WordNut\*"                 :size 0.4  :side 'top :select t :modeline t)
-  )
-
-(after! yasnippet
-  (setq yas-wrap-around-region t
-        yas-triggers-in-field t
-        ))
-
-(after! writeroom-mode
-  (add-hook #'writeroom-mode-hook  #'doom-disable-line-numbers-h)
-  (setq writeroom-width 100)
-  )
-
-(use-package! ace-link
-  :commands (ace-link ace-link-woman)
-  )
-
-(use-package! ahk-mode
-  :commands ahk-mode
-  )
-
-(use-package all-the-icons-ivy-rich
-  :after ivy-rich
-  :init (all-the-icons-ivy-rich-mode 1))
-
-(use-package! anki-editor
-  :commands anki-editor-mode
-  :config
-  (setq anki-editor-create-decks t)
-  )
-
-(use-package! apache-mode
-  :commands apache-mode
-  )
-
-(use-package! bats-mode
-  :after sh-script
-  :config
-  (advice-add #'bats-run-all :override (lambda ()
-                                         "Run bats in the current directory."
-                                         (interactive)
-                                         (if (string-match "exercism" (projectile-project-name))
-                                             (compile (concat bats-program " *_test.sh"))
-                                           (bats-run "."))))
-  )
-
-(use-package! counsel-org-clock
-  :commands (counsel-org-clock-context
-             counsel-org-clock-history
-             counsel-org-clock-goto
-             )
-  :config
-  (setq counsel-org-clock-history-limit 20)
-  )
-
-(use-package! counsel-tramp
-  :commands counsel-tramp
-  )
-
-(use-package! counsel-web
-  :commands (counsel-web-search counsel-web-suggest)
-  :config
-  (setq
-   counsel-web-search-function #'counsel-web-search--google
-   counsel-web-search-action #'aj-eaf-browse-url-maybe
-   counsel-web-search-alternate-action #'eww
-   counsel-web-search-dynamic-update t
-   counsel-web-engine 'google
-   )
-  )
-
-(use-package! cyphejor
-  :config
-  (setq
-   cyphejor-rules
-   `(:upcase
-     ("agenda"      ,(all-the-icons-faicon      "calendar-check-o" :height 0.95 :v-adjust 0.05 )     :postfix)
-     ("brain"       ,(all-the-icons-fileicon    "brain"                         :v-adjust -0.1)      :postfix)
-     ("css"         ,(all-the-icons-alltheicon  "css3"                          :v-adjust 0.1)       :postfix)
-     ("c"           ,(all-the-icons-alltheicon  "c"                             :v-adjust 0.1)       :postfix)
-     ("dired"       ,(all-the-icons-octicon     "file-directory"                :v-adjust 0.1)       :postfix)
-     ("doom" "")
-     ("dashboard" "")
-     ("emacs"       ,(all-the-icons-fileicon    "emacs"            :height 0.95 :v-adjust -0.1 )     :prefix)
-     ("eww"         ,(all-the-icons-faicon      "firefox"                       :v-adjust -0.1)      :postfix)
-     ("eaf"         ,(all-the-icons-faicon      "chrome"                        :v-adjust -0.1)      :postfix)
-     ("eaf"         ,(all-the-icons-faicon      "chrome")                                            :postfix)
-     ("fundamental" ,(all-the-icons-faicon      "file-text"                     :v-adjust 0.1)       :postfix)
-     ("helpful"     ,(all-the-icons-material    "help_outline"     :height 1.2  :v-adjust -0.2 )     :prefix)
-     ("info"        ,(all-the-icons-fileicon    "man-page"                      :v-adjust -0.1)      :postfix)
-     ("gfm"         ,(all-the-icons-octicon     "markdown"                      :v-adjust -0.1)      :postfix)
-     ("js2"         ,(all-the-icons-alltheicon  "javascript-badge"              :v-adjust 0.1)       :postfix)
-     ("java"        ,(all-the-icons-alltheicon  "java"             :height 1.1  :v-adjust 0.1 )      :postfix)
-     ("json"        ,(all-the-icons-octicon     "settings"                      :v-adjust 0.1)       :postfix)
-     ("lisp"        "")
-     ("man"         ,(all-the-icons-fileicon    "man-page"                      :v-adjust -0.1)      :postfix)
-     ("magit"       ,(all-the-icons-alltheicon  "git"                           :v-adjust 0.1)       :postfix)
-     ("mode"        "")
-     ("nov"         ,(all-the-icons-faicon      "book"                          :v-adjust -0.1)      :postfix)
-     ("org" ,(concat (all-the-icons-fileicon    "org"                           :v-adjust -0.1) " ") :prefix)
-     ("pdf"         ,(all-the-icons-octicon     "file-pdf"                      :v-adjust -0.1)      :postfix)
-     ("python"      ,(all-the-icons-alltheicon  "python"                        :v-adjust 0.1)       :postfix)
-     ("php"         ,(all-the-icons-fileicon    "php"              :height 1.1)                      :postfix)
-     ("pug"         ,(all-the-icons-fileicon    "pug")                                               :postfix)
-     ("perl"        ,(all-the-icons-alltheicon  "perl"                          :v-adjust 0.1)       :postfix)
-     ("racket"      ,(all-the-icons-fileicon    "racket"           :height 0.9  :v-adjust -0.1 )     :postfix)
-     ("scss"        ,(all-the-icons-alltheicon  "css3"                          :v-adjust 0.1)       :postfix)
-     ("sh"          ,(all-the-icons-octicon     "terminal"                      :v-adjust 0.1)       :postfix)
-     ("status"      "")
-     ("tldr"        ,(all-the-icons-fileicon    "man-page"                      :v-adjust -0.1)      :postfix)
-     ("typescript"  ,(all-the-icons-fileicon    "typescript-alt"   :height 0.8  :v-adjust 0.05 )     :postfix)
-     ("vterm"       ,(all-the-icons-faicon      "terminal"                      :v-adjust -0.1)      :postfix)
-     ("visualize"   "")
-     ("view"        "")
-     ("woman"       ,(all-the-icons-fileicon    "man-page"                      :v-adjust -0.1)      :postfix)
-     ("web"         ,(all-the-icons-alltheicon  "html5"                         :v-adjust 0.1)       :postfix)
-     ("yaml"        ,(all-the-icons-octicon     "settings"                      :v-adjust -0.1)      :postfix)
-     ))
-
-  (cyphejor-mode 1)
-  )
-
-(use-package! define-word
-  :commands (define-word  define-word-at-point))
-
-(use-package! dart-mode
-  :commands dart-mode
-  :config
-  (add-hook! 'dart-mode-local-vars-hook #'lsp-deferred)
-  )
-(use-package! esqlite
-  :commands (esqlite-stream-open esqlite-read))
-
-(use-package! eslintd-fix
-  :commands eslintd-fix-mode
-  )
-
-(use-package! google-translate
-  :commands (google-translate-at-point
-             google-translate-at-point-reverse)
-  :init
-  (setq google-translate-default-source-language "en"
-        google-translate-default-target-language "cs"
-        google-translate-listen-program (executable-find "mpv")
-        google-translate-show-phonetic t
-        )
-  )
-
-(set-popup-rule! "*Google Translate*"        :size 0.4  :side 'top :select t :modeline t)
-
-(use-package! highlight-blocks
-  :commands (highlight-blocks-mode highlight-blocks-now)
-  :config
-  (custom-theme-set-faces! nil
-    `(highlight-blocks-depth-1-face :background ,(doom-color 'base1))
-    `(highlight-blocks-depth-2-face :background ,(doom-lighten 'base1 0.03))
-    `(highlight-blocks-depth-3-face :background ,(doom-lighten 'base1 0.06))
-    `(highlight-blocks-depth-4-face :background ,(doom-lighten 'base1 0.09))
-    `(highlight-blocks-depth-5-face :background ,(doom-lighten 'base1 0.12))
-    `(highlight-blocks-depth-6-face :background ,(doom-lighten 'base1 0.15))
-    `(highlight-blocks-depth-7-face :background ,(doom-lighten 'base1 0.17))
-    `(highlight-blocks-depth-8-face :background ,(doom-lighten 'base1 0.2))
-    `(highlight-blocks-depth-9-face :background ,(doom-lighten 'base1 0.23))
-    )
-  )
-
-(use-package! highlight-escape-sequences
-  :commands highlight-escape-sequences-mode
-  )
-
-(use-package! hungry-delete
-  :demand t
-  :config
-  (setq hungry-delete-except-modes
-        '(term-mode help-mode helpful-mode minibuffer-inactive-mode calc-mode))
-  (global-hungry-delete-mode 1))
-
-(use-package! howdoyou
-  :commands (howdoyou-query aj/howdoyou-hydra/body)
-  :config
-  (set-popup-rule! "*How Do You"      :vslot 3 :size 82  :side 'left :select t :ttl nil :modeline t :autosave t :quit t)
-
-  (add-hook 'howdoyou-mode-hook (lambda ()
-                                  (doom-mark-buffer-as-real-h)
-                                  (persp-add-buffer (current-buffer))
-                                  (turn-off-solaire-mode)
-                                  (mkdir "/tmp/howdoyou" t)
-                                  (setq-local org-src-fontify-natively nil)
-                                  (setq-local buffer-file-name "/tmp/howdoyou/latest.org")
-                                  ))
-  )
-
-(use-package! hydra-posframe
-  :after hydra
-  :config
-  (hydra-posframe-mode +1)
-  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center
-        hydra-posframe-border-width 10
-        )
-  )
-
-(use-package! indium
-  :commands indium-connect
-  )
-
-(use-package! imenu-list
-  :commands imenu-list-smart-toggle
-  :config
-  (set-popup-rule! "^\\*Ilist"
-    :side 'right :size 35 :select nil :ttl nil :quit nil)
-  ;; First create new face which is a copy of hl-line-face
-  (copy-face 'hl-line 'hl-line-imenu-list-face)
-  ;; Change what you want in this new face
-  (set-face-attribute 'hl-line-imenu-list-face nil
-                      :background `,(doom-color 'base4) :weight 'bold :underline t)
-
-  (set-face-attribute 'imenu-list-entry-face-0 nil
-                      :foreground `,(doom-color 'blue))
-  (set-face-attribute 'imenu-list-entry-face-1 nil
-                      :foreground `,(doom-color 'magenta))
-  (set-face-attribute 'imenu-list-entry-face-2 nil
-                      :foreground `,(doom-color 'violet))
-  (set-face-attribute 'imenu-list-entry-face-3 nil
-                      :foreground `,(doom-lighten 'blue 0.25))
-  ;; Finally, the hook
-  (add-hook 'imenu-list-major-mode-hook (lambda ()
-                                          "Customize hl-line-face locally."
-                                          (set (make-local-variable 'hl-line-face)
-                                               'hl-line-imenu-list-face)
-                                          (hl-line-mode)))
-  (add-hook 'imenu-list-major-mode-hook #'variable-pitch-mode)
-  )
-
-(use-package! ivy-yasnippet
-  :commands ivy-yasnippet)
-
-(use-package! ivy-pages
-  :commands ivy-pages
-  :config
-  (advice-add #'ivy-pages-transformer :override #'ivy-pages-transformer-clear-string)
-  )
-
-(use-package! jest
-  :after js2-mode
-  :config
-  (advice-add #'jest--project-root :around (lambda (orig-fn &rest args)
-                                             (if (string-match "exercism" (projectile-project-name))
-                                                 (cl-letf (((symbol-function 'projectile-project-root)
-                                                            (lambda (&rest _)
-                                                              (file-name-directory buffer-file-name))))
-                                                   (apply orig-fn args))
-                                               (apply orig-fn args))))
-  (setq jest-pdb-track nil)
-  (add-hook 'jest-mode-hook (lambda ()
-                              (evil-motion-state)
-                              ))
-
-
-  (set-popup-rule! "*jest\*"            :size 20            :side 'bottom :select t :quit t :modeline nil)
-  )
-
-(use-package! js-doc
-  :after js2-mode
-  :config
-  (set-popup-rule! "JsDocTagDescription" :size 20 :side 'bottom :select t :quit t :modeline nil)
-  )
-
-(use-package! js-react-redux-yasnippets
-  :after yasnippet
-  )
-
-(use-package lfe-mode
-  :commands lfe-mode
-  :load-path "~/.emacs.d/.local/straight/repos/lfe-mode"
-  :config
-  (require 'inferior-lfe)
-  (require 'lfe-indent)
-
-  (add-hook 'lfe-mode-hook (lambda ()
-                             "Setup lfe-mode"
-                             (rainbow-delimiters-mode)
-                             (highlight-numbers-mode)))
-
-  (add-hook 'inferior-lfe-mode-hook (lambda ()
-                                      (doom-mark-buffer-as-real-h)
-                                      (persp-add-buffer (current-buffer))))
-
-  (set-popup-rule! "*inferior-lfe\*" :size 14 :side 'bottom :select t :quit t :modeline nil)
-  )
-
-(use-package lsp-lua-emmy
-  :after lsp-clients
-  :load-path "~/.emacs.d/.local/straight/repos/lsp-lua-emmy"
-  :config
-  (setq lsp-lua-emmy-jar-path
-        (expand-file-name
-         (concat aj-repos-dir
-                 "/EmmyLua-LanguageServer/EmmyLua-LS/build/libs/EmmyLua-LS-all.jar")))
-  )
-
-(after! lua-mode
-  (add-hook! 'lua-mode-local-vars-hook #'lsp-deferred)
-  )
-
-(use-package shrface
-  ;; :load-path "~/repos/shrface"
-  :after shr
-  :config
-  (shrface-basic)
-  (shrface-trial)
-  (setq shrface-bullets-bullet-list '("*")
-        shrface-paragraph-indentation 0
-        shrface-paragraph-fill-column 80
-        shrface-href-versatile nil
-        )
-  )
-
-(after! occur
-  (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
-  )
-
-(use-package shr-tag-pre-highlight
-  :after shr
-  :config
-  (add-to-list 'shr-external-rendering-functions
-               '(pre . shrface-shr-tag-pre-highlight)))
-
-(use-package! mocha
-  :after js2-mode
-  )
-
-(use-package! flycheck-sml
-  :after sml-mode
-  )
-
-(use-package! nov
-  :after org
-  :config
-  (add-hook 'nov-post-html-render-hook
-            (lambda ()
-              "User shrface imenu function."
-              (setq imenu-create-index-function #'shrface-imenu-get-tree)))
-  (set-popup-rule! (lambda (buf &rest _)
-                     "Find nov-mode browser buffer."
-                     (with-current-buffer buf
-                       (when (eq major-mode 'nov-mode) t)))
-    :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
-
-  (setq nov-shr-rendering-functions
-        '((img . nov-render-img) (title . nov-render-title)))
-  (setq nov-shr-rendering-functions
-        (append nov-shr-rendering-functions shr-external-rendering-functions))
-
-  (setq nov-text-width t
-        visual-fill-column-center-text t
-        nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
-
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (add-hook 'nov-post-html-render-hook (lambda ()
-                                         (setq-local header-line-format nil)))
-  (add-hook 'nov-mode-hook (lambda ()
-                             "Setup nov-mode to my liking."
-                             (visual-line-mode)
-                             (visual-fill-column-mode)
-                             (doom-mark-buffer-as-real-h)
-                             (shrface-mode)
-                             (setq org-link-parameters
-                                   (remove '("nov" :follow nov-org-link-follow :store nov-org-link-store) org-link-parameters))
-                             (org-link-set-parameters "nov" :follow #'nov-org-link-follow)))
-  (advice-add #'nov--find-file :override #'my-nov--find-file-a)
-  (advice-add #'nov-clean-up :override (lambda () t))
-  )
-
-(use-package! ob-javascript
-  :after ob-core
-  :config
-  (advice-add #'ob-javascript--node-path :override #'aj-ob-javascript--node-path-a))
-
-(use-package! org-brain
-  :after org
-  :init
-  (when (featurep! :editor evil)
-    (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode))
-  :config
-  (set-popup-rule! "^\\*org-brain\\*$" :vslot -1 :size 60 :side 'left :select t :quit t :ttl nil :modeline t)
-  (add-hook 'org-brain-visualize-mode-hook (lambda ()
-                                             (doom-mark-buffer-as-real-h)
-                                             (persp-add-buffer (current-buffer))
-                                             (visual-line-mode)))
-  (advice-add #'org-brain-visualize :after #'aj-org-buffers-respect-sanity-a)
-  (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt-a)
-  (advice-add #'org-brain-goto :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-brain-goto :after (lambda (&rest _)
-                                        "Recenter visited heading to the top of the buffer."
-                                        (recenter 0 t)
-                                        (when (org-at-heading-p)
-                                          (org-narrow-to-subtree)
-                                          (org-cycle)
-                                          (outline-show-branches)
-                                          (org-show-entry))
-                                        (turn-off-solaire-mode)))
-  (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
-  (setq org-brain-visualize-default-choices 'all
-        org-brain-title-max-length -1
-        org-brain-path aj-org-technical-dir
-        org-brain-data-file (expand-file-name ".org-brain-data.el" doom-cache-dir)
-        org-brain-include-file-entries t
-        org-brain-file-entries-use-title t
-        )
-  )
-
-(use-package! org-pretty-tags
-  :after org
-  :config
-  (org-pretty-tags-global-mode +1)
-  (setq org-pretty-tags-surrogate-strings
-        `(
-          ;; ("tag" . icon)
-          ("inbox" . ,(all-the-icons-faicon  "envelope" :face 'all-the-icons-lblue :height 1.0))
-          ("personal" . ,(all-the-icons-material  "person" :face 'all-the-icons-lpink :v-adjust -0.2 :height 1.1))
-          ("environment" . ,(all-the-icons-faicon  "cogs" :face 'all-the-icons-dsilver :height 1.1))
-          ("emacs" . ,(all-the-icons-fileicon  "emacs" :face 'all-the-icons-purple :height 1.1))
-          ("vscode" . ,(all-the-icons-fileicon  "codekit" :face 'all-the-icons-cyan :height 1.1))
-          ("linux" . ,(all-the-icons-faicon  "linux" :face 'all-the-icons-lorange :height 1.1))
-          ("windows" . ,(all-the-icons-faicon  "windows" :face 'all-the-icons-blue :height 1.1))
-          ("job" . ,(all-the-icons-material  "monetization_on" :face 'all-the-icons-green :height 1.1))
-          ("education" . ,(all-the-icons-faicon  "graduation-cap" :face 'all-the-icons-orange :height 1.1))
-          ("book" . ,(all-the-icons-faicon  "book" :face 'all-the-icons-dyellow :v-adjust 0.1 :height 1.1))
-          ("link" . ,(all-the-icons-octicon  "link" :face 'all-the-icons-dblue :v-adjust 0.1 :height 1.1))
-          ("bug" . ,(all-the-icons-octicon  "bug" :face 'all-the-icons-red :height 1.1))
-          )
-        )
-  )
-
-(use-package! org-ql
-  :after org
-  :config
-  (advice-add #'org-ql--select :around #'doom-shut-up-a)
-  (advice-add #'org-ql-view-refresh :around #'doom-shut-up-a)
-  (advice-add #'org-ql-view-refresh :after (lambda (&rest _)
-                                             "Blacklist certain Org-QL views from re-applying agenda filter."
-                                             (let ((buffer (prin1-to-string (current-buffer))))
-                                               (unless (or (string-match "Inbox" buffer)
-                                                           (string-match "Stucked Projects" buffer)
-                                                           (string-match "All Todos" buffer)
-                                                           (string-match "ARCHIVED" buffer))
-                                                 (org-agenda-filter-apply aj-org-agenda-filter 'tag)))))
-  (advice-add #'org-ql-view--format-element :override #'aj-org-ql-view--format-element-a)
-  (advice-add #'org-ql-view--display :after #'aj-org-ql-hide-header-a)
-  )
-
-(use-package! org-sidebar
-  :commands (org-sidebar org-sidebar-tree org-sidebar-ql)
-  )
-
-(use-package! org-super-agenda
-  :after org
-  :config
-  (advice-add #'org-super-agenda-mode :around #'doom-shut-up-a)
-  (org-super-agenda-mode)
-  (setq org-super-agenda-header-map (make-sparse-keymap))
-  )
-
-(use-package! powershell
-  :commands powershell-mode
-  )
-
-(use-package! powerthesaurus
-  :commands (powerthesaurus-lookup-word
-             powerthesaurus-lookup-word-dwim
-             powerthesaurus-lookup-word-at-point))
-
-(use-package! robots-txt-mode
-  :commands robots-txt-mode
-  )
-
-(use-package! reason-mode
-  :commands reason-mode
-  )
-
-(use-package! sdcv
-  :commands (sdcv-search-input sdcv-search-pointer)
-  :config
-  (setq sdcv-dictionary-simple-list '("WordNet"))
-  (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t :modeline t)
-  (when (featurep! :editor evil)
-    (add-hook #'sdcv-mode-hook (lambda ()
-                                 (evil-set-initial-state 'sdcv-mode 'motion))))
-  )
-
-(use-package! systemd
-  :commands systemd-mode
   )
 
 (use-package! tldr
@@ -1671,9 +1589,64 @@
     :vslot 1 :size 82  :side 'left :select t :ttl nil :modeline t)
   )
 
+(after! treemacs
+  (setq
+   evil-treemacs-state-cursor 'box
+   treemacs-project-follow-cleanup t
+   treemacs-width 25
+   )
+  (treemacs-follow-mode +1)
+  )
+
+(after! typescript-mode
+  (add-hook 'typescript-mode-local-vars-hook
+            (lambda ()
+              (when (flycheck-may-enable-checker 'javascript-eslint)
+                (flycheck-select-checker 'javascript-eslint))))
+  )
+
+(after! undo-tree
+  (advice-add #'undo-tree-save-history :around #'doom-shut-up-a)
+  (advice-add #'undo-tree-load-history :around #'doom-shut-up-a))
+
+(after! vc-git
+  (advice-add #'vc-git-mode-line-string :around (lambda (orig-fn args)
+                                                  "Remove \"Git\" from output."
+                                                  (replace-regexp-in-string "^Git." "" (funcall orig-fn args))))
+  )
+
+(after! warnings
+  (add-to-list 'warning-suppress-types '(defvaralias))
+  )
+
 (use-package! vimrc-mode
   :commands vimrc-mode
   )
+
+(after! vterm
+  (remove-hook 'vterm-mode-hook #'hide-mode-line-mode)
+  (set-popup-rule! "*doom:vterm-popup" :size 0.25 :vslot -5 :select t :quit t :ttl nil :modeline nil)
+  )
+
+(after! web-mode
+  (set-docsets! 'web-mode "HTML" "CSS" "WordPress")
+
+  (add-hook 'web-mode-hook 'flycheck-mode)
+
+  (setq web-mode-enable-current-element-highlight t
+        web-mode-auto-close-style 1
+        )
+  )
+
+(after! which-func
+  (setq which-func-modes nil)
+  )
+
+(after! which-key
+  (setq which-key-idle-delay 0.8
+        which-key-allow-evil-operators t
+        which-key-show-operator-state-maps t
+        ))
 
 (use-package which-key-posframe
   :after which-key
@@ -1682,12 +1655,26 @@
   (setq which-key-posframe-poshandler #'posframe-poshandler-frame-top-center)
   )
 
+(after! wordnut
+  (set-popup-rule! "*WordNut\*"                 :size 0.4  :side 'top :select t :modeline t)
+  )
+
 (use-package! yankpad
   :after org
   :config
   (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   (remove-hook 'after-change-major-mode-hook #'yankpad-local-category-to-major-mode)
   (remove-hook 'projectile-find-file-hook #'yankpad-local-category-to-projectile)
+  )
+
+(after! yasnippet
+  (setq yas-wrap-around-region t
+        yas-triggers-in-field t
+        ))
+
+(after! writeroom-mode
+  (add-hook #'writeroom-mode-hook  #'doom-disable-line-numbers-h)
+  (setq writeroom-width 100)
   )
 
 (use-package! zeal-at-point
@@ -1715,11 +1702,13 @@
 (advice-add #'aj-org-jump-to-datetree :around #'aj-org-buffer-to-popup-a)
 
 ;;; theme-settings
-(add-hook! 'doom-load-theme-hook :append
-  (defun +doom-solaire-mode-swap-bg-maybe-h ()
-    (when (string-prefix-p "aj-" (symbol-name doom-theme))
-      (require 'solaire-mode)
-      (solaire-mode-swap-bg))))
+(add-hook 'doom-load-theme-hook
+          (lambda ()
+            "+doom-solaire-mode-swap-bg-maybe-h"
+            (when (string-prefix-p "aj-" (symbol-name doom-theme))
+              (require 'solaire-mode)
+              (solaire-mode-swap-bg)))
+          t)
 
 (after! solaire-mode
   (setq solaire-mode-remap-line-numbers t)
