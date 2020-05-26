@@ -1161,7 +1161,9 @@
   (setq writeroom-width 100)
   )
 
-(use-package! ace-link)
+(use-package! ace-link
+  :commands (ace-link ace-link-woman)
+  )
 
 (use-package! ahk-mode
   :commands ahk-mode
@@ -1272,6 +1274,7 @@
   :commands (define-word  define-word-at-point))
 
 (use-package! dart-mode
+  :commands dart-mode
   :config
   (add-hook! 'dart-mode-local-vars-hook #'lsp-deferred)
   )
@@ -1417,6 +1420,7 @@
   )
 
 (use-package lfe-mode
+  :commands lfe-mode
   :load-path "~/.emacs.d/.local/straight/repos/lfe-mode"
   :config
   (require 'inferior-lfe)
@@ -1435,7 +1439,7 @@
   )
 
 (use-package lsp-lua-emmy
-  :after lsp-mode
+  :after lsp-clients
   :load-path "~/.emacs.d/.local/straight/repos/lsp-lua-emmy"
   :config
   (setq lsp-lua-emmy-jar-path
@@ -1475,7 +1479,9 @@
   :after js2-mode
   )
 
-(use-package! flycheck-sml)
+(use-package! flycheck-sml
+  :after sml-mode
+  )
 
 (use-package! nov
   :after org
@@ -1606,7 +1612,7 @@
   )
 
 (use-package! powershell
-  :defer t
+  :commands powershell-mode
   )
 
 (use-package! powerthesaurus
@@ -1615,9 +1621,12 @@
              powerthesaurus-lookup-word-at-point))
 
 (use-package! robots-txt-mode
+  :commands robots-txt-mode
   )
 
-(use-package! reason-mode)
+(use-package! reason-mode
+  :commands reason-mode
+  )
 
 (use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)
@@ -1630,7 +1639,8 @@
   )
 
 (use-package! systemd
-  :commands (systemd-mode))
+  :commands systemd-mode
+  )
 
 (use-package! tldr
   :commands tldr
@@ -1802,7 +1812,11 @@
     (if (ignore-errors (directory-files eaf-path))
         (progn
           (add-to-list 'load-path eaf-path)
-          (require 'eaf)
+
+          (unless (fboundp 'eaf-open-browser)
+            (autoload
+              (function eaf-open-browser)
+              "eaf" nil t))
 
           (after! eaf
             (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
