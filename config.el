@@ -415,6 +415,8 @@
   (setq evil-move-cursor-back nil
         evil-want-fine-undo t
         evil-visual-state-cursor 'hbar
+        evil-split-window-below t
+        evil-vsplit-window-right t
         )
 
   (dolist (fn '(+evil/next-comment
