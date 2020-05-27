@@ -1661,7 +1661,7 @@
 (after! purescript-mode
   (add-hook 'purescript-mode-local-vars-hook (lambda ()
                                                (let ((dir (file-name-directory
-                                                           (sodaware/file-search-upward default-directory "bower.json"))))
+                                                           (locate-dominating-file default-directory "bower.json"))))
                                                  (psc-ide-server-start dir)
                                                  (flycheck-mode))))
   (add-to-list
