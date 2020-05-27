@@ -101,3 +101,18 @@ Either they are contributing to org-agenda or are notes files from org-directory
   "List of strings represeting tags for filtering search of private notes.")
 
 (doom-store-persist doom-store-location '(aj-org-private-notes-filter-preset))
+
+(defvar aj-modes-tests-alist '()
+  "Contains alist specifying shell test tool per major mode.
+
+  Car is a symbol representing major mode and cdr is plist where:
+
+DIR represents directory from within should shell command be executed
+and can be string, variable or lambda producing valid value for `default-directory'.
+
+FN represents function launching shell command.
+(typically `compile', `shell-command' or `async-shell-command')
+
+CMD is a string representing shell command which will execute tests
+(something like \"make test\" or \"ruby *_test.rb\")
+")

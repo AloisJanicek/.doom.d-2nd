@@ -1026,6 +1026,23 @@ If FILE is not found in DIRECTORY, the parent of DIRECTORY will be searched."
           (cons 'dart project)
         (cons 'transient dir))))
 
+;;;###autoload
+(defun aj/run-some-code-test-tool ()
+  "Run shell test tool specified per major modes in `aj-modes-tests-alist'.
+If there is no associated entry present for current major mode, throw warning.
+"
+  (interactive)
+  (let* ((item (cdr (assoc major-mode aj-modes-tests-alist )))
+         (maybe-dir (plist-get item :dir))
+         (default-directory (if (eq (type-of (plist-get item :dir)) 'cons)
+                                (funcall (plist-get item :dir))
+                              (eval (plist-get item :dir))))
+         (fn (plist-get item :fn))
+         (cmd (plist-get item :cmd)))
+    (if (and item fn cmd)
+        (funcall fn cmd)
+      (warn "%s isn't configured in `aj-modes-tests-alist'" major-mode))))
+
 (provide 'functions)
 
 ;;; functions.el ends here

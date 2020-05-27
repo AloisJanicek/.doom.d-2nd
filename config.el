@@ -106,6 +106,12 @@
   (set-popup-rule! "*apropos\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t)
   (set-popup-rule! "*Apropos\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t))
 
+(after! asm-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(asm-mode . (:dir default-directory :fn async-shell-command :cmd "make")))
+  )
+
 (after! auth-source
   (setq auth-sources '("~/.authinfo.gpg"))
   )
@@ -140,6 +146,52 @@
   (add-hook 'scss-mode-local-vars-hook
             (lambda ()
               (flycheck-select-checker 'scss-stylelint)))
+  )
+
+(after! cc-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(c-mode . (:dir (lambda () (locate-dominating-file "." "makefile"))
+               :fn async-shell-command
+               :cmd "make test")))
+
+  (add-to-list
+   'aj-modes-tests-alist
+   '(c++-mode . (:dir default-directory
+                 :fn async-shell-command
+                 :cmd "make")))
+
+  (add-to-list
+   'aj-modes-tests-alist
+   '(java-mode . (:dir (lambda () (locate-dominating-file "." "build.gradle"))
+                  :fn async-shell-command
+                  :cmd "gradle --warning-mode none test")))
+  )
+
+(use-package! cfml-mode
+  :commands cfml-mode
+  :config
+  (add-to-list
+   'aj-modes-tests-alist
+   '(cfscript-mode . (:dir default-directory
+                      :fn shell-command
+                      :cmd "box task run TestRunner")))
+  )
+
+(after! coffee-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(coffee-mode . (:dir default-directory
+                    :fn shell-command
+                    :cmd "jasmine-node --coffee *.spec.coffee")))
+  )
+
+(after! crystal-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(crystal-mode . (:dir (lambda () (locate-dominating-file "." "README.md"))
+                     :fn shell-command
+                     :cmd "crystal spec")))
   )
 
 (after! cus-edit
@@ -220,6 +272,20 @@
    )
   )
 
+(after! csharp-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(csharp-mode . (:dir default-directory :fn shell-command :cmd "dotnet test")))
+  (advice-add #'aj/run-some-code-test-tool
+              :after
+              (lambda ()
+                "When in csharp-mode, jump at the end of the output buffer."
+                ;; for some reason can't use async buffers with "dotnet test"
+                (when (eq major-mode 'csharp-mode)
+                  (with-current-buffer (get-buffer "*Shell Command Output*")
+                    (goto-char (point-max))))))
+  )
+
 (use-package! cyphejor
   :config
   (setq
@@ -271,6 +337,16 @@
   (cyphejor-mode 1)
   )
 
+(use-package d-mode
+  :commands d-mode
+  :config
+  (add-to-list
+   'aj-modes-tests-alist
+   '(d-mode . (:dir (lambda () (locate-dominating-file "." "dub.sdl"))
+               :fn shell-command
+               :cmd "dub test")))
+  )
+
 (use-package! define-word
   :commands (define-word  define-word-at-point))
 
@@ -305,11 +381,34 @@
   (advice-add #'ert-results-previous-test :after (lambda () (recenter 0)))
   )
 
+(after! erlang-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(erlang-mode . (:dir (lambda () (locate-dominating-file "." "rebar.config"))
+                    :fn async-shell-command
+                    :cmd "rebar3 eunit")))
+
+  (advice-add #'aj/run-some-code-test-tool
+              :after
+              (lambda ()
+                "When in erlang-mode, jump at the end of the output buffer."
+                (when (eq major-mode 'erlang-mode)
+                  (with-current-buffer (get-buffer "*Shell Command Output*")
+                    (goto-char (point-max))))))
+  )
 (use-package! esqlite
   :commands (esqlite-stream-open esqlite-read))
 
 (use-package! eslintd-fix
   :commands eslintd-fix-mode
+  )
+
+(after! ess-r-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(ess-r-mode . (:dir default-directory
+                   :fn async-shell-command
+                   :cmd "Rscript test*")))
   )
 
 (after! evil
@@ -395,6 +494,22 @@
   :after sml-mode
   )
 
+(after! fsharp-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(fsharp-mode . (:dir (lambda () (locate-dominating-file "." "README.md"))
+                    :fn shell-command
+                    :cmd "dotnet test")))
+
+  (advice-add #'aj/run-some-code-test-tool
+              :after
+              (lambda ()
+                "When in fsharp-mode, jump at the end of the output buffer."
+                (when (eq major-mode 'fsharp-mode)
+                  (with-current-buffer (get-buffer "*Shell Command Output*")
+                    (goto-char (point-max))))))
+  )
+
 (after! geiser-impl
   (setq geiser-default-implementation 'guile))
 
@@ -418,6 +533,28 @@
 (after! groovy-mode
   (add-hook! 'groovy-mode-local-vars-hook #'lsp-deferred)
   (setq lsp-groovy-server-file "/usr/share/java/groovy-language-server/groovy-language-server-all.jar")
+
+  (add-to-list
+   'aj-modes-tests-alist
+   '(groovy-mode . (:dir (lambda () (locate-dominating-file "." "build.gradle"))
+                    :fn shell-command
+                    :cmd "gradle --warning-mode none test")))
+
+  (advice-add #'aj/run-some-code-test-tool
+              :after
+              (lambda ()
+                "When in groovy-mode, jump at the end of the output buffer."
+                (when (eq major-mode 'groovy-mode)
+                  (with-current-buffer (get-buffer "*Shell Command Output*")
+                    (goto-char (point-max))))))
+  )
+
+(after! haskell-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(haskell-mode . (:dir (lambda () (locate-dominating-file "." "stack.yaml"))
+                     :fn async-shell-command
+                     :cmd "stack test")))
   )
 
 (after! help
@@ -646,6 +783,14 @@
   (setq json-reformat:indent-width 2)
   )
 
+(after! julia-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(julia-mode . (:dir default-directory
+                   :fn async-shell-command
+                   :cmd "julia runtests.jl")))
+  )
+
 (after! loaddefs
   (setq browse-url-browser-function
         '(
@@ -700,6 +845,14 @@
 
 (setq read-process-output-max (* 1024 1024))
 
+(after! kotlin-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(kotlin-mode . (:dir (lambda () (locate-dominating-file "." "gradlew"))
+                    :fn shell-command
+                    :cmd "gradle --warning-mode none test")))
+  )
+
 (use-package lfe-mode
   :commands lfe-mode
   :load-path "~/.emacs.d/.local/straight/repos/lfe-mode"
@@ -717,6 +870,13 @@
                                       (persp-add-buffer (current-buffer))))
 
   (set-popup-rule! "*inferior-lfe\*" :size 14 :side 'bottom :select t :quit t :modeline nil)
+
+  (add-to-list
+   'aj-modes-tests-alist
+   '(lfe-mode . (:dir (lambda () (locate-dominating-file "." "Makefile"))
+                 :fn async-shell-command
+                 :cmd "make test")))
+
   )
 
 (use-package lsp-lua-emmy
@@ -735,13 +895,27 @@
         )
   )
 
+(use-package! lsp-dart
+  :after dart-mode
+  )
+
+(use-package! lsp-julia
+  :after julia-mode
+  )
+
 (after! lua-mode
   (add-hook! 'lua-mode-local-vars-hook #'lsp-deferred)
+
+  (add-to-list
+   'aj-modes-tests-alist
+   '(lua-mode . (:dir default-directory
+                 :fn async-shell-command
+                 :cmd "busted")))
   )
 
 (after! lsp-clients
   (setq lsp-clients-php-server-command '("php" "/usr/share/php/php-language-server/bin/php-language-server.php"))
-
+  (setq lsp-csharp-server-path "/opt/omnisharp-roslyn/OmniSharp.exe")
   (lsp-register-client
    (make-lsp-client :new-connection (lsp-stdio-connection (executable-find "reason-language-server"))
                     :major-modes '(reason-mode)
@@ -806,6 +980,12 @@
             (lambda ()
               (when (flycheck-may-enable-checker 'nim)
                 (flycheck-select-checker 'nim))))
+
+  (add-to-list
+   'aj-modes-tests-alist
+   '(nim-mode . (:dir default-directory
+                 :fn async-shell-command
+                 :cmd "nim c -r *_test.nim")))
   )
 
 (use-package! nov
@@ -845,7 +1025,6 @@
   (advice-add #'nov--find-file :override #'my-nov--find-file-a)
   (advice-add #'nov-clean-up :override (lambda () t))
   )
-
 (after! ob-core
   (setq
    org-babel-default-header-args '((:session . "none")
@@ -1421,6 +1600,19 @@
             (lambda ()
               (when (flycheck-may-enable-checker 'perl)
                 (flycheck-select-checker 'perl))))
+  (add-to-list
+   'aj-modes-tests-alist
+   '(perl-mode . (:dir default-directory
+                  :fn async-shell-command
+                  :cmd "prove *.t")))
+  )
+
+(after! php-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(php-mode . (:dir default-directory
+                 :fn async-shell-command
+                 :cmd "phpunit *_test.php")))
   )
 
 (use-package! powershell
@@ -1458,12 +1650,25 @@
 
   )
 
+(after! prolog
+  (add-to-list
+   'aj-modes-tests-alist
+   '(prolog-mode . (:dir default-directory
+                    :fn async-shell-command
+                    :cmd "swipl -f *.pl -s *.plt -g run_tests,halt -t 'halt(1)'")))
+  )
+
 (after! purescript-mode
   (add-hook 'purescript-mode-local-vars-hook (lambda ()
                                                (let ((dir (file-name-directory
                                                            (sodaware/file-search-upward default-directory "bower.json"))))
                                                  (psc-ide-server-start dir)
                                                  (flycheck-mode))))
+  (add-to-list
+   'aj-modes-tests-alist
+   '(purescript-mode . (:dir (lambda () (locate-dominating-file "." "bower.json"))
+                        :fn async-shell-command
+                        :cmd "pulp test --no-check-main")))
   )
 
 (after! python
@@ -1479,11 +1684,38 @@
                   (apply orig-fn args))))
   )
 
+(after! raku-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(raku-mode . (:dir default-directory
+                  :fn async-shell-command
+                  :cmd "raku *.t6")))
+  )
+
+(after! ruby-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(ruby-mode . (:dir default-directory
+                  :fn async-shell-command
+                  :cmd "ruby *_test.rb")))
+  )
+
 (after! racket-mode
-  (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil :modeline t))
+  (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil :modeline t)
+  (add-to-list
+   'aj-modes-tests-alist
+   '(racket-mode . (:dir default-directory
+                    :fn async-shell-command
+                    :cmd "raco test *-test.rkt")))
+  )
 
 (use-package! reason-mode
   :commands reason-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(reason-mode . (:dir (lambda () (locate-dominating-file "." "package.json"))
+                    :fn async-shell-command
+                    :cmd "npm test")))
   )
 
 (after! recentf
@@ -1497,7 +1729,21 @@
   )
 
 (after! scheme
-  (set-popup-rule! "^\\* Guile REPL *"          :size 10 :select t :quit nil :modeline t))
+  (set-popup-rule! "^\\* Guile REPL *"          :size 10 :select t :quit nil :modeline t)
+  (add-to-list
+   'aj-modes-tests-alist
+   '(scheme-mode . (:dir default-directory
+                    :fn async-shell-command
+                    :cmd "make guile")))
+  )
+
+(after! scala-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(scala-mode . (:dir (lambda () (locate-dominating-file "." "build.sbt"))
+                   :fn shell-command
+                   :cmd "export PATH=\"/usr/lib/jvm/java-8-openjdk/jre/bin/:$PATH\" && sbt test")))
+  )
 
 (use-package! sdcv
   :commands (sdcv-search-input sdcv-search-pointer)
@@ -1542,6 +1788,12 @@
 (after! lisp-mode
   (add-hook 'lisp-mode-hook (lambda ()
                               (dash-docs-activate-docset "Common_Lisp" )))
+  (add-to-list
+   'aj-modes-tests-alist
+   '(lisp-mode . (:dir default-directory
+                  :fn async-shell-command
+                  :cmd (concat (executable-find "sbcl")
+                               " --load *-test.lisp --quit"))))
   )
 
 (after! sly-mrepl
@@ -1558,6 +1810,30 @@
 
 (after! shell
   (add-hook 'shell-mode-hook #'evil-normal-state)
+  )
+
+(after! sh-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(sh-mode . (:dir default-directory
+                :fn async-shell-command
+                :cmd "bats run all")))
+  )
+
+(after! swift-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(swift-mode . (:dir default-directory
+                   :fn async-shell-command
+                   :cmd "swift test")))
+  )
+
+(after! sml-mode
+  (add-to-list
+   'aj-modes-tests-alist
+   '(sml-mode . (:dir default-directory
+                 :fn async-shell-command
+                 :cmd "poly -q --use test.sml")))
   )
 
 (use-package! tldr
@@ -1598,11 +1874,24 @@
   (treemacs-follow-mode +1)
   )
 
+(after! tuareg
+  (add-to-list
+   'aj-modes-tests-alist
+   '(tuareg-mode . (:dir default-directory
+                    :fn async-shell-command
+                    :cmd "make")))
+  )
+
 (after! typescript-mode
   (add-hook 'typescript-mode-local-vars-hook
             (lambda ()
               (when (flycheck-may-enable-checker 'javascript-eslint)
                 (flycheck-select-checker 'javascript-eslint))))
+  (add-to-list
+   'aj-modes-tests-alist
+   '(typescript-mode . (:dir default-directory
+                        :fn async-shell-command
+                        :cmd "yarn test")))
   )
 
 (after! undo-tree
@@ -1660,7 +1949,9 @@
   )
 
 (use-package! yankpad
-  :after org
+  :commands (yankpad-insert yankpad-set-category yankpad-append-category)
+  :init
+  (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   :config
   (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   (remove-hook 'after-change-major-mode-hook #'yankpad-local-category-to-major-mode)

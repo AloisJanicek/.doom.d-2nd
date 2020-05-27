@@ -43,84 +43,6 @@
   :nm "C-j" #'evil-window-down
   )
 
- ;;; asm-mode
- (:after asm-mode
-  :map asm-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "make"))
-  )
-
- ;;; c-mode
- (:after cc-mode
-  :map c-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific for exercism folder structure."
-                     (interactive)
-                     (let ((default-directory (file-name-directory
-                                               (directory-file-name
-                                                (file-name-directory
-                                                 (buffer-file-name))))))
-                       (compile "make test")))
-  )
-
- ;;; csharp-mode
- (:after csharp-mode
-  :map csharp-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Just run `dotnet test`."
-                     (interactive)
-                     (shell-command "dotnet test")
-                     (with-current-buffer (get-buffer "*Shell Command Output*")
-                       (end-of-buffer)))
-  )
-
- ;;; c++-mode
- (:after cc-mode
-  :map c++-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (compile "make"))
-  )
-
- ;;; cfscript-mode
- (:after cfml-mode
-  :map cfscript-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (shell-command "box task run TestRunner"))
-
-  )
-
- ;;; coffee-mode
- (:after coffee-mode
-  :map coffee-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (shell-command "jasmine-node --coffee *.spec.coffee"))
-
-  )
-
- ;;; crystal-mode
- (:after crystal-mode
-  :map crystal-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (let ((default-directory (file-name-directory
-                                               (directory-file-name
-                                                (file-name-directory
-                                                 (buffer-file-name))))))
-                       (shell-command "crystal spec")))
-  )
-
  ;;; css-mode
  (:after css-mode
   :map css-mode-map
@@ -136,19 +58,6 @@
   "C-f" #'ivy-call
   "C-d" #'ivy-immediate-done
   "C-;" #'ivy-restrict-to-matches
-  )
-;;; d-mode
- (:after d-mode
-  :map d-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (let ((default-directory (file-name-directory
-                                               (directory-file-name
-                                                (file-name-directory
-                                                 (buffer-file-name))))))
-                       (shell-command "dub test")))
   )
 
 ;;; dart-mode
@@ -220,22 +129,6 @@
   "t" #'elm-test-project
   )
 
- ;;; erlang
- (:after erlang
-  :map erlang-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (let ((default-directory (file-name-directory
-                                               (directory-file-name
-                                                (file-name-directory
-                                                 (buffer-file-name))))))
-                       (shell-command "rebar3 eunit")
-                       (with-current-buffer (get-buffer "*Shell Command Output*")
-                         (end-of-buffer))))
-  )
-
  ;;; flycheck
  (:after flycheck
   :map flycheck-error-list-mode-map
@@ -249,72 +142,6 @@
   "RET"    nil
   [return] nil
   [mouse-1] nil
-  )
-
- ;;; fsharp
- (:after fsharp-mode
-  :map fsharp-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Just run `dotnet test`."
-                     (interactive)
-                     (shell-command "dotnet test")
-                     (with-current-buffer (get-buffer "*Shell Command Output*")
-                       (end-of-buffer)))
-  )
-
- ;;; groovy
- (:after groovy-mode
-  :map groovy-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (let ((default-directory
-                             (file-name-directory
-                              (directory-file-name
-                               (file-name-directory
-                                (directory-file-name
-                                 (file-name-directory
-                                  (directory-file-name
-                                   (file-name-directory
-                                    (buffer-file-name))))))))))
-                       (shell-command "gradle test")
-                       (with-current-buffer (get-buffer "*Shell Command Output*")
-                         (end-of-buffer))))
-  )
-
- ;;; haskell
- (:after haskell-mode
-  :map haskell-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (let ((default-directory (file-name-directory
-                                               (directory-file-name
-                                                (file-name-directory
-                                                 (buffer-file-name))))))
-                       (async-shell-command "stack test")))
-  )
-
- ;;; java
- (:after cc-mode
-  :map java-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (let ((default-directory
-                             (file-name-directory
-                              (directory-file-name
-                               (file-name-directory
-                                (directory-file-name
-                                 (file-name-directory
-                                  (directory-file-name
-                                   (file-name-directory
-                                    (buffer-file-name))))))))))
-                       (async-shell-command "gradle --warning-mode none test")))
   )
 
  ;;; helpful
@@ -340,35 +167,6 @@
   :nmv  "e"      #'evil-forward-word-end
   )
 
- ;;; julia
- (:after julia-mode
-  :map julia-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (async-shell-command "julia runtests.jl"))
-  )
-
- ;;; kotlin
- (:after kotlin-mode
-  :map kotlin-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (let ((default-directory
-                             (file-name-directory
-                              (directory-file-name
-                               (file-name-directory
-                                (directory-file-name
-                                 (file-name-directory
-                                  (directory-file-name
-                                   (file-name-directory
-                                    (buffer-file-name))))))))))
-                       (async-shell-command "gradle --warning-mode none test")))
-  )
-
  ;;; lfe
  (:after lfe-mode
   :map lfe-mode-map
@@ -378,14 +176,6 @@
                      (if (get-buffer "*inferior-lfe*")
                          (pop-to-buffer (get-buffer "*inferior-lfe*"))
                        (inferior-lfe nil)))
-  :desc "test" "t" (lambda ()
-                     "Specific for exercism folder structure."
-                     (interactive)
-                     (let ((default-directory (file-name-directory
-                                               (directory-file-name
-                                                (file-name-directory
-                                                 (buffer-file-name))))))
-                       (compile "make test")))
   )
 
  (:after inferior-lfe
@@ -394,15 +184,6 @@
   :nemi "C-h"       #'evil-window-left
   :nemi "C-j"       #'evil-window-down
   :nemi "C-k"       #'evil-window-up
-  )
-
- ;;; lua
- (:after lua-mode
-  :map lua-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "busted"))
   )
 
  ;;; magit
@@ -459,24 +240,6 @@
   :nm "S-<tab>" #'org-shifttab
   :nm "C-j" nil
   :nm "C-k" nil
-  )
-
- ;;; nim
- (:after nim-mode
-  :map nim-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "nim c -r *_test.nim"))
-  )
-
- ;;; ocaml / tuareg
- (:after tuareg
-  :map tuareg-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "make"))
   )
 
  ;;; occur
@@ -839,102 +602,10 @@
                 (pdf-occur-view-occurrence)))
   )
 
- ;;; perl
- (:after perl-mode
-  :map perl-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "prove *.t"))
-  )
-
- ;;; php
- (:after php-mode
-  :map php-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "phpunit *_test.php"))
-  )
-
  ;;; popup-buffer
  (:after popup-buffer
   :map +popup-buffer-mode-map
   "C-l"  #'evil-window-right
-  )
-
- ;;; purescript
- (:after purescript-mode
-  :map purescript-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (let ((default-directory (file-name-directory
-                                               (directory-file-name
-                                                (file-name-directory
-                                                 (buffer-file-name))))))
-                       (async-shell-command "pulp test --no-check-main"))
-                     )
-  )
-
- ;;; prolog
- (:after prolog
-  :map prolog-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     ;; Assuming there is only one .pl and one .plt file in current directory.
-                     (async-shell-command "swipl -f *.pl -s *.plt -g run_tests,halt -t 'halt(1)'"))
-  )
-
- ;;; r
- (:after ess-r-mode
-  :map ess-r-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "Rscript test*"))
-  )
-
- ;;; raku / perl6
- (:after raku-mode
-  :map raku-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "raku *.t6"))
-  )
-
- ;;; raket
- (:after racket-mode
-  :map racket-mode-map
-  :localleader
-  :desc "test" "T" (lambda ()
-                     (interactive)
-                     (async-shell-command "raco test *-test.rkt"))
-  )
-
- ;;; ruby
- (:after ruby-mode
-  :map ruby-mode-map
-  :localleader
-  :desc "test" "T" (lambda ()
-                     (interactive)
-                     (async-shell-command "ruby *_test.rb"))
-  )
-
- ;;; reason-ml
- (:after reason-mode
-  :map reason-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific for exercism folder structure."
-                     (interactive)
-                     (let ((default-directory (file-name-directory
-                                               (directory-file-name
-                                                (file-name-directory
-                                                 (buffer-file-name))))))
-                       (async-shell-command "npm test")))
   )
 
  ;;; sdcv
@@ -961,44 +632,12 @@
   :m "v" #'show-entry
   )
 
- ;;; scm
- (:after scheme
-  :map scheme-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "make guile"))
-  )
-
-
- ;;; scala
- (:after scala-mode
-  :map scala-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (let ((default-directory
-                             (file-name-directory
-                              (directory-file-name
-                               (file-name-directory
-                                (directory-file-name
-                                 (file-name-directory
-                                  (directory-file-name
-                                   (file-name-directory
-                                    (buffer-file-name))))))))))
-                       (async-shell-command "export PATH=\"/usr/lib/jvm/java-8-openjdk/jre/bin/:$PATH\" && sbt test")))
-  )
-
  ;;; lisp-mode
  (:after lisp-mode
   :map lisp-mode-map
   :localleader
   "t" nil
-  :desc "run test"         "t" (lambda ()
-                                 (interactive)
-                                 (compile (concat (executable-find "sbcl")
-                                                  " --load *-test.lisp --quit")))
+
   (:prefix ("R" . "tRace")
    :desc "Toggle"         "t" #'sly-toggle-trace-fdefinition
    :desc "Toggle (fancy)" "T" #'sly-toggle-fancy-trace
@@ -1012,25 +651,6 @@
   :i "C-l" #'sly-mrepl-clear-repl
   :i "<up>" #'sly-mrepl-previous-input-or-button
   :i "<down>" #'sly-mrepl-previous-input-or-button
-  )
-
- ;;; swift
- (:after swift-mode
-  :map swift-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     "Specific to exercism folder structure."
-                     (interactive)
-                     (async-shell-command "swift test"))
-  )
-
- ;;; sml
- (:after sml-mode
-  :map sml-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "poly -q --use test.sml"))
   )
 
  ;;; term
@@ -1062,15 +682,6 @@
                     (buffer-substring-no-properties
                      (point)
                      (search-forward " ")))))
-  )
-;;; typescript
- (:after typescript-mode
-  :map typescript-mode-map
-  :localleader
-  :desc "test" "t" (lambda ()
-                     (interactive)
-                     (async-shell-command "yarn test"))
-
   )
 
  ;;; vterm
@@ -1141,14 +752,6 @@
   :iemnv "C-h" #'evil-window-left
   :iemnv "C-l" #'evil-window-right
   :iemnv "C-<SPC>" #'treemacs-peek
-  )
-
- ;;; sh-script
- (:after sh-script
-  :map sh-mode-map
-  :localleader
-  :desc "bats run all"     "t" #'bats-run-all
-  :desc "bats run current" "T" #'bats-run-current-test
   )
 
  ;;; yasnippet
@@ -1380,6 +983,7 @@
 
  (:prefix ("c" . "code")
   :desc "eval-last-sexp"           "s" #'eval-last-sexp
+  :desc "test"                     "t" #'aj/run-some-code-test-tool
   :desc "google this error"        "H" #'aj/flycheck-error-search
   :desc "imenu-outline"            "o" #'counsel-imenu
   :desc "info about error"         "i" #'flycheck-explain-error-at-point
