@@ -1711,6 +1711,7 @@
 
 (use-package! reason-mode
   :commands reason-mode
+  :config
   (add-to-list
    'aj-modes-tests-alist
    '(reason-mode . (:dir (lambda () (locate-dominating-file "." "package.json"))
