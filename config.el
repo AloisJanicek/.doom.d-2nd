@@ -618,7 +618,7 @@
   :demand t
   :config
   (setq hungry-delete-except-modes
-        '(term-mode help-mode helpful-mode minibuffer-inactive-mode calc-mode))
+        '(term-mode vterm-mode help-mode helpful-mode minibuffer-inactive-mode calc-mode))
   (global-hungry-delete-mode 1))
 
 (use-package! hydra-posframe
