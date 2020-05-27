@@ -191,10 +191,10 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
 
 ;;;###autoload
 ;; https://www.reddit.com/r/emacs/comments/8fg34h/capture_code_snippet_using_org_capture_template/
-(defun my-org-capture-code-snippet (file source-buffer)
+(defun my-org-capture-code-snippet (file)
   "Build `org-mode' source block with code selected in FILE.
 Argument SOURCE-BUFFER is buffer visiting FILE."
-  (with-current-buffer source-buffer
+  (with-current-buffer aj-capturing-in-this-buffer
     (let* ((code-snippet (replace-regexp-in-string
                           "\*" ","
                           (or (when (eq major-mode 'pdf-view-mode)
@@ -238,12 +238,13 @@ If HEADLINE, capture under it instead of top level."
                        ":CREATED: %U\n"
                        ":END:\n\n"
                        "from: %a\n\n"
-                       "%(my-org-capture-code-snippet \"%F\" source-buffer)"))
+                       "%(my-org-capture-code-snippet \"%F\")"))
          (org-capture-templates (if headline
                                     `(("s" "code snippet" entry (file+headline ,file ,headline)
                                        ,line :immediate-finish t :empty-lines 1))
                                   `(("s" "code snippet" entry (file ,file)
                                      ,line :immediate-finish t :empty-lines 1)))))
+    (setq aj-capturing-in-this-buffer (current-buffer))
     (org-capture nil "s")))
 
 ;;;###autoload (autoload 'aj/org-capture-code-hydra/body "autoload/orgmode" nil t)
