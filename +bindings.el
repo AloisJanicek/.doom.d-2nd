@@ -1050,7 +1050,9 @@
                                      (aj/org-notes-set-filter-preset aj-org-private-notes-filetags 'aj-org-private-notes-filter-preset))
   :desc "grep"               "g" (λ! (aj/org-notes-search-no-link aj-org-technical-dir))
   :desc "grep dir"           "G" #'aj/org-notes-search-no-link
-  :desc "indirect"           "i" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
+  :desc "inbox jump"         "i" (λ! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 3))
+
+  :desc "indirect"           "I" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
                                       (buffer-file-name (current-buffer))))
   :desc "Update IDs and other" "U" (λ!
                                     (aj/org-id-update-recursively)
