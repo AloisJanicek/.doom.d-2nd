@@ -1068,8 +1068,7 @@
   :desc "personal"           "P" (λ! (aj-org-find-file aj-org-personal-dir))
   :desc "personal headlines" "p" (λ! (aj-org-jump-to-headline-at (aj-org-get-filtered-org-files aj-org-personal-dir aj-org-personal-notes-filter-preset) 2))
   :desc "query"              "q" #'org-ql-search
-  :desc "private headlines"  "r" (λ! (aj-org-jump-to-headline-at (aj-org-get-filtered-org-files aj-org-private-dir aj-org-private-notes-filter-preset) 2))
-  :desc "private files"      "R" (λ! (aj-org-find-file aj-org-private-dir))
+  :desc "brain-resources"    "r" (λ! (org-brain-open-resource (org-brain-choose-entry "Resource from: " 'all)))
   :desc "headlines all"      "s" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 3))
   :desc "headlines all DEEP" "S" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 9))
   :desc "sparse tree"        "t" #'org-ql-sparse-tree
@@ -1083,7 +1082,10 @@
                                      (+popup/close window 'force)
                                      (aj-open-file-switch-create-indirect-buffer-per-persp buffer))
                                    (selected-window))
-  :desc "PRVT"               "x" #'aj/private-refile/body
+  "x" nil
+  :desc "PRVT refile"     "xr" #'aj/private-refile/body
+  :desc "PRVT headlines"  "xh" (λ! (aj-org-jump-to-headline-at (aj-org-get-filtered-org-files aj-org-private-dir aj-org-private-notes-filter-preset) 2))
+  :desc "PRVT files"      "xf" (λ! (aj-org-find-file aj-org-private-dir))
   )
 
  ;; "m" :localleader

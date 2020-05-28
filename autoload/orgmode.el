@@ -152,10 +152,10 @@ Works also in `org-agenda'."
                                :idle which-key-idle-delay
                                )
   "
-_t_op level   _j_ournal     _r_efile targets   _v_isible heading   _O_ther buffer     _p_roject             _x_private
-_f_ile        _c_lock       _l_ast location    _._this file        _o_ther window     _P_roject journal
+_t_op level   _j_ournal     refile _T_argets   _v_isible heading   _O_ther buffer     _p_roject             _x_private
+_f_ile        _c_lock       _l_ast location    _._this file        _o_ther window     _P_roject journal     _r_resources
 "
-  ("r" (lambda (arg)
+  ("T" (lambda (arg)
          (interactive "P")
          (if (memq major-mode aj-org-agenda-similar-modes)
              (call-interactively #'org-agenda-refile)
@@ -180,7 +180,9 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
   ("." #'+org/refile-to-current-file)
   ("c" #'+org/refile-to-running-clock)
   ("l" #'+org/refile-to-last-location)
+  ("r" #'aj/org-refile-link-to-resources-drawer)
   )
+
 ;; ORG-CAPTURE
 
 ;;;###autoload
@@ -1613,6 +1615,37 @@ Org manual: 8.4.2 The clock table.
   (<
    (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT a) "999")))
    (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT b) "999")))))
+
+;;;###autoload
+(defun aj/org-refile-link-to-resources-drawer ()
+  "Refile current link under RESOURCES drawer of one of the org-brain items."
+  (interactive)
+  (let* ((re-store-link (lambda ()
+                          (org-back-to-heading)
+                          (org-toggle-item nil)
+                          (let* ((str (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+                                 (url (substring str (+ 2 (string-match (rx "[[") str)) (string-match (rx "][") str)))
+                                 (title (substring str (+ 2 (string-match (rx "][") str)) (string-match (rx "]]") str))))
+                            (org-protocol-store-link (list :url url :title title))
+                            (kill-whole-line)
+                            (save-buffer)
+                            (widen)
+                            (org-brain-add-resource))))
+         (agenda (derived-mode-p 'org-agenda-mode))
+         (buff-orig (buffer-name))
+         (marker (when agenda
+                   (org-get-at-bol 'org-hd-marker)))
+         (buff (when marker (marker-buffer marker))))
+    (if agenda
+        (with-current-buffer buff
+          (org-with-wide-buffer
+           (goto-char marker)
+           (let ((org-agenda-buffer-name buff-orig))
+             (org-remove-subtree-entries-from-agenda))
+           (funcall re-store-link)
+           (or (org-agenda-redo)
+               (org-ql-view-refresh))))
+      (funcall re-store-link))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
