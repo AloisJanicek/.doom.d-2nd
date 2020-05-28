@@ -1620,6 +1620,7 @@ Org manual: 8.4.2 The clock table.
 (defun aj/org-refile-link-to-resources-drawer ()
   "Refile current link under RESOURCES drawer of one of the org-brain items."
   (interactive)
+  (require 'org-protocol)
   (let* ((re-store-link (lambda ()
                           (org-back-to-heading)
                           (org-toggle-item nil)
