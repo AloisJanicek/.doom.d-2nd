@@ -1154,7 +1154,6 @@
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
         org-brain-path aj-org-technical-dir
-        org-brain-data-file (expand-file-name ".org-brain-data.el" doom-cache-dir)
         org-brain-include-file-entries t
         org-brain-file-entries-use-title t
         )
