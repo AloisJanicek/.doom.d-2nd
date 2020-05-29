@@ -1619,9 +1619,10 @@ Org manual: 8.4.2 The clock table.
 ;;;###autoload
 (defun aj/org-refile-link-to-resources-drawer ()
   "Refile current link under point into RESOURCES drawer of one of the org-brain items.
-Works for links in heading title or for plain links.
-When links is play link without org syntax, link is re-captured with eaf-browser.
-At the end, link is deleted.
+
+Works for links in heading title and for plain links.
+In case of plain links, title is added to the link.
+At the end, source link is deleted.
 "
   (interactive)
   (require 'org-protocol)
