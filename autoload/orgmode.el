@@ -1625,44 +1625,35 @@ At the end, link is deleted.
 "
   (interactive)
   (require 'org-protocol)
-  (let* ((re-store-link (lambda ()
-                          (org-toggle-item nil)
-                          (let* ((url-plain (thing-at-point-url-at-point))
-                                 (orig-buff (current-buffer))
-                                 (str (buffer-substring-no-properties
-                                       (line-beginning-position)
-                                       (line-end-position)))
-                                 (url (ignore-errors
-                                        (substring str
-                                                   (+ 2 (string-match (rx "[[") str))
-                                                   (string-match (rx "][") str))))
-                                 (title (ignore-errors
-                                          (substring str
-                                                     (+ 2 (string-match (rx "][") str))
-                                                     (string-match (rx "]]") str))))
-                                 (kill-and-add (lambda ()
-                                                 (with-current-buffer orig-buff
-                                                   (kill-whole-line)
-                                                   (save-buffer)
-                                                   (widen))
-                                                 (org-brain-add-resource
-                                                  (nth 0 (car org-stored-links))
-                                                  (nth 1 (car org-stored-links))
-                                                  nil
-                                                  (org-brain-choose-entry "Insert link in entry: " 'all))
-                                                 (pop org-stored-links))))
-                            (if (and url title)
-                                (progn
-                                  (org-protocol-store-link (list :url url :title title))
-                                  (funcall kill-and-add))
-                              (progn
-                                (eaf-open-browser url-plain)
-                                ;; 2.5 seconds - be sure that eaf-browser buffer is ready
-                                (run-with-timer 2.5
-                                                nil
-                                                (lambda ()
-                                                  (aj/org-re-capture-link-with-eaf-browser url-plain)
-                                                  (funcall kill-and-add))))))))
+  (let* ((re-store-link
+          (lambda ()
+            (org-toggle-item nil)
+            (let* ((orig-buff (current-buffer))
+                   (str (buffer-substring-no-properties
+                         (line-beginning-position)
+                         (line-end-position)))
+                   (url (or
+                         (thing-at-point-url-at-point)
+                         (ignore-errors
+                           (substring str
+                                      (+ 2 (string-match (rx "[[") str))
+                                      (string-match (rx "][") str)))))
+                   (title (or (ignore-errors
+                                (substring str
+                                           (+ 2 (string-match (rx "][") str))
+                                           (string-match (rx "]]") str)))
+                              (aj-get-web-page-title url))))
+              (org-protocol-store-link (list :url url :title title))
+              (with-current-buffer orig-buff
+                (kill-whole-line)
+                (save-buffer)
+                (widen))
+              (org-brain-add-resource
+               (nth 0 (car org-stored-links))
+               (nth 1 (car org-stored-links))
+               nil
+               (org-brain-choose-entry "Insert link in entry: " 'all))
+              (pop org-stored-links))))
          (agenda (derived-mode-p 'org-agenda-mode))
          (buff-orig (buffer-name))
          (marker (when agenda
@@ -1681,22 +1672,10 @@ At the end, link is deleted.
     (select-window (get-buffer-window buff-orig))))
 
 ;;;###autoload
-(defun aj/org-re-capture-link-with-eaf-browser (url)
-  "Re-capture URL with eaf-browser."
-  (interactive)
-  (let ((get-eaf-browser-buff
-         (lambda ()
-           (catch 'buff
-             (seq-map
-              (lambda (buff)
-                (with-current-buffer buff
-                  (when (ignore-errors (string-equal eaf--buffer-url url))
-                    (throw 'buff buff))))
-              (buffer-list))))))
-    (message "url: %s" url)
-    (with-current-buffer (funcall get-eaf-browser-buff)
-      (aj/eaf-browser-org-store-link)
-      (kill-buffer (current-buffer)))))
+(defun aj-get-web-page-title (url)
+  "Get value of <title> element downloaded from URL."
+  (shell-command-to-string
+   (concat "curl '" url "' -so - | grep -iPo '(?<=<title>)(.*)(?=</title>)'")))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
