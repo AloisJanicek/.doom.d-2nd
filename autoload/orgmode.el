@@ -1281,14 +1281,14 @@ Otherwise dispatch default commands.
   "Return list of all org files but without archived files."
   (seq-filter (lambda (elt)
                 (not (string-match "org_archive" elt)))
-              (directory-files-recursively org-directory "org")))
+              (directory-files-recursively org-directory "org$")))
 
 ;;;###autoload
 (defun aj-get-all-archived-org-files ()
   "Return list of all archived org files."
   (seq-filter (lambda (elt)
                 (string-match "org_archive" elt))
-              (directory-files-recursively org-directory "org")))
+              (directory-files-recursively org-directory "org$")))
 
 ;;;###autoload
 (defun aj/org-agenda-headlines (&optional keywords)
