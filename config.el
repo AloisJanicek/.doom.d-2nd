@@ -1113,7 +1113,7 @@
    org-imenu-depth 9
 
    org-refile-targets `((,(directory-files-recursively
-                           org-directory org-agenda-file-regexp)
+                           org-brain-path org-agenda-file-regexp)
                          :maxlevel . 3))
 
    org-use-property-inheritance t
@@ -1153,7 +1153,7 @@
   (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
-        org-brain-path aj-org-technical-dir
+        org-brain-path (expand-file-name "technical" org-directory)
         org-brain-include-file-entries t
         org-brain-file-entries-use-title t
         )
@@ -1591,7 +1591,7 @@
         persp-autokill-buffer-on-remove nil
         )
   (advice-add #'persp-remove-buffer :around #'doom-shut-up-a)
-  (dolist (file (directory-files-recursively org-directory ".org"))
+  (dolist (file (directory-files-recursively org-directory ".org$"))
     (add-to-list 'aj-persp-blacklist `,(file-name-nondirectory file)))
   )
 

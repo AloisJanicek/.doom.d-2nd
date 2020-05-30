@@ -28,15 +28,6 @@ if running under WSL")
 (defvar aj-org-inbox-file (expand-file-name "inbox.org" org-directory)
   "File where all stuff goes initially.")
 
-(defvar aj-org-technical-dir (expand-file-name "technical" org-directory)
-  "Directory of technical notes.")
-
-(defvar aj-org-personal-dir (expand-file-name "personal" org-directory)
-  "Directory of personal notes.")
-
-(defvar aj-org-private-dir (expand-file-name "private" org-directory)
-  "Directory of private notes.")
-
 (defvar aj-org-agenda-filter nil
   "Variable for preserving filter choice between agenda views.")
 
@@ -78,30 +69,6 @@ if running under WSL")
 Either they are contributing to org-agenda or are notes files from org-directory.
 ")
 
-(defvar aj-org-technical-notes-filetags nil
-  "Variable storing list of all filetags from org files in `aj-org-technical-dir'.")
-
-(defvar aj-org-technical-notes-filter-preset nil
-  "List of strings represeting tags for filtering search of technical notes.")
-
-(doom-store-persist doom-store-location '(aj-org-technical-notes-filter-preset))
-
-(defvar aj-org-personal-notes-filetags nil
-  "Variable storing list of all filetags from org files in `aj-org-personal-dir'.")
-
-(defvar aj-org-personal-notes-filter-preset nil
-  "List of strings represeting tags for filtering search of personal notes.")
-
-(doom-store-persist doom-store-location '(aj-org-personal-notes-filter-preset))
-
-(defvar aj-org-private-notes-filetags nil
-  "Variable storing list of all filetags from org files in `aj-org-private-dir'.")
-
-(defvar aj-org-private-notes-filter-preset nil
-  "List of strings represeting tags for filtering search of private notes.")
-
-(doom-store-persist doom-store-location '(aj-org-private-notes-filter-preset))
-
 (defvar aj-modes-tests-alist '()
   "Contains alist specifying shell test tool per major mode.
 
@@ -116,3 +83,17 @@ FN represents function launching shell command.
 CMD is a string representing shell command which will execute tests
 (something like \"make test\" or \"ruby *_test.rb\")
 ")
+
+(defvar aj-org-notes-filetags '()
+  "Alist storing list of all filetags from each dir returned by `aj-org-brain-get-all-brains'")
+
+(doom-store-persist doom-store-location '(aj-org-notes-filetags))
+
+(defvar aj-org-notes-filter-preset '()
+  "Alist storing preset for filtering notes searching.
+
+Car is one of the directory returned by `aj-org-brain-get-all-brains'.
+Cdr is list of one or more strings returned `aj-org-notes-update-filetags'
+and stored in `aj-org-notes-filter-preset'.")
+
+(doom-store-persist doom-store-location '(aj-org-notes-filter-preset))

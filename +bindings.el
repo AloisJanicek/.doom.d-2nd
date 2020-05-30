@@ -381,13 +381,14 @@
     )
    )
 
-  (:prefix ("v" . "view")
-   :desc "block"            "b" #'org-narrow-to-block
-   :desc "columns"          "c" #'org-columns
-   :desc "element"          "e" #'org-narrow-to-element
-   :desc "sparse tree"      "p" #'org-sparse-tree
-   :desc "subtree"          "s" #'org-narrow-to-subtree
-   :desc "widen"            "w" #'widen
+  (:prefix ("z" . "view")
+   :desc "block"              "b" #'org-narrow-to-block
+   :desc "columns"            "c" #'org-columns
+   :desc "element"            "e" #'org-narrow-to-element
+   :desc "sparse tree"        "t" #'org-sparse-tree
+   :desc "sparse tree org-ql" "T" #'org-ql-sparse-tree
+   :desc "subtree"            "s" #'org-narrow-to-subtree
+   :desc "widen"              "w" #'widen
    )
 
   ;;; evil-org-mode
@@ -831,8 +832,8 @@
  (:prefix ("o" . "open")
   :desc "clock"                   "c" #'aj/org-clock-hydra/body
   (:prefix ("C" . "calibre")
-   :desc "technical"             "c" (lambda! (aj-open-calibre-book (expand-file-name "Technical/" aj-calibre-path)))
-   :desc "personal"              "p" (lambda! (aj-open-calibre-book (expand-file-name "Personal/" aj-calibre-path)))
+   :desc "technical"             "c" (cmd! (aj-open-calibre-book (expand-file-name "Technical/" aj-calibre-path)))
+   :desc "personal"              "p" (cmd! (aj-open-calibre-book (expand-file-name "Personal/" aj-calibre-path)))
    )
 
   :desc "agenda"                   "A" #'org-agenda
@@ -1005,94 +1006,78 @@
   )
 
  (:prefix ("n" . "notes")
-  :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp))
-  :desc "switch brain"       "B" (λ! (org-brain-switch-brain
-                                      (ivy-read "Choose brain: "
-                                                (seq-filter
-                                                 (lambda (dir)
-                                                   (and (not (string-match "attach\\|archive\\|export" dir))
-                                                        (not (string-equal dir org-directory))))
-                                                 (ffap-all-subdirs org-directory 1)))))
-  :desc "archive jump"       "A" (λ! (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3))
-  :desc "journal jump"       "j" (λ! (aj-org-jump-to-datetree
-                                      (if (and aj-org-agenda-filter
-                                               (not current-prefix-arg))
-                                          (aj-org-return-filtered-agenda-file)
-                                        (aj/choose-file-from org-agenda-files))
-                                      "JOURNAL"))
+  :desc "brain-goto"           "b" (λ! (if current-prefix-arg
+                                           (org-brain-switch-brain
+                                            (ivy-read "Choose brain: "
+                                                      (aj-org-brain-get-all-brains)))
+                                         (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp)))
+  :desc "brain-visualize"      "v" #'org-brain-visualize
+  :desc "brain-resource"       "r" (λ! (if (eq (car current-prefix-arg) 4)
+                                           (aj/org-brain-open-from-all-resources t)
+                                         (if (eq (car current-prefix-arg) 16)
+                                             (org-brain-open-resource
+                                              (org-brain-choose-entry "Resource from: " 'all))
+                                           (aj/org-brain-open-from-all-resources))))
 
-  :desc "clock report at"    "c" (λ! (aj-org-clock-datetree-report
-                                      (if (and aj-org-agenda-filter
-                                               (not current-prefix-arg))
-                                          (car (aj-org-return-filtered-agenda-file))
-                                        (aj/choose-file-from
-                                         (seq-filter
-                                          (lambda (file)
-                                            (not (string-match "inbox" file)))
-                                          org-agenda-files)))
-                                      (ivy-read "Select time block: "
-                                                '(today thisweek thismonth))))
-  :desc "all today clock reports"  "C" (λ!
-                                        (mapc (lambda (file)
-                                                (aj-org-clock-datetree-report file 'today))
+  :desc "notes grep"           "g" (λ! (aj/org-notes-search-no-link
+                                        (if current-prefix-arg
+                                            nil
+                                          org-brain-path)))
+  :desc "notes query"          "q" (λ! (cl-letf (((symbol-function 'org-ql-view--complete-buffers-files)
+                                                  (lambda (&rest _)
+                                                    (directory-files-recursively org-brain-path ".org$"))))
+                                         (call-interactively #'org-ql-search)))
+  :desc "notes heading"        "n" (λ! (aj-org-jump-to-headline-at
+                                        (if (not current-prefix-arg)
+                                            (aj-org-get-filtered-org-files
+                                             org-brain-path
+                                             (cdr (assoc org-brain-path aj-org-notes-filter-preset)))
+                                          (directory-files-recursively org-brain-path ".org$"))
+                                        (if (eq (car current-prefix-arg) 16) 9 2)))
+  :desc "notes open"           "N" (λ! (if current-prefix-arg
+                                           (aj-org-find-file org-directory)
+                                         (aj-org-find-file org-brain-path)))
+  :desc "jump inbox"           "i" (λ! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 3))
+  :desc "jump archive"         "A" (λ! (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3))
+  :desc "filter"               "f" (λ! (if current-prefix-arg
+                                           (progn
+                                             (setcdr (assoc org-brain-path aj-org-notes-filter-preset) nil)
+                                             (message "Cleared filter preset for %s" org-brain-path))
+                                         (aj/org-notes-set-filter-preset org-brain-path)))
+  :desc "Update IDs and other" "U" (λ! (aj/org-id-update-recursively)
+                                       (seq-map
+                                        (lambda (dir)
+                                          (aj-org-notes-update-filetags dir))
+                                        (aj-org-brain-get-all-brains))
+                                       (message "Updated file-tags definition.")
+                                       (aj-org-update-help-files)
+                                       (message "Updated `aj-org-help-files' definition."))
+  :desc "indirect"             "I" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
+                                        (buffer-file-name (current-buffer))))
+  :desc "journal jump"         "j" (λ! (aj-org-jump-to-datetree
+                                        (if (and aj-org-agenda-filter
+                                                 (not current-prefix-arg))
+                                            (aj-org-return-filtered-agenda-file)
+                                          (aj/choose-file-from org-agenda-files))
+                                        "JOURNAL"))
+  "c" nil
+  :desc "clock report at"        "ca" (λ! (aj-org-clock-datetree-report
+                                           (if (and aj-org-agenda-filter
+                                                    (not current-prefix-arg))
+                                               (car (aj-org-return-filtered-agenda-file))
+                                             (aj/choose-file-from
                                               (seq-filter
                                                (lambda (file)
                                                  (not (string-match "inbox" file)))
                                                org-agenda-files)))
-  :desc "filter"             "f" (lambda ()
-                                   (interactive)
-                                   (unless aj-org-technical-notes-filetags
-                                     (aj-org-notes-update-filetags aj-org-technical-dir 'aj-org-technical-notes-filetags))
-                                   (aj/org-notes-set-filter-preset aj-org-technical-notes-filetags 'aj-org-technical-notes-filter-preset))
-  "F" nil
-  :desc "personal filter"      "Fp" (lambda ()
-                                      (interactive)
-                                      (unless aj-org-personal-notes-filetags
-                                        (aj-org-notes-update-filetags aj-org-personal-dir 'aj-org-personal-notes-filetags))
-                                      (aj/org-notes-set-filter-preset aj-org-personal-notes-filetags 'aj-org-personal-notes-filter-preset))
-  :desc "private filter"      "Fr" (lambda ()
-                                     (interactive)
-                                     (unless aj-org-private-notes-filetags
-                                       (aj-org-notes-update-filetags aj-org-private-dir 'aj-org-private-notes-filetags))
-                                     (aj/org-notes-set-filter-preset aj-org-private-notes-filetags 'aj-org-private-notes-filter-preset))
-  :desc "grep"               "g" (λ! (aj/org-notes-search-no-link aj-org-technical-dir))
-  :desc "grep dir"           "G" #'aj/org-notes-search-no-link
-  :desc "inbox jump"         "i" (λ! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 3))
-
-  :desc "indirect"           "I" (λ! (aj-open-file-switch-create-indirect-buffer-per-persp
-                                      (buffer-file-name (current-buffer))))
-  :desc "Update IDs and other" "U" (λ!
-                                    (aj/org-id-update-recursively)
-                                    (aj-org-update-help-files)
-                                    (message "Updated `aj-org-help-files' definition.")
-                                    (aj-org-notes-update-filetags aj-org-technical-dir 'aj-org-technical-notes-filetags)
-                                    (aj-org-notes-update-filetags aj-org-personal-dir 'aj-org-personal-notes-filetags)
-                                    (aj-org-notes-update-filetags aj-org-private-dir 'aj-org-private-notes-filetags)
-                                    (message "Updated `aj-org-technical-notes-filetags' definition."))
-  :desc "notes"              "N" (λ! (aj-org-find-file aj-org-technical-dir))
-  :desc "notes headlines"    "n" (λ! (aj-org-jump-to-headline-at (aj-org-get-filtered-org-files aj-org-technical-dir aj-org-technical-notes-filter-preset) 2))
-  :desc "org-dir"            "o" (λ! (aj-org-find-file org-directory))
-  :desc "personal"           "P" (λ! (aj-org-find-file aj-org-personal-dir))
-  :desc "personal headlines" "p" (λ! (aj-org-jump-to-headline-at (aj-org-get-filtered-org-files aj-org-personal-dir aj-org-personal-notes-filter-preset) 2))
-  :desc "query"              "q" #'org-ql-search
-  :desc "brain-resources"    "r" (λ! (org-brain-open-resource (org-brain-choose-entry "Resource from: " 'all)))
-  :desc "headlines all"      "s" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 3))
-  :desc "headlines all DEEP" "S" (λ! (aj-org-jump-to-headline-at (aj-get-all-org-files) 9))
-  :desc "sparse tree"        "t" #'org-ql-sparse-tree
-  :desc "visualize"          "v" #'org-brain-visualize
-  :desc "rise to window"     "z" (lambda (window &optional arg)
-                                   (interactive
-                                    (list (selected-window) current-prefix-arg))
-                                   (let ((buffer (current-buffer))
-                                         (+popup--inhibit-transient t)
-                                         +popup--remember-last)
-                                     (+popup/close window 'force)
-                                     (aj-open-file-switch-create-indirect-buffer-per-persp buffer))
-                                   (selected-window))
-  "x" nil
-  :desc "PRVT refile"     "xr" #'aj/private-refile/body
-  :desc "PRVT headlines"  "xh" (λ! (aj-org-jump-to-headline-at (aj-org-get-filtered-org-files aj-org-private-dir aj-org-private-notes-filter-preset) 2))
-  :desc "PRVT files"      "xf" (λ! (aj-org-find-file aj-org-private-dir))
+                                           (ivy-read "Select time block: "
+                                                     '(today thisweek thismonth))))
+  :desc "clock report today all" "cA" (λ! (mapc (lambda (file)
+                                                  (aj-org-clock-datetree-report file 'today))
+                                                (seq-filter
+                                                 (lambda (file)
+                                                   (not (string-match "inbox" file)))
+                                                 org-agenda-files)))
   )
 
  ;; "m" :localleader

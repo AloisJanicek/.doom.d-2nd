@@ -157,9 +157,19 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
 "
   ("T" (lambda (arg)
          (interactive "P")
-         (if (memq major-mode aj-org-agenda-similar-modes)
-             (call-interactively #'org-agenda-refile)
-           (call-interactively #'org-refile))))
+         (let ((file-list
+                (if current-prefix-arg
+                    (directory-files-recursively
+                     org-brain-path org-agenda-file-regexp)
+                  (aj-org-get-filtered-org-files
+                   org-brain-path
+                   (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))
+
+           (setq org-refile-targets `((,file-list
+                                       :maxlevel . 3)))
+           (if (memq major-mode aj-org-agenda-similar-modes)
+               (call-interactively #'org-agenda-refile)
+             (call-interactively #'org-refile)))))
   ("f" (aj/org-refile-to-file
         (aj/choose-file-from
          (aj-get-all-org-files))))
@@ -586,8 +596,8 @@ Then moves the point to the end of the line."
   (interactive)
   (require 'link-hint)
   (avy-with link-hint-open-link
-            (link-hint--one :open)
-            (org-brain-goto-current)))
+    (link-hint--one :open)
+    (org-brain-goto-current)))
 
 ;;;###autoload
 (defun aj/org-brain-entry-at-pt-a ()
@@ -1288,7 +1298,7 @@ Otherwise dispatch default commands.
   "Return list of all archived org files."
   (seq-filter (lambda (elt)
                 (string-match "org_archive" elt))
-              (directory-files-recursively org-directory "org$")))
+              (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
 (defun aj/org-agenda-headlines (&optional keywords)
@@ -1462,48 +1472,53 @@ path is colorized according to outline faces.
      'marker (copy-marker (point)))))
 
 ;;;###autoload
-(defun aj-org-notes-update-filetags (dir filetags)
-  "Collect all org file filetags in DIR and save them into FILETAGS variable."
-  (set filetags
-       (delete-dups
-        (flatten-list
-         (mapcar (lambda (file)
-                   (when (+org-get-global-property "FILETAGS" file)
-                     (split-string
-                      (+org-get-global-property "FILETAGS" file) ":" t)))
-                 (directory-files-recursively dir ".org$"))))))
+(defun aj-org-notes-update-filetags (dir)
+  "Collect all org file filetags in DIR and save them into `aj-org-notes-filetags' variable."
+  (setq aj-org-notes-filetags
+        (assoc-delete-all dir aj-org-notes-filetags #'string-equal))
+
+  (add-to-list 'aj-org-notes-filetags
+               (cons dir
+                     (list
+                      (delete-dups
+                       (flatten-list
+                        (mapcar (lambda (file)
+                                  (when (+org-get-global-property "FILETAGS" file)
+                                    (split-string
+                                     (+org-get-global-property "FILETAGS" file) ":" t)))
+                                (directory-files-recursively dir ".org$"))))))))
 
 ;;;###autoload
-(defun aj/org-notes-set-filter-preset (filetags preset)
-  "Set value of PRESET according to FILETAGS.
-
-FILETAGS is list of strings representing file tags collected from org files.
-PRESET is a subset of FILETAGS used for filtering when searching org files.
+(defun aj/org-notes-set-filter-preset (dir)
+  "For DIR from `aj-org-notes-filetags' select some tags to use as filter.
 "
   (interactive)
-  (let ((prompt (lambda ()
-                  (format "Tags (%s): "
-                          (mapconcat #'identity (eval preset) ", ")))))
+  (let* ((filetags (car (cdr (assoc dir aj-org-notes-filetags))))
+         (preset (cdr (assoc dir aj-org-notes-filter-preset)))
+         (preset-was-empty (unless preset t))
+         (prompt (lambda ()
+                   (format "Tags (%s): "
+                           (mapconcat #'identity preset ", ")))))
     (ivy-read (funcall prompt)
               filetags
               :action (lambda  (x)
                         "Adopted from `counsel-org-tag-action'."
-                        (if (member x (eval preset))
-                            (set preset
-                                 (delete x (eval preset)))
+                        (if (member x preset)
+                            (setq preset
+                                  (delete x preset))
                           (unless (equal x "")
-                            (set preset
-                                 (append (eval preset) (list x)))
+                            (setq preset
+                                  (append preset (list x)))
                             (unless (member x ivy--all-candidates)
                               (setq ivy--all-candidates (append ivy--all-candidates (list x))))))
                         (setq ivy--prompt (concat "%-4d " (funcall prompt)))
                         (if (eq this-command 'ivy-call)
                             (with-selected-window (active-minibuffer-window)
                               (delete-minibuffer-contents))))
-              :caller 'aj/org-notes-set-filter-preset
-              )
-    )
-  )
+              :caller 'aj/org-notes-set-filter-preset)
+    (if preset-was-empty
+        (add-to-list 'aj-org-notes-filter-preset (cons dir preset))
+      (setcdr (assoc dir aj-org-notes-filter-preset) preset))))
 
 ;;;###autoload
 (defun aj/org-notes-search-no-link (&optional directory)
@@ -1677,6 +1692,45 @@ At the end, source link is deleted.
   "Get value of <title> element downloaded from URL."
   (shell-command-to-string
    (concat "curl '" url "' -so - | grep -iPo '(?<=<title>)(.*)(?=</title>)'")))
+
+;;;###autoload
+(defun aj-org-brain-get-all-brains ()
+  "Return all directories which can be considered as separate brains."
+  (interactive)
+  (require 'ffap)
+  (seq-filter
+   (lambda (dir)
+     (and (not (string-match "attach\\|archive\\|export" dir))
+          (not (string-equal dir org-directory))))
+   (ffap-all-subdirs org-directory 1)))
+
+;;;###autoload
+(defun aj/org-brain-open-from-all-resources (&optional all)
+  "Open link from all org-brain resources."
+  (interactive)
+  (let ((filtered-files
+         (seq-map
+          (lambda (file)
+            (file-name-sans-extension
+             (file-name-nondirectory file)))
+          (aj-org-get-filtered-org-files
+           org-brain-path
+           (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))
+    (org-open-link-from-string
+     (org-brain--choose-resource
+      (remove
+       nil
+       (seq-reduce
+        (lambda (acu entry)
+          (append acu
+                  (when (and
+                         (not (string-match "::" (car entry)))
+                         (if all t (cl-member (car entry) filtered-files :test #'string-match)))
+                    (org-brain-descendants
+                     (cdr entry)))))
+        (org-brain--all-targets)
+        '()))))))
+
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
