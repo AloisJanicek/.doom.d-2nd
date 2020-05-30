@@ -1007,9 +1007,12 @@
  (:prefix ("n" . "notes")
   :desc "brain-goto"         "b" (λ! (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp))
   :desc "switch brain"       "B" (λ! (org-brain-switch-brain
-                                      (ivy-read
-                                       "Brain: "
-                                       (seq-map #'eval '(aj-org-personal-dir aj-org-technical-dir aj-org-private-dir)))))
+                                      (ivy-read "Choose brain: "
+                                                (seq-filter
+                                                 (lambda (dir)
+                                                   (and (not (string-match "attach\\|archive\\|export" dir))
+                                                        (not (string-equal dir org-directory))))
+                                                 (ffap-all-subdirs org-directory 1)))))
   :desc "archive jump"       "A" (λ! (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3))
   :desc "journal jump"       "j" (λ! (aj-org-jump-to-datetree
                                       (if (and aj-org-agenda-filter
