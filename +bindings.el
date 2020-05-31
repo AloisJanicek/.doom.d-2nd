@@ -1020,9 +1020,9 @@
                                            (aj/org-brain-open-from-all-resources))))
 
   :desc "notes grep"           "g" (λ! (aj/org-notes-search-no-link
-                                        (if current-prefix-arg
-                                            nil
-                                          org-brain-path)))
+                                        org-brain-path))
+  :desc "notes grep"           "G" (λ! (let ((current-prefix-arg t))
+                                         (aj/org-notes-search-no-link)))
   :desc "notes query"          "q" (λ! (cl-letf (((symbol-function 'org-ql-view--complete-buffers-files)
                                                   (lambda (&rest _)
                                                     (directory-files-recursively org-brain-path ".org$"))))
