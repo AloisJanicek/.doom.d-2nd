@@ -1204,7 +1204,10 @@ If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
            ((equal :short-break org-pomodoro-state) "Short Break")
            ((equal :long-break org-pomodoro-state) "Long Break"))
      (when aj-org-agenda-filter
-       (concat " :" (upcase (substring-no-properties (car aj-org-agenda-filter) 1 4)) ":")))))
+       (concat " :" (upcase (substring-no-properties (car aj-org-agenda-filter) 1 4)) ":"))
+     ":"
+     (upcase (file-name-nondirectory org-brain-path))
+     )))
 
 ;; ORG LINKS
 ;;;###autoload

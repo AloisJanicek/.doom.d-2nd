@@ -486,7 +486,10 @@ lines are selected, or the NxM dimensions of a block selection.")
       (if org-ql-view-title
           (concat title
                   (when (stringp (car aj-org-agenda-filter))
-                    (concat " [" (string-trim-left (car aj-org-agenda-filter) "+") "]")))
+                    (concat " [" (car aj-org-agenda-filter) "]"))
+                  "::"
+                  (file-name-nondirectory org-brain-path)
+                  )
         title))))
 
 ;;; `+flyspell'
