@@ -21,6 +21,7 @@
         ("shell" . sh)
         ("sqlite" . sql))
       projectile-known-projects nil
+      org-brain-path (expand-file-name "technical" org-directory)
       )
 
 ;; weird backspace issues
