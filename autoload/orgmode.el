@@ -1532,7 +1532,19 @@ path is colorized according to outline faces.
          "rg -M 300 --no-heading --line-number --color never %s"))
     (cl-letf (((symbol-function 'counsel-git-grep-transformer)
                (lambda (str)
-                 (funcall orig-fn (org-link-display-format str)))))
+                 (funcall orig-fn (org-link-display-format str))))
+              ((symbol-function 'counsel--rg-targets)
+               (lambda ()
+                 (if current-prefix-arg
+                     ""
+                   (concat " " (mapconcat
+                                (lambda (file)
+                                  (file-name-nondirectory file))
+                                (aj-org-get-filtered-org-files
+                                 org-brain-path
+                                 (cdr (assoc org-brain-path aj-org-notes-filter-preset)))
+                                " "
+                                ))))))
       (counsel-rg nil dir))))
 
 ;;;###autoload
