@@ -1041,8 +1041,10 @@
   :desc "jump archive"         "A" (λ! (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3))
   :desc "filter"               "f" (λ! (if current-prefix-arg
                                            (progn
-                                             (setcdr (assoc org-brain-path aj-org-notes-filter-preset) nil)
-                                             (message "Cleared filter preset for %s" org-brain-path))
+                                             (aj-org-notes-update-filetags org-brain-path)
+                                             (when (assoc org-brain-path aj-org-notes-filter-preset)
+                                               (setcdr (assoc org-brain-path aj-org-notes-filter-preset) nil))
+                                             (message "Recollected filetags and cleared filter preset for %s" org-brain-path))
                                          (aj/org-notes-set-filter-preset org-brain-path)))
   :desc "Update IDs and other" "U" (λ! (aj/org-id-update-recursively)
                                        (seq-map
