@@ -1720,8 +1720,9 @@ At the end, source link is deleted.
    (ffap-all-subdirs org-directory 1)))
 
 ;;;###autoload
-(defun aj/org-brain-open-from-all-resources (&optional all)
-  "Open link from all org-brain resources."
+(defun aj/org-brain-open-from-all-resources (&optional no-filter)
+  "Open link from all org-brain resources.
+Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-preset'."
   (interactive)
   (let ((filtered-files
          (seq-map
@@ -1740,7 +1741,7 @@ At the end, source link is deleted.
           (append acu
                   (when (and
                          (not (string-match "::" (car entry)))
-                         (if all t (cl-member (car entry) filtered-files :test #'string-match)))
+                         (if no-filter t (cl-member (car entry) filtered-files :test #'string-match)))
                     (org-brain-descendants
                      (cdr entry)))))
         (org-brain--all-targets)

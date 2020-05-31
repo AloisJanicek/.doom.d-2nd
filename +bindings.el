@@ -1046,7 +1046,7 @@
                                                (setcdr (assoc org-brain-path aj-org-notes-filter-preset) nil))
                                              (message "Recollected filetags and cleared filter preset for %s" org-brain-path))
                                          (aj/org-notes-set-filter-preset org-brain-path)))
-  :desc "Update IDs and other" "U" (λ! (aj/org-id-update-recursively)
+  :desc "Update IDs and other" "u" (λ! (aj/org-id-update-recursively)
                                        (seq-map
                                         (lambda (dir)
                                           (aj-org-notes-update-filetags dir))
