@@ -1078,6 +1078,7 @@
                                                  (lambda (file)
                                                    (not (string-match "inbox" file)))
                                                  org-agenda-files)))
+  :desc "private" "x" #'aj/private-refile/body
   )
 
  ;; "m" :localleader
