@@ -1151,9 +1151,14 @@
                                           (org-show-entry))
                                         (turn-off-solaire-mode)))
   (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
+
+  (doom-store-persist doom-store-location '(org-brain-path))
+
+  (unless org-brain-path
+    (setq org-brain-path (expand-file-name "technical" org-directory)))
+
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
-        org-brain-path (expand-file-name "technical" org-directory)
         org-brain-include-file-entries t
         org-brain-file-entries-use-title t
         )
