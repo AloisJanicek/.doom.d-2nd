@@ -1705,8 +1705,15 @@ At the end, source link is deleted.
 ;;;###autoload
 (defun aj-get-web-page-title (url)
   "Get value of <title> element downloaded from URL."
-  (shell-command-to-string
-   (concat "curl '" url "' -so - | grep -iPo '(?<=<title>)(.*)(?=</title>)'")))
+  (let* ((title (string-trim (shell-command-to-string
+                              (concat "curl --max-time 3 '" url "' -so - | grep -iPo '(?<=<title>)(.*)(?=</title>)'"))))
+         (timeout (string-match "Connection timed out" title)))
+    title
+    (if (and title
+             (not timeout)
+             (not (string-empty-p title)))
+        title
+      url)))
 
 ;;;###autoload
 (defun aj-org-brain-get-all-brains ()
