@@ -1656,10 +1656,14 @@ At the end, source link is deleted.
 "
   (interactive)
   (require 'org-protocol)
-  (let* ((re-store-link
+  (let* ((old-brain org-brain-path)
+         (new-brain (when current-prefix-arg (ivy-read "Refile to brain: "
+                                                       (aj-org-brain-get-all-brains))))
+         (re-store-link
           (lambda ()
             (org-toggle-item nil)
-            (let* ((orig-buff (current-buffer))
+            (let* ((current-prefix-arg nil)
+                   (orig-buff (current-buffer))
                    (str (buffer-substring-no-properties
                          (line-beginning-position)
                          (line-end-position)))
@@ -1690,6 +1694,8 @@ At the end, source link is deleted.
          (marker (when agenda
                    (org-get-at-bol 'org-hd-marker)))
          (buff (when marker (marker-buffer marker))))
+    (when new-brain
+      (org-brain-switch-brain new-brain))
     (if agenda
         (with-current-buffer buff
           (org-with-wide-buffer
@@ -1700,6 +1706,8 @@ At the end, source link is deleted.
            (or (org-agenda-redo)
                (org-ql-view-refresh))))
       (funcall re-store-link))
+    (when new-brain
+      (org-brain-switch-brain old-brain))
     (select-window (get-buffer-window buff-orig))))
 
 ;;;###autoload
