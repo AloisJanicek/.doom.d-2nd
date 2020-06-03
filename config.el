@@ -1548,7 +1548,9 @@
 
 (after! org-id
   (setq
-   org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)))
+   org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)
+   org-id-search-archives nil
+   ))
 
 (after! org-list
   (setq
