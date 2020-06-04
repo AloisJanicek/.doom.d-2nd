@@ -1673,11 +1673,14 @@ At the end, source link is deleted.
                            (substring str
                                       (+ 2 (string-match (rx "[[") str))
                                       (string-match (rx "][") str)))))
-                   (title (or (ignore-errors
-                                (substring str
-                                           (+ 2 (string-match (rx "][") str))
-                                           (string-match (rx "]]") str)))
-                              (aj-get-web-page-title url))))
+                   (title-maybe (ignore-errors
+                                  (substring str
+                                             (+ 2 (string-match (rx "][") str))
+                                             (string-match (rx "]]") str))))
+                   (title (if (or (string-equal url title-maybe)
+                                  (not (stringp title-maybe)))
+                              (aj-get-web-page-title url)
+                            title-maybe)))
               (org-protocol-store-link (list :url url :title title))
               (with-current-buffer orig-buff
                 (kill-whole-line)
