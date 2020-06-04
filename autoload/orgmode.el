@@ -1714,7 +1714,7 @@ At the end, source link is deleted.
 (defun aj-get-web-page-title (url)
   "Get value of <title> element downloaded from URL."
   (let* ((title (string-trim (shell-command-to-string
-                              (concat "curl --max-time 3 '" url "' -so - | grep -iPo '(?<=<title>)(.*)(?=</title>)'"))))
+                              (concat (executable-find "title_getter.pl") " " url))))
          (timeout (string-match "Connection timed out" title)))
     title
     (if (and title
