@@ -1757,7 +1757,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                   (when (and
                          (not (string-match "::" (car entry)))
                          (if no-filter t (cl-member (cdr entry) filtered-files :test #'string-match)))
-                    (org-brain-descendants
+                    (org-brain-local-descendants
                      (cdr entry)))))
         (org-brain--all-targets)
         '()))))))
