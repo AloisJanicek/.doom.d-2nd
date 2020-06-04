@@ -1762,6 +1762,39 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
         (org-brain--all-targets)
         '()))))))
 
+;;;###autoload
+(defun aj/jump-to-non-resources-link ()
+  "Jump to one of the links in current buffer which are not inside :RESOURCES: drawer."
+  (interactive)
+  (goto-char (point-min))
+  (re-search-forward "\* ")
+  (let (results)
+    (while (save-excursion
+             (ignore-errors
+               (re-search-forward goto-address-url-regexp)))
+      (ignore-errors
+        (re-search-forward goto-address-url-regexp))
+      (org-narrow-to-subtree)
+      (let ((start (save-excursion (ignore-errors (re-search-backward ":RESOURCES:"))))
+            (end (save-excursion (ignore-errors (re-search-forward ":END:")))))
+        (if (and start end)
+            (progn
+              (widen)
+              (end-of-line))
+          (progn
+            (let ((pair (cons (buffer-substring
+                               (line-beginning-position)
+                               (line-end-position))
+                              (point))))
+              (push pair results)
+              (widen)
+              (end-of-line))))))
+    (ivy-read
+     "results: "
+     results
+     :action (lambda (x)
+               (goto-char (cdr x))
+               (org-show-entry)))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
