@@ -599,27 +599,6 @@ Then moves the point to the end of the line."
     (link-hint--one :open)
     (org-brain-goto-current)))
 
-;;;###autoload
-(defun aj/org-brain-entry-at-pt-a ()
-  "Get current org-brain entry.
-In `org-mode' this is the current headline, or the file.
-In `org-brain-visualize' just return `org-brain--vis-entry'.
-
-This also works with indirect buffers and symbolic links."
-  (cond ((eq major-mode 'org-mode)
-         (unless (string-prefix-p (file-truename (expand-file-name org-brain-path))
-                                  (expand-file-name (buffer-file-name (buffer-base-buffer))))
-           (error "Not in a brain file"))
-         (if (ignore-errors (org-get-heading))
-             (if-let ((id (org-entry-get nil "ID")))
-                 (org-brain-entry-from-id id)
-               (error "Current headline have no ID"))
-           (org-brain-path-entry-name (buffer-file-name))))
-        ((eq major-mode 'org-brain-visualize-mode)
-         org-brain--vis-entry)
-        (t
-         (error "Not in org-mode or org-brain-visualize"))))
-
 ;; ORG-AGENDA
 ;;;###autoload
 (defun aj-org-combined-agenda-files ()

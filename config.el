@@ -1139,7 +1139,11 @@
                                              (persp-add-buffer (current-buffer))
                                              (visual-line-mode)))
   (advice-add #'org-brain-visualize :after #'aj-org-buffers-respect-sanity-a)
-  (advice-add #'org-brain-entry-at-pt :override #'aj/org-brain-entry-at-pt-a)
+  (advice-add #'org-brain-entry-at-pt :around (lambda (orig-fn &rest args)
+                                                (let ((buffer-file-name (or buffer-file-name
+                                                                            (buffer-file-name (buffer-base-buffer))))
+                                                      (org-brain-path (file-truename org-brain-path)))
+                                                  (apply orig-fn args))))
   (advice-add #'org-brain-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-brain-goto :after (lambda (&rest _)
                                         "Recenter visited heading to the top of the buffer."
