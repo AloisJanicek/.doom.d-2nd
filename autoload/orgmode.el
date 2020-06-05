@@ -152,8 +152,8 @@ Works also in `org-agenda'."
                                :idle which-key-idle-delay
                                )
   "
-_t_op level   _j_ournal     refile _T_argets   _v_isible heading   _O_ther buffer     _p_roject             _x_private
-_f_ile        _c_lock       _l_ast location    _._this file        _o_ther window     _P_roject journal     _r_resources
+_t_op level   _j_ournal     refile _T_argets   _v_isible heading   _O_ther buffer     _p_roject             _x_private    _a_rchived resource
+_f_ile        _c_lock       _l_ast location    _._this file        _o_ther window     _P_roject journal     _r_resources  _A_rchived file
 "
   ("T" (lambda (arg)
          (interactive "P")
@@ -191,6 +191,14 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
   ("c" #'+org/refile-to-running-clock)
   ("l" #'+org/refile-to-last-location)
   ("r" #'aj/org-refile-link-to-resources-drawer)
+  ("a" (aj/org-refile-link-to-archived-resources (aj/choose-file-from
+                                                  (directory-files-recursively
+                                                   (expand-file-name "archive" org-brain-path)
+                                                   ".org_archive$"))))
+  ("A" (aj/org-refile-to-file (aj/choose-file-from
+                               (directory-files-recursively
+                                (expand-file-name "archive" org-brain-path)
+                                ".org_archive$"))))
   )
 
 ;; ORG-CAPTURE
@@ -596,8 +604,8 @@ Then moves the point to the end of the line."
   (interactive)
   (require 'link-hint)
   (avy-with link-hint-open-link
-    (link-hint--one :open)
-    (org-brain-goto-current)))
+            (link-hint--one :open)
+            (org-brain-goto-current)))
 
 ;; ORG-AGENDA
 ;;;###autoload
@@ -1319,21 +1327,22 @@ Filters todo headlines according to `aj-org-agenda-filter'.
     ))
 
 ;;;###autoload
-(defun aj-org-get-filtered-org-files (dir preset)
+(defun aj-org-get-filtered-org-files (dir preset &optional archived)
   "Return list of org files from DIR filtered matching filetags specified by PRESET.
 If there are no matching files, return all org files from DIR instead.
 "
-  (let ((files (seq-filter
-                (lambda (file)
-                  (when (+org-get-global-property "FILETAGS" file)
-                    (catch 'tag
-                      (dolist (tag (split-string
-                                    (+org-get-global-property "FILETAGS" file) ":" t))
-                        (when (cl-member tag preset :test #'string-match) (throw 'tag t))))))
-                (directory-files-recursively dir ".org$"))))
+  (let* ((match (if archived ".org_archive$" ".org$"))
+         (files (seq-filter
+                 (lambda (file)
+                   (when (+org-get-global-property "FILETAGS" file)
+                     (catch 'tag
+                       (dolist (tag (split-string
+                                     (+org-get-global-property "FILETAGS" file) ":" t))
+                         (when (cl-member tag preset :test #'string-match) (throw 'tag t))))))
+                 (directory-files-recursively dir match))))
     (if files
         files
-      (directory-files-recursively dir ".org$"))))
+      (directory-files-recursively dir match))))
 
 ;;;###autoload
 (defun aj-ivy-update-fn-timer ()
@@ -1411,7 +1420,11 @@ path is colorized according to outline faces.
          (depth (length outline))
          (level (nth 0 heading))
          (filename (when filename
-                     (+org-get-global-property "TITLE")))
+                     (or
+                      (+org-get-global-property "TITLE")
+                      (file-name-sans-extension
+                       (file-name-nondirectory (or buffer-file-name
+                                                   (buffer-file-name (buffer-base-buffer))))))))
          (colorize-keyword (lambda (color)
                              (add-face-text-property 0 (length keyword) 'bold t keyword)
                              (add-face-text-property 0 (length keyword) `(:foreground ,color) t keyword)))
@@ -1538,7 +1551,7 @@ path is colorized according to outline faces.
                             nil
                             (delete-dups
                              (append
-                              (directory-files-recursively org-directory ".org$")
+                              (directory-files-recursively org-directory ".org")
                               (aj-org-combined-agenda-files)))))))
 
 ;;;###autoload
@@ -1626,6 +1639,35 @@ Org manual: 8.4.2 The clock table.
    (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT b) "999")))))
 
 ;;;###autoload
+(defun aj-org-re-store-link ()
+  "Re-store current link under the point."
+  (org-toggle-item nil)
+  (let* ((current-prefix-arg nil)
+         (orig-buff (current-buffer))
+         (str (buffer-substring-no-properties
+               (line-beginning-position)
+               (line-end-position)))
+         (url (or
+               (thing-at-point-url-at-point)
+               (ignore-errors
+                 (substring str
+                            (+ 2 (string-match (rx "[[") str))
+                            (string-match (rx "][") str)))))
+         (title-maybe (ignore-errors
+                        (substring str
+                                   (+ 2 (string-match (rx "][") str))
+                                   (string-match (rx "]]") str))))
+         (title (if (or (string-equal url title-maybe)
+                        (not (stringp title-maybe)))
+                    (aj-get-web-page-title url)
+                  title-maybe)))
+    (org-protocol-store-link (list :url url :title title))
+    (with-current-buffer orig-buff
+      (kill-whole-line)
+      (save-buffer)
+      (widen))))
+
+;;;###autoload
 (defun aj/org-refile-link-to-resources-drawer ()
   "Refile current link under point into RESOURCES drawer of one of the org-brain items.
 
@@ -1638,39 +1680,14 @@ At the end, source link is deleted.
   (let* ((old-brain org-brain-path)
          (new-brain (when current-prefix-arg (ivy-read "Refile to brain: "
                                                        (aj-org-brain-get-all-brains))))
-         (re-store-link
+         (add-to-resources
           (lambda ()
-            (org-toggle-item nil)
-            (let* ((current-prefix-arg nil)
-                   (orig-buff (current-buffer))
-                   (str (buffer-substring-no-properties
-                         (line-beginning-position)
-                         (line-end-position)))
-                   (url (or
-                         (thing-at-point-url-at-point)
-                         (ignore-errors
-                           (substring str
-                                      (+ 2 (string-match (rx "[[") str))
-                                      (string-match (rx "][") str)))))
-                   (title-maybe (ignore-errors
-                                  (substring str
-                                             (+ 2 (string-match (rx "][") str))
-                                             (string-match (rx "]]") str))))
-                   (title (if (or (string-equal url title-maybe)
-                                  (not (stringp title-maybe)))
-                              (aj-get-web-page-title url)
-                            title-maybe)))
-              (org-protocol-store-link (list :url url :title title))
-              (with-current-buffer orig-buff
-                (kill-whole-line)
-                (save-buffer)
-                (widen))
-              (org-brain-add-resource
-               (nth 0 (car org-stored-links))
-               (nth 1 (car org-stored-links))
-               nil
-               (org-brain-choose-entry "Insert link in entry: " 'all))
-              (pop org-stored-links))))
+            (org-brain-add-resource
+             (nth 0 (car org-stored-links))
+             (nth 1 (car org-stored-links))
+             nil
+             (org-brain-choose-entry "Insert link in entry: " 'all))
+            (pop org-stored-links)))
          (agenda (derived-mode-p 'org-agenda-mode))
          (buff-orig (buffer-name))
          (marker (when agenda
@@ -1685,9 +1702,11 @@ At the end, source link is deleted.
            (let ((org-agenda-buffer-name buff-orig))
              (org-remove-subtree-entries-from-agenda))
            (funcall re-store-link)
+           (aj-org-re-store-link)
            (or (org-agenda-redo)
                (org-ql-view-refresh))))
-      (funcall re-store-link))
+      (funcall re-store-link)
+      (aj-org-re-store-link))
     (when new-brain
       (org-brain-switch-brain old-brain))
     (select-window (get-buffer-window buff-orig))))
@@ -1695,8 +1714,12 @@ At the end, source link is deleted.
 ;;;###autoload
 (defun aj-get-web-page-title (url)
   "Get value of <title> element downloaded from URL."
-  (let* ((title (string-trim (shell-command-to-string
-                              (concat (executable-find "title_getter.pl") " " url))))
+  (let* ((title-maybe (string-trim (shell-command-to-string
+                                    (concat "curl --max-time 3 '" url "' -so - | grep -iPo '(?<=<title>)(.*)(?=</title>)'"))))
+         (title (if (string-match "www.w3.org/2000/svg" title-maybe)
+                    (string-trim (shell-command-to-string
+                                  (concat (executable-find "title_getter.pl") " " url)))
+                  title-maybe))
          (timeout (string-match "Connection timed out" title)))
     title
     (if (and title
@@ -1777,6 +1800,96 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
      :action (lambda (x)
                (goto-char (cdr x))
                (org-show-entry)))))
+
+;;;###autoload
+(defun aj/org-open-from-all-buffer-links (&optional buffer)
+  "Collect and offer all links from current org buffer."
+  (interactive)
+  (with-current-buffer (or buffer
+                           (current-buffer))
+    (if (derived-mode-p 'org-mode)
+        (ivy-read "Links: "
+                  (org-element-map (org-element-parse-buffer) 'link
+                    (lambda (link)
+                      (cons
+                       (let* ((beg (org-element-property :contents-begin link))
+                              (end (org-element-property :contents-end link))
+                              (title (ignore-errors (replace-regexp-in-string
+                                                     "[ \t\n\r]+" " " (buffer-substring-no-properties beg end)))))
+                         (if title
+                             title
+                           (org-element-property :raw-link link)))
+                       (org-element-property :raw-link link)))
+                    nil nil t)
+                  :action (lambda (x)
+                            (org-open-link-from-string (cdr x))))
+      (warn "No org-mode buffer, no links"))))
+
+;;;###autoload
+(defun aj/org-refile-link-to-archived-resources (file &optional level)
+  "Archive link under the point into \"RESOURCES\" drawer of some archived org file."
+  (interactive)
+  (let* ((headings (lambda ()
+                     (aj-org-get-pretty-heading-path t t nil t)))
+         (ivy-height (round (* (frame-height) 0.80)))
+         (link-text (lambda ()
+                      (concat "- " (org-make-link-string
+                                    (nth 0 (car org-stored-links))
+                                    (nth 1 (car org-stored-links))))))
+         ivy-sort-functions-alist)
+    (aj-org-re-store-link)
+    (ivy-read
+     "Resources at: "
+     (append (list file)
+             (org-ql-query
+               :select headings
+               :from file
+               :where `(and (level <= ,(or level 3))
+                            (regexp ":RESOURCES:"))))
+     :action (lambda (x)
+               (if
+                   (cl-member x (directory-files-recursively
+                                 (expand-file-name "archive" org-brain-path)
+                                 ".org_archive$") :test #'string-match)
+                   (progn
+                     ;; insert into filetop RESOURCES
+                     (org-with-point-at
+                         (with-current-buffer (or (get-file-buffer x)
+                                                  (find-file-noselect x))
+                           (point-min-marker))
+                       (goto-char (org-brain-first-headline-position))
+                       (if (re-search-backward org-brain-resources-start-re nil t)
+                           (end-of-line)
+                         (if (re-search-backward org-brain-keyword-regex nil t)
+                             (progn
+                               (end-of-line)
+                               (newline-and-indent))
+                           (goto-char (point-min)))
+                         (insert (concat ":" org-brain-resources-drawer-name ":\n:END:\n"))
+                         (re-search-backward org-brain-resources-start-re nil t)
+                         (end-of-line))
+                       (newline-and-indent)
+                       (insert (funcall link-text))
+                       (save-buffer))
+                     )
+                 (progn
+                   ;; insert into heading RESOURCES
+                   (org-with-point-at (get-text-property 0 'marker x)
+                     (goto-char (cdr (org-get-property-block)))
+                     (forward-line 1)
+                     (if (looking-at org-brain-resources-start-re)
+                         (end-of-line)
+                       (open-line 1)
+                       (indent-for-tab-command)
+                       (insert (concat ":" org-brain-resources-drawer-name ":"))
+                       (save-excursion
+                         (insert "\n")
+                         (indent-for-tab-command)
+                         (insert ":END:")))
+                     (newline-and-indent)
+                     (insert (funcall link-text))
+                     (save-buffer))))
+               x))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

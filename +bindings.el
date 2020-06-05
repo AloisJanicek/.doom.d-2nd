@@ -330,6 +330,7 @@
 
   "l" nil
   (:prefix ("l" . "link")
+   :desc "all"              "a" #'aj/org-open-from-all-buffer-links
    :desc "follow"           "f" #'link-hint-open-link
    :desc "headline"         "h" #'aj/org-insert-link-into-heading
    :desc "insert"           "i" #'org-insert-link
@@ -1027,7 +1028,7 @@
                                                   (lambda (&rest _)
                                                     (directory-files-recursively org-brain-path ".org$"))))
                                          (call-interactively #'org-ql-search)))
-  :desc "notes heading"        "n" (λ! (aj-org-jump-to-headline-at
+  :desc "notes headings"       "n" (λ! (aj-org-jump-to-headline-at
                                         (if (not current-prefix-arg)
                                             (aj-org-get-filtered-org-files
                                              org-brain-path
@@ -1038,7 +1039,23 @@
                                            (aj-org-find-file org-directory)
                                          (aj-org-find-file org-brain-path)))
   :desc "jump inbox"           "i" (λ! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 3))
-  :desc "jump archive"         "A" (λ! (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3))
+  :desc "archive headings"     "a" (λ! (if current-prefix-arg
+                                           (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3)
+                                         (aj-org-jump-to-headline-at
+                                          (aj-org-get-filtered-org-files
+                                           (expand-file-name "archive" org-brain-path)
+                                           (cdr (assoc org-brain-path aj-org-notes-filter-preset))
+                                           t))))
+  :desc "archive open"          "A" (λ!
+                                     (if current-prefix-arg
+                                         (let* ((file (ivy-read "Selet file: "
+                                                                (directory-files-recursively
+                                                                 (expand-file-name "archive" org-brain-path)
+                                                                 ".org_archive$")))
+                                                (buffer (or (get-file-buffer file)
+                                                            (find-file-noselect file))))
+                                           (aj/org-open-from-all-buffer-links buffer))
+                                       (aj-org-find-file (expand-file-name "archive" org-brain-path))))
   :desc "filter"               "f" (λ! (if current-prefix-arg
                                            (progn
                                              (aj-org-notes-update-filetags org-brain-path)
