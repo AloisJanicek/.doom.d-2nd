@@ -1712,7 +1712,9 @@ At the end, source link is deleted.
                    (org-get-at-bol 'org-hd-marker)))
          (buff (when marker (marker-buffer marker))))
     (when new-brain
+      (setq aj-currently-refiling t)
       (org-brain-switch-brain new-brain))
+    
     (if agenda
         (with-current-buffer buff
           (org-with-wide-buffer
@@ -1725,8 +1727,11 @@ At the end, source link is deleted.
                (org-ql-view-refresh))))
       (aj-org-re-store-link)
       (funcall add-to-resources))
+
     (when new-brain
-      (org-brain-switch-brain old-brain))
+      (org-brain-switch-brain old-brain)
+      (setq aj-currently-refiling nil))
+    
     (select-window (get-buffer-window buff-orig))))
 
 ;;;###autoload

@@ -1156,16 +1156,17 @@
                                                         (file-truename (expand-file-name "private" org-directory)))
                                                        (current-prefix-arg nil)
                                                        (old-brain org-brain-path))
-                                                   (when (file-equal-p
-                                                          (file-truename directory)
-                                                          encrypted-dir)
+                                                   (when (and (file-equal-p
+                                                               (file-truename directory)
+                                                               encrypted-dir)
+                                                              (not aj-currently-refiling))
                                                      (aj-decrypt-encrypt-files-directory directory))
                                                    (funcall orig-fn directory)
-                                                   (when (file-equal-p
-                                                          encrypted-dir
-                                                          (file-truename old-brain))
-                                                     (aj-decrypt-encrypt-files-directory old-brain t))
-                                                   )))
+                                                   (when (and (file-equal-p
+                                                               encrypted-dir
+                                                               (file-truename old-brain))
+                                                              (not aj-currently-refiling))
+                                                     (aj-decrypt-encrypt-files-directory old-brain t)))))
 
   (doom-store-persist doom-store-location '(org-brain-path))
 
