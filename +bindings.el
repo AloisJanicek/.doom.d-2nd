@@ -287,8 +287,18 @@
    )
 
   "T"  nil
-  (:prefix ("T" . "toggle")
-   :desc "item" "i" #'org-toggle-item
+  (:prefix ("T" . "teleport")
+   :desc "item"    "i" #'org-toggle-item
+   :desc "buffer"  "b" (lambda ()
+                         (interactive)
+                         (aj-org-teleport-heading-here (buffer-file-name)))
+   :desc "Brain"   "B" (lambda ()
+
+                         (interactive)
+                         (aj-org-teleport-heading-here (ivy-read "brain file: "
+                                                                 (directory-files-recursively
+                                                                  org-brain-path
+                                                                  ".org$"))))
    )
 
   :desc "sort" "^" #'org-sort
@@ -313,7 +323,14 @@
   :desc "wiki"                "w" #'aj/org-mode-menu
   "r" nil
   :desc "refile"              "r" #'aj/org-refile-hydra/body
-
+  :desc "resurrect"           "R" (λ!
+                                   (aj-org-teleport-heading-here
+                                    (ivy-read "Selet file: "
+                                              (if current-prefix-arg
+                                                  (aj-get-all-archived-org-files)
+                                                (directory-files-recursively
+                                                 (expand-file-name "archive" org-brain-path)
+                                                 ".org_archive$")))))
   "e" nil
   (:prefix ("e" . "export")
    :desc "dispatch"    "d" #'org-export-dispatch

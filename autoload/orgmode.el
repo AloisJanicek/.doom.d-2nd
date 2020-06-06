@@ -604,8 +604,8 @@ Then moves the point to the end of the line."
   (interactive)
   (require 'link-hint)
   (avy-with link-hint-open-link
-            (link-hint--one :open)
-            (org-brain-goto-current)))
+    (link-hint--one :open)
+    (org-brain-goto-current)))
 
 ;; ORG-AGENDA
 ;;;###autoload
@@ -1890,6 +1890,35 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                      (insert (funcall link-text))
                      (save-buffer))))
                x))))
+
+;;;###autoload
+(defun aj-org-teleport-heading-here (file)
+  "Copy heading from FILE to the current point."
+  (interactive)
+  (let ((headings (lambda ()
+                    (aj-org-get-pretty-heading-path t t nil t)))
+        (ivy-height (round (* (frame-height) 0.80)))
+        (org-yank-adjusted-subtrees t)
+        heading ivy-sort-functions-alist timer)
+    (ivy-read
+     "Go to: "
+     (org-ql-query
+       :select headings
+       :from file)
+     :action (lambda (x)
+               (setq heading (get-text-property 0 'marker x))))
+    (with-current-buffer (marker-buffer heading)
+      (goto-char heading)
+      (org-cut-subtree)
+      (save-buffer))
+    (org-yank)
+    (progn
+      (org-delete-property-globally "ARCHIVE_TIME")
+      (org-delete-property-globally "ARCHIVE_FILE")
+      (org-delete-property-globally "ARCHIVE_OLPATH")
+      (org-delete-property-globally "ARCHIVE_CATEGORY")
+      (org-delete-property-globally "ARCHIVE_ITAGS"))
+    (save-buffer)))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
