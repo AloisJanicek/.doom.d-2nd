@@ -38,25 +38,28 @@ Which operation will be executed depends on value of ENCRYPT."
           (insert decoded)
         (insert cipher))
       (save-buffer)
-      (message "%s ...done" operation))))
+      (message "%s file: %s..." operation file))))
 
 ;;;###autoload
 (defun aj-decrypt-encrypt-files-directory (directory &optional encrypt)
   "Decrypt or encrypt files in directory DIRECTORY.
 Which operation will be executed depends on value of ENCRYPT."
-  (let ((files (directory-files directory t ".org"))
-        (encrypted '())
-        (decrypted '()))
+  (let ((files (directory-files-recursively directory ".org"))
+        encrypted decrypted)
     (dolist (i files)
       (if (string-match "BEGIN PGP MESSAGE"
                         (shell-command-to-string (concat "head -n 1 " i)))
-          (add-to-list 'encrypted i)
-        (add-to-list 'decrypted i)))
+          (push i encrypted)
+        (push i decrypted)))
     (if encrypt
-        (dolist (i decrypted)
-          (aj-decrypt-encrypt-file i t))
-      (dolist (i encrypted)
-        (aj-decrypt-encrypt-file i)))))
+        (progn
+          (dolist (i decrypted)
+            (aj-decrypt-encrypt-file i t))
+          (message "Encrypted %s files." (length decrypted)))
+      (progn
+        (dolist (i encrypted)
+          (aj-decrypt-encrypt-file i))
+        (message "Decrypted %s files." (length encrypted))))))
 
 ;;;###autoload
 (defun aj/flyspell-enable ()
@@ -1004,12 +1007,12 @@ Depends on \"jsdv\" yasnippet snippet expanding to jsdoc docstring.
 
 ;;;###autoload
 (defun project-try-dart (dir)
-    "Help project.el in finding the project root for your dart file."
-    (let ((project (or (locate-dominating-file dir "pubspec.yaml")
-                       (locate-dominating-file dir "BUILD"))))
-      (if project
-          (cons 'dart project)
-        (cons 'transient dir))))
+  "Help project.el in finding the project root for your dart file."
+  (let ((project (or (locate-dominating-file dir "pubspec.yaml")
+                     (locate-dominating-file dir "BUILD"))))
+    (if project
+        (cons 'dart project)
+      (cons 'transient dir))))
 
 ;;;###autoload
 (defun aj/run-some-code-test-tool ()
