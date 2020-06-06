@@ -616,8 +616,8 @@ Then moves the point to the end of the line."
   (interactive)
   (require 'link-hint)
   (avy-with link-hint-open-link
-    (link-hint--one :open)
-    (org-brain-goto-current)))
+            (link-hint--one :open)
+            (org-brain-goto-current)))
 
 ;; ORG-AGENDA
 ;;;###autoload
