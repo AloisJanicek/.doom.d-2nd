@@ -1151,6 +1151,22 @@
                                         (turn-off-solaire-mode)))
   (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
 
+  (advice-add #'org-brain-switch-brain :around (lambda (orig-fn directory)
+                                                 (let ((encrypted-dir
+                                                        (file-truename (expand-file-name "private" org-directory)))
+                                                       (current-prefix-arg nil)
+                                                       (old-brain org-brain-path))
+                                                   (when (file-equal-p
+                                                          (file-truename directory)
+                                                          encrypted-dir)
+                                                     (aj-decrypt-encrypt-files-directory directory))
+                                                   (funcall orig-fn directory)
+                                                   (when (file-equal-p
+                                                          encrypted-dir
+                                                          (file-truename old-brain))
+                                                     (aj-decrypt-encrypt-files-directory directory t))
+                                                   )))
+
   (doom-store-persist doom-store-location '(org-brain-path))
 
   (unless org-brain-path
