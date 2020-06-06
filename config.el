@@ -112,7 +112,7 @@
   )
 
 (after! avy
-  (setq avy-all-windows nil
+  (setq avy-all-windows t
         avy-background t))
 
 (use-package! bats-mode

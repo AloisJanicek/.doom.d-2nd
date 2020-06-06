@@ -1039,7 +1039,7 @@
 
   :desc "notes grep"           "g" (λ! (aj/org-notes-search-no-link
                                         org-brain-path))
-  :desc "notes grep"           "G" (λ! (let ((current-prefix-arg t))
+  :desc "notes grep"           "G" (λ! (let ((current-prefix-arg '(4)))
                                          (aj/org-notes-search-no-link)))
   :desc "notes query"          "q" (λ! (cl-letf (((symbol-function 'org-ql-view--complete-buffers-files)
                                                   (lambda (&rest _)
