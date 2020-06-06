@@ -150,7 +150,6 @@
  ;;nix
  (ocaml +lsp)
  (org +dragndrop +pandoc +hugo +pomodoro)
- perl
  (php +lsp)
  ;;plantuml
  purescript
@@ -160,6 +159,7 @@
   )
  ;;qt
  racket
+ raku
  rest
  ;; rst
  (ruby +lsp)
