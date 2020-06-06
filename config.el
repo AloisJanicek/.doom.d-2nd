@@ -1164,7 +1164,7 @@
                                                    (when (file-equal-p
                                                           encrypted-dir
                                                           (file-truename old-brain))
-                                                     (aj-decrypt-encrypt-files-directory directory t))
+                                                     (aj-decrypt-encrypt-files-directory old-brain t))
                                                    )))
 
   (doom-store-persist doom-store-location '(org-brain-path))
