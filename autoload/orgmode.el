@@ -1697,6 +1697,7 @@ At the end, source link is deleted.
   (let* ((old-brain org-brain-path)
          (new-brain (when current-prefix-arg (ivy-read "Refile to brain: "
                                                        (aj-org-brain-get-all-brains))))
+         (current-prefix-arg nil)
          (add-to-resources
           (lambda ()
             (org-brain-add-resource
