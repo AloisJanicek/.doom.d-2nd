@@ -152,7 +152,7 @@ Works also in `org-agenda'."
                                :idle which-key-idle-delay
                                )
   "
-_t_op level   _j_ournal     refile _T_argets   _v_isible heading   _O_ther buffer     _p_roject             _x_private    _a_rchived resource
+_t_op level   _j_ournal     refile _T_argets   _v_isible heading   _O_ther buffer     _p_roject             _x_private    _a_rchived resource _s_election
 _f_ile        _c_lock       _l_ast location    _._this file        _o_ther window     _P_roject journal     _r_resources  _A_rchived file
 "
   ("T" (lambda (arg)
@@ -199,6 +199,18 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
                                (directory-files-recursively
                                 (expand-file-name "archive" org-brain-path)
                                 ".org_archive$"))))
+  ("s" (if current-prefix-arg
+           ;; default to current buffer
+           ;; one prefix - filtered brain files
+           ;; two prefixes - all brain files
+           (if (eq (car current-prefix-arg) 16)
+               (aj-org-refile-region
+                (directory-files-recursively org-brain-path ".org$"))
+             (aj-org-refile-region
+              (aj-org-get-filtered-org-files
+               org-brain-path
+               (cdr (assoc org-brain-path aj-org-notes-filter-preset)))))
+         (aj-org-refile-region (buffer-file-name))))
   )
 
 ;; ORG-CAPTURE
@@ -1919,6 +1931,38 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
       (org-delete-property-globally "ARCHIVE_CATEGORY")
       (org-delete-property-globally "ARCHIVE_ITAGS"))
     (save-buffer)))
+
+;;;###autoload
+(defun my/move-region-to-heading (&optional heading)
+  "Move current region to a user-selected heading or programmatically to HEADING represented by a marker."
+  (interactive (list
+                (nth 3 (org-refile-get-location "Move region to: "))))
+  (let* ((target-marker heading))
+    (atomic-change-group
+      (kill-region (region-beginning) (region-end))
+      (set-buffer (marker-buffer target-marker))
+      (goto-char target-marker)
+      (org-back-to-heading t)
+      (outline-next-heading)
+      (insert "\n")
+      (yank)
+      (insert "\n"))))
+
+;;;###autoload
+(defun aj-org-refile-region (file-or-files)
+  "Refile current region under heading in FILE-OR-FILES."
+  (let ((headings (lambda ()
+                    (aj-org-get-pretty-heading-path t t nil t)))
+        (ivy-height (round (* (frame-height) 0.80)))
+        ivy-sort-functions-alist timer)
+    (ivy-read
+     "Go to: "
+     (org-ql-query
+       :select headings
+       :from file)
+     :action (lambda (x)
+               (my/move-region-to-heading
+                (get-text-property 0 'marker x))))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
