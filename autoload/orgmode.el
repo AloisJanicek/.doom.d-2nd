@@ -1532,27 +1532,32 @@ path is colorized according to outline faces.
   "Remove org link syntax from grep search results."
   (interactive)
   (require 'org)
-  (let ((orig-fn (symbol-function 'counsel-git-grep-transformer))
-        (dir (or directory
-                 (read-directory-name "Search directory: " org-directory)))
-        (counsel-rg-base-command
-         "rg -M 300 --no-heading --line-number --color never %s"))
+  (let* ((orig-fn (symbol-function 'counsel-git-grep-transformer))
+         (dir (or directory
+                  (read-directory-name "Search directory: " org-directory)))
+         (cancel-filter (when (eq (car current-prefix-arg) 4) t))
+         (search-archive (when (eq (car current-prefix-arg) 16)
+                           (setq cancel-filter t)
+                           t))
+         (counsel-rg-base-command
+          "rg -M 300 --no-heading --line-number --color never %s"))
     (cl-letf (((symbol-function 'counsel-git-grep-transformer)
                (lambda (str)
                  (funcall orig-fn (org-link-display-format str))))
               ((symbol-function 'counsel--rg-targets)
                (lambda ()
-                 (if current-prefix-arg
-                     ""
-                   (concat " " (mapconcat
-                                (lambda (file)
-                                  (file-name-nondirectory file))
-                                (aj-org-get-filtered-org-files
-                                 org-brain-path
-                                 (cdr (assoc org-brain-path aj-org-notes-filter-preset)))
-                                " "
-                                ))))))
-      (counsel-rg nil dir))))
+                 (if cancel-filter
+                     nil
+                   (seq-map
+                    (lambda (file)
+                      (file-name-nondirectory file))
+                    (aj-org-get-filtered-org-files
+                     org-brain-path
+                     (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))))
+      (when search-archive
+        (setq dir (expand-file-name "archive" dir)))
+      (let ((current-prefix-arg nil))
+        (counsel-rg nil dir)))))
 
 ;;;###autoload
 (defun aj-org-update-help-files ()
@@ -1713,12 +1718,12 @@ At the end, source link is deleted.
            (goto-char marker)
            (let ((org-agenda-buffer-name buff-orig))
              (org-remove-subtree-entries-from-agenda))
-           (funcall re-store-link)
            (aj-org-re-store-link)
+           (funcall add-to-resources)
            (or (org-agenda-redo)
                (org-ql-view-refresh))))
-      (funcall re-store-link)
-      (aj-org-re-store-link))
+      (aj-org-re-store-link)
+      (funcall add-to-resources))
     (when new-brain
       (org-brain-switch-brain old-brain))
     (select-window (get-buffer-window buff-orig))))
