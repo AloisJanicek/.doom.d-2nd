@@ -1207,7 +1207,6 @@
   :after org
   :config
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
-  (advice-add #'org-ql-view-refresh :around #'doom-shut-up-a)
   (advice-add #'org-ql-view-refresh :after (lambda (&rest _)
                                              "Blacklist certain Org-QL views from re-applying agenda filter."
                                              (let ((buffer (prin1-to-string (current-buffer))))
