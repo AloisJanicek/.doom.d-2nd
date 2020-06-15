@@ -57,7 +57,7 @@ if running under WSL")
  Useful when capturing code snippets.")
 
 (defvar aj-help-buffer-modes
-  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode
+  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode org-journal-mode
              Man-mode woman-mode org-mode org-brain-visualize-mode tldr-mode)
   "List of major modes for buffers to be consider as help buffers.")
 

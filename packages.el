@@ -1,6 +1,8 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
 
+(unpin! org-roam)
+
 (package! ace-link)
 
 (package! ahk-mode)
@@ -98,6 +100,8 @@
 
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags"))
+
+(package! org-roam-server)
 
 (package! org-sidebar
   :recipe (:host github :repo "alphapapa/org-sidebar"))

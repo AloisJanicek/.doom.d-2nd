@@ -1106,6 +1106,10 @@ in temporarily popup window on the right side of the frame.
                               (autosave . t))))
             (with-current-buffer buffer
               (turn-off-solaire-mode)
+              ;; fix for better compatibility with upstream functions not accounting for indirect buffers
+              (when (buffer-base-buffer)
+                (setq-local buffer-file-truename
+                            (file-truename (buffer-file-name (buffer-base-buffer)))))
               (setq aj-last-popup-win
                     (get-buffer-window (current-buffer))))))
 
@@ -1775,7 +1779,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
           (aj-org-get-filtered-org-files
            org-brain-path
            (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))
-    (org-open-link-from-string
+    (org-link-open-from-string
      (org-brain--choose-resource
       (remove
        nil
@@ -1974,6 +1978,22 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
      :action (lambda (x)
                (my/move-region-to-heading
                 (get-text-property 0 'marker x))))))
+
+
+;;;###autoload (autoload 'aj/org-roam-hydra/body "autoload/orgmode" nil t)
+(defhydra aj/org-roam (:color blue)
+  "roam: "
+  ("f" #'org-roam-find-file "file")
+  ("s" (lambda ()
+         (interactive)
+         (org-roam-server-mode)
+         (let ((server-buff (get-buffer "*eaf Org Roam Server*")))
+           (if server-buff
+               (pop-to-buffer server-buff)
+             (eaf-open-browser "127.0.0.1:8080")))) "server")
+  ("i" #'org-roam-insert "insert")
+  ("t" #'org-roam-buffer-toggle-display "toggle")
+  )
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

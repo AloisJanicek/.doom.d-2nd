@@ -377,6 +377,7 @@
     )
    )
 
+  "m" nil
   (:prefix ("m" . "mind")
    :desc "visualize"    "v" #'aj/org-brain-visualize-entry-at-pt
 
@@ -1035,13 +1036,17 @@
                                                       (aj-org-brain-get-all-brains)))
                                          (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp)))
   :desc "brain-visualize"      "v" #'org-brain-visualize
+  "r" nil
   :desc "brain-resource"       "r" (λ! (if (eq (car current-prefix-arg) 4)
                                            (aj/org-brain-open-from-all-resources t)
                                          (if (eq (car current-prefix-arg) 16)
                                              (org-brain-open-resource
                                               (org-brain-choose-entry "Resource from: " 'all))
                                            (aj/org-brain-open-from-all-resources))))
-
+  :desc "roam"                 "R" (λ! (if current-prefix-arg
+                                           ;; switch to different roam
+                                           (progn )
+                                         (aj/org-roam/body)))
   :desc "notes grep"           "g" (λ! (aj/org-notes-search-no-link
                                         org-brain-path))
   :desc "notes grep"           "G" (λ! (let ((current-prefix-arg '(4)))
@@ -1101,6 +1106,11 @@
                                             (aj-org-return-filtered-agenda-file)
                                           (aj/choose-file-from org-agenda-files))
                                         "JOURNAL"))
+
+  :desc "org-journal"          "J" (λ! (if current-prefix-arg
+                                           (let (current-prefix-arg)
+                                             (org-journal-new-entry nil))
+                                         (call-interactively #'org-journal-new-entry)))
   "c" nil
   :desc "clock report at"        "ca" (λ! (aj-org-clock-datetree-report
                                            (if (and aj-org-agenda-filter

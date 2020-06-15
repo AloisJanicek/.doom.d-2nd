@@ -19,7 +19,7 @@
   )
 
  :ui
- ;;deft
+ deft
  doom
  doom-dashboard
  doom-quit
@@ -149,7 +149,7 @@
  nim
  ;;nix
  (ocaml +lsp)
- (org +dragndrop +pandoc +hugo +pomodoro)
+ (org +dragndrop +pandoc +hugo +pomodoro +roam +journal)
  (php +lsp)
  ;;plantuml
  purescript

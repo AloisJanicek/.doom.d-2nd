@@ -345,6 +345,22 @@
 (use-package! define-word
   :commands (define-word  define-word-at-point))
 
+(after! deft
+  (require 'org-roam)
+  (setq deft-directory org-roam-directory)
+  (advice-add #'deft-open-file
+              :around
+              (lambda (orig-fn &rest args)
+                (cl-letf (((symbol-function 'switch-to-buffer)
+                           #'aj-open-file-switch-create-indirect-buffer-per-persp))
+                  (apply orig-fn args))))
+  (advice-add #'deft-open-file :around #'aj-org-buffer-to-popup-a)
+  (add-hook 'deft-open-file-hook (lambda (&rest _)
+                                   (with-current-buffer
+                                       (get-buffer "*Deft*")
+                                     (bury-buffer))))
+  )
+
 (use-package! dart-mode
   :commands dart-mode
   :config
@@ -1567,6 +1583,22 @@
    org-id-search-archives nil
    ))
 
+(setq org-journal-dir (file-name-as-directory "roam"))
+
+(after! org-journal
+  (setq org-journal-date-prefix "#+TITLE: "
+        org-journal-file-format "%Y-%m-%d.org"
+        org-journal-date-format "%A, %d %B %Y"
+        org-journal-time-prefix "* ")
+  (advice-add #'org-journal-new-entry :after (lambda (&rest _) (evil-insert 0)))
+  (advice-add #'org-journal-new-entry :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-journal-new-entry :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-journal-open-current-journal-file :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-journal-open-current-journal-file :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-journal-read-or-display-entry :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-journal-read-or-display-entry :around #'aj-org-buffer-to-popup-a)
+  )
+
 (after! org-list
   (setq
    org-checkbox-hierarchical-statistics t))
@@ -1581,6 +1613,22 @@
         org-pomodoro-mode-line nil)
   (doom-store-persist doom-store-location '(org-pomodoro-count))
   (add-hook! 'org-clock-out-hook #'org-pomodoro-kill)
+  )
+
+(after! org-roam
+  (setq org-roam-directory (expand-file-name "roam" org-directory)
+        org-roam-buffer-width 0.2
+        )
+  (advice-add #'org-roam-find-file :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-roam-find-file :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-roam-unlinked-references :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-roam-unlinked-references :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-roam-protocol-open-file :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-roam-protocol-open-file :around #'aj-org-buffer-to-popup-a)
+  )
+
+(use-package! org-roam-server
+  :after org-roam
   )
 
 (after! pdf-view
@@ -1657,6 +1705,7 @@
   (add-hook 'project-find-functions #'project-try-dart))
 
 (after! projectile
+  (remove-hook 'projectile-find-file-hook #'yankpad-local-category-to-projectile)
   (setq projectile-track-known-projects-automatically nil
         projectile-project-search-path aj-repos-dir
         )
@@ -1978,9 +2027,9 @@
   (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   :config
   (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
-  (remove-hook 'after-change-major-mode-hook #'yankpad-local-category-to-major-mode)
-  (remove-hook 'projectile-find-file-hook #'yankpad-local-category-to-projectile)
   )
+
+(remove-hook 'after-change-major-mode-hook #'yankpad-local-category-to-major-mode)
 
 (after! yasnippet
   (setq yas-wrap-around-region t

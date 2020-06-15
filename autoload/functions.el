@@ -750,7 +750,7 @@ Around advice for `ivy--switch-buffer-action'.
        aj-org-help-files)
       (cl-letf (((symbol-function 'switch-to-buffer)
                  (lambda (buffer &rest _)
-                   (cond ((eq (with-current-buffer buffer major-mode) 'org-mode)
+                   (cond ((memq (with-current-buffer buffer major-mode) '(org-mode org-journal-mode))
                           (aj-display-org-buffer-popup buffer))
                          (t (pop-to-buffer buffer))))))
         (funcall orig-fn buffer))
