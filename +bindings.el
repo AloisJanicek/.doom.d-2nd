@@ -820,6 +820,7 @@
   :desc "mixed pitch"       "M" #'mixed-pitch-mode
   :desc "pretty symbols"    "p" #'prettify-symbols-mode
   :desc "re-builder"        "R" #'regexp-builder
+  :desc "Chromium incognito private" "P" #'aj/chromium-toggle-incognito
   :desc "flyspell"          "s" #'aj/flyspell-enable
   :desc "swap dictionaries" "S" (λ! (aj-ispell-swap-two-dicts "english" "czech"))
   :desc "treemacs"          "t" #'+treemacs/toggle

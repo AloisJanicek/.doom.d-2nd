@@ -1031,6 +1031,18 @@ If there is no associated entry present for current major mode, throw warning.
         (funcall fn cmd)
       (warn "%s isn't configured in `aj-modes-tests-alist'" major-mode))))
 
+;;;###autoload
+(defun aj/chromium-toggle-incognito ()
+  "Toggle incognito mode for link opened with Chromium browser."
+  (interactive)
+  (if (cl-member "--incognito" browse-url-chromium-arguments :test #'string-match)
+      (progn
+        (setq browse-url-chromium-arguments (cl-remove "--incognito" browse-url-chromium-arguments :test #'equal))
+        (message "Turning OFF incognito mode for Chromium: %s" browse-url-chromium-arguments))
+    (progn
+      (add-to-list 'browse-url-chromium-arguments "--incognito")
+      (message "Turning ON incognito mode for Chromium: %s " browse-url-chromium-arguments))))
+
 (provide 'functions)
 
 ;;; functions.el ends here
