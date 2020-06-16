@@ -1062,6 +1062,22 @@
 
 (remove-hook 'org-mode-hook #'flyspell-mode)
 
+(after! ol
+  (advice-add
+   #'org-link-open-from-string
+   :override
+   (lambda (s &rest _)
+     "Handle path links with spaces."
+     (interactive)
+     (with-temp-buffer
+       (let ((org-inhibit-startup nil))
+         (insert "[[]]")
+         (goto-char (point-min))
+         (goto-char (+ (point) 2))
+         (insert s)
+         (org-mode)
+         (org-open-at-point))))))
+
 (after! org
   (aj-org-update-help-files)
   (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
