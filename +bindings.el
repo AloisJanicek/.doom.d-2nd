@@ -245,6 +245,9 @@
   :nm "S-<tab>" #'org-shifttab
   :nm "C-j" nil
   :nm "C-k" nil
+  :localleader
+  "n" #'org-noter
+  "i" #'org-noter-insert-note
   )
 
  ;;; occur
@@ -604,6 +607,9 @@
   :nm "q" (λ! (when buffer-file-name
                 (doom-store-put buffer-file-name (pdf-view-current-page) nil "pdf-view-page"))
               (kill-this-buffer))
+  :localleader
+  "n" #'org-noter
+  "i" #'org-noter-insert-note
   :map pdf-outline-minor-mode-map
   :nm "o" (lambda ()
             (interactive)
