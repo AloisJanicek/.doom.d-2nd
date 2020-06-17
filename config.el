@@ -1332,7 +1332,6 @@
   )
 
 (after! org-capture
-  (require 'yankpad)
   (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
   (add-hook 'org-capture-after-finalize-hook #'aj/org-clock-update-heading)
   (setq
