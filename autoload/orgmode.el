@@ -1189,7 +1189,10 @@ _o_ut            _h_istory   _k_ontext _e_ffort  _C_ancel
   "Return status info about `org-pomodoro'.
 If `org-pomodoro' is not running, try to print info about org-clock.
 If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
-  (when (featurep 'org)
+  (when (and
+         (featurep 'org)
+         (featurep 'org-capture)
+         )
     (require 'org-pomodoro)
     (concat
      (cond ((equal :none org-pomodoro-state)
