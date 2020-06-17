@@ -1619,6 +1619,10 @@
   (setq
    org-checkbox-hierarchical-statistics t))
 
+(after! org-noter
+  (advice-add #'org-noter :after #'aj-calibre-org-update-org-noter-files)
+  )
+
 ;; (after! org-protocol
 ;;   (load! "local/org-protocol-capture-html/org-protocol-capture-html.el"))
 

@@ -2000,5 +2000,32 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
   ("t" #'org-roam-buffer-toggle-display "toggle")
   )
 
+;;;###autoload
+(defun aj-calibre-org-update-org-noter-files ()
+  "Set value of `aj-calibre-org-files'."
+  (message "Updating value of `aj-calibre-org-files'...")
+  (setq aj-calibre-org-files (directory-files-recursively aj-calibre-path ".org$"))
+  (message "Updating value of `aj-calibre-org-files'...done")
+  ;; add to help files
+  (setq aj-org-help-files (append aj-org-help-files aj-calibre-org-files)))
+
+;;;###autoload
+(defun aj/calibre-org-open-org-noter-note ()
+  "Open one of the `aj-calibre-org-files' specially."
+  (interactive)
+  (unless aj-calibre-org-noter-files-first-run
+    (aj-calibre-org-update-org-noter-files)
+    (setq aj-calibre-org-noter-files-first-run t))
+  (ivy-read "Select book note: "
+            (seq-map
+             (lambda (file)
+               (cons (file-name-nondirectory file) file))
+             aj-calibre-org-files)
+            :action
+            (lambda (file-pair)
+              (let* ((file (cdr file-pair)))
+                (aj-display-org-buffer-popup (or (get-file-buffer file)
+                                                 (find-file-noselect file)))))))
+
 (provide 'orgmode)
 ;;; orgmode.el ends here

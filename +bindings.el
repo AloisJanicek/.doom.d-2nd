@@ -865,6 +865,7 @@
   (:prefix ("C" . "calibre")
    :desc "technical"             "c" (cmd! (aj-open-calibre-book (expand-file-name "Technical/" aj-calibre-path)))
    :desc "personal"              "p" (cmd! (aj-open-calibre-book (expand-file-name "Personal/" aj-calibre-path)))
+   :desc "notes"                 "n" #'aj/calibre-org-open-org-noter-note
    )
 
   :desc "agenda"                   "A" #'org-agenda

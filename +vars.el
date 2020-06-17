@@ -100,3 +100,11 @@ and stored in `aj-org-notes-filter-preset'.")
 
 (defvar aj-currently-refiling nil
   "Indicates if there is refile operation running and some files should not be encrypted.")
+
+(defvar aj-calibre-org-files nil
+  "List of all org-noter org files saved for pdf and epub files anywhere under `aj-calibre-path'.")
+
+(doom-store-persist doom-store-location '(aj-calibre-org-files))
+
+(defvar aj-calibre-org-noter-files-first-run nil
+  "Indicatec if `aj/calibre-org-open-org-noter-note' has been previosly executed in this session.")
