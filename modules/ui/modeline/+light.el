@@ -357,10 +357,10 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
       (propertize
        (let ((buffer-file-name buffer-file-truename))
          (or (when buffer-file-name
-               (if-let (project (or (ignore-errors projectile-project-root)
-                                    default-directory))
-                   (unless (< (window-width) 104)
-                     (file-relative-name buffer-file-name (concat project "..")))))
+               (let ((project (or (ignore-errors projectile-project-root)
+                                  default-directory)))
+                 (unless (< (window-width) 104)
+                   (file-relative-name buffer-file-name (concat project "..")))))
              "%b"))
        'face (cond ((and (buffer-modified-p)
                          (not (or (doom-special-buffer-p (current-buffer))

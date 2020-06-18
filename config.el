@@ -491,7 +491,9 @@
 
   (add-hook 'find-file-hook (lambda ()
                               "Referencing buffer-local variable value is faster then calling expensive function."
-                              (setq-local projectile-project-root (projectile-project-root))))
+                              (let ((root (or (projectile-project-root)
+                                              default-directory)))
+                                (setq-local projectile-project-root root))))
   )
 
 (after! format-all
