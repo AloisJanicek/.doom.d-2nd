@@ -414,6 +414,7 @@
     )
    )
 
+  "n" #'org-noter
   (:prefix ("z" . "view")
    :desc "block"              "b" #'org-narrow-to-block
    :desc "columns"            "c" #'org-columns
