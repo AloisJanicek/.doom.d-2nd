@@ -1051,13 +1051,13 @@
                                          (org-brain-goto nil 'aj-open-file-switch-create-indirect-buffer-per-persp)))
   :desc "brain-visualize"      "v" #'org-brain-visualize
   "r" nil
-  :desc "brain-resource"       "r" (λ! (if (eq (car current-prefix-arg) 4)
+  :desc "brain-resource"       "R" (λ! (if (eq (car current-prefix-arg) 4)
                                            (aj/org-brain-open-from-all-resources t)
                                          (if (eq (car current-prefix-arg) 16)
                                              (org-brain-open-resource
                                               (org-brain-choose-entry "Resource from: " 'all))
                                            (aj/org-brain-open-from-all-resources))))
-  :desc "roam"                 "R" #'aj/org-roam/body
+  :desc "roam"                 "r" #'aj/org-roam/body
   :desc "notes grep"           "g" (λ! (aj/org-notes-search-no-link
                                         org-brain-path))
   :desc "notes grep"           "G" (λ! (let ((current-prefix-arg '(4)))
