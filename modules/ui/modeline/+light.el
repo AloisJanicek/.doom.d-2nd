@@ -355,13 +355,12 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
   '((:eval
      (concat
       (propertize
-       (let ((buffer-file-name (buffer-file-name (buffer-base-buffer))))
+       (let ((buffer-file-name buffer-file-truename))
          (or (when buffer-file-name
-               (if-let (project (or projectile-project-root
+               (if-let (project (or (ignore-errors projectile-project-root)
                                     default-directory))
                    (unless (< (window-width) 104)
-                     (let ((filename (or buffer-file-truename (file-truename buffer-file-name))))
-                       (file-relative-name filename (concat project ".."))))))
+                     (file-relative-name buffer-file-name (concat project "..")))))
              "%b"))
        'face (cond ((and (buffer-modified-p)
                          (not (or (doom-special-buffer-p (current-buffer))
@@ -371,7 +370,7 @@ Requires `anzu', also `evil-anzu' if using `evil-mode' for compatibility with
                       '(:inherit mode-line-inactive :slant italic)))
                    ((+modeline-active)
                     'mode-line-buffer-id))
-       'help-echo buffer-file-name)
+       'help-echo (or buffer-file-name buffer-file-truename))
       (unless (or
                (doom-special-buffer-p (current-buffer))
                (memq major-mode '(vterm-mode pdf-view-mode nov-mode)))

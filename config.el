@@ -488,6 +488,10 @@
                                     (with-selected-window window
                                       (recenter)))))
                               (current-buffer))))
+
+  (add-hook 'find-file-hook (lambda ()
+                              "Referencing buffer-local variable value is faster then calling expensive function."
+                              (setq-local projectile-project-root (projectile-project-root))))
   )
 
 (after! format-all
