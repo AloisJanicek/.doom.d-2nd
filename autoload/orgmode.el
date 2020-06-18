@@ -1987,8 +1987,13 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 
 
 ;;;###autoload (autoload 'aj/org-roam-hydra/body "autoload/orgmode" nil t)
-(defhydra aj/org-roam (:color blue)
-  "roam: "
+(defhydra aj/org-roam (:color blue
+                       :body-pre (if (or current-prefix-arg
+                                         (not org-roam-directory))
+                                     (aj/org-roam-choose-update-dir)))
+  "
+roam: %(identity org-roam-directory)
+"
   ("f" #'org-roam-find-file "file")
   ("s" (lambda ()
          (interactive)
@@ -1997,6 +2002,10 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
            (if server-buff
                (pop-to-buffer server-buff)
              (eaf-open-browser "127.0.0.1:8080")))) "server")
+  ("d" (lambda ()
+         (interactive)
+         (setq deft-directory org-roam-directory)
+         (deft)) "deft")
   ("i" #'org-roam-insert "insert")
   ("t" #'org-roam-buffer-toggle-display "toggle")
   )
@@ -2027,6 +2036,18 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
               (let* ((file (cdr file-pair)))
                 (aj-display-org-buffer-popup (or (get-file-buffer file)
                                                  (find-file-noselect file)))))))
+
+;;;###autoload
+(defun aj/org-roam-choose-update-dir ()
+  "Choose and update `org-roam-directory'."
+  (interactive)
+  (let ((dir (ivy-read "Choose roam directory: "
+                       (seq-filter
+                        (lambda (dir)
+                          (string-match "roam" dir))
+                        (ffap-all-subdirs org-directory 1)))))
+    (setq org-roam-directory dir))
+  (org-roam-db-build-cache))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

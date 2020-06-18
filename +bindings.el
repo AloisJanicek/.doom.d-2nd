@@ -72,6 +72,12 @@
   :desc "test" "t" #'lsp-dart-run-all-tests
   )
 
+;;; deft-mode
+ (:after deft
+  :map deft-mode-map
+  :nmv "q" #'bury-buffer
+  )
+
 ;;; eww
  (:after eww
   :map eww-mode-map
@@ -1051,17 +1057,7 @@
                                              (org-brain-open-resource
                                               (org-brain-choose-entry "Resource from: " 'all))
                                            (aj/org-brain-open-from-all-resources))))
-  :desc "roam"                 "R" (λ! (if current-prefix-arg
-                                           (progn
-                                             (require 'org-roam)
-                                             (setq org-roam-directory
-                                                   (ivy-read "Choose roam directory: "
-                                                             (seq-filter
-                                                              (lambda (dir)
-                                                                (string-match "roam" dir))
-                                                              (ffap-all-subdirs org-directory 1))))
-                                             (org-roam-db-build-cache))
-                                         (aj/org-roam/body)))
+  :desc "roam"                 "R" #'aj/org-roam/body
   :desc "notes grep"           "g" (λ! (aj/org-notes-search-no-link
                                         org-brain-path))
   :desc "notes grep"           "G" (λ! (let ((current-prefix-arg '(4)))
@@ -1122,10 +1118,14 @@
                                           (aj/choose-file-from org-agenda-files))
                                         "JOURNAL"))
 
-  :desc "org-journal"          "J" (λ! (if current-prefix-arg
-                                           (let (current-prefix-arg)
-                                             (org-journal-new-entry nil))
-                                         (call-interactively #'org-journal-new-entry)))
+  :desc "org-journal"          "J" (λ!
+                                    (unless org-roam-directory
+                                      (aj/org-roam-choose-update-dir))
+                                    (setq org-journal-dir (file-name-nondirectory org-roam-directory))
+                                    (if current-prefix-arg
+                                        (let (current-prefix-arg)
+                                          (org-journal-new-entry nil))
+                                      (call-interactively #'org-journal-new-entry)))
   "c" nil
   :desc "clock report at"        "ca" (λ! (aj-org-clock-datetree-report
                                            (if (and aj-org-agenda-filter

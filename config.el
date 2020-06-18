@@ -1604,7 +1604,8 @@
    org-id-search-archives nil
    ))
 
-(setq org-journal-dir (file-name-as-directory "roam"))
+(doom-store-persist doom-store-location '(org-roam-directory))
+(setq org-journal-dir (file-name-nondirectory org-roam-directory))
 
 (after! org-journal
   (setq org-journal-date-prefix "#+TITLE: "
@@ -1641,9 +1642,10 @@
   )
 
 (after! org-roam
-  (setq org-roam-directory (expand-file-name "roam" org-directory)
-        org-roam-buffer-width 0.2
-        )
+  (setq +org-roam-open-buffer-on-find-file nil)
+  (doom-store-persist doom-store-location '(org-roam-directory))
+
+  (setq org-roam-buffer-width 0.2)
   (advice-add #'org-roam-find-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-find-file :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-unlinked-references :around #'aj-org-open-file-respect-sanity-a)
