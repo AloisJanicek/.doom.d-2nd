@@ -13,8 +13,12 @@
   "Refile as new top level heading in specified file `FILE'.
 If headline `HEADLINE' is provided, use it as a refile target instead.
 If run from `org-agenda' use `org-agenda-refile' instead."
-  (let* ((pos (save-excursion
+  (let* ((encrypted (string-match "BEGIN PGP MESSAGE"
+                                  (shell-command-to-string (concat "head -n 1 " file))))
+         (pos (save-excursion
                 (find-file-noselect file)
+                (when encrypted
+                  (aj-decrypt-encrypt-file file))
                 (with-current-buffer (find-buffer-visiting file)
                   (if headline
                       (org-find-exact-headline-in-buffer headline)
