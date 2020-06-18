@@ -1052,8 +1052,15 @@
                                               (org-brain-choose-entry "Resource from: " 'all))
                                            (aj/org-brain-open-from-all-resources))))
   :desc "roam"                 "R" (λ! (if current-prefix-arg
-                                           ;; switch to different roam
-                                           (progn )
+                                           (progn
+                                             (require 'org-roam)
+                                             (setq org-roam-directory
+                                                   (ivy-read "Choose roam directory: "
+                                                             (seq-filter
+                                                              (lambda (dir)
+                                                                (string-match "roam" dir))
+                                                              (ffap-all-subdirs org-directory 1))))
+                                             (org-roam-db-build-cache))
                                          (aj/org-roam/body)))
   :desc "notes grep"           "g" (λ! (aj/org-notes-search-no-link
                                         org-brain-path))

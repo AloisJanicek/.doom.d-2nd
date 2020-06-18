@@ -1766,7 +1766,7 @@ At the end, source link is deleted.
   (require 'ffap)
   (seq-filter
    (lambda (dir)
-     (and (not (string-match "attach\\|archive\\|export" dir))
+     (and (not (string-match "attach\\|archive\\|export\\|roam" dir))
           (not (string-equal dir org-directory))))
    (ffap-all-subdirs org-directory 1)))
 
