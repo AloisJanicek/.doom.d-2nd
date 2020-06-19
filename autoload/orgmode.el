@@ -1996,7 +1996,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                                          (not org-roam-directory))
                                      (aj/org-roam-choose-update-dir)))
   "
-roam: %(identity org-roam-directory)
+%(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
   ("f" #'org-roam-find-file "file")
   ("s" (lambda ()
