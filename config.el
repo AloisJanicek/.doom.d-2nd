@@ -1104,7 +1104,15 @@
                                                 (when (eq major-mode 'org-mode) (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
-
+  (advice-add
+   #'org-open-file
+   :around
+   (lambda (orig-fn &rest args)
+     (let ((path (nth 0 args)))
+       (if (string-equal "org" (file-name-extension path))
+           (cl-letf (((symbol-function 'pop-to-buffer) #'aj-display-org-buffer-popup))
+             (apply orig-fn args))
+         (apply orig-fn args)))))
   (setcdr (assoc "\\.x?html?\\'" org-file-apps) #'aj-browse-zeal-local-file)
   (org-link-set-parameters "calibre" :follow #'aj-org-calibre-follow :store #'aj-org-calibre-store)
 
