@@ -1195,29 +1195,54 @@ If `org-pomodoro' is not running, try to print info about org-clock.
 If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
   (when (and
          (featurep 'org)
-         (featurep 'org-capture)
-         )
+         (featurep 'org-capture))
     (require 'org-pomodoro)
-    (concat
-     (cond ((equal :none org-pomodoro-state)
-            (if (org-clock-is-active)
-                (format "⏲ %d m / %s – %s "
-                        (org-clock-get-clocked-time)
-                        org-clock-effort
-                        (substring-no-properties org-clock-heading))
-              "- no active task -"))
-           ((equal :pomodoro org-pomodoro-state)
-            (format "⦿ %d m (%d) - %s"
-                    (/ (org-pomodoro-remaining-seconds) 60)
-                    org-pomodoro-count
-                    (substring-no-properties org-clock-heading)))
-           ((equal :short-break org-pomodoro-state) "Short Break")
-           ((equal :long-break org-pomodoro-state) "Long Break"))
-     (when aj-org-agenda-filter
-       (concat " :" (upcase (substring-no-properties (car aj-org-agenda-filter) 1 4)) ":"))
-     ":"
-     (upcase (file-name-nondirectory org-brain-path))
-     )))
+    (let ((agenda-filter (car aj-org-agenda-filter))
+          (brain-path (file-name-nondirectory org-brain-path))
+          (notes-filter (car (cdr (assoc org-brain-path aj-org-notes-filter-preset))))
+          (roam-dir (string-trim-left
+                     (file-name-nondirectory
+                      (string-trim-right org-roam-directory "/"))
+                     "roam-"))
+          (separator "[ - ]"))
+      (concat
+       (cond ((equal :none org-pomodoro-state)
+              (if (org-clock-is-active)
+                  (format "⏲ %d m / %s – %s "
+                          (org-clock-get-clocked-time)
+                          org-clock-effort
+                          (substring-no-properties org-clock-heading))
+                "- no active task - "))
+             ((equal :pomodoro org-pomodoro-state)
+              (format "⦿ %d m (%d) - %s"
+                      (/ (org-pomodoro-remaining-seconds) 60)
+                      org-pomodoro-count
+                      (substring-no-properties org-clock-heading)))
+             ((equal :short-break org-pomodoro-state) "Short Break")
+             ((equal :long-break org-pomodoro-state) "Long Break"))
+       (mapconcat
+        #'identity
+        (list
+         (if agenda-filter
+             (substring-no-properties agenda-filter 1 4)
+           separator)
+         (if brain-path
+             (upcase (substring  brain-path 0 4))
+           separator)
+         (if notes-filter
+             (substring notes-filter 0 4)
+           separator)
+         (if roam-dir
+             (upcase (substring
+                      roam-dir
+                      0 4))
+           separator))
+        ":"
+        )
+       )
+      )
+    )
+  )
 
 ;; ORG LINKS
 ;;;###autoload
