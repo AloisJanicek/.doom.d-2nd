@@ -79,7 +79,10 @@
 
 (use-package all-the-icons-ivy-rich
   :after ivy-rich
-  :init (all-the-icons-ivy-rich-mode 1))
+  :init (all-the-icons-ivy-rich-mode 1)
+  :config
+  (setf (car (cdr (car (cdr (nth 1 (plist-get (cadr all-the-icons-ivy-rich-display-transformers-list) :columns)))))) 60)
+  )
 
 (use-package! anki-editor
   :commands anki-editor-mode
