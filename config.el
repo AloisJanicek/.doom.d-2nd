@@ -1828,7 +1828,9 @@
   )
 
 (after! python
-  (set-docsets! 'python-mode "Python_3"))
+  (set-docsets! 'python-mode "Python_3")
+  (set-popup-rule! "*Python*"     :size 16 :vslot -2 :side 'bottom :select t :quit t :ttl nil :modeline nil)
+  )
 
 (after! python-pytest
   (advice-add #'python-pytest--find-test-file
