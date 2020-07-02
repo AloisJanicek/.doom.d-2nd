@@ -2017,7 +2017,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 
 ;;;###autoload (autoload 'aj/org-roam-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-roam (:color blue
-                       :body-pre (if (or current-prefix-arg
+                       :body-pre (if (or (eq (car current-prefix-arg) 4)
                                          (not org-roam-directory))
                                      (aj/org-roam-choose-update-dir)))
   "
@@ -2026,16 +2026,24 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
   ("f" #'org-roam-find-file "file")
   ("s" (lambda ()
          (interactive)
-         (org-roam-server-mode)
+         ;; 2x C-u for disabling mode
+         (if (eq (car current-prefix-arg) 16)
+             (org-roam-server-light-mode -1)
+           (unless (ignore-errors org-roam-server-light-mode)
+             (org-roam-server-light-mode)))
          (let ((server-buff (get-buffer "*eaf Org Roam Server*")))
            (if server-buff
-               (progn
-                 (pop-to-buffer server-buff)
-                 (with-selected-window (get-buffer-window server-buff)
-                   (maximize-window)
-                   (eaf-proxy-refresh_page)))
-             (eaf-open-browser "127.0.0.1:8080"))
-           )) "server")
+               (if org-roam-server-light-mode
+                   (progn
+                     (pop-to-buffer server-buff)
+                     (with-selected-window (get-buffer-window server-buff)
+                       (maximize-window)
+                       ;; (eaf-proxy-refresh_page)
+                       ))
+                 (kill-buffer server-buff))
+             (when org-roam-server-light-mode
+               (eaf-open-browser "127.0.0.1:8080"))))) "server")
+  ("S" (org-roam-server-mode -1) "Stop")
   ("d" (lambda ()
          (interactive)
          (setq deft-directory org-roam-directory)
