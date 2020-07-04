@@ -1711,7 +1711,10 @@
         (progn
           (let ((default-directory (expand-file-name "org-roam-server-light" aj-repos-dir)))
             (start-process-shell-command process-title "org-roam-server-light-output-buffer" "python main.py"))
-          (add-hook 'find-file-hook #'aj-org-roam-server-light-find-file-hook-function nil nil)))))
+          (add-hook 'find-file-hook #'aj-org-roam-server-light-find-file-hook-function nil nil)
+          (f-write-text org-roam-directory
+                        'utf-8
+                        (format "/tmp/%s" (symbol-name 'org-roam-directory)))))))
 
   )
 

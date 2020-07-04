@@ -2089,7 +2089,19 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                           (string-match "roam" dir))
                         (ffap-all-subdirs org-directory 1)))))
     (setq org-roam-directory dir))
-  (org-roam-db-build-cache))
+  (f-write-text org-roam-directory
+                'utf-8
+                (format "/tmp/%s" (symbol-name 'org-roam-directory)))
+  (org-roam-db-build-cache)
+  (when (get-process "org-roam-server-light")
+    (delete-process "org-roam-server-light")
+    (let ((default-directory (expand-file-name "org-roam-server-light" aj-repos-dir)))
+      (start-process-shell-command
+       "org-roam-server-light"
+       "org-roam-server-light-output-buffer"
+       "python main.py"))
+    )
+  )
 
 (provide 'orgmode)
 ;;; orgmode.el ends here
