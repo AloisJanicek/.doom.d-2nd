@@ -1659,6 +1659,7 @@
   (setq org-roam-buffer-width 0.2)
   (advice-add #'org-roam--find-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam--find-file :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
   (advice-add #'org-roam-unlinked-references :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-unlinked-references :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-open-file-respect-sanity-a)
