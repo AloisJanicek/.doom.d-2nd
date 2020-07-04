@@ -2026,24 +2026,19 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
   ("f" #'org-roam-find-file "file")
   ("s" (lambda ()
          (interactive)
-         ;; 2x C-u for disabling mode
-         (if (eq (car current-prefix-arg) 16)
-             (org-roam-server-light-mode -1)
-           (unless (ignore-errors org-roam-server-light-mode)
-             (org-roam-server-light-mode)))
+         (unless (ignore-errors org-roam-server-light-mode)
+           (org-roam-server-light-mode))
          (let ((server-buff (get-buffer "*eaf Org Roam Server*")))
            (if server-buff
                (if org-roam-server-light-mode
                    (progn
                      (pop-to-buffer server-buff)
                      (with-selected-window (get-buffer-window server-buff)
-                       (maximize-window)
-                       ;; (eaf-proxy-refresh_page)
-                       ))
+                       (maximize-window)))
                  (kill-buffer server-buff))
              (when org-roam-server-light-mode
                (eaf-open-browser "127.0.0.1:8080"))))) "server")
-  ("S" (org-roam-server-mode -1) "Stop")
+  ("S" (org-roam-server-light-mode -1) "Stop")
   ("d" (lambda ()
          (interactive)
          (setq deft-directory org-roam-directory)
@@ -2088,10 +2083,10 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                         (lambda (dir)
                           (string-match "roam" dir))
                         (ffap-all-subdirs org-directory 1)))))
-    (setq org-roam-directory dir))
+    (setq org-roam-directory (file-truename dir)))
   (f-write-text org-roam-directory
                 'utf-8
-                (format "/tmp/%s" (symbol-name 'org-roam-directory)))
+                (format "/tmp/org-roam-server-light/%s" (symbol-name 'org-roam-directory)))
   (org-roam-db-build-cache)
   (when (get-process "org-roam-server-light")
     (delete-process "org-roam-server-light")

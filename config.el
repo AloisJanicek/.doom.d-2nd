@@ -1686,7 +1686,9 @@
                                                                "/"))))
         (f-write-text aj-org-roam-server-light-last-roam-buffer
                       'utf-8
-                      (format "/tmp/%s" (symbol-name 'aj-org-roam-server-light-last-roam-buffer))))))
+                      (format
+                       "/tmp/org-roam-server-light/%s"
+                       (symbol-name 'aj-org-roam-server-light-last-roam-buffer))))))
 
   (defun aj-org-roam-server-light-find-file-hook-function ()
     "If the current visited file is an `org-roam` file, update the current buffer."
@@ -1699,22 +1701,25 @@
     :lighter ""
     :global t
     :init-value nil
-    (let ((process-title "org-roam-server-light"))
+    (let* ((title "org-roam-server-light")
+           (tmp-dir (concat "/tmp/" title)))
       (if (not (ignore-errors org-roam-server-light-mode))
           (progn
-            (when (get-process process-title)
-              (delete-process "org-roam-server-light"))
+            (when (get-process title)
+              (delete-process title))
             (remove-hook 'find-file-hook #'aj-org-roam-server-light-find-file-hook-function nil)
             (dolist (buf (org-roam--get-roam-buffers))
               (with-current-buffer buf
                 (remove-hook 'post-command-hook #'aj-org-roam-server-light-update-last-buffer t))))
         (progn
-          (let ((default-directory (expand-file-name "org-roam-server-light" aj-repos-dir)))
-            (start-process-shell-command process-title "org-roam-server-light-output-buffer" "python main.py"))
+          (let ((default-directory (expand-file-name title aj-repos-dir)))
+            (start-process-shell-command "org-roam-server-light" "org-roam-server-light-output-buffer" "python main.py"))
           (add-hook 'find-file-hook #'aj-org-roam-server-light-find-file-hook-function nil nil)
+          (unless (file-exists-p tmp-dir)
+            (make-directory tmp-dir))
           (f-write-text org-roam-directory
                         'utf-8
-                        (format "/tmp/%s" (symbol-name 'org-roam-directory)))))))
+                        (expand-file-name (symbol-name 'org-roam-directory) tmp-dir))))))
 
   )
 
