@@ -2043,7 +2043,13 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                                        (quit . t)
                                        (select . t)
                                        (modeline . t)
-                                       (autosave . nil)))))
+                                       (autosave . nil))))
+                     (let ((script (executable-find "eaf-org-roam-adjust-scroll.py")))
+                       (when script
+                         (async-start-process
+                          "eaf-scroll"
+                          script
+                          nil))))
                  (kill-buffer server-buff))
              (when org-roam-server-light-mode
                (eaf-open-browser "127.0.0.1:8080"))))) "server")
