@@ -23,7 +23,7 @@ if running under WSL")
 (defvar aj-repos-dir (expand-file-name "repos" aj-home-base-dir)
   "Path of the repos folder.")
 
-(setq org-directory (expand-file-name "Dropbox/org" aj-home-base-dir))
+(setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir)))
 
 (defvar aj-org-inbox-file (expand-file-name "inbox.org" org-directory)
   "File where all stuff goes initially.")

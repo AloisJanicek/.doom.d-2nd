@@ -1616,6 +1616,15 @@
    ))
 
 (doom-store-persist doom-store-location '(org-roam-directory))
+
+(unless org-roam-directory
+  (require 'ffap)
+  (setq org-roam-directory (car
+                            (seq-filter
+                             (lambda (dir)
+                               (string-match "roam" dir))
+                             (ffap-all-subdirs org-directory 1)))))
+
 (setq org-journal-dir (file-name-nondirectory org-roam-directory))
 
 (after! org-journal
@@ -1667,7 +1676,7 @@
   )
 
 (defvar aj-org-roam-server-light-last-roam-buffer nil
-    "Tracks last org-roam buffer")
+  "Tracks last org-roam buffer")
 
 (use-package! org-roam-server
   :after org-roam
