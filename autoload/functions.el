@@ -1045,14 +1045,14 @@ If there is no associated entry present for current major mode, throw warning.
 
 ;;;###autoload
 (defun aj-fix-buffer-file-name-for-indirect-buffers-a (orig-fn &rest args)
-    "Advice for functions expecting `buffer-file-name' to work."
-    (let ((buffer-file-name buffer-file-truename))
-      (cl-letf (((symbol-function 'buffer-file-name)
-                 (lambda (&optional buffer)
-                   "Return value of `buffer-file-truename'."
-                   (with-current-buffer (or buffer (current-buffer))
-                     buffer-file-truename))))
-        (apply orig-fn args))))
+  "Advice for functions expecting `buffer-file-name' to work."
+  (let ((buffer-file-name buffer-file-truename))
+    (cl-letf (((symbol-function 'buffer-file-name)
+               (lambda (&optional buffer)
+                 "Return value of `buffer-file-truename'."
+                 (with-current-buffer (or buffer (current-buffer))
+                   buffer-file-truename))))
+      (apply orig-fn args))))
 
 (provide 'functions)
 
