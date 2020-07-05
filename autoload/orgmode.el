@@ -2028,13 +2028,22 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
          (interactive)
          (unless (ignore-errors org-roam-server-light-mode)
            (org-roam-server-light-mode))
-         (let ((server-buff (get-buffer "*eaf Org Roam Server*")))
+         (let ((server-buff (get-buffer "*eaf Org Roam Server*"))
+               (pop-size (round (/ (frame-width) 2))))
            (if server-buff
                (if org-roam-server-light-mode
                    (progn
-                     (pop-to-buffer server-buff)
-                     (with-selected-window (get-buffer-window server-buff)
-                       (maximize-window)))
+                     (+popup-buffer server-buff
+                                    `((side . right)
+                                      (size . ,pop-size)
+                                      (slot)
+                                      (vslot . 1)
+                                      (window-parameters
+                                       (ttl)
+                                       (quit . t)
+                                       (select . t)
+                                       (modeline . t)
+                                       (autosave . nil)))))
                  (kill-buffer server-buff))
              (when org-roam-server-light-mode
                (eaf-open-browser "127.0.0.1:8080"))))) "server")
