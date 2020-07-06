@@ -63,6 +63,7 @@
   "C-f" #'ivy-call
   "C-d" #'ivy-immediate-done
   "C-;" #'ivy-restrict-to-matches
+  "S-SPC" nil
   )
 
 ;;; dart-mode
