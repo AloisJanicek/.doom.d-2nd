@@ -2,6 +2,7 @@
 ;;; packages.el
 
 (unpin! org-roam)
+(unpin! company-org-roam)
 
 (package! ace-link)
 
@@ -100,8 +101,6 @@
 
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags"))
-
-(package! org-roam-server)
 
 (package! org-sidebar
   :recipe (:host github :repo "alphapapa/org-sidebar"))

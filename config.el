@@ -1673,17 +1673,12 @@
   (advice-add #'org-roam-unlinked-references :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-buffer-to-popup-a)
-  )
-
-(defvar aj-org-roam-server-light-last-roam-buffer nil
-  "Tracks last org-roam buffer")
-
-(use-package! org-roam-server
-  :after org-roam
-  :config
-  (setq org-roam-server-network-poll nil)
 
   (require 'f)
+
+  (defvar aj-org-roam-server-light-last-roam-buffer nil
+    "Tracks last org-roam buffer")
+
   (defun aj-org-roam-server-light-update-last-buffer ()
     "Update `aj-org-roam-server-light-last-roam-buffer'."
     (let ((buf (or (buffer-base-buffer (current-buffer)) (current-buffer))))
