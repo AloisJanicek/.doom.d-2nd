@@ -2093,6 +2093,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 (defun aj/org-roam-choose-update-dir ()
   "Choose and update `org-roam-directory'."
   (interactive)
+  (require 'ffap)
   (let ((dir (ivy-read "Choose roam directory: "
                        (seq-filter
                         (lambda (dir)
