@@ -1676,30 +1676,33 @@
 
   (require 'f)
 
-  (defvar aj-org-roam-server-light-last-roam-buffer nil
+  (defcustom org-roam-server-light-last-roam-buffer nil
     "Tracks last org-roam buffer")
 
-  (defun aj-org-roam-server-light-update-last-buffer ()
-    "Update `aj-org-roam-server-light-last-roam-buffer'."
+  (defcustom org-roam-server-light-css nil
+    "Custom CSS for org-roam-server-light")
+
+  (defun org-roam-server-light-update-last-buffer ()
+    "Update `org-roam-server-light-last-roam-buffer'."
     (let ((buf (or (buffer-base-buffer (current-buffer)) (current-buffer))))
       (when (org-roam--org-roam-file-p
              (buffer-file-name buf))
-        (setq aj-org-roam-server-light-last-roam-buffer (car (last
-                                                              (split-string
-                                                               (org-roam--path-to-slug
-                                                                (buffer-name buf))
-                                                               "/"))))
-        (f-write-text aj-org-roam-server-light-last-roam-buffer
+        (setq org-roam-server-light-last-roam-buffer (car (last
+                                                           (split-string
+                                                            (org-roam--path-to-slug
+                                                             (buffer-name buf))
+                                                            "/"))))
+        (f-write-text org-roam-server-light-last-roam-buffer
                       'utf-8
                       (format
                        "/tmp/org-roam-server-light/%s"
-                       (symbol-name 'aj-org-roam-server-light-last-roam-buffer))))))
+                       (symbol-name 'org-roam-server-light-last-roam-buffer))))))
 
-  (defun aj-org-roam-server-light-find-file-hook-function ()
+  (defun org-roam-server-light-find-file-hook-function ()
     "If the current visited file is an `org-roam` file, update the current buffer."
     (when (org-roam--org-roam-file-p)
-      (add-hook 'post-command-hook #'aj-org-roam-server-light-update-last-buffer nil t)
-      (aj-org-roam-server-light-update-last-buffer)))
+      (add-hook 'post-command-hook #'org-roam-server-light-update-last-buffer nil t)
+      (org-roam-server-light-update-last-buffer)))
 
   (define-minor-mode org-roam-server-light-mode
     "Start the http server and serve org-roam files."
@@ -1712,14 +1715,14 @@
           (progn
             (when (get-process title)
               (delete-process title))
-            (remove-hook 'find-file-hook #'aj-org-roam-server-light-find-file-hook-function nil)
+            (remove-hook 'find-file-hook #'org-roam-server-light-find-file-hook-function nil)
             (dolist (buf (org-roam--get-roam-buffers))
               (with-current-buffer buf
-                (remove-hook 'post-command-hook #'aj-org-roam-server-light-update-last-buffer t))))
+                (remove-hook 'post-command-hook #'org-roam-server-light-update-last-buffer t))))
         (progn
           (let ((default-directory (expand-file-name title aj-repos-dir)))
             (start-process-shell-command "org-roam-server-light" "org-roam-server-light-output-buffer" "python main.py"))
-          (add-hook 'find-file-hook #'aj-org-roam-server-light-find-file-hook-function nil nil)
+          (add-hook 'find-file-hook #'org-roam-server-light-find-file-hook-function nil nil)
           (unless (file-exists-p tmp-dir)
             (make-directory tmp-dir))
           (f-write-text org-roam-directory
