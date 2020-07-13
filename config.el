@@ -1992,7 +1992,7 @@
    'aj-modes-tests-alist
    '(sh-mode . (:dir default-directory
                 :fn async-shell-command
-                :cmd "bats run all")))
+                :cmd "BATS_RUN_SKIPPED=true bats *_test.sh")))
   )
 
 (after! swift-mode
