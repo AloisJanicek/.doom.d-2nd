@@ -683,6 +683,11 @@
    :desc "Untrace all"    "u" #'sly-untrace-all
    )
   )
+ ;;; lsp-mode
+ (:after lsp-mode
+  :map lsp-signature-mode-map
+  "M-a"       #'mark-whole-buffer
+  )
 
  ;;; sly-mrepl
  (:after sly-mrepl

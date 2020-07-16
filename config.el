@@ -368,6 +368,7 @@
   :commands dart-mode
   :config
   (add-hook! 'dart-mode-local-vars-hook #'lsp-deferred)
+  (set-docsets! 'dart-mode "Dart")
   )
 
 (after! elisp-mode
@@ -384,6 +385,10 @@
   (advice-add #'elisp-demos-advice-helpful-update :override #'aj-elisp-demos-advice-helpful-update)
   )
 
+(after! elixir-mode
+  (set-docsets! 'elixir-mode "Elixir")
+  )
+
 (after! epg
   (setq epg-pinentry-mode 'ask))
 
@@ -396,6 +401,7 @@
   )
 
 (after! erlang-mode
+  (set-docsets! 'erlang-mode "Erlang")
   (add-to-list
    'aj-modes-tests-alist
    '(erlang-mode . (:dir (lambda () (locate-dominating-file "." "rebar.config"))
@@ -560,7 +566,7 @@
    'aj-modes-tests-alist
    '(groovy-mode . (:dir (lambda () (locate-dominating-file "." "build.gradle"))
                     :fn shell-command
-                    :cmd "gradle --warning-mode none test")))
+                    :cmd "gradle --warning-mode none --info test")))
 
   (advice-add #'aj/run-some-code-test-tool
               :after
@@ -998,6 +1004,7 @@
   )
 
 (after! nim
+  (set-docsets! 'nim-mode "Nim")
   (add-hook 'nim-mode-local-vars-hook
             (lambda ()
               (when (flycheck-may-enable-checker 'nim)
@@ -1875,6 +1882,8 @@
   )
 
 (after! racket-mode
+  (add-hook 'racket-smart-open-bracket-mode-hook (lambda ()
+                                                   (racket-smart-open-bracket-mode -1)))
   (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil :modeline t)
   (add-to-list
    'aj-modes-tests-alist
@@ -1965,10 +1974,10 @@
                               (dash-docs-activate-docset "Common_Lisp" )))
   (add-to-list
    'aj-modes-tests-alist
-   '(lisp-mode . (:dir default-directory
+   `(lisp-mode . (:dir default-directory
                   :fn async-shell-command
-                  :cmd (concat (executable-find "sbcl")
-                               " --load *-test.lisp --quit"))))
+                  :cmd ,(concat (executable-find "sbcl")
+                                " --load *-test.lisp --quit"))))
   )
 
 (after! sly-mrepl
