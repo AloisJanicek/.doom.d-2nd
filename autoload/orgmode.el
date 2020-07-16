@@ -2054,6 +2054,14 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
              (when org-roam-server-light-mode
                (eaf-open-browser "127.0.0.1:8080"))))) "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
+  ("j" (progn
+         (unless org-roam-directory
+           (aj/org-roam-choose-update-dir))
+         (setq org-journal-dir (file-name-nondirectory org-roam-directory))
+         (if current-prefix-arg
+             (let (current-prefix-arg)
+               (org-journal-new-entry nil))
+           (call-interactively #'org-journal-new-entry))) "journal")
   ("d" (lambda ()
          (interactive)
          (setq deft-directory org-roam-directory)
