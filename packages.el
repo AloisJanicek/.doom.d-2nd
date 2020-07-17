@@ -111,6 +111,9 @@
 
 (package! org-ql)
 
+(package! paredit
+  :recipe (:host github :repo "emacsmirror/paredit"))
+
 (package! powershell
   :recipe (:host github :repo "jschaf/powershell.el"))
 
