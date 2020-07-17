@@ -963,6 +963,17 @@
 
  (:prefix ("g" . "git")
   :desc "/log"                     "/" #'counsel-git-log
+  :desc "Inhibit refresh" "I" (lambda ()
+                                (interactive)
+                                (let ((set-and-msg-var (lambda (val)
+                                                         (setf inhibit-magit-refresh val)
+                                                         (message
+                                                          "%s is set to %s now."
+                                                          (symbol-name 'inhibit-magit-refresh)
+                                                          (eval inhibit-magit-refresh)))))
+                                  (if (bound-and-true-p inhibit-magit-refresh)
+                                      (funcall set-and-msg-var nil)
+                                    (funcall set-and-msg-var t))))
   )
 
  (:prefix ("h" . "help")
