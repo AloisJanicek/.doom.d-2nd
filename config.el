@@ -400,7 +400,7 @@
   (advice-add #'ert-results-previous-test :after (lambda () (recenter 0)))
   )
 
-(after! erlang-mode
+(after! erlang
   (set-docsets! 'erlang-mode "Erlang")
   (add-to-list
    'aj-modes-tests-alist
@@ -413,7 +413,7 @@
               (lambda ()
                 "When in erlang-mode, jump at the end of the output buffer."
                 (when (eq major-mode 'erlang-mode)
-                  (with-current-buffer (get-buffer "*Shell Command Output*")
+                  (with-current-buffer (get-buffer "*Async Shell Command*")
                     (goto-char (point-max))))))
   )
 (use-package! esqlite
@@ -801,6 +801,12 @@
             (lambda ()
               (when (flycheck-may-enable-checker 'javascript-eslint)
                 (flycheck-select-checker 'javascript-eslint))))
+  (add-to-list
+   'aj-modes-tests-alist
+   '(js2-mode . (:dir (lambda () (locate-dominating-file "." "package.json"))
+                 :fn async-shell-command
+                 :cmd "npm test")))
+
   )
 
 (after! js-mode
@@ -1003,7 +1009,7 @@
   (setq nav-flash-delay 0.33)
   )
 
-(after! nim
+(after! nim-mode
   (set-docsets! 'nim-mode "Nim")
   (add-hook 'nim-mode-local-vars-hook
             (lambda ()
@@ -1996,7 +2002,7 @@
   (add-hook 'shell-mode-hook #'evil-normal-state)
   )
 
-(after! sh-mode
+(after! sh-script
   (add-to-list
    'aj-modes-tests-alist
    '(sh-mode . (:dir default-directory
