@@ -647,6 +647,11 @@
   "C-l"  #'evil-window-right
   )
 
+ (:after prolog
+  :map prolog-mode-map
+  "M-a"       #'mark-whole-buffer
+  )
+
  ;;; sdcv
  (:after sdcv
   :map sdcv-mode-map
