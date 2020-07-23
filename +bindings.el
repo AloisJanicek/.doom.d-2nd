@@ -1051,6 +1051,7 @@
   :desc "info about error"         "i" #'flycheck-explain-error-at-point
   :desc "macro-expand"             "m" #'macrostep-expand
   :desc "howdoyou this error"      "h" (lambda () (interactive) (aj/flycheck-error-search t))
+  :desc "Restart LSP"              "R" #'lsp-restart-workspace
   )
 
  (:prefix ("v" . "view")
