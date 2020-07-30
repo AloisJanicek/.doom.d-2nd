@@ -1,3 +1,4 @@
 flycheck*
 *.elc
 +local.el
+custom.el
