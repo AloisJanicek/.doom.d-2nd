@@ -1717,7 +1717,8 @@ Org manual: 8.4.2 The clock table.
                   title-maybe)))
     (org-protocol-store-link (list :url url :title title))
     (with-current-buffer orig-buff
-      (kill-whole-line)
+      ;; (kill-whole-line)
+      (evil-delete-whole-line (line-beginning-position) (line-end-position))
       (save-buffer)
       (widen))))
 
