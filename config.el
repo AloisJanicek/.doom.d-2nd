@@ -826,7 +826,7 @@
   )
 
 (after! loaddefs
-  (setq browse-url-browser-function
+  (setq browse-url-handlers
         '(
           ("github" . aj-chromium-browse-url-dispatch)
           ("reddit" . aj-chromium-browse-url-dispatch)
