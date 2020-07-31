@@ -1100,7 +1100,7 @@
   :desc "notes open"           "N" (cmd! (if current-prefix-arg
                                              (aj-org-find-file org-directory)
                                            (aj-org-find-file org-brain-path)))
-  :desc "jump inbox"           "i" (cmd! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 3))
+  :desc "jump inbox"           "i" (cmd! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 1))
   :desc "archive headings"     "a" (cmd! (if current-prefix-arg
                                              (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3)
                                            (aj-org-jump-to-headline-at
