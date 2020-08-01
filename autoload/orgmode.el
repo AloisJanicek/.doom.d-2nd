@@ -1230,7 +1230,12 @@ If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
              (upcase (substring  brain-path 0 4))
            separator)
          (if notes-filter
-             (substring notes-filter 0 4)
+             (substring notes-filter
+                        0
+                        (let ((filter-len (length notes-filter)))
+                          (if (< filter-len 4)
+                              filter-len
+                            4)))
            separator)
          (if roam-dir
              (upcase (substring
