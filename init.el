@@ -35,7 +35,7 @@
  (popup
   +all
   +defaults)
- pretty-code
+ ;; pretty-code
  ;;tabs
  treemacs
  ;;unicode
