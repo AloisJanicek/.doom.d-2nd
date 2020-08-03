@@ -620,8 +620,8 @@ Then moves the point to the end of the line."
   (interactive)
   (require 'link-hint)
   (avy-with link-hint-open-link
-            (link-hint--one :open)
-            (org-brain-goto-current)))
+    (link-hint--one :open)
+    (org-brain-goto-current)))
 
 ;; ORG-AGENDA
 ;;;###autoload
@@ -836,7 +836,8 @@ which one is currently active."
                                    )
   "
 _i_nbox   _a_genda   _n_ext       _w_ait      _T_ODOs         _r_ecent     _c_ancelled   _S_omeday
-_t_odo    _l_og      _p_rojects   _s_tucked   _W_eek agenda   _A_rchived   _d_one        _M_aybe 
+_t_odo    _l_og      _p_rojects   _s_tucked   _W_eek agenda   _A_rchived   _d_one        _M_aybe
+_q_uery
 "
 
   ("a" (let ((org-agenda-start-day "today")
@@ -940,6 +941,9 @@ _t_odo    _l_og      _p_rojects   _s_tucked   _W_eek agenda   _A_rchived   _d_on
    )
 
   ("M" (aj-org-ql-simple-taks-search "MAYBE"))
+  ("q" (org-ql-search
+         (aj-org-combined-agenda-files)
+         (ivy-read "query: " nil)))
   )
 
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
