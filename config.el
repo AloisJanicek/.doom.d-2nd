@@ -1459,9 +1459,9 @@
 
                            ("t" "Task" entry (file
                                               (lambda ()
-                                                (interactive "P")
                                                 (if (and aj-org-agenda-filter
-                                                         (not current-prefix-arg))
+                                                         (not current-prefix-arg)
+                                                         (car (aj-org-return-filtered-agenda-file)))
                                                     (car (aj-org-return-filtered-agenda-file))
                                                   (aj/choose-file-from
                                                    (seq-filter
@@ -1485,7 +1485,8 @@
                            ("T" "Task clocked-in" entry (file
                                                          (lambda ()
                                                            (if (and aj-org-agenda-filter
-                                                                    (not current-prefix-arg))
+                                                                    (not current-prefix-arg)
+                                                                    (car (aj-org-return-filtered-agenda-file)))
                                                                (car (aj-org-return-filtered-agenda-file))
                                                              (aj/choose-file-from
                                                               (seq-filter

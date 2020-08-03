@@ -326,8 +326,8 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
                                            :from yankpad-file
                                            :where '(level 1)))))))
   ("k" (org-capture nil "k"))
-  ("t" (org-capture nil "t"))
-  ("T" (org-capture nil "T"))
+  ("t" (aj/org-capture-task))
+  ("T" (aj/org-capture-clocked-task))
   ("j" (aj-org-capture-into-journal-in
         (if (and aj-org-agenda-filter
                  (not current-prefix-arg))
@@ -366,6 +366,59 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
                                             "<" date ">" "\n %?")
                                    :immediate-finish t :prepend t))))
     (org-capture nil "c")))
+;;;###autoload
+(defun aj--org-capture-task (&optional clock-in)
+  "Capture task my way. 'CLOCK-IN' the task with optional argument."
+  (let* ((file (if (and aj-org-agenda-filter
+                        (not current-prefix-arg))
+                   (car (aj-org-return-filtered-agenda-file))
+                 (aj/choose-file-from
+                  (seq-filter
+                   (lambda (file)
+                     (not (string-match "inbox" file)))
+                   org-agenda-files))))
+         (title (concat " "(ivy-read "Title: " nil)))
+         (tag-list (completing-read-multiple
+                    "tag: "
+                    (org-global-tags-completion-table
+                     (aj-org-combined-agenda-files))))
+         (tag-str (if tag-list (concat " :" (mapconcat #'identity tag-list ":") ":") ""))
+         (template-str (concat
+                        "* TO" "DO" title tag-str "\n"
+                        ":PROPERTIES:\n"
+                        ":CREATED: %U\n"
+                        ":END:\n"
+                        "\n"
+                        "%i\n"
+                        "%?"
+                        "%^{EFFORT}p"
+                        )
+                       )
+         (current-prefix-arg nil)
+         (org-capture-templates `(("t" "task" entry (file ,file)
+                                   ,template-str
+                                   :immediate-finish t :prepend t :empty-lines 1)
+                                  ("T" "clocked task" entry (file ,file)
+                                   ,template-str
+                                   :clock-in t
+                                   :clock-keep t
+                                   :immediate-finish t
+                                   :prepend t
+                                   :empty-lines 1))))
+    (if clock-in
+        (org-capture nil "T")
+      (org-capture nil "t"))))
+
+;;;###autoload
+(defun aj/org-capture-task ()
+  "Ask for file, heading title, tag or tags (empty tag selection won't cancel capture...)."
+  (interactive)
+  (aj--org-capture-task))
+
+(defun aj/org-capture-clocked-task ()
+  "Ask for file, heading title, tag or tags (empty tag selection won't cancel capture...)."
+  (interactive)
+  (aj--org-capture-task t))
 
 ;;;###autoload
 (defun aj/org-capture-into-project (&optional current week)
@@ -620,8 +673,8 @@ Then moves the point to the end of the line."
   (interactive)
   (require 'link-hint)
   (avy-with link-hint-open-link
-    (link-hint--one :open)
-    (org-brain-goto-current)))
+            (link-hint--one :open)
+            (org-brain-goto-current)))
 
 ;; ORG-AGENDA
 ;;;###autoload
