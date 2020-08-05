@@ -397,12 +397,11 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
          (current-prefix-arg nil)
          (org-capture-templates `(("t" "task" entry (file ,file)
                                    ,template-str
-                                   :immediate-finish t :prepend t :empty-lines 1)
+                                   :prepend t :empty-lines 1)
                                   ("T" "clocked task" entry (file ,file)
                                    ,template-str
                                    :clock-in t
                                    :clock-keep t
-                                   :immediate-finish t
                                    :prepend t
                                    :empty-lines 1))))
     (if clock-in
