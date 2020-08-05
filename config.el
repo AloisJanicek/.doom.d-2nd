@@ -1147,9 +1147,10 @@
                           (file . find-file-other-window)
                           (wl . wl-other-frame))
    org-todo-keywords
-   '((sequence "TODO(t)" "PROJECT(p)" "NEXT(n)" "WAIT(w)" "SOMEDAY(s)" "MAYBE(m)" "|" "DONE(d)" "CANCELLED(c)"))
+   '((sequence "TODO(t)" "PROJECT(p)" "NEXT(n)" "WAIT(w)" "HOLD(h)" "SOMEDAY(s)" "MAYBE(m)" "|" "DONE(d)" "CANCELLED(c)"))
    org-todo-keyword-faces `(("NEXT" . ,(doom-color 'green))
                             ("WAIT" . ,(doom-color 'magenta))
+                            ("HOLD" . ,(doom-color 'teal))
                             ("PROJECT" . ,(doom-color 'yellow))
                             ("TODO" . ,(doom-color 'yellow))
                             ,(if (eq doom-theme 'aj-dark+)

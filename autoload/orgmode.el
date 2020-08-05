@@ -724,18 +724,40 @@ which one is currently active."
 ;;;###autoload
 (defun aj-org-ql-search-stucked-project ()
   "Stucked projects query for org-ql."
-  '(or (and (todo)
-            (children (or (todo)
-                          (todo "DONE")
-                          (todo "CANCELLED")
-                          (todo "WAIT")))
-            (not (descendants (todo "NEXT")))
-            (not (todo "WAIT")))
-       (and (todo "WAIT")
-            (children (or (todo)
-                          (todo "DONE")
-                          (todo "CANCELLED")))
-            (not (children (todo "WAIT"))))))
+  '(or
+    (and (todo)
+         (children (or (todo)
+                       (todo "DONE")
+                       (todo "CANCELLED")
+                       (todo "WAIT")
+                       (todo "HOLD")
+                       (todo "SOMEDAY")
+                       (todo "MAYBE")
+                       ))
+         (not (descendants (todo "NEXT")))
+         (not (todo "WAIT"))
+         (not (todo "HOLD"))
+         (not (todo "SOMEDAY"))
+         (not (todo "MAYBE"))
+         )
+
+    (and (or (todo "HOLD")
+             (todo "WAIT")
+             (todo "SOMEDAY")
+             (todo "MAYBE")
+             )
+         (children (or (todo)
+                       (todo "DONE")
+                       (todo "CANCELLED")))
+         (not (children (or
+                         (todo "HOLD")
+                         (todo "WAIT")
+                         (todo "SOMEDAY")
+                         (todo "MAYBE")
+                         ))))
+
+    )
+  )
 
 ;;;###autoload
 (defun aj-org-ql-simple-taks-search (task)
@@ -890,7 +912,7 @@ which one is currently active."
   "
 _i_nbox   _a_genda   _n_ext       _w_ait      _T_ODOs         _r_ecent     _c_ancelled   _S_omeday
 _t_odo    _l_og      _p_rojects   _s_tucked   _W_eek agenda   _A_rchived   _d_one        _M_aybe
-_q_uery
+_q_uery                       _h_old
 "
 
   ("a" (let ((org-agenda-start-day "today")
@@ -930,7 +952,11 @@ _q_uery
          (org-ql-search
            (aj-org-combined-agenda-files)
            '(and (todo)
-                 (children (todo)))
+                 (children (todo))
+                 (not (or (todo "SOMEDAY")
+                          (todo "MAYBE")
+                          ))
+                 )
            :sort '(date priority todo)
            :super-groups '((:auto-category t))
            :title "Projects")))
@@ -948,6 +974,14 @@ _q_uery
            :sort '(date priority todo)
            :super-groups '((:auto-parent t))
            :title "WAIT")))
+
+  ("h" (let ((org-agenda-tag-filter aj-org-agenda-filter))
+         (org-ql-search (aj-org-combined-agenda-files)
+           '(and (todo "HOLD")
+                 (not (children (todo))))
+           :sort '(date priority todo)
+           :super-groups '((:auto-parent t))
+           :title "HOLD")))
 
   ("c" (aj-org-ql-simple-taks-search "CANCELLED"))
 
