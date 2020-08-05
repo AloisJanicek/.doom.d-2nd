@@ -1,6 +1,7 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
 
+(unpin! t)
 (unpin! org-roam)
 (unpin! company-org-roam)
 
