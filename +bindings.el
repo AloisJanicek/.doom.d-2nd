@@ -889,7 +889,7 @@
   :desc "agenda"                   "a" #'aj/org-agenda-gtd-hydra/body
   :desc "browse eww"               "b" #'eww
   :desc "browse eaf"               "B" #'eaf-open-browser
-  :desc "agenda tasks"             "h" (cmd! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT")))
+  :desc "agenda tasks"             "h" (cmd! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT" "WAIT" "HOLD")))
   :desc "all agenda tasks"         "H" (cmd! (aj/org-agenda-headlines))
   :desc "imenu-list"               "i" #'imenu-list-smart-toggle
   :desc "NEXT agenda tasks"        "n" (cmd! (aj/org-agenda-headlines '(todo "NEXT")))
