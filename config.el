@@ -2300,6 +2300,8 @@
             (when (featurep! :editor evil)
               (evil-set-initial-state 'eaf-mode 'emacs))
 
+            (eaf-bind-key nil "C-h" eaf-browser-keybinding)
+
             (map!
              :map eaf-mode-map*
              "C-h" #'evil-window-left
@@ -2309,12 +2311,14 @@
              "C-;" #'aj/eaf-show-keys-help
              )
 
-            (setq eaf-config-location (expand-file-name "eaf" doom-etc-dir)
-                  eaf-buffer-title-format "*eaf %s*"
-                  )
-
-            (eaf-bind-key nil "C-h" eaf-browser-keybinding)
             (eaf-setq eaf-browser-dark-mode "false")
+            (eaf-setq eaf-browser-enable-history "false")
+            (eaf-setq eaf-browser-enable-plugin "false")
+            (eaf-setq eaf-browser-enable-adblocker "true")
+            (eaf-setq eaf-browser-enable-autofill "false")
+
+            (setq eaf-buffer-title-format "*eaf %s*")
+
             (add-to-list 'eaf-app-display-function-alist
                          '("browser" . pop-to-buffer))
 
@@ -2324,7 +2328,8 @@
                                  (when (and (eq major-mode 'eaf-mode)
                                             (string-equal eaf--buffer-app-name "browser"))
                                    t)))
-              :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)))
+              :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)
+            ))
       (message "no emacs-application-framework repository found at %s" eaf-path))))
 
 (load! "+bindings")
