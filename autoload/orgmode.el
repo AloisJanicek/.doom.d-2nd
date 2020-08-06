@@ -1555,7 +1555,12 @@ path is colorized according to outline faces.
          (outline (when outline
                     (org-get-outline-path)))
          (tag (when tag
-                (nth 5 heading)))
+                (let ((tag (nth 5 heading)))
+                  (cond ((and time tag)
+                         (concat tag "scheduled:"))
+                        ((and time (not tag))
+                         ":scheduled:")
+                        (t tag)))))
          (todo-parent-maybe (org-with-wide-buffer
                              (if-let ((parent (car (last (org-get-outline-path)))))
                                  (unless
