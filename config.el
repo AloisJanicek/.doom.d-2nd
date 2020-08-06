@@ -1327,6 +1327,7 @@
   (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-switch-to :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-agenda-todo :after #'aj-org-agenda-save-and-refresh-a)
+  (advice-add #'org-todo :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-kill :after #'aj-org-agenda-save-and-refresh-a)
 
   (setq
