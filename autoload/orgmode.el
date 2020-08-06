@@ -1546,13 +1546,23 @@ Heading is stripped of org-mode link syntax and whole
 path is colorized according to outline faces.
 "
   (let* ((heading (org-heading-components))
-         (text (org-link-display-format (nth 4 heading)))
+         (time (org-element--get-time-properties))
+         (text (if time
+                   (concat "⏲ " (org-link-display-format (nth 4 heading)))
+                 (org-link-display-format (nth 4 heading))))
          (keyword (when keyword
                     (nth 2 heading)))
          (outline (when outline
                     (org-get-outline-path)))
          (tag (when tag
                 (nth 5 heading)))
+         (todo-parent-maybe (org-with-wide-buffer
+                             (if-let ((parent (car (last (org-get-outline-path)))))
+                                 (unless
+                                     (ignore-errors
+                                       ;; this is nil for heading with todo keyword
+                                       (re-search-backward (concat "* " parent)))
+                                   t))))
          (depth (length outline))
          (level (nth 0 heading))
          (filename (when filename
@@ -1567,6 +1577,7 @@ path is colorized according to outline faces.
          (spc " ")
          (i 0))
 
+    
     (put-text-property 0 (length text) 'face (format "outline-%d" level) text)
 
     (when outline
@@ -1584,6 +1595,13 @@ path is colorized according to outline faces.
       (if (string-match (concat "TO" "DO" "\\|PROJECT\\|NEXT") keyword)
           (put-text-property 0 (length text) 'face 'outline-1 text)
         (put-text-property 0 (length text) 'face 'bold text)))
+
+    ;; I don't want to my attention to be stolen by subtasks from projects other then NEXT or scheduled items
+    (when (or (and todo-parent-maybe
+                   (not (or (string-equal "NEXT" keyword)
+                            (string-equal "PROJECT" keyword))))
+              time)
+      (put-text-property 0 (length text) 'face 'ivy-virtual text))
 
     (when filename
       (put-text-property 0 (length filename) 'face 'bold filename))
