@@ -1458,6 +1458,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
     (widen)
     (goto-char marker)
     (org-narrow-to-subtree)
+    (outline-hide-leaves)
     (org-show-entry)
     (outline-show-branches)
     ))
