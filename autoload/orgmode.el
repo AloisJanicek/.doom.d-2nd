@@ -1239,13 +1239,6 @@ got renamed while clock were running.
                     (match-string-no-properties 4)))
                   (t "???"))))))
 
-;;;###autoload
-(defun aj/org-clock-menu ()
-  "Present recent clocked tasks."
-  (interactive)
-  (setq current-prefix-arg '(4))
-  (call-interactively 'org-clock-in-last))
-
 ;;;###autoload (autoload 'aj/org-clock-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-clock-hydra (:color blue
                               :hint nil
@@ -1258,7 +1251,7 @@ got renamed while clock were running.
 _i_n   _p_omodoro  _g_oto      _U_pdate  _r_ename  _R_eset
 _o_ut            _h_istory   _k_ontext _e_ffort  _C_ancel
 "
-  ("i" #'aj/org-clock-menu)
+  ("i" (org-clock-in '(4)))
   ("e" #'org-clock-modify-effort-estimate)
   ("o" #'org-clock-out)
   ("p" #'org-pomodoro)

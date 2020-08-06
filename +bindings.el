@@ -478,7 +478,6 @@
 
   (:prefix ("c" . "clock")
    :m "i" #'org-agenda-clock-in
-   :m "m" #'aj/org-clock-menu
    :m "o" #'org-agenda-clock-out
    :m "p" #'org-pomodoro
    )
