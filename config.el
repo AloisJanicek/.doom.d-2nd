@@ -1326,6 +1326,7 @@
   (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
   (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-switch-to :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-agenda-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-agenda-todo :after #'aj-org-agenda-save-and-refresh-a)
   (advice-add #'org-todo :after (lambda (&rest _)
                                   (org-save-all-org-buffers)))
