@@ -2200,6 +2200,7 @@
   (setq solaire-mode-remap-line-numbers t)
   (remove-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
   (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
+  (add-to-list 'solaire-mode-themes-to-face-swap "aj-dark+")
   )
 
 (set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono 1.1" :slant 'italic :height 105 :weight 'medium)
