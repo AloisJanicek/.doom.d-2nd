@@ -1408,7 +1408,11 @@ Otherwise dispatch default commands.
   "Get all files in `org-directory' recursively and update org IDs."
   (interactive)
   (org-id-update-id-locations
-   (directory-files-recursively org-directory ".org$"))
+   (seq-filter
+    (lambda (file)
+      (not
+       (string-match "roam-" file)))
+    (directory-files-recursively org-directory ".org$")))
   (org-brain-update-id-locations))
 
 ;; MISC
