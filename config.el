@@ -232,6 +232,10 @@
          (goto-char pos)
          (recenter)
          (counsel--mark-ring-add-highlight)))))
+
+  ;; WSL1 + rust tools like ripgrep + glibc
+  (when (aj-wsl-p)
+    (setq counsel-rg-base-command "rg -j1 -M 500 --with-filename --no-heading --line-number --color never %s"))
   )
 
 (after! counsel-dash
