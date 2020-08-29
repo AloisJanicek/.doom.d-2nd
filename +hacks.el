@@ -93,3 +93,22 @@ For ensuring compatibility with how things are implemented and expected in upstr
                                     (eval-buffer))
                                   ))
   )
+
+
+(after! spell-fu
+  ;; HACK: fixing 'Not enabling jit-lock: it does not work in indirect buffer'
+  (defun aj-apply-fn-to-base-buffer (orig-fn &rest args)
+    "Apply `ORIG-FN' to base buffer if current buffer is indirect."
+    (with-current-buffer
+        (or
+         (buffer-base-buffer)
+         (current-buffer))
+      (apply orig-fn args)))
+
+  (advice-add #'spell-fu--immediate-disable :around #'aj-apply-fn-to-base-buffer)
+  (advice-add #'spell-fu--immediate-enable :around #'aj-apply-fn-to-base-buffer)
+  (advice-add #'spell-fu--idle-enable :around #'aj-apply-fn-to-base-buffer)
+  (advice-add #'spell-fu--idle-disable :around #'aj-apply-fn-to-base-buffer)
+  (advice-add #'spell-fu-region :around #'aj-apply-fn-to-base-buffer)
+  (advice-add #'spell-fu--goto-next-or-previous-error :around #'aj-apply-fn-to-base-buffer)
+  )
