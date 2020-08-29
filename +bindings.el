@@ -844,7 +844,7 @@
   :desc "pretty symbols"    "p" #'prettify-symbols-mode
   :desc "re-builder"        "R" #'regexp-builder
   :desc "Chromium incognito private" "P" #'aj/chromium-toggle-incognito
-  :desc "flyspell"          "s" #'aj/flyspell-enable
+  :desc "spell-fu"          "s" #'aj/spell-fu-enable
   :desc "swap dictionaries" "S" (cmd! (aj-ispell-swap-two-dicts "english" "czech"))
   :desc "treemacs"          "t" #'+treemacs/toggle
   :desc "light/dark theme"  "T" (cmd! (aj-doom-themes-swap-two-themes 'doom-solarized-dark 'doom-solarized-light))
