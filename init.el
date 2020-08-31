@@ -83,6 +83,7 @@
  syntax
  (spell
   ;; +everywhere
+  +flyspell
   )
  grammar
 
