@@ -967,8 +967,7 @@
         magit-clone-default-directory `,aj-repos-dir
         )
   ;; (magit-todos-mode)
-  ;; (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
-  )
+  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (remove-hook 'Man-mode-hook #'hide-mode-line-mode)
 
@@ -1087,6 +1086,8 @@
   (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
   )
 
+(remove-hook 'org-mode-hook #'flyspell-mode)
+
 (after! ol
   (advice-add
    #'org-link-open-from-string
@@ -1111,7 +1112,7 @@
   (set-popup-rule! "^\\*Org QL.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
 
   (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
-  (add-hook 'org-capture-mode-hook #'spell-fu-mode)
+  (add-hook 'org-capture-mode-hook #'flyspell-mode)
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)

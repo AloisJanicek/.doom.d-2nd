@@ -62,12 +62,15 @@ Which operation will be executed depends on value of ENCRYPT."
         (message "Decrypted %s files." (length encrypted))))))
 
 ;;;###autoload
-(defun aj/spell-fu-enable ()
-  "Toggle command `spell-fu-mode' with check for progn-derived mode."
+(defun aj/flyspell-enable ()
+  "Toggle command `flyspell-mode' with check for progn-derived mode."
   (interactive)
-  (if (not spell-fu-mode)
-      (spell-fu-mode 1)
-    (spell-fu-mode 0)))
+  (if (not flyspell-mode)
+      (progn
+        (flyspell-mode 1)
+        (if (derived-mode-p 'prog-mode)
+            (flyspell-prog-mode)))
+    (flyspell-mode 0)))
 
 ;;;###autoload
 (defun aj-ispell-swap-two-dicts (dict1 dict2)
@@ -77,7 +80,8 @@ Which operation will be executed depends on value of ENCRYPT."
              dict2 dict1)))
     (progn
       (ispell-change-dictionary target-dict)
-      (spell-fu-mode 1))))
+      (flyspell-mode 1)
+      (flyspell-buffer))))
 
 ;;;###autoload
 (defun aj-doom-themes-swap-two-themes (theme1 theme2)

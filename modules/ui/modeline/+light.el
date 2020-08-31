@@ -494,9 +494,7 @@ lines are selected, or the NxM dimensions of a block selection.")
 ;;; `+flyspell'
 (def-modeline-var! +flyspell
   '(:eval
-    (when (or flyspell-mode
-              spell-fu-mode
-              )
+    (when flyspell-mode
       (concat
        (all-the-icons-faicon "language" :v-adjust 0.0 :height 0.9)
        " "
