@@ -586,7 +586,7 @@
   )
 
  ;;; pdf-tools
- (:after pdf-tools
+ (:after pdf-view
   :map pdf-view-mode-map
   :nm "C-h" #'evil-window-left
   :nm "C-j" #'evil-window-down
