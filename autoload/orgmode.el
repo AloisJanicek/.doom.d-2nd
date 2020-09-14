@@ -350,6 +350,22 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
   ("s" (org-capture nil "cs") "source" )
   )
 
+;;;###autoload (autoload 'aj/org-attach-hydra/body "autoload/orgmode" nil t)
+(defhydra aj/org-attach-hydra (:color blue
+                               :hint nil
+                               :idle which-key-idle-delay
+                               )
+  "
+_c_p   _l_n _a_ttach
+_m_v   ln_s_
+"
+  ("a" #'org-attach-attach)
+  ("c" #'org-attach-attach-cp)
+  ("m" #'org-attach-attach-mv)
+  ("l" #'org-attach-attach-ls)
+  ("s" #'org-attach-attach-lns)
+  )
+
 ;;;###autoload
 (defun aj/org-capture-calendar ()
   "Ask for file, date, heading title, tag and then capture."

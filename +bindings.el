@@ -295,6 +295,9 @@
    )
 
   :localleader
+  (:prefix ("a" . "attachments")
+   :desc "attach file hydra" "a" #'aj/org-attach-hydra/body
+   )
   "B"  nil
   (:prefix ("B" . "babel")
    :desc "tangle"  "t" #'org-babel-tangle
