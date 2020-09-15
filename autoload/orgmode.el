@@ -157,7 +157,7 @@ Works also in `org-agenda'."
                                )
   "
 _t_op level   _j_ournal     refile _T_argets   _v_isible heading   _O_ther buffer     _p_roject             _x_private    _a_rchived resource _s_election
-_f_ile        _c_lock       _l_ast location    _._this file        _o_ther window     _P_roject journal     _r_resources  _A_rchived file
+_f_ile        _c_lock       _l_ast location    _._this file        _o_ther window     _P_roject journal     _r_resources  _A_rchived file _b_rain entry
 "
   ("T" (lambda (arg)
          (interactive "P")
@@ -178,6 +178,7 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
         (aj/choose-file-from
          (aj-get-all-org-files))))
   ("v" #'+org/refile-to-visible)
+  ("b" #'aj/org-refile-under-org-brain-entry)
   ("j" (aj-org-refile-to-datetree
         (aj/choose-file-from
          (directory-files org-directory t ".org"))))
@@ -1920,6 +1921,25 @@ At the end, source link is deleted.
              (not (string-empty-p title)))
         title
       url)))
+
+;;;###autoload
+(defun aj/org-refile-under-org-brain-entry ()
+  "Refile heading under org-brain entry.
+When org-brain entry is file, refile as top-level heading."
+  (interactive)
+  (let* ((entry-marker (org-brain-entry-marker
+                        (org-brain-choose-entry "Refile under entry: " 'all)))
+         (entry-buffer (marker-buffer entry-marker)))
+    (let* ((file (with-current-buffer entry-buffer
+                   (or (buffer-file-name) buffer-file-truename)))
+           (pos (with-current-buffer entry-buffer
+                  (save-excursion
+                    (goto-char (marker-position entry-marker))
+                    (point))))
+           (rfloc (list nil file nil pos)))
+      (if (memq major-mode aj-org-agenda-similar-modes)
+          (org-agenda-refile nil rfloc)
+        (org-refile nil nil rfloc)))))
 
 ;;;###autoload
 (defun aj-org-brain-get-all-brains ()
