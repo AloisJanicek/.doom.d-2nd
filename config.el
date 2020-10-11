@@ -368,12 +368,8 @@
                                      (bury-buffer))))
   )
 
-(use-package! dart-mode
-  :commands dart-mode
-  :config
-  (add-hook! 'dart-mode-local-vars-hook #'lsp-deferred)
-  (set-docsets! 'dart-mode "Dart")
-  )
+(after! dart-mode
+  (set-docsets! 'dart-mode "Dart"))
 
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
@@ -917,28 +913,10 @@
 
   )
 
-(use-package lsp-lua-emmy
-  :after lsp-clients
-  :load-path "~/.emacs.d/.local/straight/repos/lsp-lua-emmy"
-  :config
-  (setq lsp-lua-emmy-jar-path
-        (expand-file-name
-         (concat aj-repos-dir
-                 "/EmmyLua-LanguageServer/EmmyLua-LS/build/libs/EmmyLua-LS-all.jar")))
-  )
-
 (after! lsp
   (setq lsp-ui-sideline-enable nil
         lsp-semantic-highlighting :deferred
         )
-  )
-
-(use-package! lsp-dart
-  :after dart-mode
-  )
-
-(use-package! lsp-julia
-  :after julia-mode
   )
 
 (after! lua-mode

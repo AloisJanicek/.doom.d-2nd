@@ -124,6 +124,7 @@
  crystal
  (csharp +lsp)
  data
+ (dart +flutter +lsp)
  (elixir +lsp)
  (elm +lsp)
  emacs-lisp
@@ -145,7 +146,7 @@
  ;;lean
  ;;factor
  ;;ledger
- lua
+ (lua +lsp)
  markdown
  nim
  ;;nix
@@ -167,7 +168,7 @@
  (rust +lsp)
  (scala +lsp)
  scheme
- (sh +lsp)
+ (sh +lsp +powershell)
  sml
  ;;solidity
  (swift +lsp)

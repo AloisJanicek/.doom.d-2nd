@@ -4,54 +4,50 @@
 (unpin! org-roam)
 (unpin! company-org-roam)
 
-(package! ace-link)
+(package! ace-link :pin "298f02f")
 
-(package! ahk-mode)
+(package! ahk-mode :pin "729007b")
 
 (package! all-the-icons-ivy-rich
-  :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich"))
+  :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich") :pin "6428cb3")
 
-(package! anki-editor)
+(package! anki-editor :pin "546774a")
 
-(package! apache-mode)
+(package! apache-mode :pin "a66dc1f")
 
-(package! bats-mode)
+(package! bats-mode :pin "d519f7c")
 
-(package! cfml-mode)
+(package! cfml-mode :pin "b06d7ce")
 
-(package! d-mode)
-
-(package! dart-mode)
-
-(package! lsp-dart)
+(package! d-mode :pin "b40a7ab")
 
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock"))
 
-(package! counsel-tramp)
+(package! counsel-tramp :pin "719b38b")
 
 (package! counsel-web
   :recipe (:host github :repo "mnewt/counsel-web"))
 
 (package! cyphejor
-  :recipe (:host github :repo "mrkkrp/cyphejor"))
+  :recipe (:host github :repo "mrkkrp/cyphejor") :pin "763531d")
 
-(package! define-word)
+(package! define-word :pin "3af6825")
 
 (package! eslintd-fix
-  :recipe (:host github :repo "aaronjensen/eslintd-fix"))
+  :recipe (:host github :repo "aaronjensen/eslintd-fix") :pin "0c43114")
 
-(package! esqlite)
+(package! esqlite :pin "08a779a")
 
-(package! google-translate)
+(package! google-translate :pin "0270073")
 
 (package! flycheck-sml
-  :recipe (:host github :repo "creichert/flycheck-sml"))
+  :recipe (:host github :repo "creichert/flycheck-sml") :pin "670eada")
 
-(package! highlight-blocks)
+(package! highlight-blocks :pin "33cf3d3")
 
 (package! highlight-escape-sequences
-  :recipe (:host github :repo "hlissner/highlight-escape-sequences"))
+  :recipe (:host github :repo "hlissner/highlight-escape-sequences") :pin "baa6994")
 
 (package! howdoyou
   :recipe (:host github :repo "thanhvg/emacs-howdoyou"))
@@ -61,40 +57,35 @@
 (package! hydra-posframe
   :recipe (:host github :repo "Ladicle/hydra-posframe"))
 
-(package! indium)
+(package! indium :pin "59f12cb")
 
-(package! imenu-list)
+(package! imenu-list :pin "4600873")
 
 (package! ivy-pages
-  :recipe (:host github :repo "igorepst/ivy-pages"))
+  :recipe (:host github :repo "igorepst/ivy-pages") :pin "47b03a1")
 
 (package! ivy-yasnippet
-  :recipe (:host github :repo "mkcms/ivy-yasnippet"))
+  :recipe (:host github :repo "mkcms/ivy-yasnippet") :pin "83402d9")
 
 (package! jest
-  :recipe (:host github :repo "xlarsx/emacs-jest"))
+  :recipe (:host github :repo "xlarsx/emacs-jest") :pin "b51be19")
 
 (package! js-doc
-  :recipe (:host github :repo "mooz/js-doc"))
+  :recipe (:host github :repo "mooz/js-doc") :pin "f0606e8")
 
 (package! js-react-redux-yasnippets
-  :recipe (:host github :repo "AloisJanicek/js-react-redux-yasnippets" :files ("*.el" "snippets") :branch "fix-yas-snippet-dirs"))
-
-(package! lsp-julia
-  :recipe (:host github :repo "non-Jedi/lsp-julia"))
+  :recipe (:files ("*.el" "snippets"))
+  :pin "9f509043f01fa59bff4daf31b2e95d63f8deab4a")
 
 (package! lfe-mode
-  :recipe (:host github :repo "emacsmirror/lfe-mode"))
+  :recipe (:host github :repo "emacsmirror/lfe-mode") :pin "2fecc5d")
 
-(package! lsp-lua-emmy
-  :recipe (:host github :repo "phenix3443/lsp-lua-emmy"))
-
-(package! mocha)
+(package! mocha :pin "6a72fa2")
 
 (package! nov)
 
 (package! ob-javascript
-  :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*")))
+  :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*")) :pin "4aafd53")
 
 (package! org-brain
   :recipe (:host github :repo "Kungsgeten/org-brain"))
@@ -107,43 +98,38 @@
 
 (package! org-super-agenda)
 
-(package! org-superstar :disable t)
-
 (package! org-ql)
 
 (package! paredit
-  :recipe (:host github :repo "emacsmirror/paredit"))
-
-(package! powershell
-  :recipe (:host github :repo "jschaf/powershell.el"))
+  :recipe (:host github :repo "emacsmirror/paredit") :pin "8330a41")
 
 (package! powerthesaurus
-  :recipe (:host github :repo "SavchenkoValeriy/emacs-powerthesaurus"))
+  :recipe (:host github :repo "SavchenkoValeriy/emacs-powerthesaurus") :pin "93036d3")
 
 (package! reason-mode
-  :recipe (:host github :repo "reasonml-editor/reason-mode"))
+  :recipe (:host github :repo "reasonml-editor/reason-mode") :pin "5690544")
 
-(package! robots-txt-mode)
+(package! robots-txt-mode :pin "8bf6728")
 
 (package! sdcv
-  :recipe (:host github :repo "stardiviner/sdcv.el" :files ("sdcv.el")))
+  :recipe (:host github :repo "stardiviner/sdcv.el" :files ("sdcv.el")) :pin "943ae3e")
 
 (package! shrface
-  :recipe (:host github :repo "AloisJanicek/shrface" :branch "fix-regexp-vars"))
+  :recipe (:host github :repo "AloisJanicek/shrface" :branch "fix-regexp-vars") :pin "e2d0102")
 
 (package! shr-tag-pre-highlight
-  :recipe (:host github :repo "xuchunyang/shr-tag-pre-highlight.el"))
+  :recipe (:host github :repo "xuchunyang/shr-tag-pre-highlight.el") :pin "931c447")
 
-(package! systemd)
+(package! systemd :pin "51c148e")
 
-(package! tldr)
+(package! tldr :pin "269bda7")
 
-(package! vimrc-mode)
+(package! vimrc-mode :pin "13bc150")
 
 (package! which-key-posframe
-  :recipe (:host github :repo "yanghaoxie/which-key-posframe"))
+  :recipe (:host github :repo "yanghaoxie/which-key-posframe") :pin "e7f2860")
 
 (package! yankpad)
 
 (package! zeal-at-point
-  :recipe (:host github :repo "jinzhu/zeal-at-point"))
+  :recipe (:host github :repo "jinzhu/zeal-at-point") :pin "0fc3263")
