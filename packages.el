@@ -4,6 +4,10 @@
 (unpin! org-roam)
 (unpin! company-org-roam)
 
+(package! lsp-julia
+  :recipe (:host github :repo "non-Jedi/lsp-julia")
+  :pin "c523c250c4bd2777203101ab417e9b7312472f46")
+
 (package! ace-link :pin "298f02f")
 
 (package! ahk-mode :pin "729007b")
