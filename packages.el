@@ -4,6 +4,10 @@
 (unpin! org-roam)
 (unpin! company-org-roam)
 
+(package! org-mode
+  :recipe (:repo "https://code.orgmode.org/bzg/org-mode.git"
+           :files ("*.el" "lisp/*.el" "contrib/lisp/*.el"))
+  :pin "8402c4a778")
 (package! lsp-julia
   :recipe (:host github :repo "non-Jedi/lsp-julia")
   :pin "c523c250c4bd2777203101ab417e9b7312472f46")
