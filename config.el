@@ -649,13 +649,15 @@
         '(term-mode vterm-mode help-mode helpful-mode minibuffer-inactive-mode calc-mode))
   (global-hungry-delete-mode 1))
 
-(use-package! hydra-posframe
-  :after hydra
-  :config
-  (hydra-posframe-mode +1)
-  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center
-        hydra-posframe-border-width 10
-        )
+(when (display-graphic-p)
+  (use-package! hydra-posframe
+    :after hydra
+    :config
+    (hydra-posframe-mode +1)
+    (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center
+          hydra-posframe-border-width 10
+          )
+    )
   )
 
 (after! hl-todo
