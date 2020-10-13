@@ -4,6 +4,7 @@
  :input
  ;;chinese
  ;;japanese
+ ;;layout
 
  :completion
  (company
@@ -27,6 +28,8 @@
  hl-todo
  ;;hydra
  indent-guides
+ ;;ligatures
+ ;;minimap
  (modeline
   +light)
  nav-flash
@@ -35,7 +38,6 @@
  (popup
   +all
   +defaults)
- ;; pretty-code
  ;;tabs
  treemacs
  ;;unicode
@@ -67,10 +69,10 @@
   +icons
   )
  electric
+ ;;ibuffer
  (undo
   +tree
   )
- ;;ibuffer
  vc
 
  :term
@@ -104,16 +106,20 @@
   +docsets
   )
  lsp
- ;;macos
  magit
  make
  ;;pass
  pdf
  prodigy
  rgb
+ ;;taskrunner
  ;;terraform
  ;;tmux
  upload
+
+ :os
+ (:if IS-MAC macos)
+ tty
 
  :lang
  ;;agda
@@ -133,14 +139,15 @@
  ;;faust
  (fsharp +lsp)
  ;;fstar
+ ;;gdscript
  (go +lsp)
  (haskell +lsp)
  ;;hy
  ;;idris
+ (json +lsp)
  (java +lsp)
  (javascript +lsp)
  (julia +lsp)
- (json +lsp)
  (kotlin +lsp)
  ;;latex
  ;;lean
@@ -173,8 +180,8 @@
  ;;solidity
  (swift +lsp)
  ;;terra
- (yaml +lsp)
  (web +lsp)
+ (yaml +lsp)
 
  :email
  ;;(mu4e +gmail)
