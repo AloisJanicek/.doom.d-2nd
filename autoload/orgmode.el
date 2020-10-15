@@ -1827,6 +1827,7 @@ Org manual: 8.4.2 The clock table.
 ;;;###autoload
 (defun aj-org-re-store-link ()
   "Re-store current link under the point."
+  (require 'org-protocol)
   (org-show-entry)
   (org-toggle-item nil)
   (let* ((current-prefix-arg nil)
