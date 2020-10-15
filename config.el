@@ -2263,7 +2263,8 @@
       (set-frame-size (selected-frame) 120 42))
   (pushnew! default-frame-alist '(fullscreen . maximized)))
 
-(unless (aj-wsl-p)
+(unless (or (aj-wsl-p)
+            (not (display-graphic-p)))
   (let ((eaf-path (expand-file-name "emacs-application-framework" aj-repos-dir)))
     (if (ignore-errors (directory-files eaf-path))
         (progn
