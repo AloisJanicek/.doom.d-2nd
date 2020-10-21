@@ -2256,12 +2256,17 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
   "Choose and update `org-roam-directory'."
   (interactive)
   (require 'ffap)
-  (let ((dir (ivy-read "Choose roam directory: "
-                       (seq-filter
-                        (lambda (dir)
-                          (string-match "roam" dir))
-                        (ffap-all-subdirs org-directory 1)))))
-    (setq org-roam-directory (file-truename dir)))
+  (let* ((dir (file-truename
+               (ivy-read "Choose roam directory: "
+                         (seq-filter
+                          (lambda (dir)
+                            (string-match "roam" dir))
+                          (ffap-all-subdirs org-directory 1)))))
+         (db-dir (concat doom-etc-dir (file-name-nondirectory dir))))
+    (unless (file-exists-p db-dir)
+      (make-directory db-dir))
+    (setq org-roam-directory dir
+          org-roam-db-location (expand-file-name "org-roam.db" db-dir)))
 
   (let ((tmp-dir "/tmp/org-roam-server-light/"))
     (unless (file-exists-p tmp-dir)

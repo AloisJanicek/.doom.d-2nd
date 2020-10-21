@@ -1727,9 +1727,12 @@
           (add-hook 'find-file-hook #'org-roam-server-light-find-file-hook-function nil nil)
           (unless (file-exists-p tmp-dir)
             (make-directory tmp-dir))
+          (f-write-text org-roam-db-location
+                        'utf-8
+                        (expand-file-name "org-roam-db-location" tmp-dir))
           (f-write-text org-roam-directory
                         'utf-8
-                        (expand-file-name (symbol-name 'org-roam-directory) tmp-dir))))))
+                        (expand-file-name "org-roam-directory" tmp-dir))))))
 
   )
 
