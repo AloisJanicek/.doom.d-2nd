@@ -2323,5 +2323,3 @@
 
 (when (file-readable-p (expand-file-name "+local.el" doom-private-dir))
   (load! "+local"))
-
-;; (load! "+JetBrainsMono.el")
