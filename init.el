@@ -24,6 +24,7 @@
  doom
  doom-dashboard
  doom-quit
+ ; (emoji +unicode)
  ;;fill-column
  hl-todo
  ;;hydra
