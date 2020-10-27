@@ -1677,11 +1677,11 @@
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-buffer-to-popup-a)
 
-  (defcustom org-roam-server-light-css nil
-    "Custom CSS for org-roam-server-light")
-
-  (load! "+org-roam-server-light")
-
+  (setq org-roam-server-light-network-vis-options
+        "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.5 } } } }"
+        )
+  (setq org-roam-server-light-dir (expand-file-name "org-roam-server-light" aj-repos-dir))
+  (load! (expand-file-name "org-roam-server-light.el" org-roam-server-light-dir))
   )
 
 (after! pdf-view
