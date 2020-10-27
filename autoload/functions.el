@@ -179,9 +179,11 @@ Optional argument ARGS represents arguments passed to advised function."
   (if (aj-wsl-p)
       (apply #'wsl-browse-url args)
     (apply
-     (if (y-or-n-p (concat "link: " "Browse with EAF browser? "))
-         #'aj-eaf-browse-url-maybe
-       #'aj-chromium-browse-url-dispatch)
+     (if (or (not (display-graphic-p))
+             (y-or-n-p (concat "link: " "Browse with EAF browser? ")))
+         #'aj-chromium-browse-url-dispatch
+       #'aj-eaf-browse-url-maybe
+       )
      args)))
 
 ;;;###autoload
