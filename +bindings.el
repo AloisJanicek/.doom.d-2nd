@@ -1147,7 +1147,7 @@
   :desc "org-journal"          "J" (cmd!
                                     (unless org-roam-directory
                                       (aj/org-roam-choose-update-dir))
-                                    (setq org-journal-dir (file-name-nondirectory org-roam-directory))
+                                    (setq org-journal-dir (expand-file-name "journal" org-roam-directory))
                                     (if current-prefix-arg
                                         (let (current-prefix-arg)
                                           (org-journal-new-entry nil))

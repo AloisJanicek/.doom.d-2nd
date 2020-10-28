@@ -2,7 +2,6 @@
 ;;; packages.el
 
 (unpin! org-roam)
-(unpin! company-org-roam)
 
 (package! org-mode
   :recipe (:repo "https://code.orgmode.org/bzg/org-mode.git"

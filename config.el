@@ -1098,6 +1098,8 @@
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (add-hook 'org-mode-hook #'mixed-pitch-mode)
+  (advice-add #'org-goto-marker-or-bmk :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-goto-marker-or-bmk :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-refile :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
@@ -1616,7 +1618,10 @@
   (setq
    org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)
    org-id-search-archives nil
-   ))
+   )
+  (advice-add #'org-id-open :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-id-open :around #'aj-org-buffer-to-popup-a)
+  )
 
 (doom-store-persist doom-store-location '(org-roam-directory))
 
@@ -1628,7 +1633,7 @@
                                (string-match "roam" dir))
                              (ffap-all-subdirs org-directory 1)))))
 
-(setq org-journal-dir (file-name-nondirectory org-roam-directory))
+(setq org-journal-dir (expand-file-name "journal" org-roam-directory))
 
 (after! org-journal
   (setq org-journal-date-prefix "#+TITLE: "
@@ -1642,6 +1647,9 @@
   (advice-add #'org-journal-open-current-journal-file :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-journal-read-or-display-entry :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-journal-read-or-display-entry :around #'aj-org-buffer-to-popup-a)
+  (add-hook 'org-journal-after-header-create-hook #'org-id-get-create)
+  (add-hook 'org-journal-after-header-create-hook #'org-roam-db-update-cache 100)
+  (set-company-backend! 'org-journal-mode 'company-capf 'company-dabbrev)
   )
 
 (after! org-list
@@ -1665,6 +1673,8 @@
   )
 
 (after! org-roam
+  (add-hook 'org-roam-capture-after-find-file-hook #'org-id-get-create)
+  (add-hook 'org-roam-capture-after-find-file-hook #'org-roam-db-update-cache 100)
   (setq +org-roam-open-buffer-on-find-file nil)
   (doom-store-persist doom-store-location '(org-roam-directory))
 
