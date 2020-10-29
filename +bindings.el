@@ -141,6 +141,24 @@
   "t" #'elm-test-project
   )
 
+;;; eshell
+ (:after esh-mode
+  :map eshell-mode-map
+  :in "C-h" #'evil-window-left
+  :in "C-j" #'evil-window-down
+  :in "C-k" #'evil-window-up
+  :in "M-1"   (cmd! (+workspace/switch-to 0))
+  :in "M-2"   (cmd! (+workspace/switch-to 1))
+  :in "M-3"   (cmd! (+workspace/switch-to 2))
+  :in "M-4"   (cmd! (+workspace/switch-to 3))
+  :in "M-5"   (cmd! (+workspace/switch-to 4))
+  :in "M-6"   (cmd! (+workspace/switch-to 5))
+  :in "M-7"   (cmd! (+workspace/switch-to 6))
+  :in "M-8"   (cmd! (+workspace/switch-to 7))
+  :in "M-9"   (cmd! (+workspace/switch-to 8))
+  :in "M-0"   #'+workspace/switch-to-last
+  :in "M-t"   #'+workspace/new
+  )
  ;;; flycheck
  (:after flycheck
   :map flycheck-error-list-mode-map

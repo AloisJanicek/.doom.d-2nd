@@ -431,6 +431,10 @@
                    :cmd "Rscript test*")))
   )
 
+(after! esh-mode
+  (set-popup-rule! "*doom:eshell-popup" :size 0.25 :vslot -5 :select t :quit t :ttl nil :modeline nil)
+  )
+
 (after! evil
   (setq evil-move-cursor-back nil
         evil-want-fine-undo t
