@@ -7,6 +7,8 @@
 (add-to-list 'org-modules 'ol-info)
 (add-to-list 'org-modules 'ol-eww)
 
+(cd aj-home-base-dir)
+
 (setq user-mail-address "janicek.dev@gmail.com"
       user-full-name    "Alois Janíček"
       +file-templates-dir (expand-file-name "templates" aj-repos-dir)
@@ -2227,11 +2229,25 @@
   )
 
 (if (aj-wsl-p)
-    (progn
-      (setq doom-font                   (font-spec :family "Consolas 1.3" :size 14)
-            doom-big-font               (font-spec :family "Consolas 1.3" :size 24))
-      (set-frame-size (selected-frame) 120 42))
-  (pushnew! default-frame-alist '(fullscreen . maximized)))
+    (if (display-graphic-p)
+        (progn
+          (set-frame-size (selected-frame) 120 42)
+          )
+      (progn
+        ;; setup transparent background in terminal
+        (solaire-global-mode)
+        (custom-theme-set-faces! 'aj-dark+
+          `(default :background nil)
+          `(fringe :background nil)
+          `(solaire-alt-face :background nil)
+          `(solaire-fringe-face :background nil)
+          )
+        )
+      )
+  (progn
+    (pushnew! default-frame-alist '(fullscreen . maximized))
+    )
+  )
 
 (unless (or (aj-wsl-p)
             (not (display-graphic-p)))

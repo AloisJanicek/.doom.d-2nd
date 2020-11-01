@@ -4,7 +4,7 @@
   "Variable which equals to ~ on linux or to a specified host home directory
 if running under WSL")
 
-(defvar aj-wsl-win-root "/c"
+(defvar aj-wsl-win-root "/mnt/c"
   "Mount point of the Windows system partition")
 
 (setq aj-home-base-dir (if (aj-wsl-p)
