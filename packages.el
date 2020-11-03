@@ -12,6 +12,10 @@
   :recipe (:host github :repo "non-Jedi/lsp-julia")
   :pin "c523c250c4bd2777203101ab417e9b7312472f46")
 
+(package! json-proces-client
+  :recipe (:host github :repo "emacsmirror/json-process-client")
+  :pin "422606a7bf08d13646e3db4f6c2bddb69bd61dec")
+
 (package! ace-link :pin "298f02f")
 
 (package! ahk-mode :pin "729007b")
