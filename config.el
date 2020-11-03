@@ -823,6 +823,10 @@
 
 (after! json-mode
   (setq json-reformat:indent-width 2)
+  (add-hook
+   'json-mode-local-vars-hook
+   (lambda ()
+     (highlight-numbers-mode -1)))
   )
 
 (after! julia-mode
