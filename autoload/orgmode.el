@@ -2182,7 +2182,8 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
          (interactive)
          (unless (ignore-errors org-roam-server-light-mode)
            (org-roam-server-light-mode))
-         (if (display-graphic-p)
+         (if (and (display-graphic-p)
+                  (not (aj-wsl-p)))
              (let ((server-buff (get-buffer "*eaf Org Roam Server*"))
                    (pop-size (round (/ (frame-width) 1.6))))
                (if server-buff
@@ -2207,8 +2208,8 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                               nil))))
                      (kill-buffer server-buff))
                  (when org-roam-server-light-mode
-                   (eaf-open-browser "127.0.0.1:8080"))))
-           (browse-url "127.0.0.1:8080")
+                   (eaf-open-browser "http://127.0.0.1:8080"))))
+           (browse-url "http://127.0.0.1:8080")
            )
          ) "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
