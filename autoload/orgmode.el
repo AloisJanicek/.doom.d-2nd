@@ -2109,7 +2109,6 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 ;;;###autoload
 (defun aj-org-teleport-heading-here (file)
   "Copy heading from FILE to the current point."
-  (interactive)
   (let ((headings (lambda ()
                     (aj-org-get-pretty-heading-path t t nil t)))
         (ivy-height (round (* (frame-height) 0.80)))
