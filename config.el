@@ -206,7 +206,7 @@
 
 (after! counsel
   (setq counsel-grep-base-command "grep -E -n -i -e %s %s"
-        counsel-rg-base-command "rg -M 500 --with-filename --no-heading --line-number --color never %s"
+        counsel-rg-base-command "rg -M 500 --with-filename --no-heading --line-number --color never --glob='!.git' %s"
         counsel-outline-face-style 'verbatim
         counsel-outline-display-style 'path
         counsel-org-headline-display-tags t
