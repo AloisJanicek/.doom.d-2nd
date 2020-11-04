@@ -617,17 +617,7 @@
   :nm "j" #'pdf-view-next-line-or-next-page
   :nm "k" #'pdf-view-previous-line-or-previous-page
   :nm "l" #'org-store-link
-  :nm "o" (lambda ()
-            (interactive)
-            (let ((ivy-height 42)
-                  (ivy-posframe-size-function
-                   (lambda ()
-                     (list
-                      :height (+ ivy-height 1)
-                      :width (round (* (frame-width) 0.72))
-                      :min-height (+ ivy-height 1)
-                      :min-width (round (* (frame-width) 0.72))))))
-              (counsel-imenu)))
+  :nm "o" #'aj/bigger-counsel-imenu
   :nm "O" #'pdf-outline
   :nm "R" (cmd! (when-let (page (doom-store-get buffer-file-name "pdf-view-page"))
                   (pdf-view-goto-page page)))

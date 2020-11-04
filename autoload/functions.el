@@ -1056,6 +1056,20 @@ If there is no associated entry present for current major mode, throw warning.
                    buffer-file-truename))))
       (apply orig-fn args))))
 
+;;;###autoload
+(defun aj/bigger-counsel-imenu ()
+  "Imenu with increased height."
+  (interactive)
+  (let ((ivy-height 42)
+        (ivy-posframe-size-function
+         (lambda ()
+           (list
+            :height (+ ivy-height 1)
+            :width (round (* (frame-width) 0.72))
+            :min-height (+ ivy-height 1)
+            :min-width (round (* (frame-width) 0.72))))))
+    (counsel-imenu)))
+
 (provide 'functions)
 
 ;;; functions.el ends here

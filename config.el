@@ -1730,6 +1730,7 @@
                                          org-link-parameters))
                                   (org-link-set-parameters "pdf" :follow #'org-pdftools-open)
                                   (pdf-view-fit-width-to-window)
+                                  (aj/bigger-counsel-imenu)
                                   ))
 
   )
