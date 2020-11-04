@@ -659,7 +659,8 @@
   (use-package! hydra-posframe
     :after hydra
     :config
-    (hydra-posframe-mode +1)
+    (when (display-graphic-p)
+      (hydra-posframe-mode +1))
     (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center
           hydra-posframe-border-width 10
           )
@@ -2094,7 +2095,9 @@
 (use-package which-key-posframe
   :after which-key
   :config
-  (which-key-posframe-mode)
+  (when (display-graphic-p)
+    (which-key-posframe-mode)
+    )
   (setq which-key-posframe-poshandler #'posframe-poshandler-frame-top-center)
   )
 
