@@ -472,6 +472,7 @@
  ;;; evil-org-agenda
  (:after evil-org-agenda
   :map evil-org-agenda-mode-map
+  :m "a" nil
   :m "." (lambda ()
            (interactive)
            (let ((aj-org-agenda-gtd-hydra-no-auto t))
