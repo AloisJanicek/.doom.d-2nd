@@ -1243,7 +1243,9 @@
 (use-package! org-pretty-tags
   :after org
   :config
-  (org-pretty-tags-global-mode +1)
+  (when (display-graphic-p)
+    (org-pretty-tags-global-mode +1))
+
   (setq org-pretty-tags-surrogate-strings
         `(
           ;; ("tag" . icon)
