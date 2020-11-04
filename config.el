@@ -2312,3 +2312,9 @@
 
 (when (file-readable-p (expand-file-name "+local.el" doom-private-dir))
   (load! "+local"))
+
+(autoload
+  (function server-running-p)
+  "server" nil t)
+(unless (server-running-p)
+  (server-start))
