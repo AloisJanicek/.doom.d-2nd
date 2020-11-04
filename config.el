@@ -2324,3 +2324,6 @@
   "server" nil t)
 (unless (server-running-p)
   (server-start))
+
+(which-key-mode)
+(ivy-mode)
