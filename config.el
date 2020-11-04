@@ -2272,7 +2272,8 @@
                                                               (when (bound-and-true-p cyphejor-mode)
                                                                 (cyphejor--hook))))
             (when (featurep! :editor evil)
-              (evil-set-initial-state 'eaf-mode 'emacs))
+              (add-hook 'eaf-mode-hook #'evil-normal-state)
+              )
 
             (eaf-bind-key nil "C-h" eaf-browser-keybinding)
 
@@ -2283,6 +2284,7 @@
              "C-M-g" #'aj/eaf-browser-org-store-link
              "C-M-b" #'aj/eaf-browser-org-capture-link
              "C-;" #'aj/eaf-show-keys-help
+             "<ESC>" #'popup/close
              )
 
             (eaf-setq eaf-browser-dark-mode "false")

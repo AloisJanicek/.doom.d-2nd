@@ -2273,7 +2273,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
     (setq org-roam-directory dir
           org-roam-db-location (expand-file-name "org-roam.db" db-dir)))
 
-  (let ((tmp-dir "/tmp/org-roam-server-light/"))
+  (let ((tmp-dir org-roam-server-light-tmp-dir))
     (unless (file-exists-p tmp-dir)
       (make-directory tmp-dir))
     (f-write-text org-roam-directory
@@ -2284,10 +2284,10 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 
   (when (get-process "org-roam-server-light")
     (delete-process "org-roam-server-light")
-    (let ((default-directory (expand-file-name "org-roam-server-light" aj-repos-dir)))
+    (let ((default-directory org-roam-server-light-dir))
       (start-process-shell-command
        "org-roam-server-light"
-       "org-roam-server-light-output-buffer"
+       "*org-roam-server-light-output-buffer*"
        "python main.py"))))
 
 (provide 'orgmode)
