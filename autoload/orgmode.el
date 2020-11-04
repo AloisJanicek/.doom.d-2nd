@@ -1945,7 +1945,6 @@ When org-brain entry is file, refile as top-level heading."
 ;;;###autoload
 (defun aj-org-brain-get-all-brains ()
   "Return all directories which can be considered as separate brains."
-  (interactive)
   (require 'ffap)
   (seq-filter
    (lambda (dir)

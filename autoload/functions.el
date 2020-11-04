@@ -566,11 +566,11 @@ _q_uery    _f_irst      _n_ext       _S_ave
   ("n" #'howdoyou-next-link)
   ("p" #'howdoyou-previous-link)
   ("r" #'howdoyou-reload-link)
-  ("S" #'aj-howdoyou-rename-buffer)
+  ("S" #'aj/howdoyou-rename-buffer)
   )
 
 ;;;###autoload
-(defun aj-howdoyou-rename-buffer ()
+(defun aj/howdoyou-rename-buffer ()
   (interactive)
   (let* ((file-name (concat (file-name-nondirectory
                              (nth howdoyou--current-link-index howdoyou--links)) ".org"))
