@@ -329,7 +329,6 @@
                          (interactive)
                          (aj-org-teleport-heading-here (buffer-file-name)))
    :desc "Brain"   "B" (lambda ()
-
                          (interactive)
                          (aj-org-teleport-heading-here (ivy-read "brain file: "
                                                                  (directory-files-recursively

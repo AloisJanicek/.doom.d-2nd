@@ -1700,7 +1700,7 @@
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-buffer-to-popup-a)
 
   (setq org-roam-server-light-dir (expand-file-name "org-roam-server-light" aj-repos-dir)
-        org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.5 } } } }"
+        org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
         org-roam-server-light-style "body.darkmode { background-color: #121212!important; }"
         org-roam-server-light-default-include-filters "null"
         org-roam-server-light-default-exclude-filters "[{ \"id\": \"journal\", \"parent\" : \"tags\"  }]"
