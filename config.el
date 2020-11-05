@@ -1722,6 +1722,8 @@
                        (when (eq major-mode 'pdf-view-mode) t)))
     :vslot 2 :size 110  :side 'left :select t :quit t :ttl nil :modeline t)
 
+  (advice-add #'pdf-outline :override #'aj/bigger-counsel-imenu)
+
   (add-hook 'pdf-view-mode-hook (lambda ()
                                   "Set up pdf-view to my liking."
                                   (pdf-view-auto-slice-minor-mode)
@@ -1733,7 +1735,6 @@
                                          org-link-parameters))
                                   (org-link-set-parameters "pdf" :follow #'org-pdftools-open)
                                   (pdf-view-fit-width-to-window)
-                                  (aj/bigger-counsel-imenu)
                                   ))
 
   )
