@@ -1731,14 +1731,19 @@ path is colorized according to outline faces.
 ;;;###autoload
 (defun aj-org-update-help-files ()
   "Update definiton of `aj-org-help-files'."
-  (setq aj-org-help-files (mapcar
-                           #'file-truename
-                           (delq
-                            nil
-                            (delete-dups
-                             (append
-                              (directory-files-recursively org-directory ".org")
-                              (aj-org-combined-agenda-files)))))))
+  (async-start
+   `(lambda ()
+      (async-inject-variables "org-directory")
+      (directory-files-recursively ,org-directory ".org"))
+   (lambda (result)
+     (setq aj-org-help-files (mapcar
+                              #'file-truename
+                              (delq
+                               nil
+                               (delete-dups
+                                (append
+                                 result
+                                 (aj-org-combined-agenda-files)))))))))
 
 ;;;###autoload
 (cl-defun aj-org-ql-hide-header-a (&key (buffer org-ql-view-buffer) header string)
