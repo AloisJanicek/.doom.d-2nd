@@ -1115,7 +1115,8 @@
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
-                                                (when (eq major-mode 'org-mode) (save-buffer))))
+                                                (when (memq major-mode '(org-mode org-journal-mode))
+                                                  (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
   (advice-add
@@ -1661,6 +1662,8 @@
   (advice-add #'org-journal-read-or-display-entry :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-journal-read-or-display-entry :around #'aj-org-buffer-to-popup-a)
   (add-hook 'org-journal-after-header-create-hook #'org-id-get-create)
+  (add-hook 'org-journal-after-header-create-hook #'save-buffer 98)
+  (add-hook 'org-journal-after-header-create-hook #'aj-org-update-help-files 99)
   (add-hook 'org-journal-after-header-create-hook #'org-roam-db-update-cache 100)
   (set-company-backend! 'org-journal-mode 'company-capf 'company-dabbrev)
   )
@@ -1686,7 +1689,9 @@
   )
 
 (after! org-roam
-  (add-hook 'org-roam-capture-after-find-file-hook #'org-id-get-create)
+  (add-hook 'org-roam-capture-after-find-file-hook #'org-id-get-create 97)
+  (add-hook 'org-journal-after-header-create-hook #'save-buffer 98)
+  (add-hook 'org-roam-capture-after-find-file-hook #'aj-org-update-help-files 99)
   (add-hook 'org-roam-capture-after-find-file-hook #'org-roam-db-update-cache 100)
   (setq +org-roam-open-buffer-on-find-file nil)
   (doom-store-persist doom-store-location '(org-roam-directory))
