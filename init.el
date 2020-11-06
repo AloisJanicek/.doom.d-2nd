@@ -199,14 +199,6 @@
  ;;literate
  (default +bindings))
 
-(setq +doom-dashboard-functions
-      '(doom-dashboard-widget-banner
-        doom-dashboard-widget-loaded
-        doom-dashboard-widget-footer)
-      +doom-dashboard-banner-file "EmacsIcon.svg"
-      +doom-dashboard-banner-dir doom-private-dir
-      )
+(load! "+dashboard")
 
-(add-hook '+doom-dashboard-mode-hook (lambda ()
-                                       (hl-line-mode -1)))
 (provide 'init.el)
