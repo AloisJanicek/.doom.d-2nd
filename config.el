@@ -1096,6 +1096,7 @@
          (org-open-at-point))))))
 
 (after! org
+  (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
   (aj-org-update-help-files)
   (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
