@@ -181,8 +181,8 @@ Optional argument ARGS represents arguments passed to advised function."
     (apply
      (if (or (not (display-graphic-p))
              (y-or-n-p (concat "link: " "Browse with EAF browser? ")))
-         #'aj-chromium-browse-url-dispatch
-       #'aj-eaf-browse-url-maybe
+         #'aj-eaf-browse-url-maybe
+       #'aj-chromium-browse-url-dispatch
        )
      args)))
 
