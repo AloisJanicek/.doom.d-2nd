@@ -1699,6 +1699,10 @@
 
   (setq org-roam-buffer-width 0.2
         org-roam-tag-sources '(prop vanilla all-directories)
+        org-roam-prefer-id-links t
+        org-roam-db-location (expand-file-name
+                              "org-roam.db"
+                              (concat doom-etc-dir (file-name-nondirectory org-roam-directory)))
         )
   (advice-add #'org-roam--find-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam--find-file :around #'aj-org-buffer-to-popup-a)
