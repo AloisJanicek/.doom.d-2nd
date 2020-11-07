@@ -1422,15 +1422,18 @@ Otherwise dispatch default commands.
 
 ;;;###autoload
 (defun aj/org-id-update-recursively ()
-  "Get all files in `org-directory' recursively and update org IDs."
+  "Get all files in `org-directory' recursively and asynchronously update org IDs."
   (interactive)
-  (org-id-update-id-locations
-   (seq-filter
-    (lambda (file)
-      (not
-       (string-match "roam-" file)))
-    (directory-files-recursively org-directory ".org$")))
-  (org-brain-update-id-locations))
+  (async-start
+   `(lambda ()
+      ,(async-inject-variables "\\`load-path\\'")
+      (require 'org-id)
+      ,(async-inject-variables "\\`org-directory\\'")
+      ,(async-inject-variables "\\`org-id-locations-file\\'")
+      (org-id-update-id-locations
+       (directory-files-recursively org-directory ".org$")))
+   (lambda (result)
+     (message "Org ids updated"))))
 
 ;; MISC
 ;;;###autoload
