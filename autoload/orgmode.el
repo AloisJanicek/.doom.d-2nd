@@ -2231,9 +2231,20 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
          (interactive)
          (setq deft-directory org-roam-directory)
          (deft)) "deft")
-  ("i" #'org-roam-insert "insert")
-  ("t" #'org-roam-buffer-toggle-display "toggle")
+  ("i" #'org-roam-jump-to-index "index")
+  ("a" #'aj/roam-aliases/body "aliases")
+  ("t" #'aj/roam-tags/body "tags")
+  ("I" #'org-roam-insert "insert")
+  ("T" #'org-roam-buffer-toggle-display "toggle")
   )
+
+(defhydra aj/roam-tags (:color blue)
+  ("a" #'org-roam-tag-add "add")
+  ("d" #'org-roam-tag-delete "delete"))
+
+(defhydra aj/roam-aliases (:color blue)
+  ("a" #'org-roam-alias-add "add")
+  ("d" #'org-roam-alias-delete "delete"))
 
 ;;;###autoload
 (defun aj-calibre-org-update-org-noter-files ()
