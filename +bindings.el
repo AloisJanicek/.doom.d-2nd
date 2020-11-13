@@ -17,7 +17,7 @@
  :ni "C-j"       #'evil-window-down
  :ni "C-k"       #'evil-window-up
  :ni "C-l"       #'evil-window-right
- :nmiev "C-="    #'recenter-top-bottom
+ :nmiev "C-S-l"  #'recenter-top-bottom
  "M-a"       #'mark-whole-buffer
  "M-f"       #'swiper
  "M-F"       #'swiper-all
