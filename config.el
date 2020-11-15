@@ -943,7 +943,6 @@
   )
 
 (after! lsp-clients
-  (setq lsp-clients-php-server-command '("php" "/usr/share/php/php-language-server/bin/php-language-server.php"))
   (setq lsp-csharp-server-path "/opt/omnisharp-roslyn/OmniSharp.exe")
   (lsp-register-client
    (make-lsp-client :new-connection (lsp-stdio-connection (executable-find "reason-language-server"))
@@ -951,6 +950,22 @@
                     :notification-handlers (ht ("client/registerCapability" 'ignore))
                     :priority 1
                     :server-id 'reason-ls))
+  )
+
+(after! lsp-php
+  (let ((serenata-exec (expand-file-name "serenata.phar" doom-etc-dir)))
+    (unless (file-exists-p serenata-exec)
+      (shell-command
+       (format
+        (concat
+         ;; Serenata 5.4.0
+         ;; more https://gitlab.com/Serenata/Serenata/-/tags
+         "curl https://gitlab.com/Serenata/Serenata/-/jobs/735379568/artifacts/raw/bin/distribution.phar "
+         "--output %s && chmod +x %s")
+        serenata-exec serenata-exec)))
+
+    (setq lsp-serenata-server-path serenata-exec)
+    (setq lsp-serenata-php-version 7.4))
   )
 
 (after! magit
