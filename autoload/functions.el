@@ -1070,6 +1070,48 @@ If there is no associated entry present for current major mode, throw warning.
             :min-width (round (* (frame-width) 0.72))))))
     (counsel-imenu)))
 
+;;;###autoload
+(defun aj/dotdrop-ediff-compare ()
+  "Diff the dotdrop files in emacs with ediff.
+"
+  (interactive)
+  (let* ((shell-command-switch "-ic")
+         (cmd-output (shell-command-to-string "dotdrop files -G | grep dst: | sed 's/,link:nolink//'"))
+         (all-dotfiles-list
+          (seq-map
+           (lambda (elm)
+             (split-string
+              (replace-regexp-in-string
+               ",src:"
+               " "
+               (replace-regexp-in-string
+                ",dst:"
+                " "
+                elm))))
+           (split-string
+            (substring
+             cmd-output
+             (search "f_" cmd-output)
+             (length cmd-output)))))
+         (modified-file-list
+          (seq-filter
+           (lambda (elm)
+             (string-match "^f_" elm))
+           (split-string
+            (shell-command-to-string "dotdrop compare --file-only | grep compare ")))))
+    (ivy-read
+     "ediff dotfile: "
+     modified-file-list
+     :action (lambda (dotfile)
+               (print dotfile)
+               (let ((dotfile-record
+                      (car
+                       (seq-filter
+                        (lambda (entry)
+                          (string-equal (car entry) (string-trim-right dotfile ":")))
+                        all-dotfiles-list))))
+                 (ediff (nth 1 dotfile-record) (nth 2 dotfile-record)))))))
+
 (provide 'functions)
 
 ;;; functions.el ends here
