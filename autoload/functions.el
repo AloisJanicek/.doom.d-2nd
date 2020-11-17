@@ -1075,6 +1075,7 @@ If there is no associated entry present for current major mode, throw warning.
   "Diff the dotdrop files in emacs with ediff.
 "
   (interactive)
+  (require 'cl)
   (let* ((shell-command-switch "-ic")
          (cmd-output (shell-command-to-string "dotdrop files -G | grep dst: | sed 's/,link:nolink//'"))
          (all-dotfiles-list
