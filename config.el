@@ -2268,6 +2268,8 @@
     (if (display-graphic-p)
         (progn
           (set-frame-size (selected-frame) 120 42)
+          (setq default-frame-alist
+                (append default-frame-alist '((inhibit-double-buffering . t))))
           )
       (progn
         ;; setup transparent background in terminal
