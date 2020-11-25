@@ -34,7 +34,7 @@
 (package! d-mode :pin "b40a7abd33d56ce20fbb51697d54f9cc68dcbb8d")
 
 (package! counsel-org-clock
-  :recipe (:host github :repo "akirak/counsel-org-clock"))
+  :recipe (:host github :repo "akirak/counsel-org-clock") :pin "c5f781f241f8b16b7c3b6fb3e56e2938ba1dd87a")
 
 (package! counsel-tramp :pin "719b38ba2242cc1c6d1d79cab106c8c8b1afa775")
 
@@ -100,17 +100,17 @@
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*")) :pin "4aafd53efbc9693fd938d6c1f23a12f7666e0728")
 
 (package! org-brain
-  :recipe (:host github :repo "Kungsgeten/org-brain"))
+  :recipe (:host github :repo "Kungsgeten/org-brain") :pin "1ae4fd46165fc56f34f36ce38cb2ae816b07e207")
 
 (package! org-pretty-tags
-  :recipe (:host gitlab :repo "marcowahl/org-pretty-tags"))
+  :recipe (:host gitlab :repo "marcowahl/org-pretty-tags") :pin "5c7521651b35ae9a7d3add4a66ae8cc176ae1c76")
 
 (package! org-sidebar
-  :recipe (:host github :repo "alphapapa/org-sidebar"))
+  :recipe (:host github :repo "alphapapa/org-sidebar") :pin "07b635040048b0884d77e6d98e0c4725f1b26167")
 
-(package! org-super-agenda :pin "3264255989021b8563ea42b5d26acbc2a024f14d")
+(package! org-super-agenda :pin "ac7f2ef05c161b10390141b6863b431dc9360edc")
 
-(package! org-ql :pin "5a0ed259bcb967067e24815c3e969f39dd02ee87")
+(package! org-ql :pin "5a0ed259bcb967067e24815c3e969f39dd02ee87" :pin "73209cf48eabf665c65d05ff669f929c188220a9")
 
 (package! paredit
   :recipe (:host github :repo "emacsmirror/paredit") :pin "8330a41e8188fe18d3fa805bb9aa529f015318e8")
