@@ -1680,7 +1680,8 @@
   (add-hook 'org-journal-after-header-create-hook #'org-id-get-create)
   (add-hook 'org-journal-after-header-create-hook #'save-buffer 98)
   (add-hook 'org-journal-after-header-create-hook #'aj-org-update-help-files 99)
-  (add-hook 'org-journal-after-header-create-hook #'org-roam-db-update-cache 100)
+  (add-hook 'org-journal-after-header-create-hook #'org-roam-db-update 100)
+  (add-to-list '+format-on-save-enabled-modes 'org-journal-mode t)
   (set-company-backend! 'org-journal-mode 'company-capf 'company-dabbrev)
   )
 
@@ -1708,7 +1709,7 @@
   (add-hook 'org-roam-capture-after-find-file-hook #'org-id-get-create 97)
   (add-hook 'org-journal-after-header-create-hook #'save-buffer 98)
   (add-hook 'org-roam-capture-after-find-file-hook #'aj-org-update-help-files 99)
-  (add-hook 'org-roam-capture-after-find-file-hook #'org-roam-db-update-cache 100)
+  (add-hook 'org-roam-capture-after-find-file-hook #'org-roam-db-update 100)
   (setq +org-roam-open-buffer-on-find-file nil)
   (doom-store-persist doom-store-location '(org-roam-directory))
 
@@ -2264,13 +2265,13 @@
 
   )
 
+(setq default-frame-alist
+      (append default-frame-alist '((inhibit-double-buffering . t))))
+
 (if (aj-wsl-p)
     (if (display-graphic-p)
         (progn
-          (set-frame-size (selected-frame) 120 42)
-          (setq default-frame-alist
-                (append default-frame-alist '((inhibit-double-buffering . t))))
-          )
+          (set-frame-size (selected-frame) 120 42))
       (progn
         ;; setup transparent background in terminal
         (solaire-global-mode)
