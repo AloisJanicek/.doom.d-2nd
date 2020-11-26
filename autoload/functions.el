@@ -1077,7 +1077,7 @@ If there is no associated entry present for current major mode, throw warning.
   (interactive)
   (require 'cl-seq)
   (let* ((shell-command-switch "-ic")
-         (cmd-output (shell-command-to-string "dotdrop files -G | grep dst: | sed 's/,link:nolink//'"))
+         (cmd-output (shell-command-to-string "dotdrop files -G | grep dst: | sed 's/,link.*//'"))
          (all-dotfiles-list
           (seq-map
            (lambda (elm)
@@ -1092,7 +1092,7 @@ If there is no associated entry present for current major mode, throw warning.
            (split-string
             (substring
              cmd-output
-             (search "f_" cmd-output)
+             (string-search "f_" cmd-output)
              (length cmd-output)))))
          (modified-file-list
           (seq-filter
