@@ -79,7 +79,7 @@
                   ))
     (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
-(use-package all-the-icons-ivy-rich
+(use-package! all-the-icons-ivy-rich
   :after ivy-rich
   :init (all-the-icons-ivy-rich-mode 1)
   :config
@@ -341,7 +341,7 @@
   (cyphejor-mode 1)
   )
 
-(use-package d-mode
+(use-package! d-mode
   :commands d-mode
   :config
   (add-to-list
@@ -900,7 +900,7 @@
                     :cmd "gradle --warning-mode none test")))
   )
 
-(use-package lfe-mode
+(use-package! lfe-mode
   :commands lfe-mode
   :load-path "~/.emacs.d/.local/straight/repos/lfe-mode"
   :config
@@ -1937,7 +1937,7 @@
                                  (evil-set-initial-state 'sdcv-mode 'motion))))
   )
 
-(use-package shrface
+(use-package! shrface
   ;; :load-path "~/repos/shrface"
   :after shr
   :config
@@ -1950,7 +1950,7 @@
         )
   )
 
-(use-package shr-tag-pre-highlight
+(use-package! shr-tag-pre-highlight
   :after shr
   :config
   (add-to-list 'shr-external-rendering-functions
@@ -2119,7 +2119,7 @@
         which-key-show-operator-state-maps t
         ))
 
-(use-package which-key-posframe
+(use-package! which-key-posframe
   :after which-key
   :config
   (when (display-graphic-p)
