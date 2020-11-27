@@ -8,6 +8,23 @@
 ;;            :files ("*.el" "lisp/*.el" "contrib/lisp/*.el"))
 ;;   :pin "8402c4a778")
 
+(defun aj-wsl-p ()
+  "Return non-nil value if Emacs is running inside WSL."
+  (string-match "Microsoft"
+                (with-temp-buffer (shell-command "uname -r" t)
+                                  (goto-char (point-max))
+                                  (delete-char -1)
+                                  (buffer-string))))
+
+(when (aj-wsl-p)
+  (package! webkit
+    :recipe (:host github :repo "akirakyle/emacs-webkit"
+             :files (:defaults "Makefile" "*.h" "*.c" "*.js" "*.css")
+             :build ("make")
+             )
+    )
+  )
+
 (package! lsp-julia
   :recipe (:host github :repo "non-Jedi/lsp-julia")
   :pin "c523c250c4bd2777203101ab417e9b7312472f46")
