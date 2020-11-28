@@ -1397,9 +1397,13 @@
                               (substring-no-properties
                                (org-get-heading)))))
             (body (concat "Captured: " heading-title)))
-       (notifications-notify
-        :title nil
-        :body body))))
+       (if (aj-wsl-p)
+           (apply 'call-process (executable-find "notify-wsl") nil
+                  0 nil
+                  (list body))
+         (notifications-notify
+          :title nil
+          :body body)))))
   (setq
    org-protocol-default-template-key "L"
    org-capture-templates `(("p" "Protocol" entry (file ,aj-org-inbox-file)
