@@ -1385,6 +1385,21 @@
 (after! org-capture
   (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
   (add-hook 'org-capture-after-finalize-hook #'aj/org-clock-update-heading)
+  (add-hook
+   'org-capture-after-finalize-hook
+   (lambda ()
+     "Send system notification after capture is done"
+     (require 'notifications)
+     (let* ((heading-title (with-current-buffer
+                               (marker-buffer org-capture-last-stored-marker)
+                             (goto-char (marker-position org-capture-last-stored-marker))
+                             (org-link-display-format
+                              (substring-no-properties
+                               (org-get-heading)))))
+            (body (concat "Captured: " heading-title)))
+       (notifications-notify
+        :title nil
+        :body body))))
   (setq
    org-protocol-default-template-key "L"
    org-capture-templates `(("p" "Protocol" entry (file ,aj-org-inbox-file)
