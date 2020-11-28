@@ -2283,9 +2283,6 @@
           )
         )
       )
-  (progn
-    (pushnew! default-frame-alist '(fullscreen . maximized))
-    )
   )
 
 (unless (or (aj-wsl-p)
