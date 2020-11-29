@@ -82,24 +82,24 @@
       switch (String.fromCharCode(event.keyCode)) {
         case (keys.link):
 
-          // org-protocol://store-link:/URL
-          //                 openedWindow = window.open('org-protocol://store-link:/'
+          // org-protocol://store-link/URL
+          //                 openedWindow = window.open('org-protocol://store-link/'
           //                                            + getLocation());
 
           // org-protocol://store-link?url=URL&title=TITLE
-          openedWindow = window.open('org-protocol://store-link:?url='
+          openedWindow = window.open('org-protocol://store-link?url='
                                      + getLocation());
           wait(delay);
           openedWindow.close();
           break;
         case (keys.linkTitle):
-          // org-protocol:/store-link:/URL/TITLE
-          //                 openedWindow = window.open('org-protocol://store-link:/'
+          // org-protocol:/store-link/URL/TITLE
+          //                 openedWindow = window.open('org-protocol://store-link/'
           //                                            + getLocation() + '/'
           //                                            + getTitle());
 
           // org-protocol://store-link?url=URL&title=TITLE
-          openedWindow = window.open('org-protocol://store-link:?url='
+          openedWindow = window.open('org-protocol://store-link?url='
                                      + getLocation()
                                      + '&title='
                                      + getTitle());
@@ -107,8 +107,8 @@
           openedWindow.close();
           break;
         case (keys.html):
-          // org-protocol://capture:/p/<url>/<title>/selection>
-          //                  openedWindow = window.open('org-protocol://capture:/w/'
+          // org-protocol://capture/p/<url>/<title>/selection>
+          //                  openedWindow = window.open('org-protocol://capture/w/'
           //                                            + getLocation() + '/'
           //                                            + getTitle() + '/'
           //                                            + encodeURIComponent(function() {
@@ -160,8 +160,8 @@
           openedWindow.close();
           break;
         case (keys.bookmarkTitle):
-          // org-protocol://capture:/L/<url>/<title>
-          //                 openedWindow = window.open('org-protocol://capture:/L/'
+          // org-protocol://capture/L/<url>/<title>
+          //                 openedWindow = window.open('org-protocol://capture/L/'
           //                                            + getLocation() + '/'
           //                                            + getTitle());
 
@@ -174,8 +174,8 @@
           openedWindow.close();
           break;
         case (keys.bookmarkTitleSelected):
-          // org-protocol://capture:/p/<url>/<title>/selection>
-          //                 openedWindow = window.open('org-protocol://capture:/p/'
+          // org-protocol://capture/p/<url>/<title>/selection>
+          //                 openedWindow = window.open('org-protocol://capture/p/'
           //                                            + getLocation() + '/'
           //                                            + getTitle() + '/'
           //                                            + escapeIt(window.getSelection().toString()));
@@ -192,8 +192,8 @@
           openedWindow.close();
           break;
         case (keys.codeInbox):
-          // org-protocol://capture:/p/<url>/<title>/selection>
-          //                 openedWindow = window.open('org-protocol://capture:/p/'
+          // org-protocol://capture/p/<url>/<title>/selection>
+          //                 openedWindow = window.open('org-protocol://capture/p/'
           //                                            + getLocation() + '/'
           //                                            + getTitle() + '/'
           //                                            + escapeIt(window.getSelection().toString()));
@@ -210,8 +210,8 @@
           openedWindow.close();
           break;
         case (keys.codeYankpad):
-          // org-protocol://capture:/p/<url>/<title>/selection>
-          //                 openedWindow = window.open('org-protocol://capture:/p/'
+          // org-protocol://capture/p/<url>/<title>/selection>
+          //                 openedWindow = window.open('org-protocol://capture/p/'
           //                                            + getLocation() + '/'
           //                                            + getTitle() + '/'
           //                                            + escapeIt(window.getSelection().toString()));
