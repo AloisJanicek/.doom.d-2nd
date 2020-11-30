@@ -1389,7 +1389,7 @@
    'org-capture-after-finalize-hook
    (lambda ()
      "Send system notification after capture is done"
-     (require 'notifications)
+     (require 'alert)
      (let* ((heading-title (with-current-buffer
                                (marker-buffer org-capture-last-stored-marker)
                              (goto-char (marker-position org-capture-last-stored-marker))
@@ -1397,13 +1397,7 @@
                               (substring-no-properties
                                (org-get-heading)))))
             (body (concat "Captured: " heading-title)))
-       (if (aj-wsl-p)
-           (apply 'call-process (executable-find "notify-wsl") nil
-                  0 nil
-                  (list body))
-         (notifications-notify
-          :title nil
-          :body body)))))
+       (alert body :title nil))))
   (setq
    org-protocol-default-template-key "L"
    org-capture-templates `(("p" "Protocol" entry (file ,aj-org-inbox-file)
