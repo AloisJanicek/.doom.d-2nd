@@ -400,15 +400,23 @@ _m_v   ln_s_
                     (org-global-tags-completion-table
                      (aj-org-combined-agenda-files))))
          (tag-str (if tag-list (concat " :" (mapconcat #'identity tag-list ":") ":") ""))
+         (effort (ivy-read "Effort: "
+                           (split-string
+                            (let ((efforts nil))
+                              (dolist (i org-global-properties)
+                                (when (string-equal (car i) "Effort_ALL")
+                                  (setq efforts (cdr i))))
+                              efforts))))
          (template-str (concat
                         "* TO" "DO" title tag-str "\n"
                         ":PROPERTIES:\n"
                         ":CREATED: %U\n"
+                        (unless (string-empty-p effort)
+                          (format ":EFFORT: %s\n" effort))
                         ":END:\n"
                         "\n"
                         "%i\n"
                         "%?"
-                        "%^{EFFORT}p"
                         )
                        )
          (current-prefix-arg nil)
@@ -689,8 +697,8 @@ Then moves the point to the end of the line."
   (interactive)
   (require 'link-hint)
   (avy-with link-hint-open-link
-            (link-hint--one :open)
-            (org-brain-goto-current)))
+    (link-hint--one :open)
+    (org-brain-goto-current)))
 
 ;; ORG-AGENDA
 ;;;###autoload
