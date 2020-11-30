@@ -1397,7 +1397,7 @@
                               (substring-no-properties
                                (org-get-heading)))))
             (body (concat "Captured: " heading-title)))
-       (alert body :title nil))))
+       (alert body))))
   (setq
    org-protocol-default-template-key "L"
    org-capture-templates `(("p" "Protocol" entry (file ,aj-org-inbox-file)
