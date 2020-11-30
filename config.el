@@ -1715,7 +1715,10 @@
         org-pomodoro-ask-upon-killing nil
         org-pomodoro-mode-line nil)
   (doom-store-persist doom-store-location '(org-pomodoro-count))
-  (add-hook! 'org-clock-out-hook #'org-pomodoro-kill)
+  (add-hook! 'org-clock-out-hook (lambda ()
+                                   "Kill the pomodoro but do not notify user via system notifications."
+                                   (cl-letf (((symbol-function 'org-pomodoro-notify) nil))
+                                     (org-pomodoro-kill))))
   )
 
 (after! org-roam
