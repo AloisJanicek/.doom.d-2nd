@@ -750,6 +750,9 @@
   :i "C-h" #'evil-window-left
   :i "C-j" #'evil-window-down
   :i "C-k" #'evil-window-up
+  :i "C-p" #'vterm-send-C-p
+  :i "C-n" #'vterm-send-C-n
+  :i "C-r" #'vterm-send-C-r
   :i "M-1"   (cmd! (+workspace/switch-to 0))
   :i "M-2"   (cmd! (+workspace/switch-to 1))
   :i "M-3"   (cmd! (+workspace/switch-to 2))
