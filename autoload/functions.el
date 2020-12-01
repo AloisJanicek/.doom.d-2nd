@@ -1071,7 +1071,18 @@ If there is no associated entry present for current major mode, throw warning.
     (counsel-imenu)))
 
 ;;;###autoload
-(defun aj/dotdrop-ediff-compare ()
+(defun aj/dotdop-update ()
+  "Run dotdrop update for current file.
+With user prefix ask user to choose file instead."
+  (interactive)
+  (let ((file (if (eq (car current-prefix-arg) 4)
+                  (read-file-name "Choose file: ")
+                (buffer-file-name)))
+        (shell-command-switch "-ic"))
+    (async-shell-command (format "dotdrop update %s" file))))
+
+;;;###autoload
+(defun aj/dotdrop-compare ()
   "Diff the dotdrop files in emacs with ediff.
 "
   (interactive)
