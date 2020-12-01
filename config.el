@@ -2369,3 +2369,6 @@
 
 (which-key-mode)
 (ivy-mode)
+
+;; emacs-anywhere settings
+(add-hook 'ea-popup-hook 'popup-handler)

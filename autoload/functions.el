@@ -1113,6 +1113,22 @@ If there is no associated entry present for current major mode, throw warning.
                         all-dotfiles-list))))
                  (ediff (nth 1 dotfile-record) (nth 2 dotfile-record)))))))
 
+;;;###autoload
+(defun github-conversation-p (window-title)
+  (or (string-match-p "Pull Request" window-title)
+      (string-match-p "Issue" window-title)
+      ))
+
+;;;###autoload
+(defun popup-handler (app-name window-title x y w h)
+  (cond
+   ((github-conversation-p window-title) (gfm-mode))
+   (t (markdown-mode))
+   )
+  (set-frame-position (selected-frame) x (+ y (- h 400)))
+  (unless (zerop w)
+    (set-frame-size (selected-frame) w 400 t)))
+
 (provide 'functions)
 
 ;;; functions.el ends here
