@@ -1071,7 +1071,7 @@ If there is no associated entry present for current major mode, throw warning.
     (counsel-imenu)))
 
 ;;;###autoload
-(defun aj/dotdop-update ()
+(defun aj/dotdrop-update ()
   "Run dotdrop update for current file.
 With user prefix ask user to choose file instead."
   (interactive)
