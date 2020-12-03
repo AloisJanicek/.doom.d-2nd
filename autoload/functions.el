@@ -1071,21 +1071,23 @@ If there is no associated entry present for current major mode, throw warning.
     (counsel-imenu)))
 
 ;;;###autoload
-(defun aj/dotdrop-update ()
-  "Run dotdrop update for current file.
-With user prefix ask user to choose file instead."
-  (interactive)
-  (let ((file (if (eq (car current-prefix-arg) 4)
-                  (read-file-name "Choose file: ")
-                (buffer-file-name)))
-        (shell-command-switch "-ic"))
-    (async-shell-command (format "dotdrop update %s" file))))
+(defun aj-dotdrop-modified ()
+  "Return list modified files managed by dotdrop."
+  (let* ((shell-command-switch "-ic")
+         (modified-file-list
+          (remove
+           nil
+           (seq-map
+            (lambda (elm)
+              (if (string-match "^f_" elm)
+                  (replace-regexp-in-string ":" "" elm)
+                nil))
+            (split-string
+             (shell-command-to-string "dotdrop compare --file-only | grep compare "))))))
+    modified-file-list))
 
 ;;;###autoload
-(defun aj/dotdrop-compare ()
-  "Diff the dotdrop files in emacs with ediff.
-"
-  (interactive)
+(defun aj-dotdrop-all-files ()
   (require 'cl-seq)
   (let* ((shell-command-switch "-ic")
          (cmd-output (shell-command-to-string "dotdrop files -G | grep dst: | sed 's/,link.*//'"))
@@ -1104,25 +1106,51 @@ With user prefix ask user to choose file instead."
             (substring
              cmd-output
              (string-search "f_" cmd-output)
-             (length cmd-output)))))
-         (modified-file-list
+             (length cmd-output))))))
+    all-dotfiles-list))
+
+;;;###autoload
+(defun aj-dotdrop-dotfile-record (dotfile)
+  "For given DOTFILE return its dotdrop record entry.
+DOTFILE can be either dotdrop label, eg.\"f_vimrc\" or
+file path corresponding with dotfile destination :dest key.
+"
+  (let ((dotfile-record
+         (car
           (seq-filter
-           (lambda (elm)
-             (string-match "^f_" elm))
-           (split-string
-            (shell-command-to-string "dotdrop compare --file-only | grep compare ")))))
-    (ivy-read
-     "ediff dotfile: "
-     modified-file-list
-     :action (lambda (dotfile)
-               (print dotfile)
-               (let ((dotfile-record
-                      (car
-                       (seq-filter
-                        (lambda (entry)
-                          (string-equal (car entry) (string-trim-right dotfile ":")))
-                        all-dotfiles-list))))
-                 (ediff (nth 1 dotfile-record) (nth 2 dotfile-record)))))))
+           (lambda (entry)
+             (or
+              (string-equal (nth 0 entry) (string-trim-right dotfile ":"))
+              (string-equal (nth 1 entry) (string-trim-right dotfile ":"))))
+           (aj-dotdrop-all-files)))))
+    dotfile-record))
+
+;;;###autoload
+(defun aj/dotdrop-compare ()
+  "Diff the dotdrop files in emacs with ediff.
+"
+  (interactive)
+  (ivy-read
+   "ediff dotfile: "
+   (aj-dotdrop-modified)
+   :action (lambda (dotfile)
+             (let ((dotfile-record (aj-dotdrop-dotfile-record dotfile)))
+               (ediff (nth 1 dotfile-record) (nth 2 dotfile-record))))))
+
+;;;###autoload
+(defun aj/dotdrop-update ()
+  "Run dotdrop update on current file.
+If the current file isn't managed by dotdrop,
+ask user to choose one of modified dotdrop files instead."
+  (interactive)
+  (let* ((file (buffer-file-name))
+         (dotfile (or (nth 1 (aj-dotdrop-dotfile-record file))
+                      (nth 1 (aj-dotdrop-dotfile-record
+                              (ivy-read
+                               "Chose file to update: "
+                               (aj-dotdrop-modified))))))
+         (shell-command-switch "-ic"))
+    (async-shell-command (format "dotdrop update %s" dotfile))))
 
 ;;;###autoload
 (defun github-conversation-p (window-title)
