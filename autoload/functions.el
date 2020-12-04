@@ -1073,41 +1073,37 @@ If there is no associated entry present for current major mode, throw warning.
 ;;;###autoload
 (defun aj-dotdrop-modified ()
   "Return list modified files managed by dotdrop."
-  (let* ((shell-command-switch "-ic")
-         (modified-file-list
-          (remove
-           nil
-           (seq-map
-            (lambda (elm)
-              (if (string-match "^f_" elm)
-                  (replace-regexp-in-string ":" "" elm)
-                nil))
-            (split-string
-             (shell-command-to-string "dotdrop compare --file-only | grep compare "))))))
-    modified-file-list))
+  (remove
+   nil
+   (seq-map
+    (lambda (elm)
+      (if (string-match "^f_" elm)
+          (replace-regexp-in-string ":" "" elm)
+        nil))
+    (split-string
+     (shell-command-to-string
+      (format "%s compare --file-only | grep compare " aj-dotdrop-base-cmd))))))
 
 ;;;###autoload
 (defun aj-dotdrop-all-files ()
   (require 'cl-seq)
-  (let* ((shell-command-switch "-ic")
-         (cmd-output (shell-command-to-string "dotdrop files -G | grep dst: | sed 's/,link.*//'"))
-         (all-dotfiles-list
-          (seq-map
-           (lambda (elm)
-             (split-string
-              (replace-regexp-in-string
-               ",src:"
-               " "
-               (replace-regexp-in-string
-                ",dst:"
-                " "
-                elm))))
-           (split-string
-            (substring
-             cmd-output
-             (string-search "f_" cmd-output)
-             (length cmd-output))))))
-    all-dotfiles-list))
+  (let* ((cmd-output (shell-command-to-string
+                      (format "%s files -G | grep dst: | sed 's/,link.*//'" aj-dotdrop-base-cmd))))
+    (seq-map
+     (lambda (elm)
+       (split-string
+        (replace-regexp-in-string
+         ",src:"
+         " "
+         (replace-regexp-in-string
+          ",dst:"
+          " "
+          elm))))
+     (split-string
+      (substring
+       cmd-output
+       (string-search "f_" cmd-output)
+       (length cmd-output))))))
 
 ;;;###autoload
 (defun aj-dotdrop-dotfile-record (dotfile)
@@ -1141,16 +1137,27 @@ file path corresponding with dotfile destination :dest key.
 (defun aj/dotdrop-update ()
   "Run dotdrop update on current file.
 If the current file isn't managed by dotdrop,
-ask user to choose one of modified dotdrop files instead."
+ask user to choose one of modified dotdrop files instead.
+
+If the selected file cannot be directly updated, like in case of
+the dotfile that is generated from dotdrop template, automatically
+launch ediff session for manual file adjustment.
+"
   (interactive)
   (let* ((file (buffer-file-name))
-         (dotfile (or (nth 1 (aj-dotdrop-dotfile-record file))
-                      (nth 1 (aj-dotdrop-dotfile-record
+         (dotfile-record (or (aj-dotdrop-dotfile-record file)
+                             (aj-dotdrop-dotfile-record
                               (ivy-read
                                "Chose file to update: "
                                (aj-dotdrop-modified))))))
-         (shell-command-switch "-ic"))
-    (async-shell-command (format "dotdrop update %s" dotfile))))
+    (or (equal 0 (shell-command
+                  (format
+                   "yes | %s update %s"
+                   aj-dotdrop-base-cmd
+                   (nth 1 dotfile-record))))
+        (ediff
+         (nth 1 dotfile-record)
+         (nth 2 dotfile-record)))))
 
 ;;;###autoload
 (defun github-conversation-p (window-title)

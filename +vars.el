@@ -17,6 +17,9 @@ if running under WSL")
 (defvar aj-library-dir "Libraries"
   "Name of the directory housing Calibre libraries.")
 
+(defvar aj-dotdrop-base-cmd (getenv "DOTDROP_BASE_CMD")
+  "Base of the dotdrop command")
+
 (defvar aj-calibre-path (expand-file-name aj-library-dir aj-reference-dir)
   "Path of the Calibre libraries.")
 
