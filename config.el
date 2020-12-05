@@ -1249,7 +1249,7 @@
   (doom-store-persist doom-store-location '(org-brain-path))
 
   (unless org-brain-path
-    (setq org-brain-path (expand-file-name "technical" org-directory)))
+    (setq org-brain-path (expand-file-name "brain" org-directory)))
 
   (setq org-brain-visualize-default-choices 'all
         org-brain-title-max-length -1
