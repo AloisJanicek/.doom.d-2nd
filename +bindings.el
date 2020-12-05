@@ -927,7 +927,13 @@
                                            :caller 'counsel-find-file)))
   :desc "project README"           "p" (lambda () (interactive)
                                          (aj-open-file-switch-create-indirect-buffer-per-persp
-                                          (expand-file-name aj-project-readme-task-filename (projectile-project-root))))
+                                          (let ((readme-org
+                                                 (expand-file-name aj-project-readme-task-filename (projectile-project-root)))
+                                                (readme-md
+                                                 (expand-file-name "README.md" (projectile-project-root))))
+                                            (if (file-exists-p readme-org)
+                                                readme-org
+                                              readme-md))))
   :desc "grep"                     "g" #'+ivy/project-search
   :desc "remove"                   "R" #'projectile-remove-known-project
   :desc "services"                 "t" #'prodigy
