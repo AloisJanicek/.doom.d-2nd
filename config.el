@@ -1935,7 +1935,10 @@
 
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
-  (dolist (i '("org/" ".pdf" ".epub" ".db" "/.emacs.d/session" "/workspaces/autosave" "/usr/share/emacs" "README.org"))
+  (dolist (i `(".org$" ".pdf$" ".epub$" ".db$"
+               ".local/etc"
+               ".local/cache"
+               ))
     (add-to-list 'recentf-exclude i))
   )
 
