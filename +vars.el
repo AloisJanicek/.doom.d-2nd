@@ -26,7 +26,7 @@ dotdrop --cfg=/home/username/dotfiles_repo/config.yaml --profile=my_profile
 (defvar aj-calibre-path (expand-file-name aj-library-dir aj-reference-dir)
   "Path of the Calibre libraries.")
 
-(defvar aj-repos-dir (expand-file-name "repos" aj-home-base-dir)
+(defvar aj-repos-dir (expand-file-name "repos" "~")
   "Path of the repos folder.")
 
 (setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir)))
