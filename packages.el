@@ -123,7 +123,7 @@
 
 (package! mocha :pin "6a72fa20e7be6e55c09b1bc9887ee09c5df28e45")
 
-(package! nov :pin "23e5d9c4c63e3a7dc08110a8dfcbb97a1186a37f")
+(package! nov :pin "c8a6de55fdbf2eb15d63f79f1645e0c0caee711d")
 
 (package! ob-javascript
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*")) :pin "4aafd53efbc9693fd938d6c1f23a12f7666e0728")
