@@ -2306,8 +2306,7 @@
 
 (if (aj-wsl-p)
     (if (display-graphic-p)
-        (progn
-          (set-frame-size (selected-frame) 120 42))
+        t
       (progn
         ;; setup transparent background in terminal
         (solaire-global-mode)

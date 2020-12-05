@@ -1,5 +1,7 @@
 ;;; init.el -*- lexical-binding: t; -*-
 
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
 (doom!
  :input
  ;;chinese
