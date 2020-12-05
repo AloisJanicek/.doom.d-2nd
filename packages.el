@@ -8,6 +8,18 @@
 ;;            :files ("*.el" "lisp/*.el" "contrib/lisp/*.el"))
 ;;   :pin "8402c4a778")
 
+(package! org-mode
+  :recipe (:host github
+           :repo "yantar92/org"
+           :branch "feature/org-fold"
+           :files ("*.el" "lisp/*.el" "contrib/lisp/*.el")
+           :build (with-temp-file (expand-file-name "org-version.el" (straight--repos-dir "org"))
+                    (insert "(fset 'org-release (lambda () \"9.5\"))\n"
+                            "(fset 'org-git-version #'ignore)\n"
+                            "(provide 'org-version)\n")))
+  :pin "308c4f57d26307c0f57ad387a4638b051f541a9c"
+  :shadow 'org)
+
 (defun aj-wsl-p ()
   "Return non-nil value if Emacs is running inside WSL."
   (string-match "Microsoft"
