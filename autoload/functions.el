@@ -1111,15 +1111,18 @@ If there is no associated entry present for current major mode, throw warning.
 DOTFILE can be either dotdrop label, eg.\"f_vimrc\" or
 file path corresponding with dotfile destination :dest key.
 "
-  (let ((dotfile-record
-         (car
-          (seq-filter
-           (lambda (entry)
-             (or
-              (string-equal (nth 0 entry) (string-trim-right dotfile ":"))
-              (string-equal (nth 1 entry) (string-trim-right dotfile ":"))))
-           (aj-dotdrop-all-files)))))
-    dotfile-record))
+  (when dotfile
+    (let ((dotfile-record
+           (car
+            (seq-filter
+             (lambda (entry)
+               (or
+                (string-equal (nth 0 entry) (string-trim-right dotfile ":"))
+                (string-equal (nth 1 entry) (string-trim-right dotfile ":"))))
+             (aj-dotdrop-all-files)))))
+      dotfile-record)
+    )
+  )
 
 ;;;###autoload
 (defun aj/dotdrop-compare ()
