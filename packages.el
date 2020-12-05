@@ -1,8 +1,8 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
 
+(package! saveplace-pdf-view :disable t)
 (unpin! org-roam)
-
 ;; (package! org-mode
 ;;   :recipe (:repo "https://code.orgmode.org/bzg/org-mode.git"
 ;;            :files ("*.el" "lisp/*.el" "contrib/lisp/*.el"))

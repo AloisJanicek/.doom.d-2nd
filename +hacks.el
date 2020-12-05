@@ -78,18 +78,3 @@ For ensuring compatibility with how things are implemented and expected in upstr
          (apply orig-fn args)))))
 
   )
-
-;; don't know why (gccmacs 28?)
-;; but I am suddently getting a lots of errors about undefined fns
-(after! pdf-view
-  (add-hook 'pdf-view-mode-hook (lambda ()
-                                  "Load pdf-cache and pdf-util by hack because `require' somwhow dosn't work."
-                                  (with-current-buffer
-                                      (find-file-noselect (expand-file-name "pdf-cache.el" pdf-tools-directory))
-                                    (eval-buffer))
-
-                                  (with-current-buffer
-                                      (find-file-noselect (expand-file-name "pdf-util.el" pdf-tools-directory))
-                                    (eval-buffer))
-                                  ))
-  )

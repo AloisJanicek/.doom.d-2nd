@@ -1755,6 +1755,10 @@
   (load! (expand-file-name "org-roam-server-light.el" org-roam-server-light-dir))
   )
 
+(after! pdf-tools
+  (advice-remove #'pdf-view-mode #'+pdf--install-epdfinfo-a)
+  )
+
 (after! pdf-view
   (setq pdf-view-midnight-colors
         `(,(doom-color 'fg) . ,(doom-color 'bg-alt)))
@@ -1780,6 +1784,18 @@
                                   (pdf-view-fit-width-to-window)
                                   ))
 
+  (defvar +pdf--page-restored-p nil)
+  (add-hook! 'pdf-view-change-page-hook
+    (defun +pdf-remember-page-number-h ()
+      (when-let (page (and buffer-file-name (pdf-view-current-page)))
+        (doom-store-put buffer-file-name page nil "pdf-view"))))
+  (add-hook! 'pdf-view-mode-hook
+    (defun +pdf-restore-page-number-h ()
+      (when-let (page (and buffer-file-name (doom-store-get buffer-file-name "pdf-view")))
+        (and (not +pdf--page-restored-p)
+             (<= page (or (pdf-cache-number-of-pages) 1))
+             (pdf-view-goto-page page)
+             (setq-local +pdf--page-restored-p t)))))
   )
 
 (after! persp-mode

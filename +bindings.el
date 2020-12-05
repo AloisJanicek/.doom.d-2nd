@@ -607,7 +607,7 @@
   )
 
  ;;; pdf-tools
- (:after pdf-view
+ (:after pdf-tools
   :map pdf-view-mode-map
   :nm "C-h" #'evil-window-left
   :nm "C-j" #'evil-window-down
@@ -619,12 +619,8 @@
   :nm "l" #'org-store-link
   :nm "o" #'aj/bigger-counsel-imenu
   :nm "O" #'pdf-outline
-  :nm "R" (cmd! (when-let (page (doom-store-get buffer-file-name "pdf-view-page"))
-                  (pdf-view-goto-page page)))
   :nm "y" #'pdf-view-kill-ring-save
-  :nm "q" (cmd! (when buffer-file-name
-                  (doom-store-put buffer-file-name (pdf-view-current-page) nil "pdf-view-page"))
-                (kill-this-buffer))
+
   :localleader
   "n" #'org-noter
   "i" #'org-noter-insert-note
