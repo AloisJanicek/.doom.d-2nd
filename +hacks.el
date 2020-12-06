@@ -27,6 +27,30 @@
 ;; weird backspace issues
 (advice-remove #'delete-backward-char #'+default--delete-backward-char-a)
 
+(after! org-protocol
+  (defun org-protocol-store-link-override-a (fname)
+    "Override advice of `org-protocol-store-link'.
+
+Unfortunatelly I was unable to do something cleaner
+with :after or :override due to some issue with starting the notification processes.
+"
+    (let* ((splitparts (org-protocol-parse-parameters fname nil '(:url :title)))
+           (uri (org-protocol-sanitize-uri (plist-get splitparts :url)))
+           (title (plist-get splitparts :title)))
+      (when (boundp 'org-stored-links)
+        (push (list uri title) org-stored-links))
+      (kill-new uri)
+      (org-notify (format "Stored: %s\n%s" (car (cdr (car org-stored-links)))
+                          (car (car org-stored-links))))
+      (message "`%s' to insert new Org link, `%s' to insert %S"
+               (substitute-command-keys "\\[org-insert-link]")
+               (substitute-command-keys "\\[yank]")
+               uri)
+      )
+    nil)
+  (advice-add #'org-protocol-store-link :override #'org-protocol-store-link-override-a)
+  )
+
 ;; org-roam - fix incorrect index file path
 (after! org-roam
   (defun org-roam--get-index-path ()
