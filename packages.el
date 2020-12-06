@@ -80,6 +80,14 @@
 
 (package! esqlite :pin "08a779a821f8d32c1a1985d8d9eb6cf21646ce2e")
 
+(package! eaf
+  :recipe (:host github
+           :repo "manateelazycat/emacs-application-framework"
+           :files ("*")
+           )
+  :pin "34011c20aa47600021a7d40d66051340a0242d87"
+  )
+
 (package! google-translate :pin "0270073331de9358f29d049a27aa9145697d6dc7")
 
 (package! flycheck-sml
