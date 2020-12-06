@@ -1148,11 +1148,15 @@ launch ediff session for manual file adjustment.
 "
   (interactive)
   (let* ((file (buffer-file-name))
-         (dotfile-record (or (aj-dotdrop-dotfile-record file)
-                             (aj-dotdrop-dotfile-record
-                              (ivy-read
-                               "Chose file to update: "
-                               (aj-dotdrop-modified))))))
+         (dotfile-record
+          (or
+           (when (or (eq (car current-prefix-arg) 4)
+                     (not (aj-dotdrop-dotfile-record file)))
+             (aj-dotdrop-dotfile-record
+              (ivy-read
+               "Chose file to update: "
+               (aj-dotdrop-modified))))
+           (aj-dotdrop-dotfile-record file))))
     (or (equal 0 (shell-command
                   (format
                    "yes | %s update %s"
