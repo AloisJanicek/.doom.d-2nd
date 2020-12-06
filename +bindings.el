@@ -842,6 +842,10 @@
   :desc "ask to save and quit"     "a" #'evil-quit-all
   )
 
+ (:prefix ("w" . "window")
+  :desc "switcher"     "," #'aj/emacs-window-switcher
+  )
+
  (:prefix ("e" . "encrypt")
   :desc "decrypt file"   "F" #'epa-decrypt-file
   :desc "decrypt region" "R" #'epa-decrypt-region

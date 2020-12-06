@@ -1182,6 +1182,27 @@ launch ediff session for manual file adjustment.
   (unless (zerop w)
     (set-frame-size (selected-frame) w 400 t)))
 
+;;;###autoload
+(defun aj/emacs-window-switcher ()
+  "Switch between opened emacs windows by narrowing the list of candidates.
+
+Intended to work exactly like window switchers in desktop environments
+as the oposite to usual emacs approach of changing content of the existing
+editor windows.
+"
+  (interactive)
+  (ivy-read "Switch to: "
+            (seq-map
+             (lambda (window)
+               (let* ((win-name (prin1-to-string window))
+                      (buff-name-str-index (+ 3 (string-search "on " win-name))))
+                 (cons (string-trim-right
+                        (substring win-name buff-name-str-index (length win-name)) ">")
+                       window)))
+             (window-list))
+            :action (lambda (window)
+                      (select-window (cdr window)))))
+
 (provide 'functions)
 
 ;;; functions.el ends here
