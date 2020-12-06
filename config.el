@@ -1276,7 +1276,7 @@
                                           (org-narrow-to-subtree)
                                           (org-cycle)
                                           (outline-show-branches)
-                                          (org-show-entry))
+                                          (org-fold-show-entry))
                                         (turn-off-solaire-mode)))
   (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
 
@@ -1374,7 +1374,7 @@
                 "Narrow and show children after switching."
                 (widen)
                 (org-narrow-to-subtree)
-                (org-show-entry)
+                (org-fold-show-entry)
                 (outline-show-branches)
                 (turn-off-solaire-mode)
                 ))
@@ -1661,7 +1661,7 @@
                                         (interactive)
                                         (widen)
                                         (org-narrow-to-subtree)
-                                        (org-show-entry)
+                                        (org-fold-show-entry)
                                         (outline-show-branches)
                                         ))
 
@@ -2255,7 +2255,7 @@
                                                    "Narrow view after switching."
                                                    (interactive)
                                                    (org-narrow-to-subtree)
-                                                   (org-show-entry)
+                                                   (org-fold-show-entry)
                                                    (outline-show-branches)
                                                    ))
 

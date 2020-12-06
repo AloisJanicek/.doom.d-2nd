@@ -561,7 +561,7 @@ and all its children are revealed."
                            (widen)
                            (goto-char (get-text-property 0 'marker headline))
                            (org-narrow-to-subtree)
-                           (org-show-entry)
+                           (org-fold-show-entry)
                            (outline-show-branches)
                            ))))
              ivy-sort-functions-alist)
@@ -1491,7 +1491,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
     (goto-char marker)
     (org-narrow-to-subtree)
     (outline-hide-leaves)
-    (org-show-entry)
+    (org-fold-show-entry)
     (outline-show-branches)
     ))
 
@@ -1844,7 +1844,7 @@ Org manual: 8.4.2 The clock table.
 (defun aj-org-re-store-link ()
   "Re-store current link under the point."
   (require 'org-protocol)
-  (org-show-entry)
+  (org-fold-show-entry)
   (org-toggle-item nil)
   (let* ((current-prefix-arg nil)
          (orig-buff (current-buffer))
@@ -2030,7 +2030,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
      results
      :action (lambda (x)
                (goto-char (cdr x))
-               (org-show-entry)))))
+               (org-fold-show-entry)))))
 
 ;;;###autoload
 (defun aj/org-open-from-all-buffer-links (&optional buffer)
