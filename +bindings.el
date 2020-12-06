@@ -55,6 +55,14 @@
   :desc "colors"        "c" #'counsel-colors-web
   )
 
+ ;;; c-mode
+ (:after cc-mode
+  :map c-mode-map
+  :ni "C-h"       #'evil-window-left
+  :ni "C-j"       #'evil-window-down
+  :ni "C-k"       #'evil-window-up
+  :ni "C-l"       #'evil-window-right
+  )
  ;;; counsel, ivy
  (:after counsel
   :map ivy-minibuffer-map
