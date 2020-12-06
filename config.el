@@ -753,6 +753,9 @@
 
 (use-package! indium
   :commands indium-connect
+  :init
+  (setq indium-chrome--default-data-dir
+        (expand-file-name (locate-user-emacs-file "indium-chrome-profile")))
   )
 
 (after! info
