@@ -373,6 +373,54 @@
 (after! dart-mode
   (set-docsets! 'dart-mode "Dart"))
 
+(use-package! eaf
+  :unless (or (aj-wsl-p)
+              (not (display-graphic-p)))
+  :commands eaf-open-browser
+  :config
+  (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
+  (advice-add
+   #'eaf--update-buffer-details
+   :after (lambda (&rest _)
+            "Prettify `mode-name' with cyphejor"
+            (when (bound-and-true-p cyphejor-mode)
+              (cyphejor--hook))))
+
+  (when (featurep! :editor evil)
+    (add-hook 'eaf-mode-hook #'evil-normal-state))
+
+  (eaf-bind-key nil "C-h" eaf-browser-keybinding)
+
+  (map!
+   :map eaf-mode-map*
+   "C-h" #'evil-window-left
+   :ie "C-h" #'evil-window-left
+   "C-M-g" #'aj/eaf-browser-org-store-link
+   "C-M-b" #'aj/eaf-browser-org-capture-link
+   "C-;" #'aj/eaf-show-keys-help
+   "<ESC>" #'popup/close
+   )
+
+  (eaf-setq eaf-browser-dark-mode "false")
+  (eaf-setq eaf-browser-enable-history "false")
+  (eaf-setq eaf-browser-enable-plugin "false")
+  (eaf-setq eaf-browser-enable-adblocker "true")
+  (eaf-setq eaf-browser-enable-autofill "false")
+
+  (setq eaf-buffer-title-format "*eaf %s*")
+
+  (add-to-list 'eaf-app-display-function-alist
+               '("browser" . pop-to-buffer))
+
+  (set-popup-rule! (lambda (buf &rest _)
+                     "Find EAF browser buffer."
+                     (with-current-buffer buf
+                       (when (and (eq major-mode 'eaf-mode)
+                                  (string-equal eaf--buffer-app-name "browser"))
+                         t)))
+    :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)
+  )
+
 (after! elisp-mode
   (add-hook 'emacs-lisp-mode-hook
             (lambda ()
@@ -2315,54 +2363,6 @@
           `(fringe :background nil)
           `(solaire-alt-face :background nil)
           `(solaire-fringe-face :background nil)))))
-
-(use-package! eaf
-  :unless (or (aj-wsl-p)
-              (not (display-graphic-p)))
-  :commands eaf-open-browser
-  :config
-  (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
-  (advice-add
-   #'eaf--update-buffer-details
-   :after (lambda (&rest _)
-            "Prettify `mode-name' with cyphejor"
-            (when (bound-and-true-p cyphejor-mode)
-              (cyphejor--hook))))
-
-  (when (featurep! :editor evil)
-    (add-hook 'eaf-mode-hook #'evil-normal-state))
-
-  (eaf-bind-key nil "C-h" eaf-browser-keybinding)
-
-  (map!
-   :map eaf-mode-map*
-   "C-h" #'evil-window-left
-   :ie "C-h" #'evil-window-left
-   "C-M-g" #'aj/eaf-browser-org-store-link
-   "C-M-b" #'aj/eaf-browser-org-capture-link
-   "C-;" #'aj/eaf-show-keys-help
-   "<ESC>" #'popup/close
-   )
-
-  (eaf-setq eaf-browser-dark-mode "false")
-  (eaf-setq eaf-browser-enable-history "false")
-  (eaf-setq eaf-browser-enable-plugin "false")
-  (eaf-setq eaf-browser-enable-adblocker "true")
-  (eaf-setq eaf-browser-enable-autofill "false")
-
-  (setq eaf-buffer-title-format "*eaf %s*")
-
-  (add-to-list 'eaf-app-display-function-alist
-               '("browser" . pop-to-buffer))
-
-  (set-popup-rule! (lambda (buf &rest _)
-                     "Find EAF browser buffer."
-                     (with-current-buffer buf
-                       (when (and (eq major-mode 'eaf-mode)
-                                  (string-equal eaf--buffer-app-name "browser"))
-                         t)))
-    :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)
-  )
 
 (load! "+bindings")
 

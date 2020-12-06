@@ -75,11 +75,6 @@
 
 (package! define-word :pin "3af6825c5f3bf4f6176a3f5b2e499616c65e2fe0")
 
-(package! eslintd-fix
-  :recipe (:host github :repo "aaronjensen/eslintd-fix") :pin "0c431141be9a408c28aead152ea454df0804364f")
-
-(package! esqlite :pin "08a779a821f8d32c1a1985d8d9eb6cf21646ce2e")
-
 (package! eaf
   :recipe (:host github
            :repo "manateelazycat/emacs-application-framework"
@@ -87,6 +82,11 @@
            )
   :pin "34011c20aa47600021a7d40d66051340a0242d87"
   )
+
+(package! eslintd-fix
+  :recipe (:host github :repo "aaronjensen/eslintd-fix") :pin "0c431141be9a408c28aead152ea454df0804364f")
+
+(package! esqlite :pin "08a779a821f8d32c1a1985d8d9eb6cf21646ce2e")
 
 (package! google-translate :pin "0270073331de9358f29d049a27aa9145697d6dc7")
 
