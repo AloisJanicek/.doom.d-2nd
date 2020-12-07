@@ -1236,9 +1236,8 @@
    org-src-fontify-natively t
    org-imenu-depth 9
 
-   org-refile-targets `((,(directory-files-recursively
-                           org-brain-path org-agenda-file-regexp)
-                         :maxlevel . 3))
+   org-refile-targets '((nil :maxlevel . 9)
+                        (org-agenda-files :maxlevel . 9))
 
    org-use-property-inheritance t
 
