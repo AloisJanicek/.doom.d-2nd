@@ -147,6 +147,10 @@
 
 (package! org-super-agenda :pin "ac7f2ef05c161b10390141b6863b431dc9360edc")
 
+(package! org-transclusion
+  :recipe (:host github :repo "nobiot/org-transclusion")
+  :pin "7f03d5913fb8c5d87950b53cc6d839e2683cdbbf")
+
 (package! org-ql :pin "5a0ed259bcb967067e24815c3e969f39dd02ee87" :pin "73209cf48eabf665c65d05ff669f929c188220a9")
 
 (package! paredit

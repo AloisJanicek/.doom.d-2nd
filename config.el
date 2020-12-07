@@ -1362,6 +1362,10 @@
   (setq org-super-agenda-header-map (make-sparse-keymap))
   )
 
+(use-package! org-transclusion
+  :after org
+  )
+
 (after! org-agenda
   (add-hook 'org-agenda-mode-hook #'aj-org-complete-all-tags-h)
   (add-hook 'org-agenda-mode-hook #'hl-line-mode)
