@@ -561,8 +561,8 @@ and all its children are revealed."
                            (widen)
                            (goto-char (get-text-property 0 'marker headline))
                            (org-narrow-to-subtree)
+                           (org-fold-show-children)
                            (org-fold-show-entry)
-                           (outline-show-branches)
                            ))))
              ivy-sort-functions-alist)
         (widen)
@@ -1490,9 +1490,8 @@ Filters todo headlines according to `aj-org-agenda-filter'.
     (widen)
     (goto-char marker)
     (org-narrow-to-subtree)
-    (outline-hide-leaves)
+    (org-fold-show-children)
     (org-fold-show-entry)
-    (outline-show-branches)
     ))
 
 ;;;###autoload

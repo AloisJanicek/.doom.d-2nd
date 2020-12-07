@@ -1274,9 +1274,9 @@
                                         (recenter 0 t)
                                         (when (org-at-heading-p)
                                           (org-narrow-to-subtree)
-                                          (org-cycle)
-                                          (outline-show-branches)
-                                          (org-fold-show-entry))
+                                          (org-fold-show-children)
+                                          (org-fold-show-entry)
+                                          )
                                         (turn-off-solaire-mode)))
   (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
 
@@ -1378,8 +1378,8 @@
                 "Narrow and show children after switching."
                 (widen)
                 (org-narrow-to-subtree)
+                (org-fold-show-children)
                 (org-fold-show-entry)
-                (outline-show-branches)
                 (turn-off-solaire-mode)
                 ))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
@@ -1665,8 +1665,8 @@
                                         (interactive)
                                         (widen)
                                         (org-narrow-to-subtree)
+                                        (org-fold-show-children)
                                         (org-fold-show-entry)
-                                        (outline-show-branches)
                                         ))
 
   (setq
