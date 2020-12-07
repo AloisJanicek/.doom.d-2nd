@@ -4,8 +4,8 @@
 (load! "+vars")
 (load! "+hacks")
 
-(add-to-list 'org-modules 'ol-info)
-(add-to-list 'org-modules 'ol-eww)
+(dolist (i '(ol-info ol-eww org-id))
+  (add-to-list 'org-modules i))
 
 (cd aj-home-base-dir)
 
