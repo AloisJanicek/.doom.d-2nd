@@ -1145,6 +1145,9 @@ ask user to choose one of modified dotdrop files instead.
 If the selected file cannot be directly updated, like in case of
 the dotfile that is generated from dotdrop template, automatically
 launch ediff session for manual file adjustment.
+
+At the end check if dotdrop repository (at DOTDROP_HOME env variable)
+is modified and offer to launch magit-status in it.
 "
   (interactive)
   (let* ((file (buffer-file-name))
@@ -1157,14 +1160,23 @@ launch ediff session for manual file adjustment.
                "Chose file to update: "
                (aj-dotdrop-modified))))
            (aj-dotdrop-dotfile-record file))))
-    (or (equal 0 (shell-command
-                  (format
-                   "yes | %s update %s"
-                   aj-dotdrop-base-cmd
-                   (nth 1 dotfile-record))))
-        (ediff
-         (nth 1 dotfile-record)
-         (nth 2 dotfile-record)))))
+
+    (unless (or (string-empty-p dotfile-record)
+                (not dotfile-record))
+      (or (equal 0 (shell-command
+                    (format
+                     "yes | %s update %s"
+                     aj-dotdrop-base-cmd
+                     (nth 1 dotfile-record))))
+          (ediff
+           (nth 1 dotfile-record)
+           (nth 2 dotfile-record)))))
+
+  (when (projectile-check-vcs-status (getenv "DOTDROP_HOME"))
+    (if (y-or-n-p "Commit changes to the DOTFILES?")
+        (magit-status (getenv "DOTDROP_HOME"))
+      (message "Ok.")))
+  )
 
 ;;;###autoload
 (defun github-conversation-p (window-title)
