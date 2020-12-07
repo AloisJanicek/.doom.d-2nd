@@ -1713,11 +1713,20 @@
          (apply orig-fn args)))))
   )
 
+(doom-store-persist doom-store-location '(org-id-locations))
+
 (after! org-id
+
   (setq
    org-id-locations-file (expand-file-name "org-ids-locations" doom-cache-dir)
    org-id-search-archives nil
    )
+
+  (unless (hash-table-p org-id-locations)
+    (if (doom-file-size org-id-locations-file)
+        (org-id-locations-load)
+      (aj/org-id-update-recursively)))
+
   (advice-add #'org-id-open :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-id-open :around #'aj-org-buffer-to-popup-a)
   )

@@ -1441,7 +1441,8 @@ Otherwise dispatch default commands.
       (org-id-update-id-locations
        (directory-files-recursively org-directory ".org$")))
    (lambda (result)
-     (message "Org ids updated"))))
+     (org-id-locations-load)
+     (message "Updated %s Org ID locations asynchronously." (hash-table-size org-id-locations)))))
 
 ;; MISC
 ;;;###autoload
