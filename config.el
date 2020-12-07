@@ -1810,6 +1810,7 @@
   )
 
 (after! pdf-tools
+  (advice-add #'pdf-info-check-epdfinfo :override #'aj/epdfinfo-never-bother-me-again-a)
   (advice-remove #'pdf-view-mode #'+pdf--install-epdfinfo-a)
   )
 

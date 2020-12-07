@@ -1215,6 +1215,14 @@ editor windows.
             :action (lambda (window)
                       (select-window (cdr window)))))
 
+;;;###autoload
+(defun aj/epdfinfo-never-bother-me-again-a ()
+  "Just build that thing, I know what I am doing.
+Override adivce for annoying `pdf-info-check-epdfinfo'
+"
+  (unless (file-exists-p pdf-info-epdfinfo-program)
+    (pdf-tools-install t t t )))
+
 (provide 'functions)
 
 ;;; functions.el ends here
