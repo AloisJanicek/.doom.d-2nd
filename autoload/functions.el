@@ -1191,7 +1191,7 @@ as the oposite to usual emacs approach of changing content of the existing
 editor windows.
 "
   (interactive)
-  (ivy-read "Switch to: "
+  (ivy-read "Switch to window: "
             (seq-map
              (lambda (window)
                (let* ((win-name (prin1-to-string window))
