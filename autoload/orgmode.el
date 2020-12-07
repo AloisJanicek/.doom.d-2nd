@@ -560,9 +560,7 @@ and all its children are revealed."
                  :action (lambda (headline)
                            (widen)
                            (goto-char (get-text-property 0 'marker headline))
-                           (org-narrow-to-subtree)
-                           (org-fold-show-children)
-                           (org-fold-show-entry)
+                           (aj-org-narrow-and-show)
                            ))))
              ivy-sort-functions-alist)
         (widen)
@@ -1490,10 +1488,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
     (aj-open-file-switch-create-indirect-buffer-per-persp buffer)
     (widen)
     (goto-char marker)
-    (org-narrow-to-subtree)
-    (org-fold-show-children)
-    (org-fold-show-entry)
-    ))
+    (aj-org-narrow-and-show)))
 
 ;;;###autoload
 (defun aj-org-get-filtered-org-files (dir preset &optional archived)
@@ -2314,6 +2309,13 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
        "org-roam-server-light"
        "*org-roam-server-light-output-buffer*"
        "python main.py"))))
+
+;;;###autoload
+(defun aj-org-narrow-and-show ()
+  "Narrow to subtree, show children and entry"
+  (org-narrow-to-subtree)
+  (org-fold-show-children)
+  (org-fold-show-entry))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

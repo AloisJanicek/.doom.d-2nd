@@ -1273,10 +1273,7 @@
                                         "Recenter visited heading to the top of the buffer."
                                         (recenter 0 t)
                                         (when (org-at-heading-p)
-                                          (org-narrow-to-subtree)
-                                          (org-fold-show-children)
-                                          (org-fold-show-entry)
-                                          )
+                                          (aj-org-narrow-and-show))
                                         (turn-off-solaire-mode)))
   (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
 
@@ -1377,11 +1374,8 @@
               (lambda (&rest _)
                 "Narrow and show children after switching."
                 (widen)
-                (org-narrow-to-subtree)
-                (org-fold-show-children)
-                (org-fold-show-entry)
-                (turn-off-solaire-mode)
-                ))
+                (aj-org-narrow-and-show)
+                (turn-off-solaire-mode)))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-exit :after #'aj-org-buffers-respect-sanity-a)
@@ -1664,10 +1658,7 @@
                                         "Narrow view after switching."
                                         (interactive)
                                         (widen)
-                                        (org-narrow-to-subtree)
-                                        (org-fold-show-children)
-                                        (org-fold-show-entry)
-                                        ))
+                                        (aj-org-narrow-and-show)))
 
   (setq
    org-clock-clocked-in-display nil
@@ -2267,10 +2258,7 @@
 (advice-add #'aj/org-notes-search-no-link :after (lambda (&rest _)
                                                    "Narrow view after switching."
                                                    (interactive)
-                                                   (org-narrow-to-subtree)
-                                                   (org-fold-show-entry)
-                                                   (outline-show-branches)
-                                                   ))
+                                                   (aj-org-narrow-and-show)))
 
 (advice-add #'aj/org-agenda-headlines :around #'aj-org-buffer-to-popup-a)
 (advice-add #'aj-org-jump-to-headline-at :around #'aj-org-buffer-to-popup-a)
