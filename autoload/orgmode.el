@@ -2330,7 +2330,10 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                         (let ((org-id-link-to-org-use-id t))
                           (insert
                            (org-with-point-at (get-text-property 0 'org-hd-marker x)
-                             (org-store-link nil))))))))
+                             (org-store-link nil)))
+                          (newline)
+                          (next-line))))))
+
 ;;;###autoload
 (defun aj/org-id-insert-link-all-org-files ()
   "Insert org-id link pointing to any heading from all org files."
