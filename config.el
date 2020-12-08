@@ -1716,7 +1716,7 @@
    )
 
   (unless (hash-table-p org-id-locations)
-    (if (doom-file-size org-id-locations-file)
+    (if (ignore-errors (doom-file-size org-id-locations-file))
         (org-id-locations-load)
       (aj/org-id-update-recursively)))
 
