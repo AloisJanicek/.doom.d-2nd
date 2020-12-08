@@ -1334,6 +1334,11 @@
   :after org
   :config
   (advice-add #'org-ql--select :around #'doom-shut-up-a)
+  )
+
+(after! org-ql-view
+  (advice-add #'org-ql-view--format-element :override #'aj-org-ql-view--format-element-a)
+  (advice-add #'org-ql-view--display :after #'aj-org-ql-hide-header-a)
   (advice-add #'org-ql-view-refresh :after (lambda (&rest _)
                                              "Blacklist certain Org-QL views from re-applying agenda filter."
                                              (let ((buffer (prin1-to-string (current-buffer))))
@@ -1342,8 +1347,6 @@
                                                            (string-match "All Todos" buffer)
                                                            (string-match "ARCHIVED" buffer))
                                                  (org-agenda-filter-apply aj-org-agenda-filter 'tag)))))
-  (advice-add #'org-ql-view--format-element :override #'aj-org-ql-view--format-element-a)
-  (advice-add #'org-ql-view--display :after #'aj-org-ql-hide-header-a)
   )
 
 (use-package! org-sidebar

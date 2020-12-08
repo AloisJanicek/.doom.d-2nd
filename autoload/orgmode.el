@@ -2317,5 +2317,37 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
   (org-fold-show-children)
   (org-fold-show-entry))
 
+;;;###autoload
+(defun jmm-org-ql-ivy-prompt-for-link (filelist)
+  "Select a org-mode header with ivy and insert its link"
+  (let (ivy-sort-functions-alist)
+    (require 'org-ql-view)
+    (ivy-read "Link:"
+              (->> (org-ql-select filelist '(and (level < 9))
+                     :action 'element-with-markers)
+                   (-map #'org-ql-view--format-element))
+              :action (lambda (x)
+                        (let ((org-id-link-to-org-use-id t))
+                          (insert
+                           (org-with-point-at (get-text-property 0 'org-hd-marker x)
+                             (org-store-link nil))))))))
+;;;###autoload
+(defun aj/org-id-insert-link-all-org-files ()
+  "Insert org-id link pointing to any heading from all org files."
+  (interactive)
+  (require 'seq)
+  (ivy-read "File: "
+            (seq-map
+             (lambda (elm)
+               (let ((file-title (+org-get-global-property "TITLE" elm))
+                     (file-name (file-name-nondirectory elm)))
+                 (list (if file-title (concat file-name " - " file-title)
+                         (concat file-name " - <untitled>" ))
+                       elm)))
+             (directory-files-recursively org-directory ".org$"))
+            :action (lambda (x)
+                      (jmm-org-ql-ivy-prompt-for-link (cdr x)))))
+
+
 (provide 'orgmode)
 ;;; orgmode.el ends here

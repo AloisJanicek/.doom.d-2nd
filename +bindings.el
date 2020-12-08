@@ -321,6 +321,7 @@
    )
 
   :localleader
+  :desc "transclusion" "$" #'org-transclusion-mode
   (:prefix ("a" . "attachments")
    :desc "attach file hydra" "a" #'aj/org-attach-hydra/body
    )
@@ -407,7 +408,9 @@
   "i" nil
   (:prefix ("i" . "insert")
    :desc "drawer"             "d" #'org-insert-drawer
-   :desc "id"                 "i" #'org-id-get-create
+   :desc "id"                 "I" #'org-id-get-create
+   :desc "heading id"         "h" #'aj/org-id-insert-link-all-org-files
+   :desc "roam"               "r" #'org-roam-insert
 
    (:desc "timestamp:"          :prefix "t"
     :desc "active"               "a" #'org-time-stamp
