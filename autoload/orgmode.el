@@ -815,12 +815,7 @@ which one is currently active."
                                    ;; Don't auto-pop following if true
                                    (unless aj-org-agenda-gtd-hydra-no-auto
 
-                                     (let* ((today (format-time-string "%F" (current-time)))
-                                            (now (format-time-string "%F %H:%M" (current-time)))
-                                            (space " ")
-                                            (start (concat today space "00:00"))
-                                            (end (concat today space "23:59"))
-                                            (past-dues `(and (ts-active :from ,start :to ,now)
+                                     (let* ((past-dues `(and (ts-active :from 0 :to ,(ts-now))
                                                              (not (habit))
                                                              (not (todo "DONE")))))
 
@@ -837,12 +832,12 @@ which one is currently active."
                                         ;; Show today's scheduled / deadline items without "HH:MM" if any
                                         ((let* ((scheduled-today (org-ql-select
                                                                    (org-agenda-files)
-                                                                   '(and (ts-active :on today)
+                                                                   '(and (ts-active :on 0)
                                                                          (not (habit))
                                                                          (not (todo "DONE")))))
                                                 (scheduled-today-hm (org-ql-select
                                                                       (org-agenda-files)
-                                                                      `(and (ts-active :from ,start :to ,end)
+                                                                      `(and (ts-active :from 0 :to 0)
                                                                             (not (habit))
                                                                             (not (todo "DONE")))))
                                                 (scheduled-today-without-hm (seq-filter
