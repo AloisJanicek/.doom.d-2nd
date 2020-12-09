@@ -2386,4 +2386,4 @@
 (ivy-mode)
 
 ;; emacs-anywhere settings
-(add-hook 'ea-popup-hook 'popup-handler)
+(add-hook 'ea-popup-hook #'ea-popup-handler)

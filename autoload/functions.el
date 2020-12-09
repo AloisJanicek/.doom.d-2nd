@@ -1179,20 +1179,34 @@ is modified and offer to launch magit-status in it.
   )
 
 ;;;###autoload
-(defun github-conversation-p (window-title)
+(defun ea-github-conversation-p (window-title)
+  "Return t if window title is one of usual github conversations."
   (or (string-match-p "Pull Request" window-title)
       (string-match-p "Issue" window-title)
       ))
 
 ;;;###autoload
-(defun popup-handler (app-name window-title x y w h)
-  (cond
-   ((github-conversation-p window-title) (gfm-mode))
-   (t (markdown-mode))
-   )
-  (set-frame-position (selected-frame) x (+ y (- h 400)))
-  (unless (zerop w)
-    (set-frame-size (selected-frame) w 400 t)))
+(defun ea-popup-handler (app-name window-title x y w h)
+  "Handle popup helper function for emacs_anywhere."
+
+  (let (flyspell-mode-hook )
+    (cond
+     ((ea-github-conversation-p window-title) (gfm-mode))
+     (t (markdown-mode))
+     )
+    (set-frame-position (selected-frame) x (+ y (- h 400)))
+    (unless (zerop w)
+      (set-frame-size (selected-frame) w 400 t))
+    (aj/spell-menu-hydra/body)
+
+    (when (y-or-n-p-with-timeout "czech?" 1.5 nil)
+      (ispell-change-dictionary "czech")
+      (flyspell-mode +1)
+      (flyspell-buffer)
+      )
+    (evil-insert-state)
+    (text-scale-increase 3)
+    ))
 
 ;;;###autoload
 (defun aj/emacs-window-switcher ()
