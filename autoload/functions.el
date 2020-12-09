@@ -1197,7 +1197,6 @@ is modified and offer to launch magit-status in it.
     (set-frame-position (selected-frame) x (+ y (- h 400)))
     (unless (zerop w)
       (set-frame-size (selected-frame) w 400 t))
-    (aj/spell-menu-hydra/body)
 
     (when (y-or-n-p-with-timeout "czech?" 1.5 nil)
       (ispell-change-dictionary "czech")
