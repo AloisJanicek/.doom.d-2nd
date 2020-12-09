@@ -818,7 +818,7 @@ which one is currently active."
                                      (let* ((today (format-time-string "%F" (current-time)))
                                             (now (format-time-string "%F %H:%M" (current-time)))
                                             (space " ")
-                                            (start (concat today space "00:01"))
+                                            (start (concat today space "00:00"))
                                             (end (concat today space "23:59"))
                                             (past-dues `(and (ts-active :from ,start :to ,now)
                                                              (not (habit))
