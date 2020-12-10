@@ -1171,12 +1171,27 @@ is modified and offer to launch magit-status in it.
           (ediff
            (nth 1 dotfile-record)
            (nth 2 dotfile-record)))))
+  (aj-dotdrop-commit-maybe))
 
+;;;###autoload
+(defun aj-dotdrop-commit-maybe ()
+  "Check if DOTDROP_HOME is modified and offer user commit changes."
   (when (projectile-check-vcs-status (getenv "DOTDROP_HOME"))
     (if (y-or-n-p "Commit changes to the DOTFILES?")
         (magit-status (getenv "DOTDROP_HOME"))
-      (message "Ok.")))
-  )
+      (message "Ok."))))
+
+;;;###autoload
+(defun aj/dotdrop-import ()
+  "Import current file into dotdrop.
+With user prefix ask for the file.
+"
+  (interactive)
+  (let ((file (if (eq (car current-prefix-arg) 4)
+                  (read-file-name "File: ")
+                (buffer-file-name))))
+    (shell-command (format "%s import %s" aj-dotdrop-base-cmd file))
+    (aj-dotdrop-commit-maybe)))
 
 ;;;###autoload
 (defun ea-github-conversation-p (window-title)
