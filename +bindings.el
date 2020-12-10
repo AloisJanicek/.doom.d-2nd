@@ -870,7 +870,7 @@
   :desc "re-builder"        "R" #'regexp-builder
   :desc "Chromium incognito private" "P" #'aj/chromium-toggle-incognito
   :desc "flyspell"          "s" #'aj/flyspell-enable
-  :desc "swap dictionaries" "S" (cmd! (aj-ispell-swap-two-dicts "english" "czech"))
+  :desc "swap dictionaries" "S" (cmd! (aj-ispell-swap-two-dicts "en" "czech"))
   :desc "treemacs"          "t" #'+treemacs/toggle
   :desc "light/dark theme"  "T" (cmd! (aj-doom-themes-swap-two-themes 'doom-solarized-dark 'doom-solarized-light))
   :desc "undo-tree"         "u" #'undo-tree-visualize

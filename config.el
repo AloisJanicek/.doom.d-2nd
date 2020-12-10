@@ -783,6 +783,7 @@
                               ))
   )
 
+(setq ispell-dictionary "en")
 (after! ispell
   (advice-add #'ispell-init-process :around #'doom-shut-up-a)
   )
