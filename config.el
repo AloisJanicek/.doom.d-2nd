@@ -11,7 +11,6 @@
 
 (setq user-mail-address "janicek.dev@gmail.com"
       user-full-name    "Alois Janíček"
-      +file-templates-dir (expand-file-name "templates" aj-repos-dir)
       +snippets-dir (expand-file-name "snippets" aj-repos-dir)
       doom-scratch-initial-major-mode 'emacs-lisp-mode
       +doom-quit-messages '("")
