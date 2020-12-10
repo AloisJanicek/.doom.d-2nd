@@ -917,7 +917,7 @@
   :desc "agenda tasks"             "h" (cmd! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT" "WAIT" "HOLD")))
   :desc "all agenda tasks"         "H" (cmd! (aj/org-agenda-headlines))
   :desc "imenu-list"               "i" #'imenu-list-smart-toggle
-  :desc "NEXT agenda tasks"        "n" (cmd! (aj/org-agenda-headlines '(todo "NEXT")))
+  :desc "NEXT agenda tasks"        "n" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-next-task-search)))
   :desc "search eww"               "s" (cmd! (counsel-web-search nil "Search web with eww: " nil #'eww))
   :desc "search eaf"               "S" (cmd! (counsel-web-search nil "Search web with eaf: " nil #'eaf-open-browser))
   )

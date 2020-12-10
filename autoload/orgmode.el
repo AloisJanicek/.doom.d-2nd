@@ -806,6 +806,21 @@ which one is currently active."
       :super-groups '((:auto-category t ))
       :title "Plain Todos")))
 
+;;;###autoload
+(defun aj-org-ql-custom-next-task-search ()
+  "Return custom org-ql queary for NEXT task."
+  (let ((tags
+         (when aj-org-agenda-filter
+           `(tags ,(string-remove-prefix
+                    "+" (substring-no-properties
+                         (car aj-org-agenda-filter)))))))
+    (remove nil `(and
+                  (todo "NEXT")
+                  ,(if tags tags)
+                  (not (or (parent "WAIT")
+                           (parent "HOLD")))
+                  (not (ts-active))))))
+
 ;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-agenda-gtd-hydra (:color blue
                                    :hint nil
@@ -878,9 +893,7 @@ which one is currently active."
                                         (t (if (let* ((tags (when aj-org-agenda-filter
                                                               `(tags ,(string-remove-prefix
                                                                        "+" (car aj-org-agenda-filter)))))
-                                                      (query (if tags
-                                                                 `(and (todo "NEXT") ,tags (not (ts-active)))
-                                                               `(and (todo "NEXT") (not (ts-active))))))
+                                                      (query (aj-org-ql-custom-next-task-search)))
                                                  (catch 'heading
                                                    (org-ql-select
                                                      (aj-org-combined-agenda-files)
@@ -891,8 +904,7 @@ which one is currently active."
                                                (let ((org-agenda-tag-filter aj-org-agenda-filter))
                                                  (org-ql-search
                                                    (aj-org-combined-agenda-files)
-                                                   '(and (todo "NEXT")
-                                                         (not (ts-active)))
+                                                   (aj-org-ql-custom-next-task-search)
                                                    :sort #'aj-org-ql-sort-by-effort
                                                    :super-groups '((:auto-category t))
                                                    :title "NEXT action"
@@ -957,8 +969,7 @@ _q_uery                       _h_old
   ("n" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
            (aj-org-combined-agenda-files)
-           '(and (todo "NEXT")
-                 (not (ts-active)))
+           (aj-org-ql-custom-next-task-search)
            :sort #'aj-org-ql-sort-by-effort
            :super-groups '((:auto-category t))
            :title "Next Action")))
@@ -1453,9 +1464,10 @@ Otherwise dispatch default commands.
               (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
-(defun aj/org-agenda-headlines (&optional keywords)
+(defun aj/org-agenda-headlines (&optional keywords query)
   "Jump to a todo headline in `org-agenda-files'.
 Optionally search for specific list of todo KEYWORDS.
+Optionally this function accepts valid org-ql QUERY.
 Filters todo headlines according to `aj-org-agenda-filter'.
 "
   (interactive "P")
@@ -1463,11 +1475,13 @@ Filters todo headlines according to `aj-org-agenda-filter'.
          (tags (unless current-prefix-arg
                  (when aj-org-agenda-filter
                    `(tags ,(string-remove-prefix "+" (car aj-org-agenda-filter))))))
-         (query (if tags
-                    `(and ,keywords ,tags)
-                  keywords))
+         (query (if query
+                    query
+                  (if tags
+                      `(and ,keywords ,tags)
+                    keywords)))
          ivy-sort-functions-alist)
-
+    (message "Query: %s" query)
     (ivy-read "Go to: " (org-ql-query
                           :select (lambda () (aj-org-get-pretty-heading-path nil nil t t))
                           :from (aj-org-combined-agenda-files)
