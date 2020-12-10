@@ -914,12 +914,29 @@
   :desc "agenda"                   "a" #'aj/org-agenda-gtd-hydra/body
   :desc "browse eww"               "b" #'eww
   :desc "browse eaf"               "B" #'eaf-open-browser
-  :desc "agenda tasks"             "h" (cmd! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT" "WAIT" "HOLD")))
-  :desc "all agenda tasks"         "H" (cmd! (aj/org-agenda-headlines))
   :desc "imenu-list"               "i" #'imenu-list-smart-toggle
-  :desc "NEXT agenda tasks"        "n" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-next-task-search)))
   :desc "search eww"               "s" (cmd! (counsel-web-search nil "Search web with eww: " nil #'eww))
   :desc "search eaf"               "S" (cmd! (counsel-web-search nil "Search web with eaf: " nil #'eaf-open-browser))
+
+  (:prefix ("o" . "open agenda")
+   :desc "all active tasks"     "a" (cmd! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT" "WAIT" "HOLD")))
+   :desc "archived"             "A" (cmd! (aj/org-agenda-headlines
+                                           nil
+                                           '(or (todo "DONE") (todo "CANCELLED"))
+                                           (aj-get-all-archived-org-files)))
+   :desc "all headings"         "h" (cmd! (aj-org-jump-to-headline-at (aj-org-combined-agenda-files) 9))
+   :desc "inbox"                "i" (cmd! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 1))
+   :desc "next"                 "n" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-next-task-query)))
+   :desc "tasks"                "t" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-todo-task-query)))
+   :desc "all tasks"            "T" (cmd! (aj/org-agenda-headlines))
+   :desc "projects"             "p" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-projects-query)))
+   :desc "wait"                 "w" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-wait-task-query)))
+   :desc "hold"                 "h" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom--task-query)))
+   :desc "someday"              "s" (cmd! (aj/org-agenda-headlines '(todo "SOMEDAY")))
+   :desc "maybe"                "m" (cmd! (aj/org-agenda-headlines '(todo "MAYBE")))
+   :desc "cancelled"            "c" (cmd! (aj/org-agenda-headlines nil '(todo "CANCELLED")))
+   :desc "done"                 "d" (cmd! (aj/org-agenda-headlines nil '(todo "DONE")))
+   )
   )
 
  (:prefix ("p" . "project")
@@ -1130,7 +1147,6 @@
   :desc "notes open"           "N" (cmd! (if current-prefix-arg
                                              (aj-org-find-file org-directory)
                                            (aj-org-find-file org-brain-path)))
-  :desc "jump inbox"           "i" (cmd! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 1))
   :desc "archive headings"     "a" (cmd! (if current-prefix-arg
                                              (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3)
                                            (aj-org-jump-to-headline-at
