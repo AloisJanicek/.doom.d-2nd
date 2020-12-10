@@ -1161,7 +1161,7 @@ is modified and offer to launch magit-status in it.
                (aj-dotdrop-modified))))
            (aj-dotdrop-dotfile-record file))))
 
-    (unless (or (string-empty-p dotfile-record)
+    (unless (or (ignore-errors (string-empty-p dotfile-record))
                 (not dotfile-record))
       (or (equal 0 (shell-command
                     (format
