@@ -1875,9 +1875,21 @@ Org manual: 8.4.2 The clock table.
 ;;;###autoload
 (defun aj-org-ql-sort-by-effort (a b)
   "Return non-nil if effort of the A is lower then effort of the B."
-  (<
-   (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT a) "999")))
-   (string-to-number (replace-regexp-in-string "[[:punct:]]" "" (or (org-element-property :EFFORT b) "999")))))
+  (let ((get-effort (lambda (elm-or-str)
+                      (string-to-number
+                       (replace-regexp-in-string
+                        "[[:punct:]]" ""
+                        (or
+                         (if (char-or-string-p elm-or-str)
+                             (org-entry-get (get-text-property 0 'marker elm-or-str) "EFFORT")
+                           (org-element-property :EFFORT elm-or-str))
+                         "999"
+                         ))))))
+    (< (funcall get-effort a)
+       (funcall get-effort b)
+       )
+    )
+  )
 
 ;;;###autoload
 (defun aj-org-re-store-link ()
