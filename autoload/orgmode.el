@@ -1572,7 +1572,7 @@ Optionally specify heading LEVEL (default is 3).
   (require 'org)
   (let* ((headings (lambda ()
                      (aj-org-get-pretty-heading-path t t t t t)))
-         (ivy-height (round (* (frame-height) 0.80)))
+         (ivy-height (round (* (frame-height) 0.60)))
          ivy-sort-functions-alist timer)
     (ivy-read
      "Go to: "
