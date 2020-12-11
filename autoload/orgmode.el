@@ -1571,7 +1571,7 @@ Optionally specify heading LEVEL (default is 3).
 "
   (require 'org)
   (let* ((headings (lambda ()
-                     (aj-org-get-pretty-heading-path t t nil t)))
+                     (aj-org-get-pretty-heading-path t t t t t)))
          (ivy-height (round (* (frame-height) 0.80)))
          ivy-sort-functions-alist timer)
     (ivy-read
@@ -1619,7 +1619,7 @@ path is colorized according to outline faces.
          (title (concat (when active-timestamp "⏲ ")
                         (org-link-display-format
                          (substring-no-properties (plist-get headline :raw-value)))))
-         (keyword (when keyword (substring-no-properties (plist-get headline :todo-keyword))))
+         (keyword (when keyword (ignore-errors (substring-no-properties (plist-get headline :todo-keyword)))))
          (effort (when effort (or (plist-get headline :EFFORT) "  :  " )))
          (tag (when tag (plist-get headline :tags)))
          (tags (when tag (concat ":"
@@ -1660,7 +1660,7 @@ path is colorized according to outline faces.
           (put-text-property 0 (length ancestor) 'face (format "outline-%d" (+ i 1)) ancestor))
         (setq i (+ i 1))))
 
-    (when (char-or-string-p keyword)
+    (when keyword
       (funcall colorize-keyword (catch 'color
                                   (dolist (i org-todo-keyword-faces)
                                     (when (equal (car i) keyword)
@@ -1691,10 +1691,10 @@ path is colorized according to outline faces.
          (concat
           (when filename (concat filename "/"))
           (mapconcat #'identity outline "/") "/"
-          (when (char-or-string-p keyword) (concat keyword spc (when effort (concat effort spc)))) title (when tags (concat spc tags)))
+          (when keyword (concat keyword spc (when effort (concat effort spc)))) title (when tags (concat spc tags)))
        (concat
         (when filename (concat filename "/"))
-        (when (char-or-string-p keyword) (concat keyword spc (when effort (concat effort spc)))) title (when tags (concat spc tags))))
+        (when keyword (concat keyword spc (when effort (concat effort spc)))) title (when tags (concat spc tags))))
      'marker (copy-marker (point)))))
 
 ;;;###autoload
