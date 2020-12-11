@@ -1508,7 +1508,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
          ivy-sort-functions-alist)
     ;; (message "Query: %s" query)
     (ivy-read "Go to: " (org-ql-query
-                          :select (lambda () (aj-org-get-pretty-heading-path nil nil t t))
+                          :select (lambda () (aj-org-get-pretty-heading-path nil nil t t t))
                           :from (or files (aj-org-combined-agenda-files))
                           :where query
                           :order-by #'aj-org-ql-sort-by-effort
@@ -1604,27 +1604,29 @@ Optionally specify heading LEVEL (default is 3).
      :action #'aj-org-jump-to-heading-action
      :caller 'aj-org-jump-to-headline-at)))
 
-(defun aj-org-get-pretty-heading-path (&optional filename outline keyword tag)
+;;;###autoload
+(defun aj-org-get-pretty-heading-path (&optional filename outline keyword tag effort)
   "Get nice org heading path.
 Heading is stripped of org-mode link syntax and whole
 path is colorized according to outline faces.
 "
-  (let* ((heading (org-heading-components))
-         (time (org-element--get-time-properties))
-         (text (if time
-                   (concat "⏲ " (org-link-display-format (nth 4 heading)))
-                 (org-link-display-format (nth 4 heading))))
-         (keyword (when keyword
-                    (nth 2 heading)))
-         (outline (when outline
-                    (org-get-outline-path)))
-         (tag (when tag
-                (let ((tag (nth 5 heading)))
-                  (cond ((and time tag)
-                         (concat tag "scheduled:"))
-                        ((and time (not tag))
-                         ":scheduled:")
-                        (t tag)))))
+  (let* ((headline (car (cdr (org-element-headline-parser (line-end-position)))))
+         (scheduled (plist-get headline :scheduled))
+         (deadline (plist-get headline :deadline))
+         (active-timestamp (or scheduled deadline))
+         (title (concat (when active-timestamp "⏲ ")
+                        (org-link-display-format
+                         (substring-no-properties (plist-get headline :raw-value)))))
+         (keyword (when keyword (substring-no-properties (plist-get headline :todo-keyword))))
+         (effort (when effort (or (plist-get headline :EFFORT) "  :  " )))
+         (tag (when tag (plist-get headline :tags)))
+         (tags (when tag (concat ":"
+                                 (mapconcat #'substring-no-properties
+                                            (append tag
+                                                    (when scheduled (list "scheduled"))
+                                                    (when deadline (list "deadline")))
+                                            ":")
+                                 ":")))
          (todo-parent-maybe (org-with-wide-buffer
                              (if-let ((parent (car (last (org-get-outline-path)))))
                                  (unless
@@ -1632,8 +1634,9 @@ path is colorized according to outline faces.
                                        ;; this is nil for heading with todo keyword
                                        (re-search-backward (concat "* " parent)))
                                    t))))
+         (outline (when outline (org-get-outline-path)))
          (depth (length outline))
-         (level (nth 0 heading))
+         (level (plist-get headline :level))
          (filename (when filename
                      (or
                       (+org-get-global-property "TITLE")
@@ -1647,7 +1650,7 @@ path is colorized according to outline faces.
          (i 0))
 
     
-    (put-text-property 0 (length text) 'face (format "outline-%d" level) text)
+    (put-text-property 0 (length title) 'face (format "outline-%d" level) title)
 
     (when outline
       (while (< i depth)
@@ -1655,38 +1658,41 @@ path is colorized according to outline faces.
           (put-text-property 0 (length ancestor) 'face (format "outline-%d" (+ i 1)) ancestor))
         (setq i (+ i 1))))
 
-    (when keyword
+    (when (char-or-string-p keyword)
       (funcall colorize-keyword (catch 'color
                                   (dolist (i org-todo-keyword-faces)
                                     (when (equal (car i) keyword)
                                       (throw 'color (cdr i))))))
 
       (if (string-match (concat "TO" "DO" "\\|PROJECT\\|NEXT") keyword)
-          (put-text-property 0 (length text) 'face 'outline-1 text)
-        (put-text-property 0 (length text) 'face 'bold text)))
+          (put-text-property 0 (length title) 'face 'outline-1 title)
+        (put-text-property 0 (length title) 'face 'bold title)))
 
     ;; I don't want to my attention to be stolen by subtasks from projects other then NEXT or scheduled items
     (when (or (and todo-parent-maybe
                    (not (or (string-equal "NEXT" keyword)
                             (string-equal "PROJECT" keyword))))
-              time)
-      (put-text-property 0 (length text) 'face 'ivy-virtual text))
+              active-timestamp)
+      (put-text-property 0 (length title) 'face 'ivy-virtual title))
 
     (when filename
       (put-text-property 0 (length filename) 'face 'bold filename))
 
-    (when tag
-      (put-text-property 0 (length tag) 'face 'org-tag tag))
+    (when tags
+      (put-text-property 0 (length tags) 'face 'org-tag tags))
+
+    (when effort
+      (put-text-property 0 (length effort) 'face 'org-tag effort))
 
     (propertize
      (if outline
          (concat
           (when filename (concat filename "/"))
           (mapconcat #'identity outline "/") "/"
-          (when keyword (concat keyword spc)) text (when tag (concat spc tag)))
+          (when (char-or-string-p keyword) (concat keyword spc (when effort (concat effort spc)))) title (when tags (concat spc tags)))
        (concat
         (when filename (concat filename "/"))
-        (when keyword (concat keyword spc)) text (when tag (concat spc tag))))
+        (when (char-or-string-p keyword) (concat keyword spc (when effort (concat effort spc)))) title (when tags (concat spc tags))))
      'marker (copy-marker (point)))))
 
 ;;;###autoload
