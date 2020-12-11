@@ -815,10 +815,12 @@ which one is currently active."
 ;;;###autoload
 (defun aj-org-ql-custom-agenda-filter-tags ()
   "Return tags part of org-ql query when `aj-org-agenda-filter' is set. "
-  (when aj-org-agenda-filter
+  (when (and aj-org-agenda-filter
+             (not current-prefix-arg))
     `(tags ,(string-remove-prefix
              "+" (substring-no-properties
                   (car aj-org-agenda-filter))))))
+
 ;;;###autoload
 (defun aj-org-ql-custom-todo-task-query ()
   "Return custom org-ql queary for TO DO and PROJECT task."
