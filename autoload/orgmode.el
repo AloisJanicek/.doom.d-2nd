@@ -1491,12 +1491,13 @@ Otherwise dispatch default commands.
               (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
-(defun aj/org-agenda-headlines (&optional keywords query files)
+(defun aj/org-agenda-headlines (&optional keywords query files no-sort)
   "Jump to a todo headline in `org-agenda-files'.
 
 Optionally search for specific list of todo KEYWORDS.
 Optionally this function accepts valid org-ql QUERY.
 Optionally this function accepts list of FILES to operate upon.
+When optionall arg NO-SORT, do not sort by effort.
 Filters todo headlines according to `aj-org-agenda-filter'.
 "
   (interactive "P")
@@ -1513,7 +1514,7 @@ Filters todo headlines according to `aj-org-agenda-filter'.
                           :select (lambda () (aj-org-get-pretty-heading-path nil nil t t t))
                           :from (or files (aj-org-combined-agenda-files))
                           :where query
-                          :order-by #'aj-org-ql-sort-by-effort
+                          :order-by (if no-sort 'random #'aj-org-ql-sort-by-effort)
                           )
               :action #'aj-org-jump-to-heading-action
               :caller 'aj/org-agenda-headlines)))
