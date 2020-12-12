@@ -1491,13 +1491,15 @@ Otherwise dispatch default commands.
               (directory-files-recursively org-directory "org")))
 
 ;;;###autoload
-(defun aj/org-agenda-headlines (&optional keywords query files no-sort)
+(defun aj/org-agenda-headlines (&optional keywords query files sort-fn reverse time)
   "Jump to a todo headline in `org-agenda-files'.
 
 Optionally search for specific list of todo KEYWORDS.
 Optionally this function accepts valid org-ql QUERY.
 Optionally this function accepts list of FILES to operate upon.
-When optionall arg NO-SORT, do not sort by effort.
+Optionally pass SORT-FN valid sorting function or keyword for `org-ql-query'.
+Optionally REVERSE the order of search results.
+Optionally show TIME in the results.
 Filters todo headlines according to `aj-org-agenda-filter'.
 "
   (interactive "P")
@@ -1508,14 +1510,22 @@ Filters todo headlines according to `aj-org-agenda-filter'.
                   (if tags
                       `(and ,keywords ,tags)
                     keywords)))
+         (time (when time t))
          ivy-sort-functions-alist)
     ;; (message "Query: %s" query)
-    (ivy-read "Go to: " (org-ql-query
-                          :select (lambda () (aj-org-get-pretty-heading-path nil nil t t t))
-                          :from (or files (aj-org-combined-agenda-files))
-                          :where query
-                          :order-by (if no-sort 'random #'aj-org-ql-sort-by-effort)
-                          )
+    (ivy-read "Go to: "
+              (let ((results (org-ql-query
+                               :select (lambda ()
+                                         (aj-org-get-pretty-heading-path nil nil t t t time))
+                               :from (or files (aj-org-combined-agenda-files))
+                               :where query
+                               :order-by (if sort-fn sort-fn #'aj-org-ql-sort-by-effort)
+                               )))
+
+                (if (ignore-errors reverse)
+                    (reverse  results)
+                  results)
+                )
               :action #'aj-org-jump-to-heading-action
               :caller 'aj/org-agenda-headlines)))
 
@@ -1608,7 +1618,7 @@ Optionally specify heading LEVEL (default is 3).
      :caller 'aj-org-jump-to-headline-at)))
 
 ;;;###autoload
-(defun aj-org-get-pretty-heading-path (&optional filename outline keyword tag effort)
+(defun aj-org-get-pretty-heading-path (&optional filename outline keyword tag effort time)
   "Get nice org heading path.
 Heading is stripped of org-mode link syntax and whole
 path is colorized according to outline faces.
@@ -1616,7 +1626,12 @@ path is colorized according to outline faces.
   (let* ((headline (car (cdr (org-element-headline-parser (line-end-position)))))
          (scheduled (plist-get headline :scheduled))
          (deadline (plist-get headline :deadline))
-         (active-timestamp (or scheduled deadline))
+         ;; (active-timestamp (or scheduled deadline))
+         (active-timestamp
+          (if scheduled
+              (plist-get (car (cdr scheduled)) :raw-value)
+            (if deadline
+                (plist-get (car (cdr deadline)) :raw-value))))
          (title (concat (when active-timestamp "⏲ ")
                         (org-link-display-format
                          (substring-no-properties (plist-get headline :raw-value)))))
@@ -1687,15 +1702,26 @@ path is colorized according to outline faces.
     (when effort
       (put-text-property 0 (length effort) 'face 'org-tag effort))
 
+    (when active-timestamp
+      (put-text-property 0 (length active-timestamp) 'face 'org-date active-timestamp))
+
     (propertize
      (if outline
          (concat
           (when filename (concat filename "/"))
           (mapconcat #'identity outline "/") "/"
-          (when keyword (concat keyword spc (when effort (concat effort spc)))) title (when tags (concat spc tags)))
+          (when keyword (concat keyword spc
+                                (when effort (concat effort spc))))
+          title (when tags (concat spc tags))
+          (when active-timestamp
+            (concat spc active-timestamp)))
        (concat
         (when filename (concat filename "/"))
-        (when keyword (concat keyword spc (when effort (concat effort spc)))) title (when tags (concat spc tags))))
+        (when keyword (concat keyword spc
+                              (when effort (concat effort spc))))
+        title (when tags (concat spc tags))
+        (when active-timestamp
+          (concat spc active-timestamp))))
      'marker (copy-marker (point)))))
 
 ;;;###autoload

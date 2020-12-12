@@ -919,7 +919,8 @@
   :desc "search eaf"               "S" (cmd! (counsel-web-search nil "Search web with eaf: " nil #'eaf-open-browser))
 
   (:prefix ("o" . "open agenda")
-   :desc "all active tasks"     "a" (cmd! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT" "WAIT" "HOLD")))
+   :desc "all active tasks"     "o" (cmd! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT" "WAIT" "HOLD")))
+   :desc "past due tasks"       "a" (cmd! (aj/org-agenda-headlines nil `(and (ts-active :from past :to ,(ts-now)) (not (todo "DONE"))) nil 'date t t))
    :desc "archived"             "A" (cmd! (aj/org-agenda-headlines
                                            nil
                                            '(or (todo "DONE") (todo "CANCELLED"))
@@ -928,14 +929,14 @@
    :desc "inbox"                "i" (cmd! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 1))
    :desc "next"                 "n" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-next-task-query)))
    :desc "tasks"                "t" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-todo-task-query)))
-   :desc "all tasks"            "T" (cmd! (aj/org-agenda-headlines nil nil nil t))
+   :desc "all tasks"            "T" (cmd! (aj/org-agenda-headlines nil nil nil 'todo))
    :desc "projects"             "p" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-projects-query)))
    :desc "wait"                 "w" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-wait-task-query)))
    :desc "hold"                 "h" (cmd! (aj/org-agenda-headlines nil (aj-org-ql-custom-hold-task-query)))
-   :desc "someday"              "s" (cmd! (aj/org-agenda-headlines '(todo "SOMEDAY") nil nil t))
-   :desc "maybe"                "m" (cmd! (aj/org-agenda-headlines '(todo "MAYBE") nil nil t))
-   :desc "cancelled"            "c" (cmd! (aj/org-agenda-headlines nil '(todo "CANCELLED") nil t))
-   :desc "done"                 "d" (cmd! (aj/org-agenda-headlines nil '(todo "DONE") nil t))
+   :desc "someday"              "s" (cmd! (aj/org-agenda-headlines '(todo "SOMEDAY") nil nil 'random))
+   :desc "maybe"                "m" (cmd! (aj/org-agenda-headlines '(todo "MAYBE") nil nil 'random))
+   :desc "cancelled"            "c" (cmd! (aj/org-agenda-headlines nil '(todo "CANCELLED") nil 'random))
+   :desc "done"                 "d" (cmd! (aj/org-agenda-headlines nil '(todo "DONE") nil 'random))
    )
   )
 
