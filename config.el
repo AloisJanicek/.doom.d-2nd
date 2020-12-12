@@ -1143,7 +1143,7 @@
   (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
   )
 
-(remove-hook 'org-mode-hook #'flyspell-mode)
+;; (remove-hook 'org-mode-hook #'flyspell-mode)
 
 (after! ol
   (advice-add
@@ -1421,8 +1421,8 @@
    org-agenda-use-time-grid nil
    org-agenda-time-grid '((daily today require-timed) nil " " " ")
    org-agenda-sorting-strategy
-   '((agenda habit-down time-up priority-down category-keep)
-     (todo   priority-up category-keep todo-state-up)
+   '((agenda habit-down time-up effort-up priority-down category-keep)
+     (todo   priority-up effort-up todo-state-up category-keep)
      (tags   priority-down category-keep)
      (search category-keep))
    )
@@ -1994,6 +1994,7 @@
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
   (dolist (i `(".org$" ".pdf$" ".epub$" ".db$"
+               ".org_archive$"
                ".local/etc"
                ".local/cache"
                ))
