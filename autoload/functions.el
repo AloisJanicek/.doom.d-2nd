@@ -145,7 +145,9 @@ Which operation will be executed depends on value of ENCRYPT."
                (setq val (if (= 1 (length collection)) (car collection)
                            (ivy-read (format "Bash history:") collection))))
       (kill-new val)
-      (message "%s => kill-ring" val))))
+      (if (derived-mode-p 'vterm-mode)
+          (vterm-yank)
+        (yank)))))
 
 ;;;###autoload
 (defun aj-eaf-browse-url-maybe (url &rest _)
