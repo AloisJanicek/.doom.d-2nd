@@ -1710,15 +1710,15 @@ path is colorized according to outline faces.
          (concat
           (when filename (concat filename "/"))
           (mapconcat #'identity outline "/") "/"
-          (when keyword (concat keyword spc
-                                (when effort (concat effort spc))))
+          (when keyword (concat (when effort (concat effort spc))
+                                keyword spc))
           title (when tags (concat spc tags))
           (when active-timestamp
             (concat spc active-timestamp)))
        (concat
         (when filename (concat filename "/"))
-        (when keyword (concat keyword spc
-                              (when effort (concat effort spc))))
+        (when keyword (concat (when effort (concat effort spc))
+                              keyword spc))
         title (when tags (concat spc tags))
         (when active-timestamp
           (concat spc active-timestamp))))
