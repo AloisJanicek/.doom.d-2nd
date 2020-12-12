@@ -1205,24 +1205,22 @@ With user prefix ask for the file.
 ;;;###autoload
 (defun ea-popup-handler (app-name window-title x y w h)
   "Handle popup helper function for emacs_anywhere."
+  (cond
+   ((ea-github-conversation-p window-title) (gfm-mode))
+   (t (markdown-mode))
+   )
+  (set-frame-position (selected-frame) x (+ y (- h 400)))
+  (unless (zerop w)
+    (set-frame-size (selected-frame) w 400 t))
 
-  (let (flyspell-mode-hook )
-    (cond
-     ((ea-github-conversation-p window-title) (gfm-mode))
-     (t (markdown-mode))
-     )
-    (set-frame-position (selected-frame) x (+ y (- h 400)))
-    (unless (zerop w)
-      (set-frame-size (selected-frame) w 400 t))
-
-    (when (y-or-n-p-with-timeout "czech?" 1.5 nil)
-      (ispell-change-dictionary "czech")
-      (flyspell-mode +1)
-      (flyspell-buffer)
-      )
-    (evil-insert-state)
-    (text-scale-increase 3)
-    ))
+  (when (y-or-n-p-with-timeout "czech?" 1.5 nil)
+    (ispell-change-dictionary "czech")
+    (flyspell-mode +1)
+    (flyspell-buffer)
+    )
+  (evil-insert-state)
+  (text-scale-increase 3)
+)
 
 ;;;###autoload
 (defun aj/emacs-window-switcher ()

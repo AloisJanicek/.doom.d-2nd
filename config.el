@@ -782,7 +782,12 @@
                               ))
   )
 
+
 (setq ispell-dictionary "en")
+(after! flyspell
+  (remove-hook 'flyspell-mode-hook #'flyspell-lazy-load)
+  )
+
 (after! ispell
   (advice-add #'ispell-init-process :around #'doom-shut-up-a)
   )
