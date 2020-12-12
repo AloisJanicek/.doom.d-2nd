@@ -2434,6 +2434,18 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
             :action (lambda (x)
                       (jmm-org-ql-ivy-prompt-for-link (cdr x)))))
 
+;;;###autoload
+(defun aj-org-agenda-headlines-custom-action-helper (headline fn)
+  "Run FN on some org-mode HEADLINE.
+Intended as a helper for custom actions in `aj/org-agenda-headlines'.
+Item must be a string containing mark pointing to valid org-mode headline to act upon.
+"
+  (let* ((marker (get-text-property 0 'marker headline))
+         (buffer (marker-buffer marker)))
+    (with-current-buffer buffer
+      (org-with-wide-buffer
+       (goto-char marker)
+       (funcall-interactively fn)))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

@@ -789,6 +789,42 @@
 
 (after! ivy
   (setq ivy-height 20)
+
+  (ivy-set-actions
+   #'aj/org-agenda-headlines
+   '(("e" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-set-effort)) "effort")
+     ("t" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-todo)) "todo")
+     ("g" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'counsel-org-tag)) "tags")
+     ("c" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-clock-in)) "clock in")
+     ("o" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-clock-out)) "clock out")
+     ("a" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-archive-subtree)) "archive")
+
+     ("s" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper
+             headline
+             (lambda ()
+               (interactive)
+               (org-schedule current-prefix-arg))))
+      "schedule")
+     ("d" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper
+             headline
+             (lambda ()
+               (interactive)
+               (org-deadline current-prefix-arg))))
+      "deadline")
+     ("r" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper
+             headline
+             (lambda ()
+               (my/org-rename-header
+                (read-string "Header: "
+                             (substring-no-properties
+                              (org-get-heading t t t t)))))))
+      "rename")
+     ("k" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-cut-subtree))
+      "delete")))
+
   (ivy-set-actions
    'counsel-projectile-bookmark
    '(("d" bookmark-delete "delete")
