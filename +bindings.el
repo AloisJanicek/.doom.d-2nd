@@ -638,7 +638,7 @@
   :map pdf-outline-minor-mode-map
   :nm "o" (lambda ()
             (interactive)
-            (let ((ivy-height 42)
+            (let ((ivy-height 30)
                   (ivy-posframe-size-function
                    (lambda ()
                      (list

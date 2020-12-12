@@ -1060,7 +1060,7 @@ If there is no associated entry present for current major mode, throw warning.
 (defun aj/bigger-counsel-imenu ()
   "Imenu with increased height."
   (interactive)
-  (let ((ivy-height 42)
+  (let ((ivy-height 30)
         (ivy-posframe-size-function
          (lambda ()
            (list
