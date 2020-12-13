@@ -787,7 +787,7 @@ which one is currently active."
   (let ((org-agenda-tag-filter aj-org-agenda-filter))
     (org-ql-search (aj-org-combined-agenda-files)
       `(todo ,task)
-      :sort '(date priority todo)
+      :sort #'aj-org-ql-sort-by-effort
       :super-groups '((:auto-category t))
       :title task)))
 
