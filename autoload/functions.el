@@ -1153,15 +1153,18 @@ is modified and offer to launch magit-status in it.
 "
   (interactive)
   (let* ((file (buffer-file-name))
+         (dotfile-record-maybe (aj-dotdrop-dotfile-record file))
+         (modified-files (aj-dotdrop-modified))
          (dotfile-record
           (or
            (when (or (eq (car current-prefix-arg) 4)
-                     (not (aj-dotdrop-dotfile-record file)))
+                     (not dotfile-record-maybe)
+                     (not (cl-member (car dotfile-record-maybe) modified-files :test #'string-match)))
              (aj-dotdrop-dotfile-record
               (ivy-read
                "Chose file to update: "
-               (aj-dotdrop-modified))))
-           (aj-dotdrop-dotfile-record file))))
+               modified-files)))
+           dotfile-record-maybe)))
 
     (unless (or (ignore-errors (string-empty-p dotfile-record))
                 (not dotfile-record))
@@ -1220,7 +1223,7 @@ With user prefix ask for the file.
     )
   (evil-insert-state)
   (text-scale-increase 3)
-)
+  )
 
 ;;;###autoload
 (defun aj/emacs-window-switcher ()
