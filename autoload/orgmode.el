@@ -1511,7 +1511,9 @@ Filters todo headlines according to `aj-org-agenda-filter'.
                       `(and ,keywords ,tags)
                     keywords)))
          (time (when time t))
-         ivy-sort-functions-alist)
+         (hydra-hint-display-type 'lv)
+         ivy-sort-functions-alist
+         )
     ;; (message "Query: %s" query)
     (ivy-read "Go to: "
               (let ((results (org-ql-query

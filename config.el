@@ -702,16 +702,15 @@
         '(term-mode vterm-mode help-mode helpful-mode minibuffer-inactive-mode calc-mode))
   (global-hungry-delete-mode 1))
 
-(when (display-graphic-p)
-  (use-package! hydra-posframe
-    :after hydra
-    :config
-    (when (display-graphic-p)
-      (hydra-posframe-mode +1))
-    (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center
-          hydra-posframe-border-width 10
-          )
-    )
+
+(use-package! hydra-posframe
+  :after hydra
+  :when (display-graphic-p)
+  :config
+  (hydra-posframe-mode +1)
+  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center
+        hydra-posframe-border-width 10
+        )
   )
 
 (after! hl-todo
@@ -793,8 +792,7 @@
   )
 
 (after! ivy
-  (setq ivy-height 20)
-
+  (setq ivy-read-action-format-function #'ivy-read-action-format-columns)
   (ivy-set-actions
    #'aj/org-agenda-headlines
    '(("e" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-set-effort)) "effort")
