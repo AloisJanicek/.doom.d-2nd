@@ -1848,7 +1848,16 @@
   (advice-add #'org-roam-unlinked-references :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-buffer-to-popup-a)
-
+  (advice-add
+   #'org-roam--prepend-tag-string
+   :override
+   (lambda (str tags)
+     "Append instead of prepend TAGS to STR."
+     (concat
+      str
+      (when tags
+        (propertize (format " %s" (s-join org-roam-tag-separator tags))
+                    'face 'org-roam-tag)))))
   (setq org-roam-server-light-dir (expand-file-name "org-roam-server-light" aj-repos-dir)
         org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
         org-roam-server-light-style "body.darkmode { background-color: #121212!important; }"
@@ -2344,6 +2353,7 @@
   `(org-block-begin-line :foreground ,(doom-lighten 'base3 0.3))
   `(org-block-end-line :foreground ,(doom-lighten 'base3 0.3))
   `(org-quote :foreground ,(doom-color 'fg-alt) :family "JetBrains Mono Medium Italic 1.1" :slant italic)
+  `(org-roam-tag :inherit 'org-tag)
   `(sly-mode-line :inherit 'mode-line-buffer-id)
   `(markdown-header-face-1 :inherit 'outline-1)
   `(markdown-header-face-2 :inherit 'outline-2)
