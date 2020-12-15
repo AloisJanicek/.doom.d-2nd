@@ -702,6 +702,7 @@ Then moves the point to the end of the line."
 ;;;###autoload
 (defun aj-org-combined-agenda-files ()
   "Return combined list of `org-agenda-files' with project readme.org files."
+  (require 'projectile)
   (append (org-agenda-files)
           (aj-get-all-projectile-README-org-files t)))
 
@@ -1064,15 +1065,10 @@ _q_uery                       _h_old
          :super-groups '((:auto-category t))
          :title "ARCHIVED"))
 
-  ("S" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search (aj-org-combined-agenda-files)
-           `(todo "SOMEDAY")
-           :sort #'aj-org-ql-sort-by-effort
-           :super-groups '((:auto-category t))
-           :title "SOMEDAY"))
-   )
+  ("S" (aj-org-ql-simple-taks-search "SOMEDAY"))
 
   ("M" (aj-org-ql-simple-taks-search "MAYBE"))
+
   ("q" (org-ql-search
          (aj-org-combined-agenda-files)
          (ivy-read "query: " nil)))
@@ -1511,7 +1507,6 @@ Filters todo headlines according to `aj-org-agenda-filter'.
                       `(and ,keywords ,tags)
                     keywords)))
          (time (when time t))
-         (hydra-hint-display-type 'lv)
          ivy-sort-functions-alist
          )
     ;; (message "Query: %s" query)
