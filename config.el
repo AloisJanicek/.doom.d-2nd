@@ -1220,7 +1220,7 @@
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
-                                                (when (memq major-mode org-mode)
+                                                (when (derived-mode-p 'org-mode)
                                                   (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
@@ -1832,17 +1832,19 @@
   (advice-add #'org-roam-capture--capture :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-capture--capture :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam--prepend-tag-string :override #'aj-org-roam-append-tag-string-a)
+  )
 
-  (setq org-roam-server-light-dir (expand-file-name "org-roam-server-light" aj-repos-dir)
+(use-package! org-roam-server-light
+  :after org-roam
+  :commands org-roam-server-light-mode
+  :config
+  (setq org-roam-server-light-dir (expand-file-name ".local/straight/repos/org-roam-server-light" user-emacs-directory)
         org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
         org-roam-server-light-style "body.darkmode { background-color: #121212!important; }"
         org-roam-server-light-default-include-filters "null"
         org-roam-server-light-default-exclude-filters "[{ \"id\": \"journal\", \"parent\" : \"tags\"  }]"
         )
-
-  (load! (expand-file-name "org-roam-server-light.el" org-roam-server-light-dir))
   )
-
 (after! pdf-tools
   (advice-add #'pdf-info-check-epdfinfo :override #'aj/epdfinfo-never-bother-me-again-a)
   (advice-remove #'pdf-view-mode #'+pdf--install-epdfinfo-a)

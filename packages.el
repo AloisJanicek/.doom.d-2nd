@@ -20,6 +20,12 @@
   :pin "4ae3f5ba130750c340f1782b5ee5b3077b66e5d6"
   :shadow 'org)
 
+(package! org-roam-server-light
+  :recipe (:host github :repo "AloisJanicek/org-roam-server-light"
+           :files ("*")
+           )
+  :pin "06634216f275dff246638fa2f9812cbdfb5ddd09")
+
 (defun aj-wsl-p ()
   "Return non-nil value if Emacs is running inside WSL."
   (string-match "Microsoft"
