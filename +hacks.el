@@ -27,36 +27,6 @@ with :after or :override due to some issue with starting the notification proces
   (advice-add #'org-protocol-store-link :override #'org-protocol-store-link-override-a)
   )
 
-;; org-roam - fix incorrect index file path
-(after! org-roam
-  (defun org-roam--get-index-path ()
-    "Return the path to the index in `org-roam-directory'.
-The path to the index can be defined in `org-roam-index-file'.
-Otherwise, it is assumed to be a note in `org-roam-directory'
-whose title is 'Index'."
-    (let* ((index org-roam-index-file)
-           (path (pcase index
-                   ((pred functionp) (funcall index))
-                   ((pred stringp) index)
-                   ('nil (user-error "You need to set `org-roam-index-file' before you can jump to it"))
-                   (wrong-type (signal 'wrong-type-argument
-                                       `((functionp stringp)
-                                         ,wrong-type))))))
-      (if (f-relative-p index)
-          (expand-file-name path (file-truename org-roam-directory))
-        index)))
-  )
-
-;; Indirect buffer issue
-(after! org-journal
-  (advice-add #'org-journal-is-journal :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add #'org-journal-new-entry :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add #'org-journal-open-entry :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add #'org-journal-journals-puthash :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add #'org-journal-dates-puthash :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add #'org-journal-carryover-delete-empty-journal :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  )
-
 ;; indirect buffer compatibility hacks
 (after! org-roam
   (advice-add #'org-roam--org-roam-file-p :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)

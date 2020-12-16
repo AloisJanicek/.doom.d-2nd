@@ -792,7 +792,6 @@
   )
 
 (after! ivy
-  (setq ivy-read-action-format-function #'ivy-read-action-format-columns)
   (ivy-set-actions
    #'aj/org-agenda-headlines
    '(("e" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-set-effort)) "effort")
@@ -1221,7 +1220,7 @@
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
-                                                (when (memq major-mode '(org-mode org-journal-mode))
+                                                (when (memq major-mode org-mode)
                                                   (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
@@ -1780,29 +1779,6 @@
                              (lambda (dir)
                                (string-match "roam" dir))
                              (ffap-all-subdirs org-directory 1)))))
-
-(setq org-journal-dir (expand-file-name "journal" org-roam-directory))
-
-(after! org-journal
-  (setq org-journal-date-prefix "#+TITLE: "
-        org-journal-file-format "%Y-%m-%d.org"
-        org-journal-date-format "%A, %d %B %Y"
-        org-journal-time-prefix "* ")
-  (advice-add #'org-journal-new-entry :after (lambda (&rest _) (evil-insert 0)))
-  (advice-add #'org-journal-new-entry :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-journal-new-entry :around #'aj-org-buffer-to-popup-a)
-  (advice-add #'org-journal-open-current-journal-file :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-journal-open-current-journal-file :around #'aj-org-buffer-to-popup-a)
-  (advice-add #'org-journal-read-or-display-entry :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-journal-read-or-display-entry :around #'aj-org-buffer-to-popup-a)
-  (add-hook 'org-journal-after-header-create-hook #'org-id-get-create)
-  (add-hook 'org-journal-after-header-create-hook #'save-buffer 98)
-  (add-hook 'org-journal-after-header-create-hook #'aj-org-update-help-files 99)
-  (add-hook 'org-journal-after-header-create-hook #'org-roam-db-update 100)
-  (add-to-list '+format-on-save-enabled-modes 'org-journal-mode t)
-  (set-company-backend! 'org-journal-mode 'company-capf 'company-dabbrev)
-  )
-
 (after! org-list
   (setq
    org-checkbox-hierarchical-statistics t))
@@ -1810,9 +1786,6 @@
 (after! org-noter
   (advice-add #'org-noter :after #'aj-calibre-org-update-org-noter-files)
   )
-
-;; (after! org-protocol
-;;   (load! "local/org-protocol-capture-html/org-protocol-capture-html.el"))
 
 (after! org-pomodoro
   (advice-add #'org-pomodoro-update-mode-line :override (lambda () "Do nothing." t))
@@ -1828,9 +1801,10 @@
 
 (after! org-roam
   (add-hook 'org-roam-capture-after-find-file-hook #'org-id-get-create 97)
-  (add-hook 'org-journal-after-header-create-hook #'save-buffer 98)
   (add-hook 'org-roam-capture-after-find-file-hook #'aj-org-update-help-files 99)
   (add-hook 'org-roam-capture-after-find-file-hook #'org-roam-db-update 100)
+  (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
+
   (setq +org-roam-open-buffer-on-find-file nil)
   (doom-store-persist doom-store-location '(org-roam-directory))
 
@@ -1840,7 +1814,14 @@
         org-roam-db-location (expand-file-name
                               "org-roam.db"
                               (concat doom-etc-dir (file-name-nondirectory org-roam-directory)))
+        org-roam-dailies-directory "journal/"
+        org-roam-dailies-capture-templates
+        `(("d" "default" entry (function org-roam-capture--get-point)
+           "* %?"
+           :file-name ,(concat org-roam-dailies-directory "%<%Y-%m-%d>")
+           :head "#+title: %<%A, %d %B %Y>\n"))
         )
+
   (advice-add #'org-roam--find-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam--find-file :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
@@ -1848,16 +1829,10 @@
   (advice-add #'org-roam-unlinked-references :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-buffer-to-popup-a)
-  (advice-add
-   #'org-roam--prepend-tag-string
-   :override
-   (lambda (str tags)
-     "Append instead of prepend TAGS to STR."
-     (concat
-      str
-      (when tags
-        (propertize (format " %s" (s-join org-roam-tag-separator tags))
-                    'face 'org-roam-tag)))))
+  (advice-add #'org-roam-capture--capture :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-roam-capture--capture :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-roam--prepend-tag-string :override #'aj-org-roam-append-tag-string-a)
+
   (setq org-roam-server-light-dir (expand-file-name "org-roam-server-light" aj-repos-dir)
         org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
         org-roam-server-light-style "body.darkmode { background-color: #121212!important; }"

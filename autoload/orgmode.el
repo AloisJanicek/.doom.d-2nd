@@ -1116,35 +1116,40 @@ indirect buffer.
 
 Designed as an override advice for file or buffer opening functions like `pop-to-buffer'.
 "
-  (unless (bufferp buffer-or-path)
-    (when (file-readable-p buffer-or-path)
-      (setq buffer-or-path (find-file-noselect buffer-or-path))))
 
-  (if buffer-or-path
-      (let* ((persp-autokill-buffer-on-remove nil)
-             (persp-suffix (concat "::" (persp-name (get-current-persp))))
-             (source-buffer (or (buffer-base-buffer buffer-or-path)
-                                buffer-or-path))
-             (source-buffer-name (buffer-name source-buffer))
-             (new-buffer-name (concat source-buffer-name persp-suffix))
-             (persp-buffer-is-there
-              (memq (get-buffer new-buffer-name)
-                    (safe-persp-buffers (get-current-persp))))
-             output-buffer)
+  (if (doom-special-buffer-p buffer-or-path)
+      (progn
+        (other-window 1)
+        (set-buffer buffer-or-path))
+    (progn
+      (unless (bufferp buffer-or-path)
+        (when (file-readable-p buffer-or-path)
+          (setq buffer-or-path (find-file-noselect buffer-or-path))))
+      (if buffer-or-path
+          (let* ((persp-autokill-buffer-on-remove nil)
+                 (persp-suffix (concat "::" (persp-name (get-current-persp))))
+                 (source-buffer (or (buffer-base-buffer buffer-or-path)
+                                    buffer-or-path))
+                 (source-buffer-name (buffer-name source-buffer))
+                 (new-buffer-name (concat source-buffer-name persp-suffix))
+                 (persp-buffer-is-there
+                  (memq (get-buffer new-buffer-name)
+                        (safe-persp-buffers (get-current-persp))))
+                 output-buffer)
 
-        (persp-remove-buffer source-buffer)
+            (persp-remove-buffer source-buffer)
 
-        (unless persp-buffer-is-there
-          (persp-add-buffer (make-indirect-buffer source-buffer new-buffer-name t)))
+            (unless persp-buffer-is-there
+              (persp-add-buffer (make-indirect-buffer source-buffer new-buffer-name t)))
 
-        (setq output-buffer (get-buffer new-buffer-name))
+            (setq output-buffer (get-buffer new-buffer-name))
 
-        (with-current-buffer output-buffer
-          (widen))
+            (with-current-buffer output-buffer
+              (widen))
 
-        (aj-get-window-for-org-buffer output-buffer))
+            (aj-get-window-for-org-buffer output-buffer))
 
-    (message "this is not buffer or valid file path: %s" buffer-or-path)))
+        (message "this is not buffer or valid file path: %s" buffer-or-path)))))
 
 ;;;###autoload
 (defun aj-get-window-for-org-buffer (buffer)
@@ -2298,22 +2303,15 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                      (kill-buffer server-buff))
                  (when org-roam-server-light-mode
                    (eaf-open-browser "http://127.0.0.1:8080"))))
-           (browse-url "http://127.0.0.1:8080")
-           )
-         ) "server")
+           (browse-url "http://127.0.0.1:8080")))
+   "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
-  ("j" (progn
-         (unless org-roam-directory
-           (aj/org-roam-choose-update-dir))
-         (setq org-journal-dir (expand-file-name "journal" org-roam-directory))
-         (if current-prefix-arg
-             (let (current-prefix-arg)
-               (org-journal-new-entry nil))
-           (call-interactively #'org-journal-new-entry))) "journal")
+  ("j" #'org-roam-dailies-date "journal")
   ("d" (lambda ()
          (interactive)
          (setq deft-directory org-roam-directory)
-         (deft)) "deft")
+         (deft))
+   "deft")
   ("i" #'org-roam-jump-to-index "index")
   ("a" #'aj/roam-aliases/body "aliases")
   ("t" #'aj/roam-tags/body "tags")
@@ -2443,6 +2441,48 @@ Item must be a string containing mark pointing to valid org-mode headline to act
       (org-with-wide-buffer
        (goto-char marker)
        (funcall-interactively fn)))))
+
+;;;###autoload
+(defun aj-org-roam-setup-dailies-file-h ()
+  "Setup org-roam dailies file to my taste.
+Initialy create id inside top-level \":PROPERTIES:\" drawer.
+Save buffer and update `aj-org-help-files'.
+"
+  (let ((fname (or (buffer-file-name)
+                   (buffer-file-name (buffer-base-buffer))))
+        hstub)
+    ;; Run this only when file is newly created (hasn't been saved yet)
+    (unless (file-exists-p fname)
+      (org-id-get-create)
+      (save-buffer)
+      (aj-org-update-help-files))
+
+    (goto-char (point-max))
+    (newline)
+    ;; prompt for HH:MM if we are not in present day file
+    (if (string-equal (format-time-string "%Y-%m-%d")
+                      (file-name-sans-extension
+                       (file-name-nondirectory
+                        (or (buffer-file-name)
+                            (buffer-file-name (buffer-base-buffer))))))
+        (setq hstub (format-time-string "* %H:%M " (current-time)))
+      (setq hstub (concat "* " (ivy-read
+                                "Time of the day (HH:MM): "
+                                nil)
+                          " ")))
+    (insert hstub)
+    (evil-insert 0)))
+
+;;;###autoload
+(defun aj-org-roam-append-tag-string-a (str tags)
+  "Append instead of prepend TAGS to STR.
+Advice for `org-roam--prepend-tag-string'.
+"
+  (concat
+   str
+   (when tags
+     (propertize (format " %s" (s-join org-roam-tag-separator tags))
+                 'face 'org-roam-tag))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

@@ -22,7 +22,7 @@
  "M-f"       #'swiper
  "M-F"       #'swiper-all
  "M-p"       #'ivy-yasnippet
- "M-q"       #'evil-quit-all
+ "M-q"       #'save-buffers-kill-terminal
  "M-s"       #'save-buffer
  "M-s"       #'save-buffer
  "M-t"       #'+workspace/new
@@ -1188,15 +1188,6 @@
                                               (aj-org-return-filtered-agenda-file)
                                             (aj/choose-file-from org-agenda-files))
                                           "JOURNAL"))
-
-  :desc "org-journal"          "J" (cmd!
-                                    (unless org-roam-directory
-                                      (aj/org-roam-choose-update-dir))
-                                    (setq org-journal-dir (expand-file-name "journal" org-roam-directory))
-                                    (if current-prefix-arg
-                                        (let (current-prefix-arg)
-                                          (org-journal-new-entry nil))
-                                      (call-interactively #'org-journal-new-entry)))
   "c" nil
   :desc "clock report at"        "ca" (cmd! (aj-org-clock-datetree-report
                                              (if (and aj-org-agenda-filter
