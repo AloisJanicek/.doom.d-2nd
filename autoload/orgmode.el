@@ -2265,14 +2265,15 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 
 
 ;;;###autoload (autoload 'aj/org-roam-hydra/body "autoload/orgmode" nil t)
-(defhydra aj/org-roam (:color blue
-                       :body-pre (if (or (eq (car current-prefix-arg) 4)
-                                         (not org-roam-directory))
-                                     (aj/org-roam-choose-update-dir)))
+(defhydra aj/org-roam-hydra (:color blue
+                             :body-pre (if (or (eq (car current-prefix-arg) 4)
+                                               (not org-roam-directory))
+                                           (aj/org-roam-choose-update-dir)))
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
-  ("f" #'org-roam-find-file "file")
+  ("f" #'aj/org-roam-ivy "file")
+  ("F" #'org-roam-find-file "File")
   ("s" (lambda ()
          (interactive)
          (unless (ignore-errors org-roam-server-light-mode)
@@ -2316,13 +2317,65 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
   ("T" #'org-roam-buffer-toggle-display "toggle")
   )
 
-(defhydra aj/roam-tags (:color blue)
+;;;###autoload (autoload 'aj/roam-tags-hydra/body "autoload/orgmode" nil t)
+(defhydra aj/roam-tags-hydra (:color blue)
   ("a" #'org-roam-tag-add "add")
   ("d" #'org-roam-tag-delete "delete"))
 
-(defhydra aj/roam-aliases (:color blue)
+;;;###autoload (autoload 'aj/roam-aliases-hydra/body "autoload/orgmode" nil t)
+(defhydra aj/roam-aliases-hydra (:color blue)
   ("a" #'org-roam-alias-add "add")
   ("d" #'org-roam-alias-delete "delete"))
+
+;;;###autoload
+(defun aj/org-roam-ivy ()
+  "Exclusive ivy interface for org-roam."
+  (interactive)
+  (ivy-read "File: " (org-roam--get-title-path-completions)
+            ;; TODO use initial input for poor's man filtering
+            :initial-input ""
+            :caller 'aj/org-roam-ivy
+            :action (lambda (x)
+                      ;; TODO capture if file doesn't exist
+                      (pop-to-buffer
+                       (find-file-noselect (plist-get (cdr x) :path))))))
+;;;###autoload
+(defun aj/org-roam-ivy-delete-action (x)
+  "Delete org-roam file X."
+  (let ((f (plist-get (cdr x) :path)))
+    (move-file-to-trash f)
+    (message "%s moved to trash." (file-name-nondirectory f))
+    (org-roam-db-mark-dirty)))
+
+;;;###autoload
+(defun aj/org-roam-ivy-rename-action (x)
+  "Change title of org-roam file X."
+  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+    (interactive)
+    (goto-char (point-min))
+    (re-search-forward "^#\\+title:" (point-max) t)
+    (re-search-forward "^[[:space:]]*#\\+TITLE:" (point-max) t)
+    (kill-line)
+    (insert " ")
+    (insert (completing-read "New title: " nil nil nil (car kill-ring)))
+    (save-buffer)
+    (kill-current-buffer)
+    (org-roam-db-mark-dirty)))
+
+;;;###autoload
+(defun aj/org-roam-ivy-move-action (x)
+  "Move org-roam file X."
+  (let* ((f (plist-get (cdr x) :path))
+         (fname (file-name-nondirectory f))
+         (fdir (file-name-directory f))
+         (dest (file-name-as-directory
+                (read-directory-name "New location: " fdir)))
+         (new (expand-file-name fname dest)))
+    (unless (file-directory-p dest)
+      (mkdir dest t))
+    (rename-file f dest)
+    (message "%s moved to new location: %s." fname dest)
+    (org-roam-db-mark-dirty)))
 
 ;;;###autoload
 (defun aj-calibre-org-update-org-noter-files ()

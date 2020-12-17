@@ -776,6 +776,36 @@
   )
 
 (after! ivy
+  (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
+
+  (ivy-add-actions
+   #'aj/org-roam-ivy
+   '(("d" #'aj/org-roam-ivy-delete-actin "delete")
+     ("t" (lambda (x)
+            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+              (org-roam-tag-add)))
+      "tag add")
+     ("T" (lambda (x)
+            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+              (org-roam-tag-delete)))
+      "tag delete")
+     ("r" #'aj/org-roam-ivy-rename-action "rename")
+     ("a" (lambda (x)
+            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+              (org-roam-alias-add)))
+      "alias add")
+     ("A" (lambda (x)
+            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+              (org-roam-alias-add)))
+      "alias delete")
+     ("m" #'aj/org-roam-ivy-move-action "move")
+     ("h" (lambda (x)
+            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+              (org-roam-doctor)))
+      "health")
+     )
+   )
+
   (ivy-set-actions
    #'aj/org-agenda-headlines
    '(("e" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-set-effort)) "effort")
@@ -815,20 +845,22 @@
    'counsel-projectile-bookmark
    '(("d" bookmark-delete "delete")
      ("r" bookmark-rename "rename")))
+
   (ivy-add-actions
    #'ivy-yasnippet
    '(("e" aj-ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own")))
+
   (ivy-add-actions
    #'ivy-switch-buffer
    '(("c" aj/kill-helpful-buffers "kill helpful-mode buffers")
      ("C" aj/kill-all-help-buffers "kill all help modes buffers")))
+
   (ivy-add-actions
    #'counsel-describe-variable
    '(("v" (lambda (x)
             (kill-new
              (prin1-to-string (symbol-value (intern x))))) "Copy value")))
 
-  (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
   )
 
 (after! ivy-posframe
@@ -1806,9 +1838,12 @@
            :head "#+title: %<%A, %d %B %Y>\n"))
         )
 
+  (advice-add #'aj/org-roam-ivy :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'aj/org-roam-ivy :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam--find-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam--find-file :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
+  (advice-add #'org-roam-doctor :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
   (advice-add #'org-roam-unlinked-references :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-unlinked-references :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-open-file-respect-sanity-a)

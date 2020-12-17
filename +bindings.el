@@ -1123,7 +1123,7 @@
                                                (org-brain-open-resource
                                                 (org-brain-choose-entry "Resource from: " 'all))
                                              (aj/org-brain-open-from-all-resources))))
-  :desc "roam"                 "r" #'aj/org-roam/body
+  :desc "roam"                 "r" #'aj/org-roam-hydra/body
   :desc "notes grep"           "g" (cmd! (aj/org-notes-search-no-link
                                           org-brain-path))
   :desc "notes grep"           "G" (cmd! (let ((current-prefix-arg '(4)))
