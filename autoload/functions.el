@@ -1233,7 +1233,7 @@ With user prefix ask for the file.
   "Switch between opened emacs windows by narrowing the list of candidates.
 
 Intended to work exactly like window switchers in desktop environments
-as the oposite to usual emacs approach of changing content of the existing
+as the oposite to usual emacs approach of swapping buffers inside existing
 editor windows.
 "
   (interactive)
