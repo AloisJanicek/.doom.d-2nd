@@ -780,7 +780,7 @@
 
   (ivy-add-actions
    #'aj/org-roam-ivy
-   '(("d" #'aj/org-roam-ivy-delete-actin "delete")
+   '(("d" aj-org-roam-ivy-delete-action "delete")
      ("t" (lambda (x)
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
               (org-roam-tag-add)))
@@ -789,7 +789,7 @@
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
               (org-roam-tag-delete)))
       "tag delete")
-     ("r" #'aj/org-roam-ivy-rename-action "rename")
+     ("r" aj-org-roam-ivy-rename-action "rename")
      ("a" (lambda (x)
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
               (org-roam-alias-add)))
@@ -798,7 +798,7 @@
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
               (org-roam-alias-add)))
       "alias delete")
-     ("m" #'aj/org-roam-ivy-move-action "move")
+     ("m" aj-org-roam-ivy-move-action "move")
      ("h" (lambda (x)
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
               (org-roam-doctor)))
@@ -1816,16 +1816,21 @@
   )
 
 (after! org-roam
-  (add-hook 'org-roam-capture-after-find-file-hook #'org-id-get-create 97)
-  (add-hook 'org-roam-capture-after-find-file-hook #'aj-org-update-help-files 99)
-  (add-hook 'org-roam-capture-after-find-file-hook #'org-roam-db-update 100)
   (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
+  (add-hook
+   'org-roam-capture-after-find-file-hook
+   (lambda ()
+     (org-id-get-create)
+     (save-buffer)
+     (aj-org-update-help-files)
+     (org-roam-db-update)))
 
-  (setq +org-roam-open-buffer-on-find-file nil)
   (doom-store-persist doom-store-location '(org-roam-directory))
 
-  (setq org-roam-buffer-width 0.2
+  (setq +org-roam-open-buffer-on-find-file nil
+        org-roam-buffer-width 0.2
         org-roam-tag-sources '(prop vanilla all-directories)
+
         org-roam-prefer-id-links t
         org-roam-db-location (expand-file-name
                               "org-roam.db"

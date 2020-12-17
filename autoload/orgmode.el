@@ -2263,6 +2263,43 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
                (my/move-region-to-heading
                 (get-text-property 0 'marker x))))))
 
+;;;###autoload
+(defun aj/start-open-org-roam-server-light ()
+  "Start `org-roam-server-light' and pop up browser window.
+Depending on current platform emacs is running on open
+either eaf-browser or default browser.
+"
+  (interactive)
+  (unless (ignore-errors org-roam-server-light-mode)
+    (org-roam-server-light-mode))
+  (if (and (display-graphic-p)
+           (not (aj-wsl-p)))
+      (let ((server-buff (get-buffer "*eaf Org Roam Server*"))
+            (pop-size (round (/ (frame-width) 1.6))))
+        (if server-buff
+            (if org-roam-server-light-mode
+                (progn
+                  (+popup-buffer server-buff
+                                 `((side . right)
+                                   (size . ,pop-size)
+                                   (slot)
+                                   (vslot . 1)
+                                   (window-parameters
+                                    (ttl)
+                                    (quit . t)
+                                    (select . t)
+                                    (modeline . t)
+                                    (autosave . nil))))
+                  (let ((script (executable-find "eaf-org-roam-adjust-scroll.py")))
+                    (when script
+                      (async-start-process
+                       "eaf-scroll"
+                       script
+                       nil))))
+              (kill-buffer server-buff))
+          (when org-roam-server-light-mode
+            (eaf-open-browser "http://127.0.0.1:8080"))))
+    (browse-url "http://127.0.0.1:8080")))
 
 ;;;###autoload (autoload 'aj/org-roam-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-roam-hydra (:color blue
@@ -2273,40 +2310,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
   ("f" #'aj/org-roam-ivy "file")
-  ("F" #'org-roam-find-file "File")
-  ("s" (lambda ()
-         (interactive)
-         (unless (ignore-errors org-roam-server-light-mode)
-           (org-roam-server-light-mode))
-         (if (and (display-graphic-p)
-                  (not (aj-wsl-p)))
-             (let ((server-buff (get-buffer "*eaf Org Roam Server*"))
-                   (pop-size (round (/ (frame-width) 1.6))))
-               (if server-buff
-                   (if org-roam-server-light-mode
-                       (progn
-                         (+popup-buffer server-buff
-                                        `((side . right)
-                                          (size . ,pop-size)
-                                          (slot)
-                                          (vslot . 1)
-                                          (window-parameters
-                                           (ttl)
-                                           (quit . t)
-                                           (select . t)
-                                           (modeline . t)
-                                           (autosave . nil))))
-                         (let ((script (executable-find "eaf-org-roam-adjust-scroll.py")))
-                           (when script
-                             (async-start-process
-                              "eaf-scroll"
-                              script
-                              nil))))
-                     (kill-buffer server-buff))
-                 (when org-roam-server-light-mode
-                   (eaf-open-browser "http://127.0.0.1:8080"))))
-           (browse-url "http://127.0.0.1:8080")))
-   "server")
+  ("s" #'aj/start-open-org-roam-server-light "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
   ("g" (aj/org-notes-search-no-link org-roam-directory) "grep")
   ("j" #'org-roam-dailies-date "journal")
@@ -2336,11 +2340,19 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
             :initial-input ""
             :caller 'aj/org-roam-ivy
             :action (lambda (x)
-                      ;; TODO capture if file doesn't exist
-                      (pop-to-buffer
-                       (find-file-noselect (plist-get (cdr x) :path))))))
+                      (let ((f (ignore-errors (plist-get (cdr x) :path))))
+                        (if f
+                            (pop-to-buffer
+                             (find-file-noselect f))
+                          (let ((org-roam-capture--info
+                                 `((title . ,x)
+                                   (slug  . ,(funcall org-roam-title-to-slug-function x))))
+                                (org-roam-capture--context 'title))
+                            (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
+                            (org-roam-capture--capture)))))))
+
 ;;;###autoload
-(defun aj/org-roam-ivy-delete-action (x)
+(defun aj-org-roam-ivy-delete-action (x)
   "Delete org-roam file X."
   (let ((f (plist-get (cdr x) :path)))
     (move-file-to-trash f)
@@ -2348,7 +2360,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
     (org-roam-db-mark-dirty)))
 
 ;;;###autoload
-(defun aj/org-roam-ivy-rename-action (x)
+(defun aj-org-roam-ivy-rename-action (x)
   "Change title of org-roam file X."
   (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
     (interactive)
@@ -2363,7 +2375,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
     (org-roam-db-mark-dirty)))
 
 ;;;###autoload
-(defun aj/org-roam-ivy-move-action (x)
+(defun aj-org-roam-ivy-move-action (x)
   "Move org-roam file X."
   (let* ((f (plist-get (cdr x) :path))
          (fname (file-name-nondirectory f))
