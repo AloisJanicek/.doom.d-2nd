@@ -1168,15 +1168,17 @@ is modified and offer to launch magit-status in it.
 
     (unless (or (ignore-errors (string-empty-p dotfile-record))
                 (not dotfile-record))
-      (or (equal 0 (shell-command
+      (if (equal 0 (shell-command
                     (format
                      "yes | %s update %s"
                      aj-dotdrop-base-cmd
                      (nth 1 dotfile-record))))
+          (aj-dotdrop-commit-maybe)
+        (progn
+          (add-hook 'ediff-quit-hook #'aj-dotdrop-commit-maybe 100)
           (ediff
            (nth 1 dotfile-record)
-           (nth 2 dotfile-record)))))
-  (add-hook 'ediff-quit-hook #'aj-dotdrop-commit-maybe 100))
+           (nth 2 dotfile-record)))))))
 
 ;;;###autoload
 (defun aj-dotdrop-commit-maybe ()
