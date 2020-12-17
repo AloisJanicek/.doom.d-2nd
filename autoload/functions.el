@@ -1176,11 +1176,12 @@ is modified and offer to launch magit-status in it.
           (ediff
            (nth 1 dotfile-record)
            (nth 2 dotfile-record)))))
-  (aj-dotdrop-commit-maybe))
+  (add-hook 'ediff-quit-hook #'aj-dotdrop-commit-maybe 100))
 
 ;;;###autoload
 (defun aj-dotdrop-commit-maybe ()
   "Check if DOTDROP_HOME is modified and offer user commit changes."
+  (remove-hook 'ediff-quit-hook #'aj-dotdrop-commit-maybe)
   (when (projectile-check-vcs-status (getenv "DOTDROP_HOME"))
     (if (y-or-n-p "Commit changes to the DOTFILES?")
         (magit-status (getenv "DOTDROP_HOME"))
