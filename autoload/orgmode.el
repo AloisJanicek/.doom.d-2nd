@@ -1794,7 +1794,8 @@ path is colorized according to outline faces.
                  (funcall orig-fn (org-link-display-format str))))
               ((symbol-function 'counsel--rg-targets)
                (lambda ()
-                 (if cancel-filter
+                 (if (or cancel-filter
+                         (not (string-prefix-p org-brain-path directory)))
                      nil
                    (seq-map
                     (lambda (file)
@@ -2306,12 +2307,8 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
            (browse-url "http://127.0.0.1:8080")))
    "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
+  ("g" (aj/org-notes-search-no-link org-roam-directory) "grep")
   ("j" #'org-roam-dailies-date "journal")
-  ("d" (lambda ()
-         (interactive)
-         (setq deft-directory org-roam-directory)
-         (deft))
-   "deft")
   ("i" #'org-roam-jump-to-index "index")
   ("a" #'aj/roam-aliases/body "aliases")
   ("t" #'aj/roam-tags/body "tags")

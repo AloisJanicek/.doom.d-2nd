@@ -353,22 +353,6 @@
 (use-package! define-word
   :commands (define-word  define-word-at-point))
 
-(after! deft
-  (require 'org-roam)
-  (setq deft-directory org-roam-directory)
-  (advice-add #'deft-open-file
-              :around
-              (lambda (orig-fn &rest args)
-                (cl-letf (((symbol-function 'switch-to-buffer)
-                           #'aj-open-file-switch-create-indirect-buffer-per-persp))
-                  (apply orig-fn args))))
-  (advice-add #'deft-open-file :around #'aj-org-buffer-to-popup-a)
-  (add-hook 'deft-open-file-hook (lambda (&rest _)
-                                   (with-current-buffer
-                                       (get-buffer "*Deft*")
-                                     (bury-buffer))))
-  )
-
 (after! dart-mode
   (set-docsets! 'dart-mode "Dart"))
 

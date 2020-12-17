@@ -81,12 +81,6 @@
   :desc "test" "t" #'lsp-dart-run-all-tests
   )
 
-;;; deft-mode
- (:after deft
-  :map deft-mode-map
-  :nmv "q" #'bury-buffer
-  )
-
 ;;; eww
  (:after eww
   :map eww-mode-map
