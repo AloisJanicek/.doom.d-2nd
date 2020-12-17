@@ -64,8 +64,9 @@
   :ni "C-l"       #'evil-window-right
   )
  ;;; counsel, ivy
- (:after counsel
+ (:after ivy
   :map ivy-minibuffer-map
+  :in "C-o" #'ivy-dispatching-done
   "TAB" #'ivy-alt-done
   "RET" #'ivy-done
   "C-f" #'ivy-call
