@@ -1727,35 +1727,28 @@ path is colorized according to outline faces.
      'marker (copy-marker (point)))))
 
 ;;;###autoload
-(defun aj-org-notes-update-filetags (dir)
-  "Collect all org file filetags in DIR and save them into `aj-org-notes-filetags' variable."
-  (setq aj-org-notes-filetags
-        (assoc-delete-all dir aj-org-notes-filetags #'string-equal))
+(defun aj-org-notes-get-filetags (dir)
+  "Return all org file filetags recursively in DIR."
+  (cons dir
+        (list
+         (delete-dups
+          (flatten-list
+           (mapcar (lambda (file)
+                     (when (+org-get-global-property "FILETAGS" file)
+                       (split-string
+                        (+org-get-global-property "FILETAGS" file) ":" t)))
+                   (directory-files-recursively dir ".org$")))))))
 
-  (add-to-list 'aj-org-notes-filetags
-               (cons dir
-                     (list
-                      (delete-dups
-                       (flatten-list
-                        (mapcar (lambda (file)
-                                  (when (+org-get-global-property "FILETAGS" file)
-                                    (split-string
-                                     (+org-get-global-property "FILETAGS" file) ":" t)))
-                                (directory-files-recursively dir ".org$"))))))))
-
-;;;###autoload
-(defun aj/org-notes-set-filter-preset (dir)
-  "For DIR from `aj-org-notes-filetags' select some tags to use as filter.
+(defun aj-org-notes-set-filter-preset--ivy (collection preset)
+  "Helper ivy prompt for setting multiple-valued filter presets.
+Its prompt will be updated every time user selects or unselects
+item candidates from COLLECTION to PRESET.
 "
-  (interactive)
-  (let* ((filetags (car (cdr (assoc dir aj-org-notes-filetags))))
-         (preset (cdr (assoc dir aj-org-notes-filter-preset)))
-         (preset-was-empty (unless preset t))
-         (prompt (lambda ()
-                   (format "Tags (%s): "
-                           (mapconcat #'identity preset ", ")))))
+  (let ((prompt (lambda ()
+                  (format "Tags (%s): "
+                          (mapconcat #'identity preset ", ")))))
     (ivy-read (funcall prompt)
-              filetags
+              collection
               :action (lambda  (x)
                         "Adopted from `counsel-org-tag-action'."
                         (if (member x preset)
@@ -1770,10 +1763,49 @@ path is colorized according to outline faces.
                         (if (eq this-command 'ivy-call)
                             (with-selected-window (active-minibuffer-window)
                               (delete-minibuffer-contents))))
-              :caller 'aj/org-notes-set-filter-preset)
-    (if preset-was-empty
-        (add-to-list 'aj-org-notes-filter-preset (cons dir preset))
-      (setcdr (assoc dir aj-org-notes-filter-preset) preset))))
+              :caller 'aj-org-notes-set-filter-preset)
+    preset)
+  )
+
+(defun aj-org-notes-filter-preset--set (dir new-val)
+  "Setter helper fn for `aj/org-notes-set-filter-preset'."
+  (if (aj-org-notes-filter-preset--get dir)
+      (setcdr (assoc dir aj-org-notes-filter-preset) new-val)
+    (add-to-list 'aj-org-notes-filter-preset (cons dir new-val))))
+
+(defun aj-org-notes-filter-preset--get (dir)
+  "Getter helper fn for `aj/org-notes-set-filter-preset'."
+  (cdr (assoc dir aj-org-notes-filter-preset)))
+
+;;;###autoload
+(defun aj/org-notes-set-filter-preset ()
+  "Set value of `aj-org-notes-filter-preset'."
+  (interactive)
+  (aj-org-notes-filter-preset--set
+   org-brain-path
+   (aj-org-notes-set-filter-preset--ivy
+    (cadr (aj-org-notes-get-filetags org-brain-path))
+    (aj-org-notes-filter-preset--get org-brain-path))))
+
+(defun aj-org-roam-filter-preset--set (dir new-val)
+  "Getter helper fn for `aj/org-roam-set-filter-preset'."
+  (if (aj-org-roam-filter-preset--get dir)
+      (setcdr (assoc dir aj-org-roam-filter-preset) new-val)
+    (add-to-list 'aj-org-roam-filter-preset (cons dir new-val))))
+
+(defun aj-org-roam-filter-preset--get (dir)
+  "Setter helper fn for `aj/org-roam-set-filter-preset'."
+  (cdr (assoc dir aj-org-roam-filter-preset)))
+
+;;;###autoload
+(defun aj/org-roam-set-filter-preset ()
+  "Set value of `aj-org-roam-filter-preset'."
+  (interactive)
+  (aj-org-roam-filter-preset--set
+   org-roam-directory
+   (aj-org-notes-set-filter-preset--ivy
+    (org-roam-db--get-tags)
+    (aj-org-roam-filter-preset--get org-roam-directory))))
 
 ;;;###autoload
 (defun aj/org-notes-search-no-link (&optional directory)
@@ -1892,7 +1924,7 @@ Org manual: 8.4.2 The clock table.
           (org-clock-report))))))
 
 ;;;###autoload
-(defun aj-org-clock-make-all-reports ()
+(defun aj/org-clock-make-all-reports ()
   "Create org clock reports in every org-agenda file."
   (interactive)
   (mapc (lambda (file)
@@ -2309,11 +2341,18 @@ either eaf-browser or default browser.
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
+  ("r" #'aj/org-roam-set-filter-preset "filter")
   ("f" #'aj/org-roam-ivy "file")
+  ("F" (let (aj-org-roam-filter-preset)
+         (aj/org-roam-ivy))
+   "file unfiltered")
   ("s" #'aj/start-open-org-roam-server-light "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
   ("g" (aj/org-notes-search-no-link org-roam-directory) "grep")
-  ("j" #'org-roam-dailies-date "journal")
+  ("j" #'org-roam-dailies-date "journal create")
+  ("J" (let (org-roam-dailies-find-file-hook)
+         (org-roam-dailies-date))
+   "journal jump")
   ("i" #'org-roam-jump-to-index "index")
   ("a" #'aj/roam-aliases/body "aliases")
   ("t" #'aj/roam-tags/body "tags")
@@ -2336,8 +2375,16 @@ either eaf-browser or default browser.
   "Exclusive ivy interface for org-roam."
   (interactive)
   (ivy-read "File: " (org-roam--get-title-path-completions)
-            ;; TODO use initial input for poor's man filtering
-            :initial-input ""
+            :initial-input (or (when aj-org-roam-filter-preset
+                                 (concat
+                                  (mapconcat #'identity
+                                             (cdr (assoc org-roam-directory aj-org-roam-filter-preset))
+                                             " "
+                                             )
+                                  " "
+                                  )
+                                 )
+                               "")
             :caller 'aj/org-roam-ivy
             :action (lambda (x)
                       (let ((f (ignore-errors (plist-get (cdr x) :path))))

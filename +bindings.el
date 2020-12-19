@@ -1137,7 +1137,7 @@
                                           (if (not current-prefix-arg)
                                               (aj-org-get-filtered-org-files
                                                org-brain-path
-                                               (cdr (assoc org-brain-path aj-org-notes-filter-preset)))
+                                               (aj-org-notes-filter-preset--get org-brain-path))
                                             (directory-files-recursively org-brain-path ".org$"))
                                           (if (eq (car current-prefix-arg) 16) 9 2)))
   :desc "notes open"           "N" (cmd! (if current-prefix-arg
@@ -1148,7 +1148,7 @@
                                            (aj-org-jump-to-headline-at
                                             (aj-org-get-filtered-org-files
                                              (expand-file-name "archive" org-brain-path)
-                                             (cdr (assoc org-brain-path aj-org-notes-filter-preset))
+                                             (aj-org-notes-filter-preset--get org-brain-path)
                                              t))))
   :desc "archive open"          "A" (cmd!
                                      (if current-prefix-arg
@@ -1162,17 +1162,12 @@
                                        (aj-org-find-file (expand-file-name "archive" org-brain-path))))
   :desc "filter"               "f" (cmd! (if current-prefix-arg
                                              (progn
-                                               (aj-org-notes-update-filetags org-brain-path)
-                                               (when (assoc org-brain-path aj-org-notes-filter-preset)
-                                                 (setcdr (assoc org-brain-path aj-org-notes-filter-preset) nil))
-                                               (message "Recollected filetags and cleared filter preset for %s" org-brain-path))
-                                           (aj/org-notes-set-filter-preset org-brain-path)))
+                                               (when (aj-org-notes-filter-preset--get org-brain-path)
+                                                 (aj-org-notes-filter-preset--set org-brain-path nil))
+                                               (message "Cleared filter preset for %s" org-brain-path)
+                                               (aj-org-notes-set-filter-preset))
+                                           (aj-org-notes-set-filter-preset)))
   :desc "Update IDs and other" "u" (cmd! (aj/org-id-update-recursively)
-                                         (seq-map
-                                          (lambda (dir)
-                                            (aj-org-notes-update-filetags dir))
-                                          (aj-org-brain-get-all-brains))
-                                         (message "Updated file-tags definition.")
                                          (aj-org-update-help-files)
                                          (message "Updated `aj-org-help-files' definition."))
   :desc "indirect"             "I" (cmd! (aj-open-file-switch-create-indirect-buffer-per-persp
