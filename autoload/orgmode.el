@@ -2375,15 +2375,9 @@ either eaf-browser or default browser.
   "Exclusive ivy interface for org-roam."
   (interactive)
   (ivy-read "File: " (org-roam--get-title-path-completions)
-            :initial-input (or (when aj-org-roam-filter-preset
-                                 (concat
-                                  (mapconcat #'identity
-                                             (cdr (assoc org-roam-directory aj-org-roam-filter-preset))
-                                             " "
-                                             )
-                                  " "
-                                  )
-                                 )
+            :initial-input (or (let ((preset (aj-org-roam-filter-preset--get org-roam-directory)))
+                                 (when preset
+                                   (concat (mapconcat #'identity preset " ") " ")))
                                "")
             :caller 'aj/org-roam-ivy
             :action (lambda (x)
