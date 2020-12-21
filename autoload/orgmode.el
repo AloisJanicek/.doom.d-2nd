@@ -1528,18 +1528,20 @@ Filters todo headlines according to `aj-org-agenda-filter'.
                     (reverse  results)
                   results)
                 )
+              :update-fn #'aj-ivy-update-fn-timer
               :action #'aj-org-jump-to-heading-action
               :caller 'aj/org-agenda-headlines)))
 
 ;;;###autoload
 (defun aj-org-jump-to-heading-action (headline)
   "Jump to HEADLINE and narrow view after showing sub-tree."
-  (let* ((marker (get-text-property 0 'marker headline))
-         (buffer (marker-buffer marker)))
-    (aj-open-file-switch-create-indirect-buffer-per-persp buffer)
-    (widen)
-    (goto-char marker)
-    (aj-org-narrow-and-show)))
+  (let ((marker (get-text-property 0 'marker headline)))
+    (when (markerp marker)
+      (let* ((buffer (marker-buffer marker)))
+        (aj-open-file-switch-create-indirect-buffer-per-persp buffer)
+        (widen)
+        (goto-char marker)
+        (aj-org-narrow-and-show)))))
 
 ;;;###autoload
 (defun aj-org-get-filtered-org-files (dir preset &optional archived)
