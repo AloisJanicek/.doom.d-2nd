@@ -1507,9 +1507,11 @@
      (let* ((heading-title (with-current-buffer
                                (marker-buffer org-capture-last-stored-marker)
                              (goto-char (marker-position org-capture-last-stored-marker))
-                             (org-link-display-format
-                              (substring-no-properties
-                               (org-get-heading)))))
+                             (if (org-on-heading-p)
+                                 (org-link-display-format
+                                  (substring-no-properties
+                                   (org-get-heading)))
+                               (+org-get-global-property "TITLE"))))
             (body (concat "Captured: " heading-title)))
        (alert body))))
   (setq
