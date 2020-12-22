@@ -779,6 +779,11 @@
   (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
 
   (ivy-add-actions
+   #'aj/org-roam-refs-ivy
+   '(("b" aj-org-roam-refs-ivy-url-open-action "browse url")
+     ))
+
+  (ivy-add-actions
    #'aj/org-roam-ivy
    '(("d" aj-org-roam-ivy-delete-action "delete")
      ("t" (lambda (x)
@@ -1855,6 +1860,8 @@
 
   (advice-add #'aj/org-roam-ivy :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'aj/org-roam-ivy :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'aj/org-roam-refs-ivy :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'aj/org-roam-refs-ivy :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam--find-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam--find-file :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)

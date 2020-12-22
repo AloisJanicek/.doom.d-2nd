@@ -2343,7 +2343,7 @@ either eaf-browser or default browser.
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
-  ("r" #'org-roam-find-ref "refs")
+  ("r" #'aj/org-roam-refs-ivy "refs")
   ("R" #'aj/org-roam-set-filter-preset "filter")
   ("f" #'aj/org-roam-ivy "file")
   ("F" (let (aj-org-roam-filter-preset)
@@ -2372,6 +2372,25 @@ either eaf-browser or default browser.
 (defhydra aj/roam-aliases-hydra (:color blue)
   ("a" #'org-roam-alias-add "add")
   ("d" #'org-roam-alias-delete "delete"))
+
+;;;###autoload
+(defun aj-org-roam-refs-ivy-url-open-action (x)
+  "Open roam_key url from file X."
+  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+    (browse-url (+org-get-global-property "roam_key"))))
+
+;;;###autoload
+(defun aj/org-roam-refs-ivy ()
+  "Exclusive ivy interface for org-roam refs."
+  (interactive)
+  (ivy-read "Refs: " (org-roam--get-ref-path-completions 1)
+            :caller 'aj/org-roam-refs-ivy
+            :update-fn #'aj-ivy-update-fn-timer
+            :action (lambda (x)
+                      (let ((f (ignore-errors (plist-get (cdr x) :path))))
+                        (if f
+                            (pop-to-buffer
+                             (find-file-noselect f)))))))
 
 ;;;###autoload
 (defun aj/org-roam-ivy ()
