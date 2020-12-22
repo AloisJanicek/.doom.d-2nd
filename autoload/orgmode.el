@@ -2588,6 +2588,19 @@ Advice for `org-roam--prepend-tag-string'.
    (when tags
      (propertize (format " %s" (s-join org-roam-tag-separator tags))
                  'face 'org-roam-tag))))
+;;;###autoload
+(defun aj-org-roam-prettier-ref-path-a (result)
+  "Customize appearance of string outputed by `org-roam--get-ref-path-completions'.
+Intended as :filter-return advice manipulating string RESULT.
+"
+  (seq-map
+   (lambda (elm)
+     (let* ((str (replace-regexp-in-string "[()]\\|//" "" (car elm)))
+            (url-beg (string-match " [^ ]*$" str))
+            (url-end (length str)))
+       (put-text-property url-beg url-end 'face 'org-tag str)
+       (setcar elm str)))
+   result))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

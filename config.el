@@ -1838,6 +1838,14 @@
                               "org-roam.db"
                               (concat doom-etc-dir (file-name-nondirectory org-roam-directory)))
         org-roam-dailies-directory "journal/"
+        org-roam-capture-ref-templates
+        '(("r" "ref" plain #'org-roam-capture--get-point
+           "%?"
+           :file-name "${slug}"
+           :head "#+title: ${title}\n#+roam_key: ${ref}"
+           :unnarrowed t
+           :immediate-finish t
+           ))
         org-roam-dailies-capture-templates
         `(("d" "default" entry (function org-roam-capture--get-point)
            "* %?"
@@ -1858,6 +1866,7 @@
   (advice-add #'org-roam-capture--capture :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-capture--capture :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam--prepend-tag-string :override #'aj-org-roam-append-tag-string-a)
+  (advice-add #'org-roam--get-ref-path-completions :filter-return #'aj-org-roam-prettier-ref-path-a)
   )
 
 (use-package! org-roam-server-light

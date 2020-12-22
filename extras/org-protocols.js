@@ -14,6 +14,9 @@
   var delay = 3000;
 
   // By pressing Ctrl + Alt + 'key':
+  // capture link in org-roam via `org-protocol://roam-ref`
+  keys.roam = 'R';
+
   // stores link via `org-protocol://store-link`, which can be inserted by `org-insert-link`
   keys.link = 'K';
 
@@ -80,6 +83,19 @@
   window.addEventListener('keyup', function() {
     if (event.ctrlKey && event.altKey && !event.shiftKey) {
       switch (String.fromCharCode(event.keyCode)) {
+        case (keys.roam):
+
+          // org-protocol://roam-ref?template=r&ref=URL&title=TITLE&body=BODY
+          openedWindow = window.open('org-protocol://roam-ref?template=r&ref='
+                                     + getLocation()
+                                     + '&title='
+                                     + getTitle()
+                                     + '&body='
+                                     + escapeIt(window.getSelection().toString())
+                                    );
+          wait(delay);
+          openedWindow.close();
+          break;
         case (keys.link):
 
           // org-protocol://store-link/URL
