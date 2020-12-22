@@ -1257,6 +1257,12 @@ Override adivce for annoying `pdf-info-check-epdfinfo'
   (unless (file-exists-p pdf-info-epdfinfo-program)
     (pdf-tools-install t t t )))
 
+;;;###autoload
+(defun advice-remove-all (sym)
+  "Remove all advices from symbol SYM."
+  (interactive "aFunction symbol: ")
+  (advice-mapc (lambda (advice _props) (advice-remove sym advice)) sym))
+
 (provide 'functions)
 
 ;;; functions.el ends here
