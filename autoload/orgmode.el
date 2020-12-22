@@ -2343,7 +2343,8 @@ either eaf-browser or default browser.
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
-  ("r" #'aj/org-roam-set-filter-preset "filter")
+  ("r" #'org-roam-find-ref "refs")
+  ("R" #'aj/org-roam-set-filter-preset "filter")
   ("f" #'aj/org-roam-ivy "file")
   ("F" (let (aj-org-roam-filter-preset)
          (aj/org-roam-ivy))
