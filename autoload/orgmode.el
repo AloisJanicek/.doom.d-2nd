@@ -2599,8 +2599,9 @@ Intended as :filter-return advice manipulating string RESULT.
      (let* ((str (replace-regexp-in-string "[()]\\|//" "" (car elm)))
             (url-beg (string-match " [^ ]*$" str))
             (url-end (length str)))
-       (put-text-property url-beg url-end 'face 'org-tag str)
-       (setcar elm str)))
+       (when (and url-beg url-end)
+         (put-text-property url-beg url-end 'face 'org-tag str))
+       (cons str (cdr elm))))
    result))
 
 (provide 'orgmode)
