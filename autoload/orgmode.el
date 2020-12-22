@@ -2356,8 +2356,8 @@ either eaf-browser or default browser.
          (org-roam-dailies-date))
    "journal jump")
   ("i" #'org-roam-jump-to-index "index")
-  ("a" #'aj/roam-aliases/body "aliases")
-  ("t" #'aj/roam-tags/body "tags")
+  ("a" #'aj/roam-aliases-hydra/body "aliases")
+  ("t" #'aj/roam-tags-hydra/body "tags")
   ("I" #'org-roam-insert "insert")
   ("T" #'org-roam-buffer-toggle-display "toggle")
   )
@@ -2382,6 +2382,7 @@ either eaf-browser or default browser.
                                    (concat (mapconcat #'identity preset " ") " ")))
                                "")
             :caller 'aj/org-roam-ivy
+            :update-fn #'aj-ivy-update-fn-timer
             :action (lambda (x)
                       (let ((f (ignore-errors (plist-get (cdr x) :path))))
                         (if f
