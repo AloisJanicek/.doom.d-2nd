@@ -2428,18 +2428,23 @@ either eaf-browser or default browser.
 (defun aj-org-roam-ivy-backlinks-action (x)
   "Browse backlinks of X."
   (let ((f (plist-get (cdr x) :path))
-        aj-org-roam-filter-preset
-        backlinks)
+        aj-org-roam-filter-preset)
     (with-current-buffer (find-file-noselect f)
-      (setq backlinks (org-roam--get-backlinks f))
-      (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
-                       (seq-map
-                        (lambda (bklink)
-                          (cons
-                           (org-roam-db--get-title (car bklink))
-                           `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
-                        backlinks)
-                       ))))
+      (if-let ((backlinks (org-roam--get-backlinks f)))
+          (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
+                           (seq-map
+                            (lambda (bklink)
+                              (cons
+                               (concat
+                                " "
+                                (org-roam--prepend-tag-string
+                                 (org-roam-db--get-title (car bklink))
+                                 (org-roam--extract-tags)))
+                               ;; fix this: (tag tag2
+                               `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
+                            backlinks))
+        (when aj-org-roam-last-ivy
+          (funcall aj-org-roam-last-ivy))))))
 
 ;;;###autoload
 (defun aj-org-roam-ivy-delete-action (x)
@@ -2657,6 +2662,38 @@ Intended as :filter-return advice manipulating string RESULT.
          (put-text-property url-beg url-end 'face 'org-tag str))
        (cons str (cdr elm))))
    result))
+
+;;;###autoload
+(defun aj-org-roam-ivy-backlinks-transformer (str)
+  "Improve appereance of org-roam ivy.
+
+Makes url of org-refs less prominent. Strips unnecessary parentheses
+around urls and tags. Adds number of backlinks before each item.
+"
+  (let ((prepend-backlinks-num
+         (lambda (f-title)
+           (let* ((f-path (caar
+                           (org-roam-db-query [:select [file] :from titles :where (= title $s1)]
+                                              f-title)))
+                  (backlinks-num (length
+                                  (org-roam-db-query [:select * :from links :where (= dest $s1)] f-path)))
+                  (backlinks-num-str (number-to-string backlinks-num)))
+             (put-text-property 0 (length backlinks-num-str) 'face
+                                (if (equal 0 backlinks-num) 'org-warning 'org-tag)
+                                backlinks-num-str)
+             (concat backlinks-num-str " " f-title)))))
+    (cond ((string-match "(//" str 0)
+           (let* ((str-list (split-string str "(//" nil))
+                  (url (string-trim-right (car (cdr str-list)) ")"))
+                  (f-title (string-trim (car str-list))))
+             (put-text-property 0 (length url) 'face 'org-tag url)
+             (concat (funcall prepend-backlinks-num f-title) " " url)))
+          ((string-match ") " str 0)
+           (let* ((str-list (split-string str ") " nil))
+                  (f-title (substring-no-properties (car (cdr str-list))))
+                  (tags (string-trim-left (car str-list) "(")))
+             (concat (funcall prepend-backlinks-num f-title) " " tags)))
+          (t (funcall prepend-backlinks-num str)))))
 
 (provide 'orgmode)
 ;;; orgmode.el ends here

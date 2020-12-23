@@ -778,11 +778,17 @@
 (after! ivy
   (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
 
+  (ivy-configure 'aj-org-roam-ivy
+    :display-transformer-fn #'aj-org-roam-ivy-backlinks-transformer)
+
   (ivy-add-actions
    #'aj-org-roam-ivy
-   '(("l" aj/test "backlinks")
+   '(("x" aj-org-roam-ivy-backlinks-action "backlinks")
      ("d" aj-org-roam-ivy-delete-action "delete")
      ("b" aj-org-roam-refs-ivy-url-open-action "browse url")
+     ("h" (lambda (x)
+            (funcall aj-org-roam-last-ivy))
+      "Back")
      ("t" (lambda (x)
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
               (org-roam-tag-add)))
@@ -801,7 +807,7 @@
               (org-roam-alias-add)))
       "alias delete")
      ("m" aj-org-roam-ivy-move-action "move")
-     ("h" (lambda (x)
+     ("H" (lambda (x)
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
               (org-roam-doctor)))
       "health")
@@ -1867,8 +1873,6 @@
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-capture--capture :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam-capture--capture :around #'aj-org-buffer-to-popup-a)
-  (advice-add #'org-roam--prepend-tag-string :override #'aj-org-roam-append-tag-string-a)
-  (advice-add #'org-roam--get-ref-path-completions :filter-return #'aj-org-roam-prettier-ref-path-a)
   )
 
 (use-package! org-roam-server-light
