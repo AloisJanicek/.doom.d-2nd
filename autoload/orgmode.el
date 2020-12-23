@@ -2343,11 +2343,11 @@ either eaf-browser or default browser.
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
-  ("r" #'aj/org-roam-refs-ivy "refs")
+  ("r" #'aj/org-roam-find-refs "refs")
   ("R" #'aj/org-roam-set-filter-preset "filter")
-  ("f" #'aj/org-roam-ivy "file")
+  ("f" #'aj/org-roam-find-file "file")
   ("F" (let (aj-org-roam-filter-preset)
-         (aj/org-roam-ivy))
+         (aj/org-roam-find-file))
    "file unfiltered")
   ("s" #'aj/start-open-org-roam-server-light "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
@@ -2380,40 +2380,66 @@ either eaf-browser or default browser.
     (browse-url (+org-get-global-property "roam_key"))))
 
 ;;;###autoload
-(defun aj/org-roam-refs-ivy ()
+(defun aj/org-roam-find-refs ()
   "Exclusive ivy interface for org-roam refs."
   (interactive)
-  (ivy-read "Refs: " (org-roam--get-ref-path-completions 1)
-            :caller 'aj/org-roam-refs-ivy
-            :update-fn #'aj-ivy-update-fn-timer
-            :action (lambda (x)
-                      (let ((f (ignore-errors (plist-get (cdr x) :path))))
-                        (if f
-                            (pop-to-buffer
-                             (find-file-noselect f)))))))
+  (setq aj-org-roam-last-ivy 'aj/org-roam-find-refs)
+  (let (aj-org-roam-filter-preset)
+    (aj-org-roam-ivy "Refs: " (org-roam--get-ref-path-completions 1))))
 
 ;;;###autoload
-(defun aj/org-roam-ivy ()
-  "Exclusive ivy interface for org-roam."
+(defun aj/org-roam-find-file ()
+  "Exclusive ivy interface for org-roam find file."
   (interactive)
-  (ivy-read "File: " (org-roam--get-title-path-completions)
-            :initial-input (or (let ((preset (aj-org-roam-filter-preset--get org-roam-directory)))
-                                 (when preset
-                                   (concat (mapconcat #'identity preset " ") " ")))
-                               "")
-            :caller 'aj/org-roam-ivy
-            :update-fn #'aj-ivy-update-fn-timer
-            :action (lambda (x)
-                      (let ((f (ignore-errors (plist-get (cdr x) :path))))
-                        (if f
-                            (pop-to-buffer
-                             (find-file-noselect f))
-                          (let ((org-roam-capture--info
-                                 `((title . ,x)
-                                   (slug  . ,(funcall org-roam-title-to-slug-function x))))
-                                (org-roam-capture--context 'title))
-                            (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
-                            (org-roam-capture--capture)))))))
+  (setq aj-org-roam-last-ivy 'aj/org-roam-find-file)
+  (aj-org-roam-ivy "File: " (org-roam--get-title-path-completions)))
+
+;;;###autoload
+(defun aj-org-roam-ivy (prompt collection)
+  "Exclusive ivy interface for org-roam."
+  (let* ((preset (aj-org-roam-filter-preset--get org-roam-directory))
+         (init-input (or (when preset (concat (mapconcat #'identity preset " ") " ")) "")))
+    (ivy-read prompt collection
+              :initial-input init-input
+              :caller 'aj-org-roam-ivy
+              :update-fn #'aj-ivy-update-fn-timer
+              :action (lambda (x)
+                        (if-let ((f (ignore-errors (plist-get (cdr x) :path))))
+                            (pop-to-buffer (find-file-noselect f))
+                          (progn
+                            ;; prevent :initial-input becoming part of the newly captured file's #+title:
+                            (when init-input
+                              (setq x (substring x (length init-input) (length x))))
+                            (aj-org-roam-ivy-capture x)))))))
+
+(defvar aj-org-roam-last-ivy nil
+  "Store the name of the last used org-roam ivy interface.")
+
+;;;###autoload
+(defun aj-org-roam-ivy-capture (x)
+  "Capture action from org-roam."
+  (let ((org-roam-capture--info
+         `((title . ,x)
+           (slug  . ,(funcall org-roam-title-to-slug-function x))))
+        (org-roam-capture--context 'title))
+    (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
+    (org-roam-capture--capture)))
+
+(defun aj-org-roam-ivy-backlinks-action (x)
+  "Browse backlinks of X."
+  (let ((f (plist-get (cdr x) :path))
+        aj-org-roam-filter-preset
+        backlinks)
+    (with-current-buffer (find-file-noselect f)
+      (setq backlinks (org-roam--get-backlinks f))
+      (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
+                       (seq-map
+                        (lambda (bklink)
+                          (cons
+                           (org-roam-db--get-title (car bklink))
+                           `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
+                        backlinks)
+                       ))))
 
 ;;;###autoload
 (defun aj-org-roam-ivy-delete-action (x)
@@ -2421,7 +2447,9 @@ either eaf-browser or default browser.
   (let ((f (plist-get (cdr x) :path)))
     (move-file-to-trash f)
     (message "%s moved to trash." (file-name-nondirectory f))
-    (org-roam-db-mark-dirty)))
+    (org-roam-db-mark-dirty)
+    (when aj-org-roam-last-ivy
+      (funcall aj-org-roam-last-ivy))))
 
 ;;;###autoload
 (defun aj-org-roam-ivy-rename-action (x)
@@ -2436,7 +2464,10 @@ either eaf-browser or default browser.
     (insert (completing-read "New title: " nil nil nil (car kill-ring)))
     (save-buffer)
     (kill-current-buffer)
-    (org-roam-db-mark-dirty)))
+    (org-roam-db-mark-dirty))
+  (when aj-org-roam-last-ivy
+    (funcall aj-org-roam-last-ivy))
+  )
 
 ;;;###autoload
 (defun aj-org-roam-ivy-move-action (x)
@@ -2451,7 +2482,10 @@ either eaf-browser or default browser.
       (mkdir dest t))
     (rename-file f dest)
     (message "%s moved to new location: %s." fname dest)
-    (org-roam-db-mark-dirty)))
+    (org-roam-db-mark-dirty))
+  (when aj-org-roam-last-ivy
+    (funcall aj-org-roam-last-ivy))
+  )
 
 ;;;###autoload
 (defun aj-calibre-org-update-org-noter-files ()
