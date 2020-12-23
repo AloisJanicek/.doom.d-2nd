@@ -2664,20 +2664,29 @@ Intended as :filter-return advice manipulating string RESULT.
   "Improve appereance of org-roam ivy.
 
 Makes url of org-refs less prominent. Strips unnecessary parentheses
-around urls and tags. Adds number of backlinks before each item.
+around urls and tags. Adds number of backlinks in front of each item.
+Prepends org-roam-ref items with \"link\" icon.
 "
   (let ((prepend-backlinks-num
          (lambda (f-title)
-           (let* ((f-path (caar
+           (let* ((f-title (substring-no-properties f-title))
+                  (f-path (caar
                            (org-roam-db-query [:select [file] :from titles :where (= title $s1)]
                                               f-title)))
                   (backlinks-num (length
                                   (org-roam-db-query [:select * :from links :where (= dest $s1)] f-path)))
-                  (backlinks-num-str (number-to-string backlinks-num)))
+                  (backlinks-num-str (number-to-string backlinks-num))
+                  (is-ref (org-roam-db-query [:select file :from [refs] :where (= file $s1)] f-path))
+                  (ico (concat
+                        (if is-ref
+                            (all-the-icons-octicon "link" :v-adjust 0.05)
+                          (all-the-icons-octicon "file-text" :v-adjust 0.05))
+                        " ")))
              (put-text-property 0 (length backlinks-num-str) 'face
                                 (if (equal 0 backlinks-num) 'org-warning 'org-tag)
                                 backlinks-num-str)
-             (concat backlinks-num-str " " f-title)))))
+             (put-text-property 0 (length ico) 'face 'org-tag ico)
+             (concat backlinks-num-str " " ico f-title)))))
     (cond ((string-match "(//" str 0)
            (let* ((str-list (split-string str "(//" nil))
                   (url (string-trim-right (car (cdr str-list)) ")"))
