@@ -2427,24 +2427,20 @@ either eaf-browser or default browser.
 
 (defun aj-org-roam-ivy-backlinks-action (x)
   "Browse backlinks of X."
-  (let ((f (plist-get (cdr x) :path))
-        aj-org-roam-filter-preset)
-    (with-current-buffer (find-file-noselect f)
-      (if-let ((backlinks (org-roam--get-backlinks f)))
-          (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
-                           (seq-map
-                            (lambda (bklink)
-                              (cons
-                               (concat
-                                " "
-                                (org-roam--prepend-tag-string
-                                 (org-roam-db--get-title (car bklink))
-                                 (org-roam--extract-tags)))
-                               ;; fix this: (tag tag2
-                               `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
-                            backlinks))
-        (when aj-org-roam-last-ivy
-          (funcall aj-org-roam-last-ivy))))))
+  (let* ((f (plist-get (cdr x) :path))
+         aj-org-roam-filter-preset)
+    (if-let ((backlinks (org-roam--get-backlinks f)))
+        (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
+                         (seq-map
+                          (lambda (bklink)
+                            (cons
+                             (org-roam--prepend-tag-string
+                              (org-roam-db--get-title (car bklink))
+                              (org-roam--extract-tags f))
+                             `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
+                          backlinks))
+      (when aj-org-roam-last-ivy
+        (funcall aj-org-roam-last-ivy)))))
 
 ;;;###autoload
 (defun aj-org-roam-ivy-delete-action (x)
