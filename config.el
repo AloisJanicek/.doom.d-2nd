@@ -1457,14 +1457,23 @@
                                         "Complete tags from all org-agenda files across each other."
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
+  (advice-add 'org-agenda-switch-to :after
+              (lambda (&rest _)
+                "Narrow and show children after switching."
+                (widen)
+                (aj-org-narrow-and-show)
+                (turn-off-solaire-mode)))
+  (advice-add #'org-agenda-switch-to :around #'aj-org-open-file-respect-sanity-a)
   (advice-add
    #'org-agenda-switch-to
    :around
    (lambda (orig-fn &rest args)
      "Show all descendants of the task under the point if it originates from
 custom org-ql \"Projects\" search instead of visiting it in the buffer."
-     (if (string-equal "*Org QL View: Projects*"
-                       (buffer-name (current-buffer)))
+     (if (cl-member
+          (buffer-name (current-buffer))
+          '("*Org QL View: Stucked Projects*" "*Org QL View: Projects*")
+          :test #'string-match)
          (let ((buffer (marker-buffer (org-get-at-bol 'org-marker)))
                (title (substring-no-properties (car (org-get-at-bol 'title)))))
            (org-ql-search
@@ -1473,14 +1482,6 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
              :sort (lambda (a b) nil)
              :title (format "Descendants of: %s" title)))
        (apply orig-fn args))))
-
-  (advice-add 'org-agenda-switch-to :after
-              (lambda (&rest _)
-                "Narrow and show children after switching."
-                (widen)
-                (aj-org-narrow-and-show)
-                (turn-off-solaire-mode)))
-
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-exit :after #'aj-org-buffers-respect-sanity-a)
@@ -1504,7 +1505,6 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
                                               (org-save-all-org-buffers)))
   (advice-add #'org-cut-special :after #'org-save-all-org-buffers)
   (advice-add #'counsel-org-tag :after #'org-save-all-org-buffers)
-  (advice-add #'org-agenda-switch-to :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-agenda-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-agenda-todo :after #'aj-org-agenda-save-and-refresh-a)
   (advice-add #'org-todo :after (lambda (&rest _)
