@@ -1496,43 +1496,47 @@ Otherwise dispatch default commands.
                 )
               (directory-files-recursively org-directory "org")))
 
+(defvar aj-org-agenda-headlines-last-search nil
+  "Store preset for the last search dispatched by `aj/org-agenda-headlines'.")
+
 ;;;###autoload
-(defun aj/org-agenda-headlines (&optional keywords query files sort-fn reverse time)
+(defun aj/org-agenda-headlines (&optional query files sort-fn reverse time no-last)
   "Jump to a todo headline in `org-agenda-files'.
 
-Optionally search for specific list of todo KEYWORDS.
 Optionally this function accepts valid org-ql QUERY.
 Optionally this function accepts list of FILES to operate upon.
 Optionally pass SORT-FN valid sorting function or keyword for `org-ql-query'.
 Optionally REVERSE the order of search results.
 Optionally show TIME in the results.
 Filters todo headlines according to `aj-org-agenda-filter'.
+With NO-LAST cancel saving of last search into `aj-org-agenda-headlines-last-search'.
 "
   (interactive "P")
-  (let* ((keywords (or keywords '(todo)))
-         (tags (aj-org-ql-custom-agenda-filter-tags))
-         (query (if query
-                    query
-                  (if tags
-                      `(and ,keywords ,tags)
-                    keywords)))
+  (let* ((tags (aj-org-ql-custom-agenda-filter-tags))
+         (query (or query
+                    (if tags
+                        `(and (todo) ,tags)
+                      '(todo))))
          (time (when time t))
-         ivy-sort-functions-alist
-         )
-    ;; (message "Query: %s" query)
-    (ivy-read "Go to: "
+         (files (or files (aj-org-combined-agenda-files)))
+         (sort-fn (or sort-fn #'aj-org-ql-sort-by-todo))
+         ivy-sort-functions-alist)
+
+    (unless no-last
+      (setq aj-org-agenda-headlines-last-search
+            `(,query ,files ,sort-fn ,reverse ,time)))
+
+    (ivy-read "Agenda: "
               (let ((results (org-ql-query
                                :select (lambda ()
                                          (aj-org-get-pretty-heading-path nil nil t t t time))
-                               :from (or files (aj-org-combined-agenda-files))
+                               :from files
                                :where query
-                               :order-by (if sort-fn sort-fn #'aj-org-ql-sort-by-effort)
+                               :order-by sort-fn
                                )))
-
                 (if (ignore-errors reverse)
-                    (reverse  results)
-                  results)
-                )
+                    (reverse results)
+                  results))
               :update-fn #'aj-ivy-update-fn-timer
               :action #'aj-org-jump-to-heading-action
               :caller 'aj/org-agenda-headlines)))

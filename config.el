@@ -688,6 +688,7 @@
 
 
 (use-package! hydra-posframe
+  :disabled
   :after hydra
   :when (display-graphic-p)
   :config
@@ -807,7 +808,6 @@
                (org-base-buffer (current-buffer))))
             (funcall aj-org-roam-last-ivy))
       "aliases")
-
      ("m" aj-org-roam-ivy-move-action "move")
      ("H" (lambda (x)
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
@@ -846,10 +846,12 @@
              (lambda ()
                (let ((h-title (aj-org-heading-title-without-statistics-cookie)))
                  (aj/org-agenda-headlines
-                  nil
                   (aj-org-ql-project-descendants-query h-title)
                   (buffer-file-name (org-base-buffer (current-buffer)))
-                  (lambda (a b) t) t)
+                  (lambda (a b) t)
+                  t
+                  t
+                  t)
                  ))))
       "descendants")
      ("r" (lambda (headline)
@@ -861,7 +863,13 @@
                              (aj-org-heading-title-without-statistics-cookie))))))
       "rename")
      ("k" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-cut-subtree))
-      "delete")))
+      "delete")
+     ("h" (lambda (x)
+            (cl-destructuring-bind (query files sort-fn reverse time) aj-org-agenda-headlines-last-search
+              (aj/org-agenda-headlines query files sort-fn reverse time)))
+      "Back")
+     )
+   )
 
   (ivy-set-actions
    'counsel-projectile-bookmark
@@ -1449,12 +1457,30 @@
                                         "Complete tags from all org-agenda files across each other."
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
+  (advice-add
+   #'org-agenda-switch-to
+   :around
+   (lambda (orig-fn &rest args)
+     "Show all descendants of the task under the point if it originates from
+custom org-ql \"Projects\" search instead of visiting it in the buffer."
+     (if (string-equal "*Org QL View: Projects*"
+                       (buffer-name (current-buffer)))
+         (let ((buffer (marker-buffer (org-get-at-bol 'org-marker)))
+               (title (substring-no-properties (car (org-get-at-bol 'title)))))
+           (org-ql-search
+             (buffer-file-name (org-base-buffer buffer))
+             (aj-org-ql-project-descendants-query title)
+             :sort (lambda (a b) nil)
+             :title (format "Descendants of: %s" title)))
+       (apply orig-fn args))))
+
   (advice-add 'org-agenda-switch-to :after
               (lambda (&rest _)
                 "Narrow and show children after switching."
                 (widen)
                 (aj-org-narrow-and-show)
                 (turn-off-solaire-mode)))
+
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-exit :after #'aj-org-buffers-respect-sanity-a)
