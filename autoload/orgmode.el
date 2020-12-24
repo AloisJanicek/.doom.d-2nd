@@ -2346,6 +2346,11 @@ either eaf-browser or default browser.
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
+  ("d" (lambda ()
+         (interactive)
+         (aj-org-roam-delete-file
+          (buffer-file-name (org-base-buffer (current-buffer)))))
+   "delete")
   ("r" #'aj/org-roam-find-refs "refs")
   ("R" #'aj/org-roam-set-filter-preset "filter")
   ("f" #'aj/org-roam-find-file "file")
@@ -2467,12 +2472,18 @@ either eaf-browser or default browser.
         (funcall aj-org-roam-last-ivy)))))
 
 ;;;###autoload
+(defun aj-org-roam-delete-file (f)
+  "Delete org-roam file F and kill visiting buffers."
+  (kill-buffer (find-buffer-visiting f))
+  (move-file-to-trash f)
+  (message "%s moved to trash." (file-name-nondirectory f))
+  (org-roam-db-mark-dirty))
+
+;;;###autoload
 (defun aj-org-roam-ivy-delete-action (x)
-  "Delete org-roam file X."
+  "Delete org-roam file X action for ivy."
   (let ((f (plist-get (cdr x) :path)))
-    (move-file-to-trash f)
-    (message "%s moved to trash." (file-name-nondirectory f))
-    (org-roam-db-mark-dirty)
+    (aj-org-roam-delete-file f)
     (when aj-org-roam-last-ivy
       (funcall aj-org-roam-last-ivy))))
 
