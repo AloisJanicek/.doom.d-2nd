@@ -821,8 +821,9 @@
    '(("e" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-set-effort)) "effort")
      ("t" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-todo)) "todo")
      ("g" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'counsel-org-tag)) "tags")
-     ("c" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-clock-in)) "clock in")
-     ("o" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-clock-out)) "clock out")
+     ;; FIXME have this functionality but prevent errors with "No active clock" when first running `aj/org-agenda-headlines'
+     ;; ("c" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-clock-in)) "clock in")
+     ;; ("o" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-clock-out)) "clock out")
      ("a" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-archive-subtree)) "archive")
 
      ("s" (lambda (headline)
@@ -839,14 +840,25 @@
                (interactive)
                (org-deadline current-prefix-arg))))
       "deadline")
+     ("x" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper
+             headline
+             (lambda ()
+               (let ((h-title (aj-org-heading-title-without-statistics-cookie)))
+                 (aj/org-agenda-headlines
+                  nil
+                  (aj-org-ql-project-descendants-query h-title)
+                  (buffer-file-name (org-base-buffer (current-buffer)))
+                  (lambda (a b) t) t)
+                 ))))
+      "descendants")
      ("r" (lambda (headline)
             (aj-org-agenda-headlines-custom-action-helper
              headline
              (lambda ()
                (my/org-rename-header
                 (read-string "Header: "
-                             (substring-no-properties
-                              (org-get-heading t t t t)))))))
+                             (aj-org-heading-title-without-statistics-cookie))))))
       "rename")
      ("k" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-cut-subtree))
       "delete")))
@@ -869,7 +881,8 @@
    #'counsel-describe-variable
    '(("v" (lambda (x)
             (kill-new
-             (prin1-to-string (symbol-value (intern x))))) "Copy value")))
+             (prin1-to-string (symbol-value (intern x)))))
+      "Copy value")))
 
   )
 

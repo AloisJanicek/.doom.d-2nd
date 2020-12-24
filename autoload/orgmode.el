@@ -664,6 +664,7 @@ Argument X represents title of the new heading."
 (defun my/org-rename-header (label)
   "Rename the current section's header to `LABEL'.
 Then moves the point to the end of the line."
+  ;; TODO Review this if this works with task count cookie [3/10]
   (interactive (list
                 (read-string "Header: "
                              (substring-no-properties (org-get-heading t t t t)))))
@@ -846,6 +847,10 @@ and has todo childre.
                       (children (todo))
                       (not (or (todo "SOMEDAY")
                                (todo "MAYBE")))))))
+;;;###autoload
+(defun aj-org-ql-project-descendants-query (h-title)
+  "Return all descendants of heading matching H-TITLE."
+  `(ancestors (heading ,h-title)))
 
 (defun aj-org-ql-custom-wait-task-query ()
   "Return custom org-ql queary for WAIT task."
@@ -1959,6 +1964,24 @@ Org manual: 8.4.2 The clock table.
   )
 
 ;;;###autoload
+(defun aj-org-ql-sort-by-todo (a b)
+  "Return non-nil if todo of A is less then todo of the B according to their order in `org-todo-keywords'.
+"
+  (let ((get-todo-keyword
+         (lambda (elm-or-str)
+           (or (if (char-or-string-p elm-or-str)
+                   (org-entry-get (get-text-property 0 'marker elm-or-str) "TODO")
+                 (org-element-property :todo-keyword elm-or-str))
+               "")))
+        (todo-keyword-less-p (lambda (a b)
+                               (> (length (cl-member a (cdar org-todo-keywords) :test #'string-match))
+                                  (length (cl-member b (cdar org-todo-keywords) :test #'string-match))))))
+    (funcall
+     todo-keyword-less-p
+     (funcall get-todo-keyword a)
+     (funcall get-todo-keyword b))))
+
+;;;###autoload
 (defun aj-org-re-store-link ()
   "Re-store current link under the point."
   (require 'org-protocol)
@@ -2735,5 +2758,12 @@ Prepends org-roam-ref items with \"link\" icon.
              (concat (funcall prepend-backlinks-num f-title) " " tags)))
           (t (funcall prepend-backlinks-num str)))))
 
+;;;###autoload
+(defun aj-org-heading-title-without-statistics-cookie ()
+  "Return title of org heading but without statistics cookie."
+  (when (org-at-heading-p)
+    (replace-regexp-in-string " *\\[[0-9]*\\(%\\|/[0-9]*\\)\\] *"
+                              ""
+                              (nth 4 (org-heading-components)))))
 (provide 'orgmode)
 ;;; orgmode.el ends here
