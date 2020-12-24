@@ -796,21 +796,18 @@
       "Back")
      ("t" (lambda (x)
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-              (org-roam-tag-add)))
-      "tag add")
-     ("T" (lambda (x)
-            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-              (org-roam-tag-delete)))
-      "tag delete")
+              (aj-org-roam-set-tag
+               (org-base-buffer (current-buffer))))
+            (funcall aj-org-roam-last-ivy))
+      "tags")
      ("r" aj-org-roam-ivy-rename-action "rename")
      ("a" (lambda (x)
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-              (org-roam-alias-add)))
-      "alias add")
-     ("A" (lambda (x)
-            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-              (org-roam-alias-add)))
-      "alias delete")
+              (aj-org-roam-set-aliases
+               (org-base-buffer (current-buffer))))
+            (funcall aj-org-roam-last-ivy))
+      "aliases")
+
      ("m" aj-org-roam-ivy-move-action "move")
      ("H" (lambda (x)
             (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
@@ -1515,18 +1512,24 @@
   (add-hook
    'org-capture-after-finalize-hook
    (lambda ()
-     "Send system notification after capture is done"
+     "Send system notification after capture is done.
+When in org-roam file, also create top-level ID.
+"
      (require 'alert)
-     (let* ((heading-title (with-current-buffer
-                               (marker-buffer org-capture-last-stored-marker)
-                             (goto-char (marker-position org-capture-last-stored-marker))
-                             (if (org-on-heading-p)
+     (with-current-buffer (marker-buffer org-capture-last-stored-marker)
+       (let* ((heading-title (progn
+                               (goto-char (marker-position org-capture-last-stored-marker))
+                               (when (org-on-heading-p)
                                  (org-link-display-format
                                   (substring-no-properties
-                                   (org-get-heading)))
-                               (+org-get-global-property "TITLE"))))
-            (body (concat "Captured: " heading-title)))
-       (alert body))))
+                                   (org-get-heading))))))
+              (file-title (unless heading-title
+                            (+org-get-global-property "TITLE")))
+              (body (concat "Captured: " (or heading-title file-title))))
+         (when file-title ;; this is true for org-roam files
+           (org-id-get-create)
+           (save-buffer))
+         (alert body)))))
   (setq
    org-protocol-default-template-key "L"
    org-capture-templates `(("p" "Protocol" entry (file ,aj-org-inbox-file)

@@ -1741,13 +1741,14 @@ path is colorized according to outline faces.
                         (+org-get-global-property "FILETAGS" file) ":" t)))
                    (directory-files-recursively dir ".org$")))))))
 
-(defun aj-org-notes-set-filter-preset--ivy (collection preset)
+(defun aj-org-notes-set-filter-preset--ivy (prompt collection preset)
   "Helper ivy prompt for setting multiple-valued filter presets.
 Its prompt will be updated every time user selects or unselects
 item candidates from COLLECTION to PRESET.
 "
   (let ((prompt (lambda ()
-                  (format "Tags (%s): "
+                  (format "%s: (%s) "
+                          prompt
                           (mapconcat #'identity preset ", ")))))
     (ivy-read (funcall prompt)
               collection
@@ -1786,6 +1787,7 @@ item candidates from COLLECTION to PRESET.
   (aj-org-notes-filter-preset--set
    org-brain-path
    (aj-org-notes-set-filter-preset--ivy
+    "Tags"
     (cadr (aj-org-notes-get-filetags org-brain-path))
     (aj-org-notes-filter-preset--get org-brain-path))))
 
@@ -1806,6 +1808,7 @@ item candidates from COLLECTION to PRESET.
   (aj-org-roam-filter-preset--set
    org-roam-directory
    (aj-org-notes-set-filter-preset--ivy
+    "Tags"
     (org-roam-db--get-tags)
     (aj-org-roam-filter-preset--get org-roam-directory))))
 
@@ -2357,21 +2360,42 @@ either eaf-browser or default browser.
          (org-roam-dailies-date))
    "journal jump")
   ("i" #'org-roam-jump-to-index "index")
-  ("a" #'aj/roam-aliases-hydra/body "aliases")
-  ("t" #'aj/roam-tags-hydra/body "tags")
+  ("a" (lambda ()
+         (interactive)
+         (aj-org-roam-set-aliases
+          (org-base-buffer (current-buffer))))
+   "aliases")
+  ("t" (lambda ()
+         (interactive)
+         (aj-org-roam-set-tag
+          (org-base-buffer (current-buffer))))
+   "tags")
   ("I" #'org-roam-insert "insert")
   ("T" #'org-roam-buffer-toggle-display "toggle")
   )
 
-;;;###autoload (autoload 'aj/roam-tags-hydra/body "autoload/orgmode" nil t)
-(defhydra aj/roam-tags-hydra (:color blue)
-  ("a" #'org-roam-tag-add "add")
-  ("d" #'org-roam-tag-delete "delete"))
+;;;###autoload
+(defun aj-org-roam-set-aliases (file)
+  (let* ((file-aliases (org-roam--extract-titles-alias)))
+    (org-roam--set-global-prop
+     "roam_alias"
+     (combine-and-quote-strings
+      (seq-uniq
+       (aj-org-notes-set-filter-preset--ivy
+        "Aliases" file-aliases file-aliases))))
+    (save-buffer)))
 
-;;;###autoload (autoload 'aj/roam-aliases-hydra/body "autoload/orgmode" nil t)
-(defhydra aj/roam-aliases-hydra (:color blue)
-  ("a" #'org-roam-alias-add "add")
-  ("d" #'org-roam-alias-delete "delete"))
+;;;###autoload
+(defun aj-org-roam-set-tag (file)
+  (let* ((all-tags (org-roam-db--get-tags))
+         (file-tags (org-roam--extract-tags-prop file)))
+    (org-roam--set-global-prop
+     "roam_tags"
+     (combine-and-quote-strings
+      (seq-uniq
+       (aj-org-notes-set-filter-preset--ivy
+        "Tags" all-tags file-tags))))
+    (save-buffer)))
 
 ;;;###autoload
 (defun aj-org-roam-refs-ivy-url-open-action (x)
