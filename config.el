@@ -862,6 +862,11 @@
                 (read-string "Header: "
                              (aj-org-heading-title-without-statistics-cookie))))))
       "rename")
+     ("R" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper
+                              headline
+                              (lambda ()
+                                (+org/refile-to-current-file nil))))
+      "Refile")
      ("k" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-cut-subtree))
       "delete")
      ("h" (lambda (x)
