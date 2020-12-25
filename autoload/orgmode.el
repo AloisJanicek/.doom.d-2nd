@@ -1008,7 +1008,7 @@ _q_uery                       _h_old
          (org-ql-search
            (aj-org-combined-agenda-files)
            (aj-org-ql-custom-projects-query)
-           :sort '(date priority todo)
+           :sort #'aj-org-ql-sort-by-todo
            :super-groups '((:auto-category t))
            :title "Projects")))
 
