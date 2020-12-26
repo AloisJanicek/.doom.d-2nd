@@ -1546,6 +1546,23 @@ Otherwise dispatch default commands.
   "Stores prefered capture template key for capturing from `aj/org-agenda-headlines'."
   )
 
+(defun aj-org-agenda-headlines-dispatch-last ()
+  (when aj-org-agenda-headlines-last-search
+    (cl-destructuring-bind
+        (query files sort-fn reverse time no-last capture-key)
+        aj-org-agenda-headlines-last-search
+      (aj/org-agenda-headlines
+       :query query
+       :files files
+       :sort-fn sort-fn
+       :reverse reverse
+       :time time
+       :no-last no-last
+       :capture-key capture-key
+       ))
+    )
+  )
+
 ;;;###autoload
 (cl-defun aj/org-agenda-headlines (&key query
                                         (files (aj-org-combined-agenda-files))
@@ -1556,8 +1573,8 @@ Otherwise dispatch default commands.
 Function accepts optionally following keywords arguments:
 valid or-ql QUERY, list of FILES to search, valid org-ql
 sorting keyword or function SORT-FN, REVERSE (bool) to reverse search results,
-TIME (bool) to show timestamp of the items, NO-LAST to saving parameters of last search
-into `aj-org-agenda-headlines-last-search'.
+TIME (bool) to show timestamp of the items, NO-LAST for not saving parameters
+of the last search into `aj-org-agenda-headlines-last-search'.
 
 This function filters agenda headlines according to `aj-org-agenda-filter'.
 "
@@ -1573,7 +1590,7 @@ This function filters agenda headlines according to `aj-org-agenda-filter'.
     (setq aj-org-capture-prefered-template-key nil)
     (unless no-last
       (setq aj-org-agenda-headlines-last-search
-            `(,query ,files ,sort-fn ,reverse ,time)))
+            `(,query ,files ,sort-fn ,reverse ,time ,no-last ,capture-key)))
 
     (when capture-key
       (setq aj-org-capture-prefered-template-key capture-key))

@@ -818,27 +818,59 @@
 
   (ivy-set-actions
    #'aj/org-agenda-headlines
-   '(("e" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-set-effort)) "effort")
-     ("t" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-todo)) "todo")
-     ("g" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'counsel-org-tag)) "tags")
-     ;; FIXME have this functionality but prevent errors with "No active clock" when first running `aj/org-agenda-headlines'
-     ;; ("c" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-clock-in)) "clock in")
-     ;; ("o" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-clock-out)) "clock out")
-     ("a" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-archive-subtree)) "archive")
-
+   '(("e" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper headline #'org-set-effort)
+            (aj-org-agenda-headlines-dispatch-last))
+      "effort")
+     ("t" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper headline #'org-todo)
+            (aj-org-agenda-headlines-dispatch-last))
+      "todo")
+     ("g" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper headline #'counsel-org-tag)
+            (aj-org-agenda-headlines-dispatch-last))
+      "tags")
+     ("c" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper
+             headline
+             (lambda ()
+               (org-clock-in)
+               (aj-org-agenda-headlines-dispatch-last))))
+      "clock in")
+     ("C" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper
+             headline
+             (lambda ()
+               (org-clock-out)
+               (aj-org-agenda-headlines-dispatch-last))))
+      "clock out")
+     ("a" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper headline #'org-archive-subtree)
+            (aj-org-agenda-headlines-dispatch-last))
+      "archive")
+     ("P" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper headline #'org-priority)
+            (aj-org-agenda-headlines-dispatch-last))
+      "Priority")
+     ("p" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper headline #'org-pomodoro)
+            (aj-org-agenda-headlines-dispatch-last))
+      "pomodor")
      ("s" (lambda (headline)
             (aj-org-agenda-headlines-custom-action-helper
              headline
              (lambda ()
                (interactive)
-               (org-schedule current-prefix-arg))))
+               (org-schedule current-prefix-arg)))
+            (aj-org-agenda-headlines-dispatch-last))
       "schedule")
      ("d" (lambda (headline)
             (aj-org-agenda-headlines-custom-action-helper
              headline
              (lambda ()
                (interactive)
-               (org-deadline current-prefix-arg))))
+               (org-deadline current-prefix-arg)))
+            (aj-org-agenda-headlines-dispatch-last))
       "deadline")
      ("x" (lambda (headline)
             (aj-org-agenda-headlines-custom-action-helper
@@ -860,19 +892,22 @@
              (lambda ()
                (my/org-rename-header
                 (read-string "Header: "
-                             (aj-org-heading-title-without-statistics-cookie))))))
+                             (aj-org-heading-title-without-statistics-cookie)))))
+            (aj-org-agenda-headlines-dispatch-last))
       "rename")
-     ("R" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper
-                              headline
-                              (lambda ()
-                                (+org/refile-to-current-file nil))))
+     ("R" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper
+             headline
+             (lambda ()
+               (+org/refile-to-current-file nil)))
+            (aj-org-agenda-headlines-dispatch-last))
       "Refile")
-     ("k" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-cut-subtree)
-            )
+     ("k" (lambda (headline)
+            (aj-org-agenda-headlines-custom-action-helper headline #'org-cut-subtree)
+            (aj-org-agenda-headlines-dispatch-last))
       "delete")
      ("h" (lambda (x)
-            (cl-destructuring-bind (query files sort-fn reverse time) aj-org-agenda-headlines-last-search
-              (aj/org-agenda-headlines :query query :files files :sort-fn sort-fn :reverse reverse :time time)))
+            (aj-org-agenda-headlines-dispatch-last))
       "Back")
      )
    )
