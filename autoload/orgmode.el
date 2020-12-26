@@ -296,6 +296,7 @@ If HEADLINE, capture under it instead of top level."
 (defhydra aj/org-capture-hydra (:color blue
                                 :hint nil
                                 :idle which-key-idle-delay
+                                :body-pre (setq aj-org-capture-prefered-template-key nil)
                                 )
   "
 _k_inbox   _j_ournal  _C_ode:   _y_ankpad   _c_lock:
@@ -1569,6 +1570,7 @@ This function filters agenda headlines according to `aj-org-agenda-filter'.
          (time (when time t))
          ivy-sort-functions-alist)
 
+    (setq aj-org-capture-prefered-template-key nil)
     (unless no-last
       (setq aj-org-agenda-headlines-last-search
             `(,query ,files ,sort-fn ,reverse ,time)))
