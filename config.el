@@ -867,7 +867,8 @@
                               (lambda ()
                                 (+org/refile-to-current-file nil))))
       "Refile")
-     ("k" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-cut-subtree))
+     ("k" (lambda (headline) (aj-org-agenda-headlines-custom-action-helper headline #'org-cut-subtree)
+            )
       "delete")
      ("h" (lambda (x)
             (cl-destructuring-bind (query files sort-fn reverse time) aj-org-agenda-headlines-last-search
@@ -1621,7 +1622,7 @@ When in org-roam file, also create top-level ID.
 
                            ("k" "Capture" entry (file ,aj-org-inbox-file)
                             ,(concat
-                              "* %^{PROMPT} \n"
+                              "* %(ivy-read \"Title: \" nil :initial-input (if aj-org-capture-prefered-template-key (current-kill 0) \"\")) \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
                               ":END:\n"
@@ -1678,7 +1679,7 @@ When in org-roam file, also create top-level ID.
                                                       (not (string-match "inbox" file)))
                                                     org-agenda-files)))))
                             ,(concat
-                              "* TO" "DO %^{PROMPT} \n"
+                              "* TO" "DO %(ivy-read \"Title: \" nil :initial-input (if aj-org-capture-prefered-template-key (current-kill 0) \"\")) \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
                               ":END:\n"
@@ -1760,6 +1761,7 @@ When in org-roam file, also create top-level ID.
                             )
                            )
    )
+
   )
 
 (after! org-clock

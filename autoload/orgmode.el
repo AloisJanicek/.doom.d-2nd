@@ -373,16 +373,22 @@ _m_v   ln_s_
   (interactive)
   (let* ((file (aj/choose-file-from org-agenda-files))
          (date (org-read-date))
-         (title (ivy-read "Title: " nil))
-         (tag (ivy-read "Tag: " nil))
+         (title (ivy-read "Title: " nil
+                          :initial-input (if aj-org-capture-prefered-template-key
+                                             (current-kill 0)
+                                           "")))
+         (tag-list (completing-read-multiple
+                    "tag: "
+                    (org-global-tags-completion-table
+                     (aj-org-combined-agenda-files))))
+         (tag-str (if tag-list (concat " :" (mapconcat #'identity tag-list ":") ":") ""))
          (org-capture-templates `(("c" "calendar" entry (file ,file)
-                                   ,(concat "** " title " "
-                                            (unless (seq-empty-p tag)
-                                              (concat ":" tag ":"))
+                                   ,(concat "** " title " " tag-str
                                             "\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n"
                                             "<" date ">" "\n %?")
                                    :immediate-finish t :prepend t))))
     (org-capture nil "c")))
+
 ;;;###autoload
 (defun aj--org-capture-task (&optional clock-in)
   "Capture task my way. 'CLOCK-IN' the task with optional argument."
@@ -394,7 +400,10 @@ _m_v   ln_s_
                    (lambda (file)
                      (not (string-match "inbox" file)))
                    org-agenda-files))))
-         (title (concat " "(ivy-read "Title: " nil)))
+         (title (concat " " (ivy-read "Title: " nil
+                                      :initial-input (if aj-org-capture-prefered-template-key
+                                                         (current-kill 0)
+                                                       ""))))
          (tag-list (completing-read-multiple
                     "tag: "
                     (org-global-tags-completion-table
@@ -1532,6 +1541,10 @@ Otherwise dispatch default commands.
 (defvar aj-org-agenda-headlines-last-search nil
   "Store preset for the last search dispatched by `aj/org-agenda-headlines'.")
 
+(defvar aj-org-capture-prefered-template-key nil
+  "Stores prefered capture template key for capturing from `aj/org-agenda-headlines'."
+  )
+
 ;;;###autoload
 (cl-defun aj/org-agenda-headlines (&key query
                                         (files (aj-org-combined-agenda-files))
@@ -1560,6 +1573,8 @@ This function filters agenda headlines according to `aj-org-agenda-filter'.
       (setq aj-org-agenda-headlines-last-search
             `(,query ,files ,sort-fn ,reverse ,time)))
 
+    (when capture-key
+      (setq aj-org-capture-prefered-template-key capture-key))
     (ivy-read "Agenda: "
               (let ((results (org-ql-query
                                :select (lambda ()
@@ -1576,15 +1591,26 @@ This function filters agenda headlines according to `aj-org-agenda-filter'.
               :caller 'aj/org-agenda-headlines)))
 
 ;;;###autoload
-(defun aj-org-jump-to-heading-action (headline)
-  "Jump to HEADLINE and narrow view after showing sub-tree."
-  (let ((marker (get-text-property 0 'marker headline)))
-    (when (markerp marker)
-      (let* ((buffer (marker-buffer marker)))
+(defun aj-org-jump-to-heading-action (x)
+  "Jump to headline `X' and narrow view after showing sub-tree."
+  (if-let* ((marker (get-text-property 0 'marker x))
+            (buffer (when (markerp marker) (marker-buffer marker))))
+      (progn
         (aj-open-file-switch-create-indirect-buffer-per-persp buffer)
         (widen)
         (goto-char marker)
-        (aj-org-narrow-and-show)))))
+        (aj-org-narrow-and-show))
+    (unless (string-empty-p x)
+      (kill-new (substring-no-properties x))
+      (if-let ((key aj-org-capture-prefered-template-key))
+          (cond ((string-equal "d" key)
+                 (aj/org-capture-calendar))
+                ((string-equal "t" key)
+                 (aj--org-capture-task))
+                (t
+                 (org-capture nil key)))
+        (org-capture nil "k"))
+      (setq aj-org-capture-prefered-template-key nil))))
 
 ;;;###autoload
 (defun aj-org-get-filtered-org-files (dir preset &optional archived)
