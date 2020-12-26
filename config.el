@@ -846,12 +846,12 @@
              (lambda ()
                (let ((h-title (aj-org-heading-title-without-statistics-cookie)))
                  (aj/org-agenda-headlines
-                  (aj-org-ql-project-descendants-query h-title)
-                  (buffer-file-name (org-base-buffer (current-buffer)))
-                  (lambda (a b) t)
-                  t
-                  t
-                  t)
+                  :query (aj-org-ql-project-descendants-query h-title)
+                  :files (buffer-file-name (org-base-buffer (current-buffer)))
+                  :sort-fn (lambda (a b) t)
+                  :reverse t
+                  :time t
+                  :no-last t)
                  ))))
       "descendants")
      ("r" (lambda (headline)
@@ -871,7 +871,7 @@
       "delete")
      ("h" (lambda (x)
             (cl-destructuring-bind (query files sort-fn reverse time) aj-org-agenda-headlines-last-search
-              (aj/org-agenda-headlines query files sort-fn reverse time)))
+              (aj/org-agenda-headlines :query query :files files :sort-fn sort-fn :reverse reverse :time time)))
       "Back")
      )
    )
@@ -1335,7 +1335,6 @@
    org-log-redeadline 'time
    org-log-reschedule 'time
    org-log-into-drawer "LOGBOOK"
-
    org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA"
    )
   )

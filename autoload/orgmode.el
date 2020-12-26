@@ -745,8 +745,7 @@ which one is currently active."
       (org-ql-view-refresh)
     (org-agenda-redo)))
 
-;;;###autoload
-(defun aj-org-ql-search-stucked-project ()
+(defun aj-org-ql-stucked-projects-query ()
   "Stucked projects query for org-ql."
   '(or
     (and (todo)
@@ -783,47 +782,46 @@ which one is currently active."
     )
   )
 
-;;;###autoload
-(defun aj-org-ql-simple-taks-search (task)
-  "Search for task `TASK' via `org-ql'."
-  (let ((org-agenda-tag-filter aj-org-agenda-filter))
-    (org-ql-search (aj-org-combined-agenda-files)
-      `(todo ,task)
-      :sort #'aj-org-ql-sort-by-effort
-      :super-groups '((:auto-category t))
-      :title task)))
+(defun aj-org-ql-past-dues-query ()
+  "Return valid org-ql query searching for past dues."
+  `(and (ts-active :from past :to ,(ts-now)) (not (done))))
 
-;;;###autoload
-(defun aj-org-ql-custom-task-search ()
-  "Search for tasks."
-  (let ((org-agenda-tag-filter aj-org-agenda-filter))
-    (org-ql-search
-      (aj-org-combined-agenda-files)
-      (aj-org-ql-custom-todo-task-query)
-      :sort #'aj-org-ql-sort-by-effort
-      :super-groups '((:auto-category t ))
-      :title "Plain Todos")))
+(defun aj-org-ql-all-active-tasks-query ()
+  "Return valid org-ql query searching for all active tasks.
+Respects `aj-org-agenda-filter'.
+"
+  `(and (todo)
+        (not (todo "SOMEDAY"))
+        (not (todo "MAYBE"))
+        (not (done))
+        ,(aj-org-ql-custom-agenda-filter-tags)))
 
-;;;###autoload
-(defun aj-org-ql-custom-next-task-query ()
-  "Return custom org-ql queary for NEXT task."
+(defun aj-org-ql-simple-task-query (keyword)
+  "Return valid org-ql query searching for todo KEYWORD.
+Respects `aj-org-agenda-filter'.
+"
   (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (remove nil `(and
-                  (todo "NEXT")
-                  ,(if tags tags)
-                  (not (or (parent "WAIT")
-                           (parent "HOLD")))
-                  (not (ts-active))))))
-;;;###autoload
-(defun aj-org-ql-custom-agenda-filter-tags ()
-  "Return tags part of org-ql query when `aj-org-agenda-filter' is set. "
-  (when (and aj-org-agenda-filter
-             (not current-prefix-arg))
-    `(tags ,(string-remove-prefix
-             "+" (substring-no-properties
-                  (car aj-org-agenda-filter))))))
+    (if tags
+        `(and (todo ,keyword) ,tags)
+      `(todo ,keyword))))
 
-;;;###autoload
+(defun aj-org-ql-non-complete-tasks-query ()
+  "Return valid org-ql query searching for non-complete tasks.
+Respects `aj-org-agenda-filter'."
+  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
+    (if tags
+        `(and (todo) ,tags)
+      `(todo))))
+
+(defun aj-org-ql-done-query ()
+  "Return valid org-ql query searching completed tasks.
+Respects `aj-org-agenda-filter'.
+"
+  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
+    (if tags
+        `(and (done) ,tags)
+      `(done))))
+
 (defun aj-org-ql-custom-todo-task-query ()
   "Return custom org-ql queary for TO DO and PROJECT task."
   (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
@@ -834,7 +832,16 @@ which one is currently active."
                       (not (children (todo)))
                       (not (parent (todo)))))))
 
-;;;###autoload
+(defun aj-org-ql-custom-next-task-query ()
+  "Return custom org-ql queary for NEXT task."
+  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
+    (remove nil `(and
+                  (todo "NEXT")
+                  ,(if tags tags)
+                  (not (or (parent "WAIT")
+                           (parent "HOLD")))
+                  (not (ts-active))))))
+
 (defun aj-org-ql-custom-projects-query ()
   "Return custom org-ql queary for Projects.
 
@@ -847,7 +854,7 @@ and has todo childre.
                       (children (todo))
                       (not (or (todo "SOMEDAY")
                                (todo "MAYBE")))))))
-;;;###autoload
+
 (defun aj-org-ql-project-descendants-query (h-title)
   "Return all descendants of heading matching H-TITLE."
   `(ancestors (heading ,h-title)))
@@ -865,6 +872,32 @@ and has todo childre.
     (remove nil `(and (todo "HOLD" )
                       ,(if tags tags)
                       (not (children (todo)))))))
+
+(defun aj-org-ql-simple-task-search (task)
+  "Search for task `TASK' via `org-ql'."
+  (org-ql-search (aj-org-combined-agenda-files)
+    (aj-org-ql-simple-task-query task)
+    :sort #'aj-org-ql-sort-by-effort
+    :super-groups '((:auto-category t))
+    :title task))
+
+(defun aj-org-ql-custom-task-search ()
+  "Search for tasks."
+  (let ((org-agenda-tag-filter aj-org-agenda-filter))
+    (org-ql-search
+      (aj-org-combined-agenda-files)
+      (aj-org-ql-custom-todo-task-query)
+      :sort #'aj-org-ql-sort-by-effort
+      :super-groups '((:auto-category t ))
+      :title "Plain Todos")))
+
+(defun aj-org-ql-custom-agenda-filter-tags ()
+  "Return tags part of org-ql query when `aj-org-agenda-filter' is set. "
+  (when (and aj-org-agenda-filter
+             (not current-prefix-arg))
+    `(tags ,(string-remove-prefix
+             "+" (substring-no-properties
+                  (car aj-org-agenda-filter))))))
 
 ;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-agenda-gtd-hydra (:color blue
@@ -920,13 +953,13 @@ and has todo childre.
                                         ((catch 'heading
                                            (org-ql-select
                                              (aj-org-combined-agenda-files)
-                                             (aj-org-ql-search-stucked-project)
+                                             (aj-org-ql-stucked-projects-query)
                                              :action (lambda ()
                                                        (when (org-get-heading)
                                                          (throw 'heading t)))))
                                          (org-ql-search
                                            (aj-org-combined-agenda-files)
-                                           (aj-org-ql-search-stucked-project)
+                                           (aj-org-ql-stucked-projects-query)
                                            :super-groups '((:auto-category t))
                                            :title "Stucked Projects"))
 
@@ -960,7 +993,7 @@ and has todo childre.
                                                                (when (org-get-heading)
                                                                  (throw 'heading t)))))
                                                  (aj-org-ql-custom-task-search)
-                                               (aj-org-ql-simple-taks-search "SOMEDAY")))
+                                               (aj-org-ql-simple-task-search "SOMEDAY")))
                                            )
                                         )
                                        )
@@ -1014,7 +1047,7 @@ _q_uery                       _h_old
 
   ("s" (org-ql-search
          (aj-org-combined-agenda-files)
-         (aj-org-ql-search-stucked-project)
+         (aj-org-ql-stucked-projects-query)
          :super-groups '((:auto-category t))
          :title "Stucked Projects"))
 
@@ -1034,9 +1067,9 @@ _q_uery                       _h_old
            :super-groups '((:auto-parent t))
            :title "HOLD")))
 
-  ("c" (aj-org-ql-simple-taks-search "CANCELLED"))
+  ("c" (aj-org-ql-simple-task-search "CANCELLED"))
 
-  ("d" (aj-org-ql-simple-taks-search "DONE"))
+  ("d" (aj-org-ql-simple-task-search "DONE"))
 
   ("r" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -1058,21 +1091,21 @@ _q_uery                       _h_old
 
   ("T" (org-ql-search
          (aj-org-combined-agenda-files)
-         '(todo)
-         :sort '(date priority todo)
+         (aj-org-ql-non-complete-tasks-query)
+         :sort #'aj-org-ql-sort-by-todo
          :super-groups '((:auto-category t))
          :title "All Todos"))
 
   ("A" (org-ql-search
          (aj-get-all-archived-org-files)
-         '(or (todo "DONE") (todo "CANCELLED"))
-         :sort '(date priority todo)
+         (aj-org-ql-done-query)
+         :sort 'date
          :super-groups '((:auto-category t))
          :title "ARCHIVED"))
 
-  ("S" (aj-org-ql-simple-taks-search "SOMEDAY"))
+  ("S" (aj-org-ql-simple-task-search "SOMEDAY"))
 
-  ("M" (aj-org-ql-simple-taks-search "MAYBE"))
+  ("M" (aj-org-ql-simple-task-search "MAYBE"))
 
   ("q" (org-ql-search
          (aj-org-combined-agenda-files)
@@ -1500,16 +1533,19 @@ Otherwise dispatch default commands.
   "Store preset for the last search dispatched by `aj/org-agenda-headlines'.")
 
 ;;;###autoload
-(defun aj/org-agenda-headlines (&optional query files sort-fn reverse time no-last)
+(cl-defun aj/org-agenda-headlines (&key query
+                                        (files (aj-org-combined-agenda-files))
+                                        (sort-fn #'aj-org-ql-sort-by-todo)
+                                        reverse time no-last capture-key)
   "Jump to a todo headline in `org-agenda-files'.
 
-Optionally this function accepts valid org-ql QUERY.
-Optionally this function accepts list of FILES to operate upon.
-Optionally pass SORT-FN valid sorting function or keyword for `org-ql-query'.
-Optionally REVERSE the order of search results.
-Optionally show TIME in the results.
-Filters todo headlines according to `aj-org-agenda-filter'.
-With NO-LAST cancel saving of last search into `aj-org-agenda-headlines-last-search'.
+Function accepts optionally following keywords arguments:
+valid or-ql QUERY, list of FILES to search, valid org-ql
+sorting keyword or function SORT-FN, REVERSE (bool) to reverse search results,
+TIME (bool) to show timestamp of the items, NO-LAST to saving parameters of last search
+into `aj-org-agenda-headlines-last-search'.
+
+This function filters agenda headlines according to `aj-org-agenda-filter'.
 "
   (interactive "P")
   (let* ((tags (aj-org-ql-custom-agenda-filter-tags))
@@ -1518,8 +1554,6 @@ With NO-LAST cancel saving of last search into `aj-org-agenda-headlines-last-sea
                         `(and (todo) ,tags)
                       '(todo))))
          (time (when time t))
-         (files (or files (aj-org-combined-agenda-files)))
-         (sort-fn (or sort-fn #'aj-org-ql-sort-by-todo))
          ivy-sort-functions-alist)
 
     (unless no-last
@@ -1589,8 +1623,8 @@ If there are no matching files, return all org files from DIR instead.
                  (ivy-state-current ivy-last))))))))
 
 ;;;###autoload
-(defun aj-org-jump-to-headline-at (filelist &optional level)
-  "Jump to org mode heading of any file from FILELIST.
+(cl-defun aj-org-jump-to-headline-at (&key files level)
+  "Jump to org mode heading of any file from FILES.
 Optionally specify heading LEVEL (default is 3).
 "
   (require 'org)
@@ -1602,7 +1636,7 @@ Optionally specify heading LEVEL (default is 3).
      "Go to: "
      (org-ql-query
        :select headings
-       :from filelist
+       :from files
        :where `(level <= ,(or level 3))
        )
      :update-fn #'aj-ivy-update-fn-timer

@@ -884,7 +884,7 @@
   :desc "set category"    "s"   #'yankpad-set-category
   :desc "expand"          "TAB" #'yankpad-expand
   :desc "insert"          "y"   #'yankpad-insert
-  :desc "yankpad jump"    "j" (cmd! (aj-org-jump-to-headline-at (list yankpad-file) 3))
+  :desc "yankpad jump"    "j" (cmd! (aj-org-jump-to-headline-at :files (list yankpad-file) :level 3))
   )
 
  ;; universal argument     "u"
@@ -914,23 +914,21 @@
   :desc "search eaf"               "S" (cmd! (counsel-web-search nil "Search web with eaf: " nil #'eaf-open-browser))
 
   (:prefix ("o" . "open agenda")
-   :desc "all active tasks"     "o" (cmd! (aj/org-agenda-headlines `(todo ,(concat "TO" "DO") "NEXT" "PROJECT" "WAIT" "HOLD")))
-   :desc "past due tasks"       "a" (cmd! (aj/org-agenda-headlines `(and (ts-active :from past :to ,(ts-now)) (not (todo "DONE"))) nil 'date t t))
-   :desc "archived"             "A" (cmd! (aj/org-agenda-headlines
-                                           '(or (todo "DONE") (todo "CANCELLED"))
-                                           (aj-get-all-archived-org-files)))
-   :desc "all headings"         "H" (cmd! (aj-org-jump-to-headline-at (aj-org-combined-agenda-files) 9))
-   :desc "inbox"                "i" (cmd! (aj-org-jump-to-headline-at (list aj-org-inbox-file) 1))
-   :desc "next"                 "n" (cmd! (aj/org-agenda-headlines (aj-org-ql-custom-next-task-query)))
-   :desc "tasks"                "t" (cmd! (aj/org-agenda-headlines (aj-org-ql-custom-todo-task-query)))
+   :desc "all active tasks"     "o" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-all-active-tasks-query)))
+   :desc "past due tasks NO-FILTER"     "a" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-past-dues-query) :sort-fn 'date :reverse t :time t))
+   :desc "archived"             "A" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-done-query) :files (aj-get-all-archived-org-files)))
+   :desc "all headings"         "H" (cmd! (aj-org-jump-to-headline-at :files (aj-org-combined-agenda-files) :level 9))
+   :desc "inbox"                "i" (cmd! (aj-org-jump-to-headline-at :files (list aj-org-inbox-file) :level 1))
+   :desc "next"                 "n" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-custom-next-task-query)))
+   :desc "tasks"                "t" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-custom-todo-task-query) :sort-fn 'date :reverse t))
    :desc "all tasks"            "T" (cmd! (aj/org-agenda-headlines))
-   :desc "projects"             "p" (cmd! (aj/org-agenda-headlines (aj-org-ql-custom-projects-query) nil #'aj-org-ql-sort-by-todo))
-   :desc "wait"                 "w" (cmd! (aj/org-agenda-headlines (aj-org-ql-custom-wait-task-query)))
-   :desc "hold"                 "h" (cmd! (aj/org-agenda-headlines (aj-org-ql-custom-hold-task-query)))
-   :desc "someday"              "s" (cmd! (aj/org-agenda-headlines '(todo "SOMEDAY") nil 'random))
-   :desc "maybe"                "m" (cmd! (aj/org-agenda-headlines '(todo "MAYBE") nil 'random))
-   :desc "cancelled"            "c" (cmd! (aj/org-agenda-headlines '(todo "CANCELLED") nil 'random))
-   :desc "done"                 "d" (cmd! (aj/org-agenda-headlines '(todo "DONE") nil 'random))
+   :desc "projects"             "p" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-custom-projects-query)))
+   :desc "wait"                 "w" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-custom-wait-task-query) :sort-fn 'date))
+   :desc "hold"                 "h" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-custom-hold-task-query) :sort-fn 'date))
+   :desc "someday"              "s" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-simple-task-query "SOMEDAY") :sort-fn 'random))
+   :desc "maybe"                "m" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-simple-task-query "MAYBE") :sort-fn 'random))
+   :desc "cancelled"            "c" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-simple-task-query "CANCELLED") :sort-fn 'date))
+   :desc "done"                 "d" (cmd! (aj/org-agenda-headlines :query (aj-org-ql-simple-task-query "DONE") :sort-fn 'date))
    )
   )
 
@@ -1133,22 +1131,22 @@
                                                       (directory-files-recursively org-brain-path ".org$"))))
                                            (call-interactively #'org-ql-search)))
   :desc "notes headings"       "n" (cmd! (aj-org-jump-to-headline-at
-                                          (if (not current-prefix-arg)
-                                              (aj-org-get-filtered-org-files
-                                               org-brain-path
-                                               (aj-org-notes-filter-preset--get org-brain-path))
-                                            (directory-files-recursively org-brain-path ".org$"))
-                                          (if (eq (car current-prefix-arg) 16) 9 2)))
+                                          :files (if (not current-prefix-arg)
+                                                     (aj-org-get-filtered-org-files
+                                                      org-brain-path
+                                                      (aj-org-notes-filter-preset--get org-brain-path))
+                                                   (directory-files-recursively org-brain-path ".org$"))
+                                          :level (if (eq (car current-prefix-arg) 16) 9 2)))
   :desc "notes open"           "N" (cmd! (if current-prefix-arg
                                              (aj-org-find-file org-directory)
                                            (aj-org-find-file org-brain-path)))
   :desc "archive headings"     "a" (cmd! (if current-prefix-arg
-                                             (aj-org-jump-to-headline-at (aj-get-all-archived-org-files) 3)
+                                             (aj-org-jump-to-headline-at :files (aj-get-all-archived-org-files) :level 3)
                                            (aj-org-jump-to-headline-at
-                                            (aj-org-get-filtered-org-files
-                                             (expand-file-name "archive" org-brain-path)
-                                             (aj-org-notes-filter-preset--get org-brain-path)
-                                             t))))
+                                            :files (aj-org-get-filtered-org-files
+                                                    (expand-file-name "archive" org-brain-path)
+                                                    (aj-org-notes-filter-preset--get org-brain-path)
+                                                    t))))
   :desc "archive open"          "A" (cmd!
                                      (if current-prefix-arg
                                          (let* ((file (ivy-read "Selet file: "
