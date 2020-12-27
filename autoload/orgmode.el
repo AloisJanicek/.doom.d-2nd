@@ -796,6 +796,13 @@ which one is currently active."
   "Return valid org-ql query searching for past dues."
   `(and (ts-active :from past :to ,(ts-now)) (not (done))))
 
+(defun aj-org-ql-future-dues-query ()
+  "Return valid org-ql query searching for future dues."
+  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
+    (if tags
+        `(and (planning :from ,(ts-now)) ,tags)
+      `(planning :from ,(ts-now)))))
+
 (defun aj-org-ql-all-active-tasks-query ()
   "Return valid org-ql query searching for all active tasks.
 Respects `aj-org-agenda-filter'.
@@ -882,6 +889,25 @@ and has todo childre.
     (remove nil `(and (todo "HOLD" )
                       ,(if tags tags)
                       (not (children (todo)))))))
+
+(defun aj-org-ql-custom-clocked-task-query ()
+  "Return custom org-ql queary for all recently clocked tasks."
+  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
+    (if tags
+        `(and (clocked) ,tags)
+      `(clocked))))
+
+(defun aj-org-ql-custom-ticklers-query ()
+  "Return custom org-ql queary for tickler items.
+
+Tickler is just plain reminder, calendar note,
+ org-heading without task keyword but with active timestamp.
+Tickler is not scheduled nor it doesn't have deadline.
+"
+  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
+    (if tags
+        `(and (ts-active) (not (planning)) ,tags)
+      `(and (ts-active) (not (planning))))))
 
 (defun aj-org-ql-simple-task-search (task)
   "Search for task `TASK' via `org-ql'."
@@ -1019,6 +1045,20 @@ _q_uery                       _h_old
              (org-agenda-span 1))
          (org-agenda nil "a")))
 
+  ("b" (org-ql-search
+         (aj-org-combined-agenda-files)
+         (aj-org-ql-future-dues-query)
+         :sort 'date
+         :super-groups '((:auto-category t))
+         :title "Future dues"))
+
+  ("B" (org-ql-search
+         (aj-org-combined-agenda-files)
+         (aj-org-ql-custom-ticklers-query)
+         :sort 'date
+         :super-groups '((:auto-category t))
+         :title "Tickler reminders"))
+
   ("W" (let ((org-agenda-start-day "today")
              (org-agenda-span 10))
          (org-agenda nil "a")))
@@ -1077,7 +1117,15 @@ _q_uery                       _h_old
            :super-groups '((:auto-parent t))
            :title "HOLD")))
 
-  ("c" (aj-org-ql-simple-task-search "CANCELLED"))
+  ("c" (org-ql-search
+         (aj-org-combined-agenda-files)
+         (aj-org-ql-custom-clocked-task-query)
+         :sort #'date
+         :super-groups '((:auto-category t ))
+         :title "Clocked")
+   )
+
+  ("C" (aj-org-ql-simple-task-search "CANCELLED"))
 
   ("d" (aj-org-ql-simple-task-search "DONE"))
 
@@ -1549,7 +1597,7 @@ Otherwise dispatch default commands.
 (defun aj-org-agenda-headlines-dispatch-last ()
   (when aj-org-agenda-headlines-last-search
     (cl-destructuring-bind
-        (query files sort-fn reverse time no-last capture-key)
+        (query prompt files sort-fn reverse time no-last capture-key)
         aj-org-agenda-headlines-last-search
       (aj/org-agenda-headlines
        :query query
