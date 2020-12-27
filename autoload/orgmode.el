@@ -408,17 +408,30 @@ _m_v   ln_s_
                           :initial-input (if aj-org-capture-prefered-template-key
                                              (current-kill 0)
                                            "")))
-         (tag-list (completing-read-multiple
-                    "tag: "
-                    (org-global-tags-completion-table
-                     (aj-org-combined-agenda-files))))
-         (tag-str (if tag-list (concat " :" (mapconcat #'identity tag-list ":") ":") ""))
+         (tag-str (aj-org-capture-select-tags-str))
          (org-capture-templates `(("c" "calendar" entry (file ,file)
                                    ,(concat "** " title " " tag-str
                                             "\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n"
                                             "<" date ">" "\n %?")
                                    :immediate-finish t :prepend t))))
     (org-capture nil "c")))
+
+;;;###autoload
+(defun aj-org-capture-select-tags-str ()
+  "Lets user to choose possibly multiple tags.
+
+Tags are being collected from all org-agenda files.
+Return string of org-mode tags separated by colons
+which is suitable for insertion into org-capture template."
+  (let* ((tag-list (flatten-list
+                    (org-global-tags-completion-table
+                     (aj-org-combined-agenda-files))))
+         (selected-tags (aj-org-notes-set-filter-preset--ivy
+                         "Tags: " tag-list nil)))
+    (if selected-tags
+        (concat " :" (mapconcat #'identity selected-tags ":") ":")
+      "")
+    ))
 
 ;;;###autoload
 (defun aj--org-capture-task (&optional clock-in)
@@ -435,11 +448,7 @@ _m_v   ln_s_
                                       :initial-input (if aj-org-capture-prefered-template-key
                                                          (current-kill 0)
                                                        ""))))
-         (tag-list (completing-read-multiple
-                    "tag: "
-                    (org-global-tags-completion-table
-                     (aj-org-combined-agenda-files))))
-         (tag-str (if tag-list (concat " :" (mapconcat #'identity tag-list ":") ":") ""))
+         (tag-str (aj-org-capture-select-tags-str))
          (effort (ivy-read "Effort: "
                            (split-string
                             (let ((efforts nil))
