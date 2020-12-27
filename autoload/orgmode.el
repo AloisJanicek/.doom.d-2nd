@@ -81,7 +81,7 @@ Works also in `org-agenda'."
   (let* ((files (or files (aj-org-combined-agenda-files)))
          (file (or
                 file
-                (buffer-file-name (marker-buffer (org-get-at-bol 'org-marker)))
+                (ignore-errors (buffer-file-name (marker-buffer (org-get-at-bol 'org-marker))))
                 (buffer-file-name (org-base-buffer (current-buffer)))
                 (ivy-read "File: " files)))
          ivy-sort-functions-alist
