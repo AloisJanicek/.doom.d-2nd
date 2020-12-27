@@ -75,6 +75,34 @@ Works also in `org-agenda'."
       (call-interactively #'org-refile))))
 
 ;;;###autoload
+(defun aj/org-refile-to-current-file (&optional files file heading)
+  "Refile to FILE and HEADING and ask user for both if they aren't provided."
+  (let* ((files (or files (aj-org-combined-agenda-files)))
+         (file (or
+                file
+                (buffer-file-name (org-base-buffer (current-buffer)))
+                (ivy-read "File: " files)))
+         ivy-sort-functions-alist
+         (heading-pos (unless heading
+                        (get-text-property
+                         0
+                         'marker
+                         (ivy-read "Heading: "
+                                   (org-ql-select file '(and (todo)
+                                                             (not (todo "MAYBE"))
+                                                             (not (todo "SOMEDAY")))
+                                     :action (lambda ()
+                                               (aj-org-get-pretty-heading-path t t t t))
+                                     :sort (lambda (a b) nil)
+                                     :narrow t
+                                     )))))
+         (rfloc (list heading file nil heading-pos)))
+    (message "%s" rfloc)
+    (if (memq major-mode aj-org-agenda-similar-modes)
+        (org-agenda-refile nil rfloc)
+      (org-refile nil nil rfloc))))
+
+;;;###autoload
 (defun +org/refile-to-last-location (arg)
   "Refile to last stored location.
 With a `\\[universal-argument]' ARG, do copy instead.
@@ -192,7 +220,7 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
   ("x" #'aj/private-refile/body)
   ("o" #'+org/refile-to-other-window)
   ("O" #'+org/refile-to-other-buffer)
-  ("." #'+org/refile-to-current-file)
+  ("." #'aj/org-refile-to-current-file)
   ("c" #'+org/refile-to-running-clock)
   ("l" #'+org/refile-to-last-location)
   ("r" #'aj/org-refile-link-to-resources-drawer)

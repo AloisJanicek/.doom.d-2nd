@@ -899,7 +899,7 @@
             (aj-org-agenda-headlines-custom-action-helper
              headline
              (lambda ()
-               (+org/refile-to-current-file nil)))
+               (aj/org-refile-to-current-file nil)))
             (aj-org-agenda-headlines-dispatch-last))
       "Refile")
      ("k" (lambda (headline)
