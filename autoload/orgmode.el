@@ -77,9 +77,11 @@ Works also in `org-agenda'."
 ;;;###autoload
 (defun aj/org-refile-to-current-file (&optional files file heading)
   "Refile to FILE and HEADING and ask user for both if they aren't provided."
+  (interactive)
   (let* ((files (or files (aj-org-combined-agenda-files)))
          (file (or
                 file
+                (buffer-file-name (marker-buffer (org-get-at-bol 'org-marker)))
                 (buffer-file-name (org-base-buffer (current-buffer)))
                 (ivy-read "File: " files)))
          ivy-sort-functions-alist
