@@ -877,6 +877,10 @@
              headline
              (lambda ()
                (let ((h-title (aj-org-heading-title-without-statistics-cookie)))
+                 ;; HACK because I am experiencing some weird issue with narrowing and widening
+                 ;; I am dropping org-ql cache for this buffer / file in this scenario
+                 (puthash (org-base-buffer (current-buffer)) nil org-ql-cache)
+
                  (aj/org-agenda-headlines
                   :query (aj-org-ql-project-descendants-query h-title)
                   :files (buffer-file-name (org-base-buffer (current-buffer)))
