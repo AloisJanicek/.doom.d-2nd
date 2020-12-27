@@ -1553,6 +1553,7 @@ Otherwise dispatch default commands.
         aj-org-agenda-headlines-last-search
       (aj/org-agenda-headlines
        :query query
+       :prompt prompt
        :files files
        :sort-fn sort-fn
        :reverse reverse
@@ -1564,7 +1565,7 @@ Otherwise dispatch default commands.
   )
 
 ;;;###autoload
-(cl-defun aj/org-agenda-headlines (&key query
+(cl-defun aj/org-agenda-headlines (&key query prompt
                                         (files (aj-org-combined-agenda-files))
                                         (sort-fn #'aj-org-ql-sort-by-todo)
                                         reverse time no-last capture-key)
@@ -1575,6 +1576,7 @@ valid or-ql QUERY, list of FILES to search, valid org-ql
 sorting keyword or function SORT-FN, REVERSE (bool) to reverse search results,
 TIME (bool) to show timestamp of the items, NO-LAST for not saving parameters
 of the last search into `aj-org-agenda-headlines-last-search'.
+PROMPT is prompt stirng for ivy interface.
 
 This function filters agenda headlines according to `aj-org-agenda-filter'.
 "
@@ -1590,11 +1592,13 @@ This function filters agenda headlines according to `aj-org-agenda-filter'.
     (setq aj-org-capture-prefered-template-key nil)
     (unless no-last
       (setq aj-org-agenda-headlines-last-search
-            `(,query ,files ,sort-fn ,reverse ,time ,no-last ,capture-key)))
+            `(,query ,prompt ,files ,sort-fn ,reverse ,time ,no-last ,capture-key)))
 
     (when capture-key
       (setq aj-org-capture-prefered-template-key capture-key))
-    (ivy-read "Agenda: "
+    (ivy-read (format "%s: " (or prompt
+                                 (format
+                                  "agenda headlines %s" (cdr (aj-org-ql-custom-agenda-filter-tags)))))
               (let ((results (org-ql-query
                                :select (lambda ()
                                          (aj-org-get-pretty-heading-path nil nil t t t time))
