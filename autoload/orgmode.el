@@ -2963,5 +2963,18 @@ Prepends org-roam-ref items with \"link\" icon.
     (replace-regexp-in-string " *\\[[0-9]*\\(%\\|/[0-9]*\\)\\] *"
                               ""
                               (nth 4 (org-heading-components)))))
+;;;###autoload
+(defun aj/org-review-tags ()
+  "Select one tag and then all headings tagged with it."
+  (interactive)
+  (let* ((files (aj-org-get-filtered-org-files
+                 :dir org-directory
+                 :preset aj-org-agenda-filter))
+         (tag (ivy-read "tag: " (flatten-list
+                                 (org-global-tags-completion-table files)))))
+    (aj/org-agenda-headlines :query `(tags ,tag)
+                             :prompt (format "tag: %s" tag)
+                             :files files
+                             )))
 (provide 'orgmode)
 ;;; orgmode.el ends here
