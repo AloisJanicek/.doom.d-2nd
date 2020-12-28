@@ -196,8 +196,9 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
                     (directory-files-recursively
                      org-brain-path org-agenda-file-regexp)
                   (aj-org-get-filtered-org-files
-                   org-brain-path
-                   (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))
+                   :recursive t
+                   :dir org-brain-path
+                   :preset (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))
 
            (setq org-refile-targets `((,file-list
                                        :maxlevel . 3)))
@@ -243,8 +244,9 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
                 (directory-files-recursively org-brain-path ".org$"))
              (aj-org-refile-region
               (aj-org-get-filtered-org-files
-               org-brain-path
-               (cdr (assoc org-brain-path aj-org-notes-filter-preset)))))
+               :recursive t
+               :dir org-brain-path
+               :preset (cdr (assoc org-brain-path aj-org-notes-filter-preset)))))
          (aj-org-refile-region (buffer-file-name))))
   )
 
@@ -1179,7 +1181,9 @@ _q_uery                       _h_old
 
   ("R" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
-           (aj-get-all-archived-org-files)
+           (aj-org-get-filtered-org-files
+            :preset aj-org-agenda-filter
+            :archived t)
            '(ts :from -21 :to today)
            :sort '(date priority todo)
            :super-groups '((:auto-ts t))
@@ -1194,7 +1198,9 @@ _q_uery                       _h_old
          :title "All Todos"))
 
   ("A" (org-ql-search
-         (aj-get-all-archived-org-files)
+         (aj-org-get-filtered-org-files
+          :preset aj-org-agenda-filter
+          :archived t)
          (aj-org-ql-done-query)
          :sort 'date
          :super-groups '((:auto-category t))
@@ -1605,26 +1611,29 @@ Otherwise dispatch default commands.
 ;;;###autoload
 (defun aj-get-all-org-files ()
   "Return list of all org files but without archived files."
-  (seq-filter (lambda (elt)
-                (not (string-match "org_archive" elt)))
-              (directory-files-recursively org-directory "org$")))
+  (directory-files-recursively org-directory ".org$"))
 
-;;;###autoload
-(defun aj-get-all-archived-org-files ()
-  "Return list of all archived org files."
-  (seq-filter (lambda (file)
-                (and (string-match "org_archive" file)
-                     (with-temp-buffer
-                       (insert-file-contents-literally file nil 0 256)
-                       (goto-char (point-min))
-                       (unless (string-equal
-                                "-----BEGIN PGP MESSAGE-----"
-                                (buffer-substring-no-properties 1 28))
-                         t)
-                       )
-                     )
-                )
-              (directory-files-recursively org-directory "org")))
+(defun aj-org-encrypted-p (file)
+  "Return non-nil when FILE is encrypted."
+  (with-temp-buffer
+    (insert-file-contents-literally file nil 0 256)
+    (goto-char (point-min))
+    (when (string-equal
+           "-----BEGIN PGP MESSAGE-----"
+           (buffer-substring-no-properties 1 28))
+      t)))
+(defun aj-org-file-belongs-to-filter-p (file preset)
+  "Return non-nil when FILE's filetag matches PRESET.
+"
+  (if current-prefix-arg
+      t
+    (when (+org-get-global-property "FILETAGS" file)
+      (catch 'tag
+        (dolist (tag (split-string
+                      (+org-get-global-property "FILETAGS" file) ":" t))
+          (when (cl-member tag preset :test #'string-match) (throw 'tag t)))))
+    )
+  )
 
 (defvar aj-org-agenda-headlines-last-search nil
   "Store preset for the last search dispatched by `aj/org-agenda-headlines'.")
@@ -1723,22 +1732,33 @@ This function filters agenda headlines according to `aj-org-agenda-filter'.
       (setq aj-org-capture-prefered-template-key nil))))
 
 ;;;###autoload
-(defun aj-org-get-filtered-org-files (dir preset &optional archived)
+(cl-defun aj-org-get-filtered-org-files (&key dir preset archived recursive)
   "Return list of org files from DIR filtered matching filetags specified by PRESET.
-If there are no matching files, return all org files from DIR instead.
+
+When ARCHIVED, return archived files only instead and specify RECURSIVE for
+searching DIR recursively.
 "
+  (require 'org-archive)
   (let* ((match (if archived ".org_archive$" ".org$"))
-         (files (seq-filter
-                 (lambda (file)
-                   (when (+org-get-global-property "FILETAGS" file)
-                     (catch 'tag
-                       (dolist (tag (split-string
-                                     (+org-get-global-property "FILETAGS" file) ":" t))
-                         (when (cl-member tag preset :test #'string-match) (throw 'tag t))))))
-                 (directory-files-recursively dir match))))
-    (if files
-        files
-      (directory-files-recursively dir match))))
+         (dir (if (ignore-errors (file-directory-p dir))
+                  (if (and archived (not recursive))
+                      (expand-file-name
+                       (file-name-directory org-archive-location) dir)
+                    dir)
+                (if (and archived (not recursive))
+                    (expand-file-name
+                     (file-name-directory org-archive-location) org-directory)
+                  org-directory)))
+         (files (if recursive
+                    (directory-files-recursively dir match)
+                  (directory-files dir t match))))
+    (seq-filter
+     (lambda (file)
+       (and (if preset
+                (aj-org-file-belongs-to-filter-p file preset)
+              t)
+            (not (aj-org-encrypted-p file))))
+     files)))
 
 ;;;###autoload
 (defun aj-ivy-update-fn-timer ()
@@ -2017,8 +2037,9 @@ item candidates from COLLECTION to PRESET.
                     (lambda (file)
                       (file-name-nondirectory file))
                     (aj-org-get-filtered-org-files
-                     org-brain-path
-                     (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))))
+                     :recursive t
+                     :dir org-brain-path
+                     :preset (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))))
       (when search-archive
         (setq dir (expand-file-name "archive" dir)))
       (let ((current-prefix-arg nil))
@@ -2294,8 +2315,9 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
             (file-name-sans-extension
              (file-name-nondirectory file)))
           (aj-org-get-filtered-org-files
-           org-brain-path
-           (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))
+           :recursive t
+           :dir org-brain-path
+           :preset (cdr (assoc org-brain-path aj-org-notes-filter-preset))))))
     (org-link-open-from-string
      (org-brain--choose-resource
       (remove

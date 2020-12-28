@@ -366,7 +366,10 @@
                                    (aj-org-teleport-heading-here
                                     (ivy-read "Selet file: "
                                               (if current-prefix-arg
-                                                  (aj-get-all-archived-org-files)
+                                                  (aj-org-get-filtered-org-files
+                                                   :preset nil
+                                                   :archived t
+                                                   :recursive t)
                                                 (directory-files-recursively
                                                  (expand-file-name "archive" org-brain-path)
                                                  ".org_archive$")))))
@@ -929,7 +932,7 @@
                                                                    :sort-fn 'date :reverse t :time t :capture-key "d"))
    :desc "archived"             "A" (cmd! (aj/org-agenda-headlines :prompt (format "archived %s" (cdr (aj-org-ql-custom-agenda-filter-tags)))
                                                                    :query (aj-org-ql-done-query)
-                                                                   :files (aj-get-all-archived-org-files) :capture-key "k"))
+                                                                   :files (aj-org-get-filtered-org-files :preset aj-org-agenda-filter :archived t)  :capture-key "k"))
    :desc "all headings"         "H" (cmd! (aj-org-jump-to-headline-at :files (aj-org-combined-agenda-files) :level 9))
    :desc "inbox"                "i" (cmd! (aj-org-jump-to-headline-at :files (list aj-org-inbox-file) :level 1))
    :desc "next"                 "n" (cmd! (aj/org-agenda-headlines :prompt (format "next %s" (cdr (aj-org-ql-custom-agenda-filter-tags)))
@@ -1155,20 +1158,24 @@
   :desc "notes headings"       "n" (cmd! (aj-org-jump-to-headline-at
                                           :files (if (not current-prefix-arg)
                                                      (aj-org-get-filtered-org-files
-                                                      org-brain-path
-                                                      (aj-org-notes-filter-preset--get org-brain-path))
+                                                      :recursive t
+                                                      :dir org-brain-path
+                                                      :preset (aj-org-notes-filter-preset--get org-brain-path))
                                                    (directory-files-recursively org-brain-path ".org$"))
                                           :level (if (eq (car current-prefix-arg) 16) 9 2)))
   :desc "notes open"           "N" (cmd! (if current-prefix-arg
                                              (aj-org-find-file org-directory)
                                            (aj-org-find-file org-brain-path)))
   :desc "archive headings"     "a" (cmd! (if current-prefix-arg
-                                             (aj-org-jump-to-headline-at :files (aj-get-all-archived-org-files) :level 3)
+                                             (aj-org-jump-to-headline-at
+                                              :files (aj-org-get-filtered-org-files :preset aj-org-agenda-filter :archived t)
+                                              :level 3)
                                            (aj-org-jump-to-headline-at
                                             :files (aj-org-get-filtered-org-files
-                                                    (expand-file-name "archive" org-brain-path)
-                                                    (aj-org-notes-filter-preset--get org-brain-path)
-                                                    t))))
+                                                    :dir org-brain-path
+                                                    :archived t
+                                                    :preset (aj-org-notes-filter-preset--get org-brain-path))
+                                            :level 3)))
   :desc "archive open"          "A" (cmd!
                                      (if current-prefix-arg
                                          (let* ((file (ivy-read "Selet file: "
