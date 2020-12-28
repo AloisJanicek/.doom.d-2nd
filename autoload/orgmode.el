@@ -427,7 +427,9 @@ Return string of org-mode tags separated by colons
 which is suitable for insertion into org-capture template."
   (let* ((tag-list (flatten-list
                     (org-global-tags-completion-table
-                     (aj-org-combined-agenda-files))))
+                     (aj-org-get-filtered-org-files
+                      :dir org-directory
+                      :preset aj-org-agenda-filter))))
          (selected-tags (aj-org-notes-set-filter-preset--ivy
                          "Tags: " tag-list nil)))
     (if selected-tags
