@@ -2592,7 +2592,10 @@ either eaf-browser or default browser.
          (aj-org-roam-delete-file
           (buffer-file-name (org-base-buffer (current-buffer)))))
    "delete")
-  ("r" #'aj/org-roam-find-refs "refs")
+  ("r" (let (aj-org-roam-filter-preset
+             aj-org-roam-latest-ivy-text)
+         (aj/org-roam-find-refs))
+   "refs")
   ("R" #'aj/org-roam-set-filter-preset "filter")
   ("f" #'aj/org-roam-find-file "file")
   ("F" (let (aj-org-roam-filter-preset
