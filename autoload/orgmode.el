@@ -841,10 +841,11 @@ which one is currently active."
 
 (defun aj-org-ql-future-dues-query ()
   "Return valid org-ql query searching for future dues."
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
+  (let ((tags (aj-org-ql-custom-agenda-filter-tags))
+        (up-to (if current-prefix-arg 365 21)))
     (if tags
-        `(and (planning :from ,(ts-now)) ,tags)
-      `(planning :from ,(ts-now)))))
+        `(and (planning :from ,(ts-now) :to ,up-to) ,tags)
+      `(planning :from ,(ts-now) :to ,up-to))))
 
 (defun aj-org-ql-all-active-tasks-query ()
   "Return valid org-ql query searching for all active tasks.
@@ -949,8 +950,8 @@ Tickler is not scheduled nor it doesn't have deadline.
 "
   (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
     (if tags
-        `(and (ts-active) (not (planning)) ,tags)
-      `(and (ts-active) (not (planning))))))
+        `(and (ts-active :to 365) (not (planning)) ,tags)
+      `(and (ts-active :to 365) (not (planning))))))
 
 (defun aj-org-ql-simple-task-search (task)
   "Search for task `TASK' via `org-ql'."
