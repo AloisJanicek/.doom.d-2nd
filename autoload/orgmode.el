@@ -1643,10 +1643,10 @@ Otherwise dispatch default commands.
 (defvar aj-org-capture-prefered-template-key nil
   "Stores prefered capture template key for capturing from `aj/org-agenda-headlines'.")
 
-(defun aj-org-agenda-headlines-dispatch-last (&optional back initial-input)
+(defun aj-org-agenda-headlines-dispatch-last (&optional up-level initial-input)
   "Dispatch last used `aj/org-agenda-headlines'.
 
-When optional BACK, return from nested search of level2
+When optional UP-LEVEL, return from nested search of level2
 (for example \"descendants\" search) into its parent search of level1.
 "
   (let* ((level1-search (plist-get aj-org-agenda-headlines-last-search :level1))
@@ -1658,7 +1658,7 @@ When optional BACK, return from nested search of level2
          )
 
     (cl-destructuring-bind (_ query prompt files sort-fn reverse time capture-key)
-        (if (and inside-level2 (not back)) level2-search level1-search)
+        (if (and inside-level2 (not up-level)) level2-search level1-search)
       (aj/org-agenda-headlines
        :query query
        :prompt prompt
