@@ -1364,7 +1364,7 @@
    org-hierarchical-todo-statistics t
 
    org-startup-with-inline-images t
-   org-hide-emphasis-markers t
+   org-hide-emphasis-markers nil
    org-fontify-whole-heading-line nil
    org-src-fontify-natively t
    org-imenu-depth 9
