@@ -1650,10 +1650,10 @@ When optional UP-LEVEL, return from nested search of level2
 (for example \"descendants\" search) into its parent search of level1.
 "
   (let* ((level1-search (plist-get aj-org-agenda-headlines-last-search :level1))
-         (level2-search (plist-get aj-org-agenda-headlines-last-search :level2))
+         (level2-search (ignore-errors (plist-get aj-org-agenda-headlines-last-search :level2)))
          (level1-ts (nth 0 level1-search))
-         (level2-ts (nth 0 level2-search))
-         (inside-level2 (time-less-p level1-ts level2-ts))
+         (level2-ts (when level2-search (nth 0 level2-search)))
+         (inside-level2 (when level2-search (time-less-p level1-ts level2-ts)))
          (initial-input (or initial-input ""))
          )
 
