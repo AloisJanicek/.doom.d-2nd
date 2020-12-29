@@ -2709,20 +2709,19 @@ the input when returning from backlinks back to top-level search.")
   "Browse backlinks of X."
   (let* ((f (plist-get (cdr x) :path))
          (from this-command))
-    (setq aj-org-roam-latest-ivy-text ivy-text)
+    (unless (string-match "Backlinks of" ivy--prompt)
+      (setq aj-org-roam-latest-ivy-text ivy-text))
     (if-let ((backlinks (org-roam--get-backlinks f)))
-        (progn
-          (setq aj-org-roam-latest-ivy-text ivy-text)
-          (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
-                           (seq-map
-                            (lambda (bklink)
-                              (cons
-                               (org-roam--prepend-tag-string
-                                (org-roam-db--get-title (car bklink))
-                                (org-roam--extract-tags f))
-                               `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
-                            backlinks)
-                           from))
+        (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
+                         (seq-map
+                          (lambda (bklink)
+                            (cons
+                             (org-roam--prepend-tag-string
+                              (org-roam-db--get-title (car bklink))
+                              (org-roam--extract-tags f))
+                             `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
+                          backlinks)
+                         from)
       (when-let ((initial-input aj-org-roam-latest-ivy-text)
                  aj-org-roam-last-ivy)
         (funcall aj-org-roam-last-ivy initial-input)))))
