@@ -1637,18 +1637,26 @@ Otherwise dispatch default commands.
     )
   )
 
-(defvar aj-org-agenda-headlines-last-search nil
+(defvar aj-org-agenda-headlines-last-search '(:level1 nil :level2 nil)
   "Store preset for the last search dispatched by `aj/org-agenda-headlines'.")
 
 (defvar aj-org-capture-prefered-template-key nil
-  "Stores prefered capture template key for capturing from `aj/org-agenda-headlines'."
-  )
+  "Stores prefered capture template key for capturing from `aj/org-agenda-headlines'.")
 
-(defun aj-org-agenda-headlines-dispatch-last ()
-  (when aj-org-agenda-headlines-last-search
-    (cl-destructuring-bind
-        (query prompt files sort-fn reverse time no-last capture-key)
-        aj-org-agenda-headlines-last-search
+(defun aj-org-agenda-headlines-dispatch-last (&optional back)
+  "Dispatch last used `aj/org-agenda-headlines'.
+
+When optional BACK, return from nested search of level2
+(for example \"descendants\" search) into its parent search of level1.
+"
+  (let* ((level1-search (plist-get aj-org-agenda-headlines-last-search :level1))
+         (level2-search (plist-get aj-org-agenda-headlines-last-search :level2))
+         (level1-ts (nth 0 level1-search))
+         (level2-ts (nth 0 level2-search))
+         (inside-level2 (time-less-p level1-ts level2-ts)))
+
+    (cl-destructuring-bind (_ query prompt files sort-fn reverse time capture-key)
+        (if (and inside-level2 (not back)) level2-search level1-search)
       (aj/org-agenda-headlines
        :query query
        :prompt prompt
@@ -1656,9 +1664,9 @@ Otherwise dispatch default commands.
        :sort-fn sort-fn
        :reverse reverse
        :time time
-       :no-last no-last
        :capture-key capture-key
-       ))
+       )
+      )
     )
   )
 
@@ -1666,17 +1674,20 @@ Otherwise dispatch default commands.
 (cl-defun aj/org-agenda-headlines (&key query prompt
                                         (files (aj-org-combined-agenda-files))
                                         (sort-fn #'aj-org-ql-sort-by-todo)
-                                        reverse time no-last capture-key)
+                                        reverse time capture-key)
   "Jump to a todo headline in `org-agenda-files'.
 
 Function accepts optionally following keywords arguments:
-valid or-ql QUERY, list of FILES to search, valid org-ql
-sorting keyword or function SORT-FN, REVERSE (bool) to reverse search results,
-TIME (bool) to show timestamp of the items, NO-LAST for not saving parameters
-of the last search into `aj-org-agenda-headlines-last-search'.
-PROMPT is prompt stirng for ivy interface.
+- valid or-ql QUERY
+- PROMPT is prompt stirng for ivy interface
+- list of FILES to search, valid org-ql
+- sorting keyword or function SORT-FN
+- REVERSE (bool) to reverse search results
+- TIME (bool) to show timestamp of the items
 
-This function filters agenda headlines according to `aj-org-agenda-filter'.
+This function filters agenda headlines according to `aj-org-agenda-filter' and
+saves the search preset into `aj-org-agenda-headlines-last-search' so the search can be
+replicated by calling this function again with arguments saved in this variable.
 "
   (interactive "P")
   (let* ((tags (aj-org-ql-custom-agenda-filter-tags))
@@ -1685,15 +1696,18 @@ This function filters agenda headlines according to `aj-org-agenda-filter'.
                         `(and (todo) ,tags)
                       '(todo))))
          (time (when time t))
+         (args-list `(,(current-time) ,query ,prompt ,files ,sort-fn ,reverse ,time ,capture-key))
          ivy-sort-functions-alist)
 
-    (setq aj-org-capture-prefered-template-key nil)
-    (unless no-last
-      (setq aj-org-agenda-headlines-last-search
-            `(,query ,prompt ,files ,sort-fn ,reverse ,time ,no-last ,capture-key)))
 
+    (let* ((keyword (if (string-match "descendants" prompt) :level2 :level1)))
+      (setq aj-org-agenda-headlines-last-search
+            (plist-put aj-org-agenda-headlines-last-search keyword args-list)))
+
+    (setq aj-org-capture-prefered-template-key nil)
     (when capture-key
       (setq aj-org-capture-prefered-template-key capture-key))
+
     (ivy-read (format "%s: " (or prompt
                                  (format
                                   "agenda headlines %s" (cdr (aj-org-ql-custom-agenda-filter-tags)))))
@@ -1950,7 +1964,9 @@ item candidates from COLLECTION to PRESET.
   (let ((prompt (lambda ()
                   (format "%s: (%s) "
                           prompt
-                          (mapconcat #'identity preset ", ")))))
+                          (mapconcat #'identity preset ", "))))
+        ivy-sort-functions-alist
+        )
     (ivy-read (funcall prompt)
               collection
               :action (lambda  (x)
@@ -1967,7 +1983,7 @@ item candidates from COLLECTION to PRESET.
                         (if (eq this-command 'ivy-call)
                             (with-selected-window (active-minibuffer-window)
                               (delete-minibuffer-contents))))
-              :caller 'aj-org-notes-set-filter-preset)
+              :caller 'aj-org-notes-set-filter-preset--ivy)
     preset)
   )
 

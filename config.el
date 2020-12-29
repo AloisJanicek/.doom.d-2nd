@@ -885,11 +885,12 @@
 
                  (aj/org-agenda-headlines
                   :query (aj-org-ql-project-descendants-query h-title)
+                  :prompt "descendants: "
                   :files (buffer-file-name (org-base-buffer (current-buffer)))
                   :sort-fn (lambda (a b) t)
                   :reverse t
                   :time t
-                  :no-last t)
+                  )
                  ))))
       "descendants")
      ("r" (lambda (headline)
@@ -913,7 +914,7 @@
             (aj-org-agenda-headlines-dispatch-last))
       "delete")
      ("h" (lambda (x)
-            (aj-org-agenda-headlines-dispatch-last))
+            (aj-org-agenda-headlines-dispatch-last t))
       "Back")
      )
    )
