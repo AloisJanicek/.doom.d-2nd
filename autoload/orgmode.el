@@ -1643,7 +1643,7 @@ Otherwise dispatch default commands.
 (defvar aj-org-capture-prefered-template-key nil
   "Stores prefered capture template key for capturing from `aj/org-agenda-headlines'.")
 
-(defun aj-org-agenda-headlines-dispatch-last (&optional back)
+(defun aj-org-agenda-headlines-dispatch-last (&optional back initial-input)
   "Dispatch last used `aj/org-agenda-headlines'.
 
 When optional BACK, return from nested search of level2
@@ -1653,7 +1653,9 @@ When optional BACK, return from nested search of level2
          (level2-search (plist-get aj-org-agenda-headlines-last-search :level2))
          (level1-ts (nth 0 level1-search))
          (level2-ts (nth 0 level2-search))
-         (inside-level2 (time-less-p level1-ts level2-ts)))
+         (inside-level2 (time-less-p level1-ts level2-ts))
+         (initial-input (or initial-input ""))
+         )
 
     (cl-destructuring-bind (_ query prompt files sort-fn reverse time capture-key)
         (if (and inside-level2 (not back)) level2-search level1-search)
@@ -1665,6 +1667,7 @@ When optional BACK, return from nested search of level2
        :reverse reverse
        :time time
        :capture-key capture-key
+       :initial-input initial-input
        )
       )
     )
@@ -1674,7 +1677,7 @@ When optional BACK, return from nested search of level2
 (cl-defun aj/org-agenda-headlines (&key query prompt
                                         (files (aj-org-combined-agenda-files))
                                         (sort-fn #'aj-org-ql-sort-by-todo)
-                                        reverse time capture-key)
+                                        reverse time capture-key initial-input)
   "Jump to a todo headline in `org-agenda-files'.
 
 Function accepts optionally following keywords arguments:
@@ -1684,6 +1687,7 @@ Function accepts optionally following keywords arguments:
 - sorting keyword or function SORT-FN
 - REVERSE (bool) to reverse search results
 - TIME (bool) to show timestamp of the items
+- INITIAL-INPUT
 
 This function filters agenda headlines according to `aj-org-agenda-filter' and
 saves the search preset into `aj-org-agenda-headlines-last-search' so the search can be
@@ -1696,9 +1700,9 @@ replicated by calling this function again with arguments saved in this variable.
                         `(and (todo) ,tags)
                       '(todo))))
          (time (when time t))
+         (initial-input (or initial-input ""))
          (args-list `(,(current-time) ,query ,prompt ,files ,sort-fn ,reverse ,time ,capture-key))
          ivy-sort-functions-alist)
-
 
     (let* ((keyword (if (string-match "descendants" prompt) :level2 :level1)))
       (setq aj-org-agenda-headlines-last-search
@@ -1721,6 +1725,7 @@ replicated by calling this function again with arguments saved in this variable.
                 (if (ignore-errors reverse)
                     (reverse results)
                   results))
+              :initial-input initial-input
               :update-fn #'aj-ivy-update-fn-timer
               :action #'aj-org-jump-to-heading-action
               :caller 'aj/org-agenda-headlines)))
