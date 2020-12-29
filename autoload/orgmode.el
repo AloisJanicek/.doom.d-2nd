@@ -1700,6 +1700,7 @@ replicated by calling this function again with arguments saved in this variable.
                         `(and (todo) ,tags)
                       '(todo))))
          (time (when time t))
+         (prompt (or prompt "agenda headlines"))
          (initial-input (or initial-input ""))
          (args-list `(,(current-time) ,query ,prompt ,files ,sort-fn ,reverse ,time ,capture-key))
          ivy-sort-functions-alist)
@@ -1712,9 +1713,7 @@ replicated by calling this function again with arguments saved in this variable.
     (when capture-key
       (setq aj-org-capture-prefered-template-key capture-key))
 
-    (ivy-read (format "%s: " (or prompt
-                                 (format
-                                  "agenda headlines %s" (cdr (aj-org-ql-custom-agenda-filter-tags)))))
+    (ivy-read (format "%s %s: " prompt (cdr (aj-org-ql-custom-agenda-filter-tags)))
               (let ((results (org-ql-query
                                :select (lambda ()
                                          (aj-org-get-pretty-heading-path nil nil t t t time))
