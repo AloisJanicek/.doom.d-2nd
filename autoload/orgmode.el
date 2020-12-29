@@ -2666,10 +2666,12 @@ either eaf-browser or default browser.
   (aj-org-roam-ivy "File: " (org-roam--get-title-path-completions)))
 
 ;;;###autoload
-(defun aj-org-roam-ivy (prompt collection)
+(defun aj-org-roam-ivy (prompt collection &optional from)
   "Exclusive ivy interface for org-roam."
-  (let* ((preset (aj-org-roam-filter-preset--get org-roam-directory))
-         (init-input (or (when preset (concat (mapconcat #'identity preset " ") " ")) "")))
+  (let* ((preset (unless (equal from 'ivy-read-action/lambda-x-and-exit)
+                   (aj-org-roam-filter-preset--get org-roam-directory)))
+         (preset-str (when preset (concat (mapconcat #'identity preset " ") " ")))
+         (init-input (or preset-str "")))
     (ivy-read prompt collection
               :initial-input init-input
               :caller 'aj-org-roam-ivy
@@ -2699,7 +2701,7 @@ either eaf-browser or default browser.
 (defun aj-org-roam-ivy-backlinks-action (x)
   "Browse backlinks of X."
   (let* ((f (plist-get (cdr x) :path))
-         aj-org-roam-filter-preset)
+         (from this-command))
     (if-let ((backlinks (org-roam--get-backlinks f)))
         (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
                          (seq-map
@@ -2709,7 +2711,8 @@ either eaf-browser or default browser.
                               (org-roam-db--get-title (car bklink))
                               (org-roam--extract-tags f))
                              `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
-                          backlinks))
+                          backlinks)
+                         from)
       (when aj-org-roam-last-ivy
         (funcall aj-org-roam-last-ivy)))))
 
