@@ -2651,27 +2651,34 @@ either eaf-browser or default browser.
     (browse-url (+org-get-global-property "roam_key"))))
 
 ;;;###autoload
-(defun aj/org-roam-find-refs ()
+(defun aj/org-roam-find-refs (&optional initial-input)
   "Exclusive ivy interface for org-roam refs."
   (interactive)
   (setq aj-org-roam-last-ivy 'aj/org-roam-find-refs)
   (let (aj-org-roam-filter-preset)
-    (aj-org-roam-ivy "Refs: " (org-roam--get-ref-path-completions 1))))
+    (aj-org-roam-ivy "Refs: " (org-roam--get-ref-path-completions 1) nil initial-input)))
 
 ;;;###autoload
-(defun aj/org-roam-find-file ()
+(defun aj/org-roam-find-file (&optional initial-input)
   "Exclusive ivy interface for org-roam find file."
   (interactive)
   (setq aj-org-roam-last-ivy 'aj/org-roam-find-file)
-  (aj-org-roam-ivy "File: " (org-roam--get-title-path-completions)))
+  (aj-org-roam-ivy "File: " (org-roam--get-title-path-completions) nil initial-input))
+
+(defvar aj-org-roam-latest-ivy-text nil
+  "Variable storing latest ivy-text suitable for restoration org roam ivy.
+
+Before descending into backlinks of the particular item, store
+valaue of the `ivy-text' into this variable and use it to restore
+the input when returning from backlinks back to top-level search.")
 
 ;;;###autoload
-(defun aj-org-roam-ivy (prompt collection &optional from)
+(defun aj-org-roam-ivy (prompt collection &optional from past-ivy-text)
   "Exclusive ivy interface for org-roam."
   (let* ((preset (unless (equal from 'ivy-read-action/lambda-x-and-exit)
                    (aj-org-roam-filter-preset--get org-roam-directory)))
          (preset-str (when preset (concat (mapconcat #'identity preset " ") " ")))
-         (init-input (or preset-str "")))
+         (init-input (or past-ivy-text preset-str "")))
     (ivy-read prompt collection
               :initial-input init-input
               :caller 'aj-org-roam-ivy
@@ -2702,19 +2709,23 @@ either eaf-browser or default browser.
   "Browse backlinks of X."
   (let* ((f (plist-get (cdr x) :path))
          (from this-command))
+    (setq aj-org-roam-latest-ivy-text ivy-text)
     (if-let ((backlinks (org-roam--get-backlinks f)))
-        (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
-                         (seq-map
-                          (lambda (bklink)
-                            (cons
-                             (org-roam--prepend-tag-string
-                              (org-roam-db--get-title (car bklink))
-                              (org-roam--extract-tags f))
-                             `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
-                          backlinks)
-                         from)
-      (when aj-org-roam-last-ivy
-        (funcall aj-org-roam-last-ivy)))))
+        (progn
+          (setq aj-org-roam-latest-ivy-text ivy-text)
+          (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
+                           (seq-map
+                            (lambda (bklink)
+                              (cons
+                               (org-roam--prepend-tag-string
+                                (org-roam-db--get-title (car bklink))
+                                (org-roam--extract-tags f))
+                               `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
+                            backlinks)
+                           from))
+      (when-let ((initial-input aj-org-roam-latest-ivy-text)
+                 aj-org-roam-last-ivy)
+        (funcall aj-org-roam-last-ivy initial-input)))))
 
 ;;;###autoload
 (defun aj-org-roam-delete-file (f)
