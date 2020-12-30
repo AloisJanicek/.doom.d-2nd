@@ -498,6 +498,84 @@ which is suitable for insertion into org-capture template."
   (aj--org-capture-task t))
 
 ;;;###autoload
+(defun aj-org-capture-file-heading (file headline type)
+  "Capture TYPE under HEADING in FILE.
+Type can be:
+- plain, which means plain org heading
+- todo, which means org heading with todo keyword
+- clock, which means todo org heading and clock it in
+"
+  (let* (current-prefix-arg
+         (title (concat
+                 " "
+                 (ivy-read "Title: " nil
+                           :initial-input (if aj-org-capture-prefered-template-key
+                                              (current-kill 0)
+                                            ""))))
+         (tag-str (aj-org-capture-select-tags-str))
+         (effort (ivy-read "Effort: "
+                           (split-string
+                            (let ((efforts nil))
+                              (dolist (i org-global-properties)
+                                (when (string-equal (car i) "Effort_ALL")
+                                  (setq efforts (cdr i))))
+                              efforts))))
+         (template-str (concat
+                        "* "
+                        (when (or (eq type 'todo)
+                                  (eq type 'clock))
+                          (concat "TO" "DO "))
+                        title tag-str "\n"
+                        ":PROPERTIES:\n"
+                        ":CREATED: %U\n"
+                        (unless (string-empty-p effort)
+                          (format ":EFFORT: %s\n" effort))
+                        ":END:\n"
+                        "\n"
+                        "%i\n"
+                        "%?"))
+         (org-capture-templates `(("t" "task" entry (file+headline ,file ,headline)
+                                   ,template-str
+                                   :prepend nil :empty-lines 1)
+                                  ("T" "clocked task" entry (file+headline ,file ,headline)
+                                   ,template-str
+                                   :clock-in t
+                                   :clock-keep t
+                                   :prepend nil
+                                   :empty-lines 1)))
+         (template-key (cond ((or (eq type 'todo)
+                                   (eq type 'plain))
+                               "t")
+                              ((eq type 'clock)
+                               "T"))))
+    (org-capture nil template-key)))
+
+(defun aj-org-capture-under (query type)
+  "Capture entry of TYPE under heading selected by QUERY.
+
+QUERY is valid org-ql query which searches file or files selected
+according to current `aj-org-agenda-filter'. Type is one of types
+specified in `aj-org-capture-file-heading'."
+  (let* ((file (if (and aj-org-agenda-filter
+                        (not current-prefix-arg)
+                        (car (aj-org-return-filtered-agenda-file)))
+                   (car (aj-org-return-filtered-agenda-file))
+                 (aj/choose-file-from
+                  (seq-filter
+                   (lambda (file)
+                     (not (string-match "inbox" file)))
+                   org-agenda-files))))
+         (project-heading
+          (substring-no-properties
+           (car
+            (get-text-property 0 'title
+                               (ivy-read (format "Project in %s: " (file-name-nondirectory file))
+                                         (->> (org-ql-select file query
+                                                :action #'element-with-markers)
+                                              (-map #'org-ql-view--format-element))))))))
+    (aj-org-capture-file-heading file project-heading type)))
+
+;;;###autoload
 (defun aj/org-capture-into-project (&optional current week)
   "Capture into projectile project.
 If optional argument `CURRENT' is non-nil then don't ask user for the project.
@@ -1745,6 +1823,12 @@ replicated by calling this function again with arguments saved in this variable.
       (if-let ((key aj-org-capture-prefered-template-key))
           (cond ((string-equal "d" key)
                  (aj/org-capture-calendar))
+                ((string-equal "x" key)
+                 (if-let ((last-search (ignore-errors (plist-get aj-org-agenda-headlines-last-search :level2)))
+                          (file (nth 3 last-search))
+                          (headline (car (cdr (car (cdr (nth 1 last-search)))))))
+                     (aj-org-capture-file-heading file headline 'todo)
+                   (aj-org-capture-under (aj-org-ql-custom-projects-query) 'todo)))
                 ((string-equal "t" key)
                  (aj--org-capture-task))
                 (t
