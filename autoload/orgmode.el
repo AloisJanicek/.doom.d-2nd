@@ -837,7 +837,7 @@ which one is currently active."
 
 (defun aj-org-ql-past-dues-query ()
   "Return valid org-ql query searching for past dues."
-  `(and (ts-active :from past :to ,(ts-now)) (not (done))))
+  `(and (ts-active :to ,(ts-now)) (not (done))))
 
 (defun aj-org-ql-future-dues-query ()
   "Return valid org-ql query searching for future dues."
@@ -988,7 +988,7 @@ Tickler is not scheduled nor it doesn't have deadline.
                                    ;; Don't auto-pop following if true
                                    (unless aj-org-agenda-gtd-hydra-no-auto
 
-                                     (let* ((past-dues `(and (ts-active :from 0 :to ,(ts-now))
+                                     (let* ((past-dues `(and (ts-active :to ,(ts-now))
                                                              (not (habit))
                                                              (not (todo "DONE")))))
 
@@ -1164,7 +1164,7 @@ _q_uery                       _h_old
   ("c" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-custom-clocked-task-query)
-         :sort #'date
+         :sort 'date
          :super-groups '((:auto-category t ))
          :title "Clocked")
    )
