@@ -1792,6 +1792,9 @@ replicated by calling this function again with arguments saved in this variable.
     (when capture-key
       (setq aj-org-capture-prefered-template-key capture-key))
 
+    (when (string-match "descendants" prompt)
+      (setq prompt (format "descendants of: %s" (car (cdr (car (cdr query)))))))
+
     (ivy-read (format "%s %s: " prompt (cdr (aj-org-ql-custom-agenda-filter-tags)))
               (let ((results (org-ql-query
                                :select (lambda ()
