@@ -2027,12 +2027,12 @@ item candidates from COLLECTION to PRESET.
 (defun aj/org-roam-set-filter-preset ()
   "Set value of `aj-org-roam-filter-preset'."
   (interactive)
-  (aj-org-roam-filter-preset--set
-   org-roam-directory
-   (aj-org-notes-set-filter-preset--ivy
-    "Tags"
-    (org-roam-db--get-tags)
-    (aj-org-roam-filter-preset--get org-roam-directory))))
+  (let ((new-preset (aj-org-notes-set-filter-preset--ivy
+                     "Tags"
+                     (org-roam-db--get-tags)
+                     (aj-org-roam-filter-preset--get org-roam-directory))))
+    (aj-org-roam-filter-preset--set org-roam-directory new-preset)
+    (setq aj-org-roam-latest-ivy-text (concat (car new-preset) " "))))
 
 ;;;###autoload
 (defun aj/org-notes-search-no-link (&optional directory)
@@ -2677,11 +2677,10 @@ into this variable and use it to restore the input when returning
 from backlinks back to top-level search or when opening org-roam ivy again.")
 
 ;;;###autoload
-(defun aj-org-roam-ivy (prompt collection &optional from past-ivy-text)
+(defun aj-org-roam-ivy (prompt collection &optional from)
   "Exclusive ivy interface for org-roam."
   (let* ((descended-into (equal from 'ivy-read-action/lambda-x-and-exit))
-         (preset (unless descended-into
-                   (aj-org-roam-filter-preset--get org-roam-directory)))
+         (preset (aj-org-roam-filter-preset--get org-roam-directory))
          (preset-str (when preset (concat (mapconcat #'identity preset " ") " ")))
          (init-input (or (unless descended-into aj-org-roam-latest-ivy-text) preset-str "")))
     (ivy-read prompt collection
