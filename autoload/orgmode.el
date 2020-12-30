@@ -544,10 +544,10 @@ Type can be:
                                    :prepend nil
                                    :empty-lines 1)))
          (template-key (cond ((or (eq type 'todo)
-                                   (eq type 'plain))
-                               "t")
-                              ((eq type 'clock)
-                               "T"))))
+                                  (eq type 'plain))
+                              "t")
+                             ((eq type 'clock)
+                              "T"))))
     (org-capture nil template-key)))
 
 (defun aj-org-capture-under (query type)
