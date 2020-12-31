@@ -506,6 +506,7 @@ Type can be:
 - clock, which means todo org heading and clock it in
 "
   (let* (current-prefix-arg
+         aj-org-capture-prefered-template-key
          (title (concat
                  " "
                  (ivy-read "Title: " nil
@@ -1788,7 +1789,6 @@ replicated by calling this function again with arguments saved in this variable.
       (setq aj-org-agenda-headlines-last-search
             (plist-put aj-org-agenda-headlines-last-search keyword args-list)))
 
-    (setq aj-org-capture-prefered-template-key nil)
     (when capture-key
       (setq aj-org-capture-prefered-template-key capture-key))
 
@@ -1836,8 +1836,7 @@ replicated by calling this function again with arguments saved in this variable.
                  (aj--org-capture-task))
                 (t
                  (org-capture nil key)))
-        (org-capture nil "k"))
-      (setq aj-org-capture-prefered-template-key nil))))
+        (org-capture nil "k")))))
 
 ;;;###autoload
 (cl-defun aj-org-get-filtered-org-files (&key dir preset archived recursive)
