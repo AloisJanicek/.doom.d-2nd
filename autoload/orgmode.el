@@ -922,9 +922,11 @@ which one is currently active."
   "Return valid org-ql query searching for future dues."
   (let ((tags (aj-org-ql-custom-agenda-filter-tags))
         (up-to (if current-prefix-arg 365 21)))
-    (if tags
-        `(and (planning :from ,(ts-now) :to ,up-to) ,tags)
-      `(planning :from ,(ts-now) :to ,up-to))))
+    `(planning :from ,(ts-now) :to ,up-to)
+    ;; (if tags
+    ;;     `(and (planning :from ,(ts-now) :to ,up-to) ,tags)
+    ;;   `(planning :from ,(ts-now) :to ,up-to))
+    ))
 
 (defun aj-org-ql-all-active-tasks-query ()
   "Return valid org-ql query searching for all active tasks.
