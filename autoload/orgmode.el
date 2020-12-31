@@ -506,7 +506,6 @@ Type can be:
 - clock, which means todo org heading and clock it in
 "
   (let* (current-prefix-arg
-         aj-org-capture-prefered-template-key
          (title (concat
                  " "
                  (ivy-read "Title: " nil
@@ -921,7 +920,7 @@ which one is currently active."
 (defun aj-org-ql-future-dues-query ()
   "Return valid org-ql query searching for future dues."
   (let ((tags (aj-org-ql-custom-agenda-filter-tags))
-        (up-to (if current-prefix-arg 365 21)))
+        (up-to (if current-prefix-arg 365 2)))
     `(planning :from ,(ts-now) :to ,up-to)
     ;; (if tags
     ;;     `(and (planning :from ,(ts-now) :to ,up-to) ,tags)
@@ -2784,8 +2783,7 @@ from backlinks back to top-level search or when opening org-roam ivy again.")
                           (progn
                             ;; prevent :initial-input becoming part of the newly captured file's #+title:
                             (when init-input
-                              (setq x (substring x (length init-input) (length x))))
-                            (aj-org-roam-ivy-capture x)))))))
+                              (aj-org-roam-ivy-capture (substring x (length init-input) (length x))))))))))
 
 (defvar aj-org-roam-last-ivy nil
   "Store the name of the last used org-roam ivy interface.")
