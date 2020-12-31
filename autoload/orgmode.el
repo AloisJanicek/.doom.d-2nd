@@ -1879,13 +1879,14 @@ searching DIR recursively.
          0.2
          nil
          `(lambda ()
-            (with-ivy-window
-              (funcall
-               (ivy--get-action ivy-last)
-               (if (consp (car-safe (ivy-state-collection ivy-last)))
-                   (assoc (ivy-state-current ivy-last)
-                          (ivy-state-collection ivy-last))
-                 (ivy-state-current ivy-last))))))))
+            (ignore-errors
+              (with-ivy-window
+                (funcall
+                 (ivy--get-action ivy-last)
+                 (if (consp (car-safe (ivy-state-collection ivy-last)))
+                     (assoc (ivy-state-current ivy-last)
+                            (ivy-state-collection ivy-last))
+                   (ivy-state-current ivy-last)))))))))
 
 ;;;###autoload
 (cl-defun aj-org-jump-to-headline-at (&key files level)
