@@ -787,7 +787,7 @@
   (ivy-add-actions
    #'aj-org-roam-ivy
    '(("x" aj-org-roam-ivy-backlinks-action "backlinks")
-     ("d" aj-org-roam-ivy-delete-action "delete")
+     ("k" aj-org-roam-ivy-delete-action "delete")
      ("b" aj-org-roam-refs-ivy-url-open-action "browse url")
      ("B" (lambda (x)
             (let ((browse-url-chromium-arguments browse-url-chromium-arguments))
