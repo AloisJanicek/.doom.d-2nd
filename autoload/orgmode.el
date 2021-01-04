@@ -2287,37 +2287,110 @@ Org manual: 8.4.2 The clock table.
      (funcall get-todo-keyword a)
      (funcall get-todo-keyword b))))
 
-;;;###autoload
+(defun aj-org-store-link (url title)
+  "Run org-protocol-store-link for URL and TITLE"
+  (require 'org-protocol)
+  (org-protocol-store-link (list :url url :title title)))
+
+(defun aj-org-roam-capture-ref (url title)
+  "Capture new org-roam reference entry from URL and TITLE."
+  (let* ((type (and (string-match "^\\([a-z]+\\):" url)
+                    (match-string 1 url)))
+         (orglink (org-link-make-string url (or (org-string-nw-p title) url)))
+         (org-roam-capture-templates org-roam-capture-ref-templates)
+         (org-roam-capture--info
+          `((ref . ,url)
+            (type . ,type)
+            (title . ,title)
+            (body . "")
+            (slug  . ,(funcall org-roam-title-to-slug-function title))
+            (orglink . ,orglink)))
+         (org-roam-capture--context 'ref))
+    (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
+    (org-roam-capture--capture)))
+
+(defun aj-org-dispatch-on-heading-link (fn)
+  "When on org-mode heading, collect its url and title
+and dispatch FN.
+FN is function taking two arguments url and title."
+
+  (org-back-to-heading)
+  (when (org-at-heading-p)
+    (org-fold-show-entry)
+    (org-toggle-item nil)
+    (let* ((current-prefix-arg nil)
+           (orig-buff (current-buffer))
+           (str (buffer-substring-no-properties
+                 (line-beginning-position)
+                 (line-end-position)))
+           (url (or
+                 (thing-at-point-url-at-point)
+                 (ignore-errors
+                   (substring str
+                              (+ 2 (string-match (rx "[[") str))
+                              (string-match (rx "][") str)))))
+           (title-maybe (ignore-errors
+                          (substring str
+                                     (+ 2 (string-match (rx "][") str))
+                                     (string-match (rx "]]") str))))
+           (title (if (or (string-equal url title-maybe)
+                          (not (stringp title-maybe)))
+                      (aj-get-web-page-title url)
+                    title-maybe)))
+      (funcall fn url title)
+      (with-current-buffer orig-buff
+        (evil-delete-whole-line (line-beginning-position) (line-end-position))
+        (save-buffer)
+        (widen)))))
+
 (defun aj-org-re-store-link ()
   "Re-store current link under the point."
-  (require 'org-protocol)
-  (org-fold-show-entry)
-  (org-toggle-item nil)
-  (let* ((current-prefix-arg nil)
-         (orig-buff (current-buffer))
-         (str (buffer-substring-no-properties
-               (line-beginning-position)
-               (line-end-position)))
-         (url (or
-               (thing-at-point-url-at-point)
-               (ignore-errors
-                 (substring str
-                            (+ 2 (string-match (rx "[[") str))
-                            (string-match (rx "][") str)))))
-         (title-maybe (ignore-errors
-                        (substring str
-                                   (+ 2 (string-match (rx "][") str))
-                                   (string-match (rx "]]") str))))
-         (title (if (or (string-equal url title-maybe)
-                        (not (stringp title-maybe)))
-                    (aj-get-web-page-title url)
-                  title-maybe)))
-    (org-protocol-store-link (list :url url :title title))
+  (aj-org-dispatch-on-heading-link #'aj-org-store-link))
+
+;;;###autoload
+(defun aj/re-capture-as-org-roam-ref ()
+  "Capture org-roam ref from link in current org-mode heading."
+  (interactive)
+  (aj-org-dispatch-on-heading-link #'aj-org-roam-capture-ref))
+
+;;;###autoload
+(defun aj/re-capture-as-org-roam-entry ()
+  "Recapture current org entry as org-roam entry.
+
+Heading's title becames org-roam entry's title and content
+of the org entry is being extracted via `org-cut-subtree' and pasted
+into new org-roam entry.
+"
+  (interactive)
+  (org-back-to-heading)
+
+  ;; delete PROPERTIES drawer
+  (re-search-forward org-property-start-re)
+  (when (org-at-property-drawer-p)
+    (delete-region (line-beginning-position)
+                   (save-excursion
+                     (re-search-forward org-property-end-re))))
+  (save-buffer)
+  (org-back-to-heading)
+  (let* ((orig-buff (current-buffer))
+         (title (substring-no-properties (car (plist-get (car (cdr (org-element-headline-parser (line-end-position)))) :title))))
+         (body (or (substring-no-properties (org-get-entry)) ""))
+         (org-roam-capture-templates
+          `(("d" "default" plain (function org-roam-capture--get-point)
+             ,(concat body "\n" "%?")
+             :file-name "%<%Y%m%d%H%M%S>-${slug}"
+             :head "#+title: ${title}\n"
+             :immediate-finish t
+             :unnarrowed t)))
+         (org-roam-capture--info
+          `((title . ,title)
+            (slug  . ,(funcall org-roam-title-to-slug-function title))))
+         (org-roam-capture--context 'title))
+    (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
+    (org-roam-capture--capture)
     (with-current-buffer orig-buff
-      ;; (kill-whole-line)
-      (evil-delete-whole-line (line-beginning-position) (line-end-position))
-      (save-buffer)
-      (widen))))
+      (org-cut-subtree)
+      (save-buffer))))
 
 ;;;###autoload
 (defun aj/org-refile-link-to-resources-drawer ()
@@ -2687,6 +2760,8 @@ either eaf-browser or default browser.
    "refs")
   ("R" #'aj/org-roam-set-filter-preset "filter")
   ("f" #'aj/org-roam-find-file "file")
+  ("k" #'aj/re-capture-as-org-roam-entry "re-capture entry")
+  ("K" #'aj/re-capture-as-org-roam-ref "re-capture link ref")
   ("F" (let (aj-org-roam-filter-preset
              aj-org-roam-latest-ivy-text)
          (aj/org-roam-find-file))
