@@ -17,7 +17,7 @@
                     (insert "(fset 'org-release (lambda () \"9.5\"))\n"
                             "(fset 'org-git-version #'ignore)\n"
                             "(provide 'org-version)\n")))
-  :pin "4ae3f5ba130750c340f1782b5ee5b3077b66e5d6"
+  :pin "9d093c1a283029dc42225d8841796db24f94dd9c"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -59,7 +59,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "16ced5756a0a2b548444cfda1e5b8ddd1eb8e24a")
+  :pin "6eb63a158cd5e1b47635704ebdd3e010e7b914f8")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -99,7 +99,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "d7d236b0c1fac35ac87cafb9bcd420469b2d6ea5"
+  :pin "2a4ee8e1bb0421461f0a677e62c711314af059bc"
   )
 
 (package! eslintd-fix
@@ -237,7 +237,7 @@
   :pin "e7f28608c7fc9507e407c6b840dff09062df533a")
 
 (package! yankpad
-  :pin "7aea1769d206c0051a014622ee64be4f4f1f0494")
+  :pin "06d85f04133fbd49a6469174032f4c10a0abe98d")
 
 (package! zeal-at-point
   :recipe (:host github :repo "jinzhu/zeal-at-point")
