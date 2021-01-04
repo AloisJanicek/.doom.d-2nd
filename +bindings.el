@@ -946,9 +946,11 @@
                                                                    :query (aj-org-ql-custom-wait-task-query) :sort-fn 'date :capture-key "t"))
    :desc "hold"                 "h" (cmd! (aj/org-agenda-headlines :prompt "hold"
                                                                    :query (aj-org-ql-custom-hold-task-query) :sort-fn 'date :capture-key "t"))
-   :desc "someday"              "s" (cmd! (aj/org-agenda-headlines :prompt "someday"
+   :desc "someday"              "s" (cmd! (aj/org-agenda-headlines :prompt "stucked projects"
+                                                                   :query (aj-org-ql-stucked-projects-query) :sort-fn 'date :capture-key "t"))
+   :desc "someday"              "S" (cmd! (aj/org-agenda-headlines :prompt "someday"
                                                                    :query (aj-org-ql-simple-task-query "SOMEDAY") :sort-fn 'random :capture-key "t"))
-   :desc "maybe"                "m" (cmd! (aj/org-agenda-headlines :prompt "maybe"
+   :desc "maybe"                "M" (cmd! (aj/org-agenda-headlines :prompt "maybe"
                                                                    :query (aj-org-ql-simple-task-query "MAYBE") :sort-fn 'random :capture-key "t"))
    :desc "cancelled"            "C" (cmd! (aj/org-agenda-headlines :prompt "cancelled"
                                                                    :query (aj-org-ql-simple-task-query "CANCELLED") :sort-fn 'date :capture-key "k"))
