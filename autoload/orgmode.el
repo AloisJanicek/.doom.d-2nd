@@ -184,11 +184,9 @@ Works also in `org-agenda'."
 (defhydra aj/org-refile-hydra (:color blue
                                :hint nil
                                :idle which-key-idle-delay
+                               :columns 4
                                )
-  "
-_t_op level   _j_ournal     refile _T_argets   _v_isible heading   _O_ther buffer     _p_roject             _x_private    _a_rchived resource _s_election
-_f_ile        _c_lock       _l_ast location    _._this file        _o_ther window     _P_roject journal     _r_resources  _A_rchived file _b_rain entry
-"
+  "Refile"
   ("T" (lambda (arg)
          (interactive "P")
          (let ((file-list
@@ -204,37 +202,45 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
                                        :maxlevel . 3)))
            (if (memq major-mode aj-org-agenda-similar-modes)
                (call-interactively #'org-agenda-refile)
-             (call-interactively #'org-refile)))))
+             (call-interactively #'org-refile))))
+   "Targets")
   ("f" (aj/org-refile-to-file
         (aj/choose-file-from
-         (aj-get-all-org-files))))
-  ("v" #'+org/refile-to-visible)
-  ("b" #'aj/org-refile-under-org-brain-entry)
+         (aj-get-all-org-files)))
+   "file")
+  ("v" #'+org/refile-to-visible "visible")
+  ("b" #'aj/org-refile-under-org-brain-entry "brain")
   ("j" (aj-org-refile-to-datetree
         (aj/choose-file-from
-         (directory-files org-directory t ".org"))))
+         (directory-files org-directory t ".org")))
+   "journal")
   ("t" (aj-org-refile-to-file-custom
         (aj/choose-file-from
-         (aj-get-all-org-files))))
+         (aj-get-all-org-files)))
+   "top level")
   ("p" (aj/org-refile-to-file
-        (aj/choose-file-from (aj-get-all-projectile-README-org-files t))))
+        (aj/choose-file-from (aj-get-all-projectile-README-org-files t)))
+   "project")
   ("P" (aj-org-refile-to-datetree
-        (aj/choose-file-from (aj-get-all-projectile-README-org-files t))))
-  ("x" #'aj/private-refile/body)
-  ("o" #'+org/refile-to-other-window)
-  ("O" #'+org/refile-to-other-buffer)
-  ("." #'aj/org-refile-to-current-file)
-  ("c" #'+org/refile-to-running-clock)
-  ("l" #'+org/refile-to-last-location)
-  ("r" #'aj/org-refile-link-to-resources-drawer)
+        (aj/choose-file-from (aj-get-all-projectile-README-org-files t)))
+   "Project")
+  ("x" #'aj/private-refile/body "xprivate")
+  ("o" #'+org/refile-to-other-window "other window")
+  ("O" #'+org/refile-to-other-buffer "Other buffer")
+  ("." #'aj/org-refile-to-current-file "current file")
+  ("c" #'+org/refile-to-running-clock "clock")
+  ("l" #'+org/refile-to-last-location "last location")
+  ("r" #'aj/org-refile-link-to-resources-drawer "resources")
   ("a" (aj/org-refile-link-to-archived-resources (aj/choose-file-from
                                                   (directory-files-recursively
                                                    (expand-file-name "archive" org-brain-path)
-                                                   ".org_archive$"))))
+                                                   ".org_archive$")))
+   "archived resources")
   ("A" (aj/org-refile-to-file (aj/choose-file-from
                                (directory-files-recursively
                                 (expand-file-name "archive" org-brain-path)
-                                ".org_archive$"))))
+                                ".org_archive$")))
+   "Archived entry")
   ("s" (if current-prefix-arg
            ;; default to current buffer
            ;; one prefix - filtered brain files
@@ -247,7 +253,9 @@ _f_ile        _c_lock       _l_ast location    _._this file        _o_ther windo
                :recursive t
                :dir org-brain-path
                :preset (cdr (assoc org-brain-path aj-org-notes-filter-preset)))))
-         (aj-org-refile-region (buffer-file-name))))
+         (aj-org-refile-region (buffer-file-name)))
+   "refile selection"
+   )
   )
 
 ;; ORG-CAPTURE
@@ -318,7 +326,7 @@ If HEADLINE, capture under it instead of top level."
 
 ;;;###autoload (autoload 'aj/org-capture-code-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-capture-code-hydra (:color blue)
-  "Code:"
+  "Code"
   ("a" #'aj/org-capture-code-ask-where "ask" )
   ("c" (aj-org-capture-code aj-org-inbox-file (ivy-read "Choose title: " nil) nil) "inbox" )
   ("q" nil "exit")
@@ -329,14 +337,12 @@ If HEADLINE, capture under it instead of top level."
                                 :hint nil
                                 :idle which-key-idle-delay
                                 :body-pre (setq aj-org-capture-prefered-template-key nil)
+                                :columns 4
                                 )
-  "
-_k_inbox   _j_ournal  _C_ode:   _y_ankpad   _c_lock:
-_t_ask     _d_ate             _Y_ankpad   _T_ask clocked
-"
-  ("d" #'aj/org-capture-calendar)
-  ("C" #'aj/org-capture-code-hydra/body)
-  ("c" #'aj/org-capture-under-clock/body)
+  "Capture"
+  ("d" #'aj/org-capture-calendar "date")
+  ("C" #'aj/org-capture-code-hydra/body "Code")
+  ("c" #'aj/org-capture-under-clock/body "under clock")
   ("y" (progn
          (require 'yankpad)
          (aj-org-capture-code yankpad-file
@@ -348,7 +354,8 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
                                                 :select '(org-get-heading t t t t)
                                                 :from yankpad-file
                                                 :where '(level 1))))
-                                  (prin1-to-string major-mode)))))
+                                  (prin1-to-string major-mode))))
+   "yankpad")
   ("Y" (progn
          (require 'yankpad)
          (aj-org-capture-code yankpad-file
@@ -358,10 +365,11 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
                                          (org-ql-query
                                            :select '(org-get-heading t t t t)
                                            :from yankpad-file
-                                           :where '(level 1)))))))
-  ("k" (org-capture nil "k"))
-  ("t" (aj/org-capture-task))
-  ("T" (aj/org-capture-clocked-task))
+                                           :where '(level 1))))))
+   "Yankpad")
+  ("k" (org-capture nil "k") "k inbox")
+  ("t" (aj/org-capture-task) "task")
+  ("T" (aj/org-capture-clocked-task) "clocked Task")
   ("j" (aj-org-capture-into-journal-in
         (if (and aj-org-agenda-filter
                  (not current-prefix-arg))
@@ -370,13 +378,14 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
            (seq-filter
             (lambda (file)
               (not (string-match "inbox" file)))
-            org-agenda-files)))))
+            org-agenda-files))))
+   "journal")
   ("q" nil)
   )
 
 ;;;###autoload (autoload 'aj/org-capture-under-clock/body "autoload/orgmode" nil t)
 (defhydra aj/org-capture-under-clock (:color blue)
-  "Code:"
+  "Code"
   ("h" (org-capture nil "ce") "heading" )
   ("c" (org-capture nil "cc") "checkitem" )
   ("i" (org-capture nil "ci") "item" )
@@ -389,15 +398,12 @@ _t_ask     _d_ate             _Y_ankpad   _T_ask clocked
                                :hint nil
                                :idle which-key-idle-delay
                                )
-  "
-_c_p   _l_n _a_ttach
-_m_v   ln_s_
-"
+  "attach"
   ("a" #'org-attach-attach)
-  ("c" #'org-attach-attach-cp)
-  ("m" #'org-attach-attach-mv)
-  ("l" #'org-attach-attach-ls)
-  ("s" #'org-attach-attach-lns)
+  ("c" #'org-attach-attach-cp "cp")
+  ("m" #'org-attach-attach-mv "mv")
+  ("l" #'org-attach-attach-ls "ls")
+  ("s" #'org-attach-attach-lns "lsn")
   )
 
 ;;;###autoload
@@ -1062,6 +1068,7 @@ Tickler is not scheduled nor it doesn't have deadline.
 ;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-agenda-gtd-hydra (:color blue
                                    :hint nil
+                                   :columns 4
                                    :idle which-key-idle-delay
                                    :body-pre
 
@@ -1159,47 +1166,48 @@ Tickler is not scheduled nor it doesn't have deadline.
                                        )
                                      )
                                    )
-  "
-_i_nbox   _a_genda   _n_ext       _w_ait      _T_ODOs         _r_ecent     _c_ancelled   _S_omeday
-_t_odo    _l_og      _p_rojects   _s_tucked   _W_eek agenda   _A_rchived   _d_one        _M_aybe
-_q_uery                       _h_old
-"
+  "Agenda search"
 
   ("a" (let ((org-agenda-start-day "today")
              (org-agenda-span 1))
-         (org-agenda nil "a")))
+         (org-agenda nil "a"))
+   "agenda")
 
   ("b" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-future-dues-query)
          :sort 'date
          :super-groups '((:auto-category t))
-         :title "Future dues"))
+         :title "Future dues")
+   "future dues")
 
   ("B" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-custom-ticklers-query)
          :sort 'date
          :super-groups '((:auto-category t))
-         :title "Tickler reminders"))
+         :title "Tickler reminders")
+   "reminders")
 
   ("W" (let ((org-agenda-start-day "today")
              (org-agenda-span 10))
-         (org-agenda nil "a")))
+         (org-agenda nil "a"))
+   "10 days Week")
 
   ("l" (let ((org-agenda-start-with-log-mode t)
              (org-agenda-span 1)
              (org-agenda-start-day nil)
-             (org-agenda-use-time-grid t)
-             )
-         (org-agenda nil "a")))
+             (org-agenda-use-time-grid t))
+         (org-agenda nil "a"))
+   "agenda with log mode")
 
   ("i" (org-ql-search
          `(,aj-org-inbox-file)
          '(level 1)
          :title "Inbox"
          ;; :sort '(date)
-         ))
+         )
+   "inbox")
 
   ("n" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -1207,9 +1215,10 @@ _q_uery                       _h_old
            (aj-org-ql-custom-next-task-query)
            :sort #'aj-org-ql-sort-by-effort
            :super-groups '((:auto-category t))
-           :title "Next Action")))
+           :title "Next Action"))
+   "next action")
 
-  ("t" (aj-org-ql-custom-task-search))
+  ("t" (aj-org-ql-custom-task-search) "task")
 
   ("p" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -1217,13 +1226,15 @@ _q_uery                       _h_old
            (aj-org-ql-custom-projects-query)
            :sort #'aj-org-ql-sort-by-todo
            :super-groups '((:auto-category t))
-           :title "Projects")))
+           :title "Projects"))
+   "projects")
 
   ("s" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-stucked-projects-query)
          :super-groups '((:auto-category t))
-         :title "Stucked Projects"))
+         :title "Stucked Projects")
+   "stucked projects")
 
   ("w" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -1231,7 +1242,8 @@ _q_uery                       _h_old
            (aj-org-ql-custom-wait-task-query)
            :sort '(date priority todo)
            :super-groups '((:auto-parent t))
-           :title "WAIT")))
+           :title "WAIT"))
+   "wait")
 
   ("h" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -1239,7 +1251,8 @@ _q_uery                       _h_old
            (aj-org-ql-custom-hold-task-query)
            :sort '(date priority todo)
            :super-groups '((:auto-parent t))
-           :title "HOLD")))
+           :title "HOLD"))
+   "hold")
 
   ("c" (org-ql-search
          (aj-org-combined-agenda-files)
@@ -1247,11 +1260,11 @@ _q_uery                       _h_old
          :sort 'date
          :super-groups '((:auto-category t ))
          :title "Clocked")
-   )
+   "clocked")
 
-  ("C" (aj-org-ql-simple-task-search "CANCELLED"))
+  ("C" (aj-org-ql-simple-task-search "CANCELLED") "cancelled")
 
-  ("d" (aj-org-ql-simple-task-search "DONE"))
+  ("d" (aj-org-ql-simple-task-search "DONE") "done")
 
   ("r" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -1260,7 +1273,8 @@ _q_uery                       _h_old
            :sort '(date priority todo)
            :super-groups '((:auto-ts t))
            :title "Recent"
-           )))
+           ))
+   "recent")
 
   ("R" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search
@@ -1271,14 +1285,18 @@ _q_uery                       _h_old
            :sort '(date priority todo)
            :super-groups '((:auto-ts t))
            :title "Archived Recent"
-           )))
+           ))
+   "archvied Recent"
+   )
 
   ("T" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-non-complete-tasks-query)
          :sort #'aj-org-ql-sort-by-todo
          :super-groups '((:auto-category t))
-         :title "All Todos"))
+         :title "All Todos")
+   "All Todos"
+   )
 
   ("A" (org-ql-search
          (aj-org-get-filtered-org-files
@@ -1287,15 +1305,17 @@ _q_uery                       _h_old
          (aj-org-ql-done-query)
          :sort 'date
          :super-groups '((:auto-category t))
-         :title "ARCHIVED"))
+         :title "ARCHIVED")
+   "Archived")
 
-  ("S" (aj-org-ql-simple-task-search "SOMEDAY"))
+  ("S" (aj-org-ql-simple-task-search "SOMEDAY") "Someday")
 
-  ("M" (aj-org-ql-simple-task-search "MAYBE"))
+  ("M" (aj-org-ql-simple-task-search "MAYBE") "Maybe")
 
   ("q" (org-ql-search
          (aj-org-combined-agenda-files)
-         (ivy-read "query: " nil)))
+         (ivy-read "query: " nil))
+   "query:")
   )
 
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
@@ -1514,32 +1534,32 @@ got renamed while clock were running.
 (defhydra aj/org-clock-hydra (:color blue
                               :hint nil
                               :idle which-key-idle-delay
+                              :columns 4
                               :body-pre
                               (when (bound-and-true-p org-clock-current-task)
                                 (org-clock-goto))
                               )
-  "
-_i_n   _p_omodoro  _g_oto      _U_pdate  _r_ename  _R_eset
-_o_ut            _h_istory   _k_ontext _e_ffort  _C_ancel
-"
-  ("i" (org-clock-in '(4)))
-  ("e" #'org-clock-modify-effort-estimate)
-  ("o" #'org-clock-out)
-  ("p" #'org-pomodoro)
-  ("g" #'counsel-org-clock-goto)
-  ("k" #'counsel-org-clock-context)
-  ("h" #'counsel-org-clock-history)
-  ("U" #'aj/org-clock-update-heading)
+  "clock"
+  ("i" (org-clock-in '(4)) "in")
+  ("e" #'org-clock-modify-effort-estimate "modify effort")
+  ("o" #'org-clock-out "out")
+  ("p" #'org-pomodoro "pomodoro")
+  ("g" #'counsel-org-clock-goto "goto")
+  ("k" #'counsel-org-clock-context "kontext")
+  ("h" #'counsel-org-clock-history "history")
+  ("U" #'aj/org-clock-update-heading "Update heading")
   ("r" (lambda ()
          (interactive)
          (with-current-buffer (marker-buffer org-clock-marker)
            (goto-char org-clock-marker)
            (org-edit-headline (ivy-read "Change title: " nil)))
-         (aj/org-clock-update-heading)))
+         (aj/org-clock-update-heading))
+   "rename heading")
   ("R" (lambda ()
          (interactive)
-         (setq org-pomodoro-count 0)))
-  ("C" #'org-clock-cancel)
+         (setq org-pomodoro-count 0))
+   "Reset pomodoro")
+  ("C" #'org-clock-cancel "Cancel clock")
   )
 
 ;;;###autoload
@@ -2743,6 +2763,7 @@ either eaf-browser or default browser.
 
 ;;;###autoload (autoload 'aj/org-roam-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-roam-hydra (:color blue
+                             :columns 4
                              :body-pre (if (or (eq (car current-prefix-arg) 4)
                                                (not org-roam-directory))
                                            (aj/org-roam-choose-update-dir)))
