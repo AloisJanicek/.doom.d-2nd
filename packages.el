@@ -13,11 +13,11 @@
            :repo "yantar92/org"
            :branch "feature/org-fold"
            :files ("*.el" "lisp/*.el" "contrib/lisp/*.el")
-           :build (with-temp-file (expand-file-name "org-version.el" (straight--repos-dir "org"))
+           :pre-build (with-temp-file (expand-file-name "org-version.el" (straight--repos-dir "org"))
                     (insert "(fset 'org-release (lambda () \"9.5\"))\n"
                             "(fset 'org-git-version #'ignore)\n"
                             "(provide 'org-version)\n")))
-  :pin "9d093c1a283029dc42225d8841796db24f94dd9c"
+  :pin "e1aa10dc5357e346f067afec934b68dad0f12b38"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -92,7 +92,7 @@
   :pin "763531d077d02a4a45c58332b8a8b8300c090678")
 
 (package! define-word
-  :pin "3af6825c5f3bf4f6176a3f5b2e499616c65e2fe0")
+  :pin "6e4a427503aef096484f88332962c346cdd10847")
 
 (package! eaf
   :recipe (:host github
@@ -110,7 +110,7 @@
   :pin "08a779a821f8d32c1a1985d8d9eb6cf21646ce2e")
 
 (package! google-translate
-  :pin "0270073331de9358f29d049a27aa9145697d6dc7")
+  :pin "6f7b75b2aa1ff4e50b6f1579cafddafae5705dbd")
 
 (package! flycheck-sml
   :recipe (:host github :repo "creichert/flycheck-sml")
@@ -176,7 +176,7 @@
 
 (package! org-brain
   :recipe (:host github :repo "Kungsgeten/org-brain")
-  :pin "2f36f303e96e384e17d156e0d6489211808d4a36")
+  :pin "f7939ef5071895930eebccf490ea7cb25cc54b2c")
 
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags")
