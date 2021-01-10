@@ -882,24 +882,26 @@ which one is currently active."
       (org-ql-view-refresh)
     (org-agenda-redo)))
 
-(org-ql-defpred habit-half-due ()
-  "Search for habits which are at least half-due.
+(after! org-ql
+  (org-ql-defpred habit-half-due ()
+    "Search for habits which are at least half-due.
 
 Normally habits appear in agenda on their scheduled day. I think this is
 too soon for habits with ranges.
 For habit with repeater of \".+2d/18d\", return non-nil only if today
 is closer to maximum of the range rather then to the scheduled date.
 "
-  :body (when-let* ((headline (car (cdr (org-element-headline-parser (line-end-position)))))
-                    (habit (string-equal "habit" (plist-get headline :STYLE)))
-                    (habit-data (when habit (org-habit-parse-todo)))
-                    (scheduled-date (nth 0 habit-data))
-                    (scheduled-repeater (nth 1 habit-data))
-                    (deadline-date (nth 2 habit-data))
-                    (deadline-repeater (nth 3 habit-data))
-                    (half (- (+ scheduled-date deadline-repeater)
-                             (/ (+ scheduled-repeater deadline-repeater) 2))))
-          (< half (org-today))))
+    :body (when-let* ((headline (car (cdr (org-element-headline-parser (line-end-position)))))
+                      (habit (string-equal "habit" (plist-get headline :STYLE)))
+                      (habit-data (when habit (org-habit-parse-todo)))
+                      (scheduled-date (nth 0 habit-data))
+                      (scheduled-repeater (nth 1 habit-data))
+                      (deadline-date (nth 2 habit-data))
+                      (deadline-repeater (nth 3 habit-data))
+                      (half (- (+ scheduled-date deadline-repeater)
+                               (/ (+ scheduled-repeater deadline-repeater) 2))))
+            (< half (org-today))))
+  )
 
 (defun aj-org-ql-stucked-projects-query ()
   "Stucked projects query for org-ql."
