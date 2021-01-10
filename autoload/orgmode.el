@@ -882,6 +882,25 @@ which one is currently active."
       (org-ql-view-refresh)
     (org-agenda-redo)))
 
+(org-ql-defpred habit-half-due ()
+  "Search for habits which are at least half-due.
+
+Normally habits appear in agenda on their scheduled day. I think this is
+too soon for habits with ranges.
+For habit with repeater of \".+2d/18d\", return non-nil only if today
+is closer to maximum of the range rather then to the scheduled date.
+"
+  :body (when-let* ((headline (car (cdr (org-element-headline-parser (line-end-position)))))
+                    (habit (string-equal "habit" (plist-get headline :STYLE)))
+                    (habit-data (when habit (org-habit-parse-todo)))
+                    (scheduled-date (nth 0 habit-data))
+                    (scheduled-repeater (nth 1 habit-data))
+                    (deadline-date (nth 2 habit-data))
+                    (deadline-repeater (nth 3 habit-data))
+                    (half (- (+ scheduled-date deadline-repeater)
+                             (/ (+ scheduled-repeater deadline-repeater) 2))))
+          (< half (org-today))))
+
 (defun aj-org-ql-stucked-projects-query ()
   "Stucked projects query for org-ql."
   '(or
@@ -921,7 +940,17 @@ which one is currently active."
 
 (defun aj-org-ql-past-dues-query ()
   "Return valid org-ql query searching for past dues."
-  `(and (ts-active :to ,(ts-now)) (not (done))))
+  `(or (and (ts-active :to ,(ts-now))
+            (not (habit))
+            (not (done)))
+       (habit-half-due)))
+
+(defun aj-org-ql-habits-query ()
+  "Return valid org-ql query searching for habits."
+  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
+    (if tags
+        `(and (habit) ,tags)
+      '(habit))))
 
 (defun aj-org-ql-future-dues-query ()
   "Return valid org-ql query searching for future dues."
@@ -1075,9 +1104,10 @@ Tickler is not scheduled nor it doesn't have deadline.
                                    ;; Don't auto-pop following if true
                                    (unless aj-org-agenda-gtd-hydra-no-auto
 
-                                     (let* ((past-dues `(and (ts-active :to ,(ts-now))
-                                                             (not (habit))
-                                                             (not (todo "DONE")))))
+                                     (let* ((past-dues `(or (and (ts-active :to ,(ts-now))
+                                                                 (not (habit))
+                                                                 (not (done)))
+                                                            (habit-half-due))))
 
                                        (cond
 
@@ -1092,14 +1122,16 @@ Tickler is not scheduled nor it doesn't have deadline.
                                         ;; Show today's scheduled / deadline items without "HH:MM" if any
                                         ((let* ((scheduled-today (org-ql-select
                                                                    (org-agenda-files)
-                                                                   '(and (ts-active :on 0)
-                                                                         (not (habit))
-                                                                         (not (todo "DONE")))))
+                                                                   '(or (and (ts-active :on 0)
+                                                                             (not (habit))
+                                                                             (not (done)))
+                                                                        (habit-half-due))))
                                                 (scheduled-today-hm (org-ql-select
                                                                       (org-agenda-files)
-                                                                      `(and (ts-active :from 0 :to 0)
-                                                                            (not (habit))
-                                                                            (not (todo "DONE")))))
+                                                                      `(or (and (ts-active :from 0 :to 0)
+                                                                                (not (habit))
+                                                                                (not (done)))
+                                                                           (habit-half-due))))
                                                 (scheduled-today-without-hm (seq-filter
                                                                              (lambda (x)
                                                                                (not (member x scheduled-today-hm)))
@@ -1253,6 +1285,13 @@ Tickler is not scheduled nor it doesn't have deadline.
            :super-groups '((:auto-parent t))
            :title "HOLD"))
    "hold")
+
+  ("H" (org-ql-search
+         (aj-org-combined-agenda-files)
+         (aj-org-ql-habits-query)
+         :sort 'date
+         :title "Habits")
+   "Habits")
 
   ("c" (org-ql-search
          (aj-org-combined-agenda-files)

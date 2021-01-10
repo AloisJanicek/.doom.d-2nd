@@ -933,7 +933,10 @@
    :desc "archived"             "A" (cmd! (aj/org-agenda-headlines :prompt "archived"
                                                                    :query (aj-org-ql-done-query)
                                                                    :files (aj-org-get-filtered-org-files :preset aj-org-agenda-filter :archived t)  :capture-key "k"))
-   :desc "all headings"         "H" (cmd! (aj-org-jump-to-headline-at :files (aj-org-combined-agenda-files) :level 9))
+   :desc "habits"               "H" (cmd! (aj/org-agenda-headlines :prompt "habits"
+                                                                   :query (aj-org-ql-habits-query)
+                                                                   :sort-fn 'date :reverse t :time t :capture-key "t"))
+   :desc "jump all headings"    "j" (cmd! (aj-org-jump-to-headline-at :files (aj-org-combined-agenda-files) :level 9))
    :desc "inbox"                "i" (cmd! (aj-org-jump-to-headline-at :files (list aj-org-inbox-file) :level 1))
    :desc "next"                 "n" (cmd! (aj/org-agenda-headlines :prompt "next"
                                                                    :query (aj-org-ql-custom-next-task-query) :capture-key "t"))
