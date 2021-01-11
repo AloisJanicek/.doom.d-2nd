@@ -61,15 +61,3 @@ For ensuring compatibility with how things are implemented and expected in upstr
          (apply orig-fn args)))))
 
   )
-
-;; HACK something weird is happening in /core but:
-;; discord is gone, Github issues tracker is suspended,
-;; Discourse is not up yet ("next week"), r/DoomEmacs is dead
-;; This is Armagedon, this is a true Doomsday
-
-;; Without this I don't have my ~/.doom.d/themes in `custom-theme-load-path'
-(setq
- custom-theme-directory (concat doom-private-dir "themes/")
- custom-theme-load-path
- (cons custom-theme-directory
-       (remq 'custom-theme-directory custom-theme-load-path)))
