@@ -3,19 +3,6 @@
 ;; weird backspace issues
 (advice-remove #'delete-backward-char #'+default--delete-backward-char-a)
 
-(after! cyphejor
-  ;; HACK Until https://github.com/mrkkrp/cyphejor/pull/11 is merged
-  ;; `get-buffer-create' signature has changed in emacs 28 and this fn
-  ;; is used to advise it
-  (defun cyphejor--fundamental-mode-advice (buffer &optional inhibit-buffer-hooks)
-    "Set `mode-name' of BUFFER according to the symbol name in `major-mode'.
-
-Only do so when the buffer is in fundamental mode."
-    (with-current-buffer buffer
-      (when (eq major-mode 'fundamental-mode)
-        (save-match-data
-          (cyphejor--hook)))))
-  )
 (after! org-protocol
   (defun org-protocol-store-link-override-a (fname)
     "Override advice of `org-protocol-store-link'.

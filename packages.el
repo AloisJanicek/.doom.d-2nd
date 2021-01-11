@@ -89,7 +89,7 @@
 
 (package! cyphejor
   :recipe (:host github :repo "mrkkrp/cyphejor")
-  :pin "763531d077d02a4a45c58332b8a8b8300c090678")
+  :pin "037c0f2d0cd0e23acd2aacb621d7694080f5eef6")
 
 (package! define-word
   :pin "6e4a427503aef096484f88332962c346cdd10847")
