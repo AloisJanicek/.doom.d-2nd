@@ -690,12 +690,11 @@
 
 
 (use-package! hydra-posframe
-  :disabled
   :after hydra
   :when (display-graphic-p)
   :config
   (hydra-posframe-mode +1)
-  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-top-center
+  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-center
         hydra-posframe-border-width 10
         )
   )
@@ -945,11 +944,13 @@
 
 (after! ivy-posframe
   (setf (alist-get t ivy-posframe-display-functions-alist)
-        #'ivy-posframe-display-at-frame-top-center)
+        #'ivy-posframe-display-at-frame-center)
   (add-to-list
    'ivy-posframe-display-functions-alist
    '(ivy-yasnippet . ivy-display-function-fallback))
-  (setq ivy-posframe-size-function
+  (setq
+   ivy-posframe-border-width 10
+   ivy-posframe-size-function
         (lambda ()
           (list
            :height (+ ivy-height 1)
@@ -957,7 +958,11 @@
            :min-height (+ ivy-height 1)
            :min-width (round (* (frame-width) 0.72))))
         )
+
   )
+
+(after! posframe
+  (advice-add #'posframe--mouse-banish :override #'my-posframe--mouse-banish-a))
 
 (after! ivy-prescient
   (add-to-list 'ivy-prescient-sort-commands 'counsel-outline t)
@@ -2312,6 +2317,14 @@ When in org-roam file, also create top-level ID.
     :vslot 1 :size 82  :side 'left :select t :ttl nil :modeline t)
   )
 
+(use-package! transient-posframe
+  :after transient
+  :config
+  (when (display-graphic-p)
+    (transient-posframe-mode))
+  (setq transient-posframe-poshandler #'posframe-poshandler-frame-center)
+  )
+
 (after! treemacs
   (setq
    evil-treemacs-state-cursor 'box
@@ -2390,7 +2403,7 @@ When in org-roam file, also create top-level ID.
   (when (display-graphic-p)
     (which-key-posframe-mode)
     )
-  (setq which-key-posframe-poshandler #'posframe-poshandler-frame-top-center)
+  (setq which-key-posframe-poshandler #'posframe-poshandler-frame-center)
   )
 
 (after! wordnut

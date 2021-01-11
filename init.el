@@ -18,6 +18,7 @@
  (ivy
   +icons
   +prescient
+  +childframe
   )
 
  :ui

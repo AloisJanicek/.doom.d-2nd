@@ -229,6 +229,11 @@
 (package! tldr
   :pin "269bda7001613c0b70c0662d2a74d200765c1dcb")
 
+(package! transient-posframe
+  :recipe (:host github :repo "yanghaoxie/transient-posframe")
+  :pin "dcd898d1d35183a7d4f2c8f0ebcb43b4f8e70ebe"
+  )
+
 (package! vimrc-mode
   :pin "13bc150a870d5d4a95f1111e4740e2b22813c30e")
 

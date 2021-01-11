@@ -1263,6 +1263,15 @@ Override adivce for annoying `pdf-info-check-epdfinfo'
   (interactive "aFunction symbol: ")
   (advice-mapc (lambda (advice _props) (advice-remove sym advice)) sym))
 
+;;;###autoload
+(defun my-posframe--mouse-banish-a (parentframe frame)
+  "Move the cursort out of the way from posframe frames.
+Intended as an override advice for `posframe--mouse-banish'.
+"
+  (call-process "/bin/bash" nil t 0 "-c"
+                (concat "nohup xdotool mousemove 500 100"
+                        " >/dev/null 2>&1 &")))
+
 (provide 'functions)
 
 ;;; functions.el ends here
