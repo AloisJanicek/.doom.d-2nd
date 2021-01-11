@@ -2031,7 +2031,7 @@ path is colorized according to outline faces.
               deadline)))
          (title (concat (if habit
                             "⚒ "
-                          (when active-timestamp "⏲ "))
+                          (when active-timestamp "◔ "))
                         (org-link-display-format
                          (substring-no-properties (plist-get headline :raw-value)))))
          (keyword (when keyword (ignore-errors (substring-no-properties (plist-get headline :todo-keyword)))))
