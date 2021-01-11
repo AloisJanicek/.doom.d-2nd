@@ -1996,16 +1996,42 @@ Optionally specify heading LEVEL (default is 3).
 Heading is stripped of org-mode link syntax and whole
 path is colorized according to outline faces.
 "
+  (require 'org-ql-view)
   (let* ((headline (car (cdr (org-element-headline-parser (line-end-position)))))
-         (scheduled (plist-get headline :scheduled))
-         (deadline (plist-get headline :deadline))
-         ;; (active-timestamp (or scheduled deadline))
+         (today (org-today))
+         (habit (when-let*
+                    ((habit (string-equal "habit" (plist-get headline :STYLE)))
+                     (habit-data (org-habit-parse-todo))
+                     (scheduled-date (nth 0 habit-data))
+                     (scheduled-str
+                      (ignore-errors
+                        (org-ql-view--format-relative-date (- today scheduled-date))))
+                     (deadline-date (nth 2 habit-data))
+                     (deadline-str
+                      (ignore-errors
+                        (org-ql-view--format-relative-date (- today deadline-date)))))
+                  (print (concat scheduled-str " / " deadline-str))))
+         (scheduled (ignore-errors
+                      (org-ql-view--format-relative-date
+                       (- today
+                          (org-time-string-to-absolute
+                           (org-element-timestamp-interpreter (plist-get headline :scheduled) 'ignore))))))
+         (deadline (ignore-errors
+                     (org-ql-view--format-relative-date
+                      (- today
+                         (org-time-string-to-absolute
+                          (org-element-timestamp-interpreter (plist-get headline :deadline) 'ignore))))))
          (active-timestamp
-          (if scheduled
-              (plist-get (car (cdr scheduled)) :raw-value)
-            (if deadline
-                (plist-get (car (cdr deadline)) :raw-value))))
-         (title (concat (when active-timestamp "⏲ ")
+          (if habit
+              habit
+            (if scheduled
+                (if deadline
+                    (concat scheduled " " deadline)
+                  scheduled)
+              deadline)))
+         (title (concat (if habit
+                            "⚒ "
+                          (when active-timestamp "⏲ "))
                         (org-link-display-format
                          (substring-no-properties (plist-get headline :raw-value)))))
          (keyword (when keyword (ignore-errors (substring-no-properties (plist-get headline :todo-keyword)))))
