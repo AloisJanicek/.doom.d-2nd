@@ -947,11 +947,10 @@ is closer to maximum of the range rather then to the scheduled date.
   "Return valid org-ql query searching for future dues."
   (let ((tags (aj-org-ql-custom-agenda-filter-tags))
         (up-to (if current-prefix-arg 365 2)))
-    `(planning :from ,(ts-now) :to ,up-to)
-    ;; (if tags
-    ;;     `(and (planning :from ,(ts-now) :to ,up-to) ,tags)
-    ;;   `(planning :from ,(ts-now) :to ,up-to))
-    ))
+    `(or (and (planning :from ,(ts-now) :to ,up-to))
+         (and (habit)
+              (planning :to ,up-to)
+              (not (habit-half-due))))))
 
 (defun aj-org-ql-all-active-tasks-query ()
   "Return valid org-ql query searching for all active tasks.
