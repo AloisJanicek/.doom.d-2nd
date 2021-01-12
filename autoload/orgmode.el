@@ -1740,7 +1740,7 @@ Otherwise dispatch default commands.
   "Return list of all org files but without archived files."
   (directory-files-recursively org-directory ".org$"))
 
-(defun aj-org-encrypted-p (file)
+(defun aj-org-file-encrypted-p (file)
   "Return non-nil when FILE is encrypted."
   (with-temp-buffer
     (insert-file-contents-literally file nil 0 256)
@@ -1912,7 +1912,7 @@ searching DIR recursively.
        (and (if preset
                 (aj-org-file-belongs-to-filter-p file preset)
               t)
-            (not (aj-org-encrypted-p file))))
+            (not (aj-org-file-encrypted-p file))))
      files)))
 
 ;;;###autoload

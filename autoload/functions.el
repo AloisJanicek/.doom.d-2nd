@@ -11,34 +11,38 @@
   "Decrypt or encrypt whole content of a file FILE.
 Which operation will be executed depends on value of ENCRYPT."
   (with-current-buffer (find-file-noselect file)
-    (let* ((start (point-min))
-           (end (point-max))
-           (context (epg-make-context epa-protocol))
-           (coding (select-safe-coding-system start end))
-           (operation (if (not encrypt) "Decrypting" "Encrypting"))
-           (decoded (unless encrypt
-                      (decode-coding-string
-                       (epg-decrypt-string
-                        context
-                        (buffer-substring-no-properties start end))
-                       'utf-8)))
-           cipher)
-      (when encrypt
-        ;; (setf (epg-context-armor context) t)
-        (setf (aref context 4) t)
-        ;; (setf (epg-context-textmode context) t)
-        (setf (aref context 5) t)
-        (setq cipher (epg-encrypt-string context
-                                         (encode-coding-string
-                                          (buffer-substring start end) coding)
-                                         (epg-list-keys context (car epa-file-encrypt-to)) nil)))
-      (delete-region start end)
-      (goto-char end)
-      (if (not encrypt)
-          (insert decoded)
-        (insert cipher))
-      (save-buffer)
-      (message "%s file: %s..." operation file))))
+    (unless (or (and (aj-org-file-encrypted-p file)
+                     encrypt)
+                (and (not (aj-org-file-encrypted-p file))
+                     (not encrypt)))
+      (let* ((start (point-min))
+             (end (point-max))
+             (context (epg-make-context epa-protocol))
+             (coding (select-safe-coding-system start end))
+             (operation (if (not encrypt) "Decrypting" "Encrypting"))
+             (decoded (unless encrypt
+                        (decode-coding-string
+                         (epg-decrypt-string
+                          context
+                          (buffer-substring-no-properties start end))
+                         'utf-8)))
+             cipher)
+        (when encrypt
+          ;; (setf (epg-context-armor context) t)
+          (setf (aref context 4) t)
+          ;; (setf (epg-context-textmode context) t)
+          (setf (aref context 5) t)
+          (setq cipher (epg-encrypt-string context
+                                           (encode-coding-string
+                                            (buffer-substring start end) coding)
+                                           (epg-list-keys context (car epa-file-encrypt-to)) nil)))
+        (delete-region start end)
+        (goto-char end)
+        (if (not encrypt)
+            (insert decoded)
+          (insert cipher))
+        (save-buffer)
+        (message "%s file: %s..." operation file)))))
 
 ;;;###autoload
 (defun aj-decrypt-encrypt-files-directory (directory &optional encrypt)
