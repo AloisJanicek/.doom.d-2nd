@@ -2373,29 +2373,49 @@ Org manual: 8.4.2 The clock table.
 ;;;###autoload
 (defun aj-org-ql-sort-by-active-timestamp (a b)
   "Sort A and B by their active timestamp.
-When habit, sort by average of its date range instead."
+
+When item is habit, sort by average of
+its date range instead of its scheduled time.
+
+For items on the same day use hh:mm
+to resole their precedence.
+"
   (let ((get-time
          (lambda (elm)
-           (or (when-let* ((habit-data
-                            (org-with-point-at (org-element-property :org-marker elm)
-                              (when (org-is-habit-p)
-                                (org-habit-parse-todo))))
-                           (scheduled-date (nth 0 habit-data))
-                           (scheduled-repeater (nth 1 habit-data))
-                           (deadline-date (nth 2 habit-data))
-                           (deadline-repeater (nth 3 habit-data))
-                           (half (- (+ scheduled-date deadline-repeater)
-                                    (/ (+ scheduled-repeater deadline-repeater) 2))))
-                 half)
-               (ignore-errors
-                 (org-time-string-to-absolute
-                  (or
-                   (plist-get (car (cdr (org-element-property :scheduled elm))) :raw-value)
-                   (plist-get (car (cdr (org-element-property :deadline elm))) :raw-value)
-                   (org-entry-get (org-element-property :org-marker elm) "TIMESTAMP"))))
-               0))))
-    (< (funcall get-time a)
-       (funcall get-time b))))
+           (let* ((habit (when-let* ((habit-data
+                                      (org-with-point-at (org-element-property :org-marker elm)
+                                        (when (org-is-habit-p)
+                                          (org-habit-parse-todo))))
+                                     (scheduled-date (nth 0 habit-data))
+                                     (scheduled-repeater (nth 1 habit-data))
+                                     (deadline-date (nth 2 habit-data))
+                                     (deadline-repeater (nth 3 habit-data))
+                                     (half (- (+ scheduled-date deadline-repeater)
+                                              (/ (+ scheduled-repeater deadline-repeater) 2))))
+                           half))
+                  (timestamp
+                   (or (plist-get (car (cdr (org-element-property :scheduled elm))) :raw-value)
+                       (plist-get (car (cdr (org-element-property :deadline elm))) :raw-value)
+                       (org-entry-get (org-element-property :org-marker elm) "TIMESTAMP")))
+                  (hh-mm
+                   (cl-destructuring-bind (_ minutes hours _ _ _ _ _ _)
+                       (org-parse-time-string timestamp)
+                     (list hours minutes)))
+                  (time (or habit
+                            (ignore-errors
+                              (org-time-string-to-absolute
+                               timestamp))
+                            0)))
+             (cons time hh-mm)))))
+    (let* ((a (funcall get-time a))
+           (b (funcall get-time b))
+           (time-a (car a))
+           (time-b (car b))
+           (hh-mm-a (cdr a))
+           (hh-mm-b (cdr b)))
+      (if (equal time-a time-b)
+          (time-less-p hh-mm-a hh-mm-b)
+        (< time-a time-b)))))
 
 ;;;###autoload
 (defun aj-org-ql-sort-by-effort (a b)
