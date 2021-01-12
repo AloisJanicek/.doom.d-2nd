@@ -323,10 +323,10 @@ return an empty string."
                                 unless (member symbol '(parent))
                                 append (list symbol val)))
            (title (--> (org-ql-view--add-faces element)
-                       (org-element-property :raw-value it)
-                       (org-link-display-format it)
-                       (propertize it 'face '(:inherit outline-1))
-                       ))
+                    (org-element-property :raw-value it)
+                    (org-link-display-format it)
+                    (propertize it 'face '(:inherit outline-1))
+                    ))
            (todo-keyword (-some--> (org-element-property :todo-keyword element)
                            (org-ql-view--add-todo-face it)))
            (tag-list (if org-use-tag-inheritance
@@ -341,9 +341,9 @@ return an empty string."
                        (org-element-property :tags element)))
            (tag-string (when tag-list
                          (--> tag-list
-                              (s-join ":" it)
-                              (s-wrap it ":")
-                              (org-add-props it nil 'face 'org-tag))))
+                           (s-join ":" it)
+                           (s-wrap it ":")
+                           (org-add-props it nil 'face 'org-tag))))
            ;;  (category (org-element-property :category element))
            (priority-string (-some->> (org-element-property :priority element)
                               (char-to-string)
@@ -360,19 +360,19 @@ return an empty string."
       (remove-list-of-text-properties 0 (length string) '(line-prefix) string)
       ;; Add all the necessary properties and faces to the whole string
       (--> string
-           (concat
-            " "
-            (if effort
-                (propertize effort 'face '(:inherit org-property-value))
+        (concat
+         " "
+         (if effort
+             (propertize effort 'face '(:inherit org-property-value))
 
-              "     "
-              )
-            " " it)
-           (org-add-props it properties
-             'org-agenda-type 'search
-             'todo-state todo-keyword
-             'tags tag-list
-             'org-habit-p habit-property)))))
+           "     "
+           )
+         " " it)
+        (org-add-props it properties
+          'org-agenda-type 'search
+          'todo-state todo-keyword
+          'tags tag-list
+          'org-habit-p habit-property)))))
 
 ;; PROJECTILE & PROJECTS
 

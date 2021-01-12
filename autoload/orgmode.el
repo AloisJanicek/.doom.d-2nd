@@ -90,14 +90,16 @@ Works also in `org-agenda'."
                          0
                          'marker
                          (ivy-read "Heading: "
-                                   (org-ql-select file '(and (todo)
-                                                             (not (todo "MAYBE"))
-                                                             (not (todo "SOMEDAY")))
-                                     :action (lambda ()
-                                               (aj-org-get-pretty-heading-path t t t t))
-                                     :sort (lambda (a b) nil)
-                                     :narrow t
-                                     )))))
+                                   (->> (org-ql-query
+                                          :from file
+                                          :where '(and (todo)
+                                                       (not (todo "MAYBE"))
+                                                       (not (todo "SOMEDAY")))
+                                          :order-by (lambda (a b) nil)
+                                          :narrow t)
+                                        (-map
+                                         (lambda (elm)
+                                           (aj-org-pretty-format-element elm t t t t))))))))
          (rfloc (list heading file nil heading-pos)))
     (message "%s" rfloc)
     (if (memq major-mode aj-org-agenda-similar-modes)
@@ -674,37 +676,24 @@ and all its children are revealed."
               (lambda ()
                 (ivy-read
                  "Go to: "
-                 (org-ql-query
-                   :select (lambda () (aj-org-get-pretty-heading-path nil t nil t))
-                   :from (current-buffer)
-                   :where '(level <= 9))
-                 :update-fn (lambda ()
-                              (when timer
-                                (cancel-timer timer))
-                              (setq timer
-                                    (run-with-timer
-                                     0.2
-                                     nil
-                                     `(lambda ()
-                                        (with-ivy-window
-                                          (funcall
-                                           (ivy--get-action ivy-last)
-                                           (if (consp (car-safe (ivy-state-collection ivy-last)))
-                                               (assoc (ivy-state-current ivy-last)
-                                                      (ivy-state-collection ivy-last))
-                                             (ivy-state-current ivy-last))))))))
+                 (->> (org-ql-query
+                        :select 'element-with-markers
+                        :from (current-buffer)
+                        :where '(level <= 9))
+                      (-map
+                       (lambda (elm)
+                         (aj-org-pretty-format-element elm t t nil t))))
+                 :update-fn #'aj-ivy-update-fn-timer
                  :caller 'aj/org-mode-menu
                  :action (lambda (headline)
                            (widen)
                            (goto-char (get-text-property 0 'marker headline))
-                           (aj-org-narrow-and-show)
-                           ))))
+                           (aj-org-narrow-and-show)))))
              ivy-sort-functions-alist)
         (widen)
         (point-min)
         (search-forward "* ")
-        (funcall menu)
-        ))))
+        (funcall menu)))))
 
 ;;;###autoload
 (defun my-transform-square-brackets-to-round-ones (string-to-transform)
@@ -1078,6 +1067,26 @@ Tickler is not scheduled nor it doesn't have deadline.
     :super-groups '((:auto-category t))
     :title task))
 
+(defun aj-org-ql-next-task-search ()
+  "Search for next tasks."
+  (org-ql-search
+    (aj-org-combined-agenda-files)
+    (aj-org-ql-custom-next-task-query)
+    :sort #'aj-org-ql-sort-by-effort
+    :super-groups '((:auto-category t))
+    :title "NEXT action"
+    )
+  )
+
+(defun aj-org-ql-stucked-projects-search ()
+  "Search for stucked projects."
+  (org-ql-search
+    (aj-org-combined-agenda-files)
+    (aj-org-ql-stucked-projects-query)
+    :super-groups '((:auto-category t))
+    :title "Stucked Projects")
+  )
+
 (defun aj-org-ql-custom-task-search ()
   "Search for tasks."
   (let ((org-agenda-tag-filter aj-org-agenda-filter))
@@ -1106,98 +1115,83 @@ Tickler is not scheduled nor it doesn't have deadline.
                                    ;; Don't auto-pop following if true
                                    (unless aj-org-agenda-gtd-hydra-no-auto
 
-                                     (let* ((past-dues `(or (and (ts-active :to ,(ts-now))
-                                                                 (not (habit))
-                                                                 (not (done)))
-                                                            (habit-half-due))))
+                                     (cond
+                                      ;; Visit running clock if any
+                                      ((bound-and-true-p org-clock-current-task)
+                                       (org-clock-goto))
 
-                                       (cond
+                                      ;; Show past scheduled / deadline items if any
+                                      ((org-ql-select (org-agenda-files) (aj-org-ql-past-dues-query))
+                                       (org-ql-search (org-agenda-files) (aj-org-ql-past-dues-query)
+                                         :sort #'aj-org-ql-sort-by-scheduled
+                                         :title "Past dues"))
 
-                                        ;; Visit running clock if any
-                                        ((bound-and-true-p org-clock-current-task)
-                                         (org-clock-goto))
+                                      ;; Show today's scheduled / deadline items without "HH:MM" if any
+                                      ((let* ((scheduled-today (org-ql-select
+                                                                 (org-agenda-files)
+                                                                 '(or (and (ts-active :on 0)
+                                                                           (not (habit))
+                                                                           (not (done)))
+                                                                      (habit-half-due))))
+                                              (scheduled-today-hm (org-ql-select
+                                                                    (org-agenda-files)
+                                                                    `(or (and (ts-active :from 0 :to 0)
+                                                                              (not (habit))
+                                                                              (not (done)))
+                                                                         (habit-half-due))))
+                                              (scheduled-today-without-hm (seq-filter
+                                                                           (lambda (x)
+                                                                             (not (member x scheduled-today-hm)))
+                                                                           scheduled-today)))
+                                         (when scheduled-today-without-hm
+                                           t))
+                                       (let ((org-agenda-start-with-log-mode t)
+                                             (org-agenda-span 1)
+                                             (org-agenda-start-day nil)
+                                             (org-agenda-use-time-grid t)
+                                             (org-agenda-time-grid '((daily today require-timed)
+                                                                     (700 800 900 1000 1100 1200
+                                                                          1300 1400 1500 1600 1700
+                                                                          1800 1900 2000 2100)
+                                                                     "......" "----------------")))
+                                         (org-agenda nil "a")))
 
-                                        ;; Show past scheduled / deadline items if any
-                                        ((org-ql-select (org-agenda-files) past-dues)
-                                         (org-ql-search (org-agenda-files) past-dues))
-
-                                        ;; Show today's scheduled / deadline items without "HH:MM" if any
-                                        ((let* ((scheduled-today (org-ql-select
-                                                                   (org-agenda-files)
-                                                                   '(or (and (ts-active :on 0)
-                                                                             (not (habit))
-                                                                             (not (done)))
-                                                                        (habit-half-due))))
-                                                (scheduled-today-hm (org-ql-select
-                                                                      (org-agenda-files)
-                                                                      `(or (and (ts-active :from 0 :to 0)
-                                                                                (not (habit))
-                                                                                (not (done)))
-                                                                           (habit-half-due))))
-                                                (scheduled-today-without-hm (seq-filter
-                                                                             (lambda (x)
-                                                                               (not (member x scheduled-today-hm)))
-                                                                             scheduled-today)))
-                                           (when scheduled-today-without-hm t))
-                                         (let ((org-agenda-start-with-log-mode t)
-                                               (org-agenda-span 1)
-                                               (org-agenda-start-day nil)
-                                               (org-agenda-use-time-grid t)
-                                               (org-agenda-time-grid '((daily today require-timed)
-                                                                       (700 800 900 1000 1100 1200
-                                                                            1300 1400 1500 1600 1700
-                                                                            1800 1900 2000 2100)
-                                                                       "......" "----------------")))
-                                           (org-agenda nil "a")))
-
-                                        ;; Show stucked projects if any
-                                        ((catch 'heading
-                                           (org-ql-select
-                                             (aj-org-combined-agenda-files)
-                                             (aj-org-ql-stucked-projects-query)
-                                             :action (lambda ()
-                                                       (when (org-get-heading)
-                                                         (throw 'heading t)))))
-                                         (org-ql-search
+                                      ;; Show stucked projects if any
+                                      ((catch 'heading
+                                         (org-ql-select
                                            (aj-org-combined-agenda-files)
                                            (aj-org-ql-stucked-projects-query)
-                                           :super-groups '((:auto-category t))
-                                           :title "Stucked Projects"))
+                                           :action (lambda ()
+                                                     (when (org-get-heading)
+                                                       (throw 'heading t)))))
+                                       (aj-org-ql-stucked-projects-search))
 
-                                        ;; otherwise default to showing "NEXT" tasks
-                                        ;; if there are no "NEXT" tasks for current filtered view (or at all)
-                                        ;; show normal tasks instead
-                                        ;; if there are no "normal tasks" for current filtered view (or at all)
-                                        ;; show "SOMEDAY" tasks
-                                        (t (if (let* ((tags (aj-org-ql-custom-agenda-filter-tags))
-                                                      (query (aj-org-ql-custom-next-task-query)))
-                                                 (catch 'heading
-                                                   (org-ql-select
-                                                     (aj-org-combined-agenda-files)
-                                                     query
-                                                     :action (lambda ()
-                                                               (when (org-get-heading)
-                                                                 (throw 'heading t))))))
-                                               (let ((org-agenda-tag-filter aj-org-agenda-filter))
-                                                 (org-ql-search
+                                      ;; otherwise default to showing "NEXT" tasks
+                                      ;; if there are no "NEXT" tasks for current filtered view (or at all)
+                                      ;; show normal tasks instead
+                                      ;; if there are no "normal tasks" for current filtered view (or at all)
+                                      ;; show "SOMEDAY" tasks
+                                      (t (if (let* ((tags (aj-org-ql-custom-agenda-filter-tags))
+                                                    (query (aj-org-ql-custom-next-task-query)))
+                                               (catch 'heading
+                                                 (org-ql-select
                                                    (aj-org-combined-agenda-files)
-                                                   (aj-org-ql-custom-next-task-query)
-                                                   :sort #'aj-org-ql-sort-by-effort
-                                                   :super-groups '((:auto-category t))
-                                                   :title "NEXT action"
-                                                   ))
-                                             (if (catch 'heading
-                                                   (org-ql-select
-                                                     (aj-org-combined-agenda-files)
-                                                     (aj-org-ql-custom-todo-task-query)
-                                                     :action (lambda ()
-                                                               (when (org-get-heading)
-                                                                 (throw 'heading t)))))
-                                                 (aj-org-ql-custom-task-search)
-                                               (aj-org-ql-simple-task-search "SOMEDAY")))
-                                           )
-                                        )
-                                       )
+                                                   query
+                                                   :action (lambda ()
+                                                             (when (org-get-heading)
+                                                               (throw 'heading t))))))
+                                             (aj-org-ql-next-task-search)
+                                           (if (catch 'heading
+                                                 (org-ql-select
+                                                   (aj-org-combined-agenda-files)
+                                                   (aj-org-ql-custom-todo-task-query)
+                                                   :action (lambda ()
+                                                             (when (org-get-heading)
+                                                               (throw 'heading t)))))
+                                               (aj-org-ql-custom-task-search)
+                                             (aj-org-ql-simple-task-search "SOMEDAY")))
+                                         )
+                                      )
                                      )
                                    )
   "Agenda search"
@@ -1210,7 +1204,7 @@ Tickler is not scheduled nor it doesn't have deadline.
   ("b" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-future-dues-query)
-         :sort 'date
+         :sort #'aj-org-ql-sort-by-scheduled
          :super-groups '((:auto-category t))
          :title "Future dues")
    "future dues")
@@ -1243,13 +1237,7 @@ Tickler is not scheduled nor it doesn't have deadline.
          )
    "inbox")
 
-  ("n" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search
-           (aj-org-combined-agenda-files)
-           (aj-org-ql-custom-next-task-query)
-           :sort #'aj-org-ql-sort-by-effort
-           :super-groups '((:auto-category t))
-           :title "Next Action"))
+  ("n" (aj-org-ql-next-task-search)
    "next action")
 
   ("t" (aj-org-ql-custom-task-search) "task")
@@ -1263,11 +1251,7 @@ Tickler is not scheduled nor it doesn't have deadline.
            :title "Projects"))
    "projects")
 
-  ("s" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (aj-org-ql-stucked-projects-query)
-         :super-groups '((:auto-category t))
-         :title "Stucked Projects")
+  ("s" (aj-org-ql-stucked-projects-search)
    "stucked projects")
 
   ("w" (let ((org-agenda-tag-filter aj-org-agenda-filter))
@@ -1291,8 +1275,8 @@ Tickler is not scheduled nor it doesn't have deadline.
   ("H" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-habits-query)
-         :sort 'date
-         :title "Habits")
+         :sort #'aj-org-ql-sort-by-scheduled
+         :title "Habits"1)
    "Habits")
 
   ("c" (org-ql-search
@@ -1858,13 +1842,15 @@ replicated by calling this function again with arguments saved in this variable.
       (setq prompt (format "descendants of \"%s\"" (car (cdr (car (cdr query)))))))
 
     (ivy-read (format "%s %s: " prompt (cdr (aj-org-ql-custom-agenda-filter-tags)))
-              (let ((results (org-ql-query
-                               :select (lambda ()
-                                         (aj-org-get-pretty-heading-path nil nil t t t time))
-                               :from files
-                               :where query
-                               :order-by sort-fn
-                               )))
+              (let ((results
+                     (->> (org-ql-query
+                            :select 'element-with-markers
+                            :from files
+                            :where query
+                            :order-by sort-fn)
+                          (-map
+                           (lambda (elm)
+                             (aj-org-pretty-format-element elm nil nil t t t time))))))
                 (if (ignore-errors reverse)
                     (reverse results)
                   results))
@@ -1954,17 +1940,17 @@ searching DIR recursively.
 Optionally specify heading LEVEL (default is 3).
 "
   (require 'org)
-  (let* ((headings (lambda ()
-                     (aj-org-get-pretty-heading-path t t t t t)))
-         (ivy-height (round (* (frame-height) 0.60)))
+  (let* ((ivy-height (round (* (frame-height) 0.60)))
          ivy-sort-functions-alist timer)
     (ivy-read
      "Go to: "
-     (org-ql-query
-       :select headings
-       :from files
-       :where `(level <= ,(or level 3))
-       )
+     (->> (org-ql-query
+            :select 'element-with-markers
+            :from files
+            :where `(level <= ,(or level 3)))
+          (-map
+           (lambda (elm)
+             (aj-org-pretty-format-element elm t t t t t))))
      :update-fn #'aj-ivy-update-fn-timer
      :action #'aj-org-jump-to-heading-action
      :caller 'aj-org-jump-to-headline-at)))
@@ -1974,34 +1960,54 @@ Optionally specify heading LEVEL (default is 3).
   "Jump to org mode datetree heading under placed under TAG in FILE.
 "
   (require 'org)
-  (let* ((headings (lambda ()
-                     (aj-org-get-pretty-heading-path t t nil t)))
-         (ivy-height (round (* (frame-height) 0.80)))
+  (let* ((ivy-height (round (* (frame-height) 0.40)))
          ivy-sort-functions-alist timer)
     (aj-org-datetree-access (if (listp file) (car file) file) tag)
     (ivy-read
      "Go to: "
-     (org-ql-query
-       :select headings
-       :from file
-       :where `(tags ,tag)
-       )
+     (->> (org-ql-query
+            :from file
+            :where `(tags ,tag))
+          (-map
+           (lambda (elm)
+             (aj-org-pretty-format-element elm t t nil t))))
      :update-fn #'aj-ivy-update-fn-timer
      :action #'aj-org-jump-to-heading-action
      :caller 'aj-org-jump-to-headline-at)))
 
+(defun aj-org-hh-mm-from-timestamp (timestamp)
+  "For raw TIMESTAMP return hh:mm."
+  (cl-destructuring-bind (_ minutes hours _ _ _ _ _ _)
+      (org-parse-time-string (plist-get (car (cdr timestamp)) :raw-value))
+    (concat
+     (if (< hours 10)
+         (concat "0" (number-to-string hours))
+       (number-to-string hours))
+     ":"
+     (if (< minutes 10)
+         (concat "0" (number-to-string minutes))
+       (number-to-string minutes)))))
+
 ;;;###autoload
-(defun aj-org-get-pretty-heading-path (&optional filename outline keyword tag effort time)
-  "Get nice org heading path.
-Heading is stripped of org-mode link syntax and whole
-path is colorized according to outline faces.
+(defun aj-org-pretty-format-element (elm &optional filename outline keyword tag effort time)
+  "Pretty format org-heading ELM.
+ELM is org-mode headline returned by `org-element-headline-parser'.
+
+Optional arguments specifies which additional features should be shown
+like FILENAME, whole file's OUTLINE, todo KEYWORD, TAG, EFFORT string or
+TIME string.
 "
   (require 'org-ql-view)
-  (let* ((headline (car (cdr (org-element-headline-parser (line-end-position)))))
+  (let* ((headline (car (cdr elm)))
          (today (org-today))
+         (marker (or (org-element-property :org-hd-marker elm)
+                     (org-element-property :org-marker elm)))
+         (buf (marker-buffer marker))
          (habit (when-let*
                     ((habit (string-equal "habit" (plist-get headline :STYLE)))
-                     (habit-data (org-habit-parse-todo))
+                     (habit-data (with-current-buffer buf
+                                   (org-habit-parse-todo marker)
+                                   ))
                      (scheduled-date (nth 0 habit-data))
                      (scheduled-str
                       (ignore-errors
@@ -2009,24 +2015,34 @@ path is colorized according to outline faces.
                      (deadline-date (nth 2 habit-data))
                      (deadline-str
                       (ignore-errors
-                        (org-ql-view--format-relative-date (- today deadline-date)))))
-                  (print (concat scheduled-str " / " deadline-str))))
-         (scheduled (ignore-errors
-                      (org-ql-view--format-relative-date
-                       (- today
-                          (org-time-string-to-absolute
-                           (org-element-timestamp-interpreter (plist-get headline :scheduled) 'ignore))))))
-         (deadline (ignore-errors
-                     (org-ql-view--format-relative-date
-                      (- today
-                         (org-time-string-to-absolute
-                          (org-element-timestamp-interpreter (plist-get headline :deadline) 'ignore))))))
+                        (org-ql-view--format-relative-date (- today deadline-date))))
+                     (h-hh-mm (aj-org-hh-mm-from-timestamp (plist-get headline :scheduled)))
+                     (h-human-str (concat scheduled-str " / " (replace-regexp-in-string "in " "" deadline-str))))
+                  (if (string-equal h-hh-mm "00:00")
+                      h-human-str
+                    (concat h-human-str " - " h-hh-mm))))
+         (timestamp-str (lambda (keyword)
+                          "For KEYWORD :scheduled or :deadline return human-friendly timestamp string."
+                          (ignore-errors
+                            (when-let* ((timestamp (plist-get headline keyword))
+                                        (human-str (org-ql-view--format-relative-date
+                                                    (- today
+                                                       (org-time-string-to-absolute
+                                                        (org-element-timestamp-interpreter timestamp 'ignore)))))
+                                        (hh-mm (aj-org-hh-mm-from-timestamp timestamp)))
+                              (if (string-equal hh-mm "00:00")
+                                  human-str
+                                (concat human-str " - " hh-mm))))))
+         (scheduled (unless habit
+                      (funcall timestamp-str :scheduled)))
+         (deadline (unless habit
+                     (funcall timestamp-str :deadline)))
          (active-timestamp
           (if habit
               habit
             (if scheduled
                 (if deadline
-                    (concat scheduled " " deadline)
+                    (concat scheduled " " (replace-regexp-in-string "in " "" deadline))
                   scheduled)
               deadline)))
          (title (concat (if habit
@@ -2037,36 +2053,44 @@ path is colorized according to outline faces.
          (keyword (when keyword (ignore-errors (substring-no-properties (plist-get headline :todo-keyword)))))
          (effort (when effort (or (plist-get headline :EFFORT) "  :  " )))
          (tag (when tag (plist-get headline :tags)))
-         (tags (when tag (concat ":"
-                                 (mapconcat #'substring-no-properties
-                                            (append tag
-                                                    (when scheduled (list "scheduled"))
-                                                    (when deadline (list "deadline")))
-                                            ":")
-                                 ":")))
+         (tags (when (or tag habit scheduled deadline)
+                 (let ((tag-str
+                        (concat ":"
+                                (mapconcat #'substring-no-properties
+                                           (append (or tag "")
+                                                   (when habit (list "habit"))
+                                                   (when scheduled (list "scheduled"))
+                                                   (when deadline (list "deadline")))
+
+                                           ":")
+                                ":")))
+                   (unless (string-equal "::" tag-str)
+                     tag-str))))
          (todo-parent-maybe (org-with-wide-buffer
-                             (if-let ((parent (car (last (org-get-outline-path)))))
-                                 (unless
-                                     (ignore-errors
-                                       ;; this is nil for heading with todo keyword
-                                       (re-search-backward (concat "* " parent)))
-                                   t))))
-         (outline (when outline (org-get-outline-path)))
+                             (when-let ((parent (car (last (org-get-outline-path)))))
+                               (unless
+                                   (ignore-errors
+                                     ;; this is nil for heading with todo keyword
+                                     (re-search-backward (concat "* " parent)))
+                                 t))))
+         (outline (when outline (with-current-buffer buf
+                                  (org-get-outline-path))))
          (depth (length outline))
          (level (plist-get headline :level))
          (filename (when filename
-                     (or
-                      (+org-get-global-property "TITLE")
-                      (file-name-sans-extension
-                       (file-name-nondirectory (or buffer-file-name
-                                                   (buffer-file-name (buffer-base-buffer))))))))
+                     (with-current-buffer buf
+                       (or
+                        (+org-get-global-property "TITLE")
+                        (file-name-sans-extension
+                         (file-name-nondirectory
+                          (or buffer-file-name
+                              (buffer-file-name (buffer-base-buffer)))))))))
          (colorize-keyword (lambda (color)
                              (add-face-text-property 0 (length keyword) 'bold t keyword)
                              (add-face-text-property 0 (length keyword) `(:foreground ,color) t keyword)))
          (spc " ")
          (i 0))
 
-    
     (put-text-property 0 (length title) 'face (format "outline-%d" level) title)
 
     (when outline
@@ -2089,8 +2113,11 @@ path is colorized according to outline faces.
     (when (or (and todo-parent-maybe
                    (not (or (string-equal "NEXT" keyword)
                             (string-equal "PROJECT" keyword))))
-              active-timestamp)
+              (unless time active-timestamp))
       (put-text-property 0 (length title) 'face 'ivy-virtual title))
+
+    (when time
+      (put-text-property 0 (length title) 'face 'org-drawer title))
 
     (when filename
       (put-text-property 0 (length filename) 'face 'bold filename))
@@ -2121,7 +2148,7 @@ path is colorized according to outline faces.
         title (when tags (concat spc tags))
         (when active-timestamp
           (concat spc active-timestamp))))
-     'marker (copy-marker (point)))))
+     'marker marker)))
 
 ;;;###autoload
 (defun aj-org-notes-get-filetags (dir)
@@ -2336,6 +2363,24 @@ Org manual: 8.4.2 The clock table.
          (lambda (file)
            (not (string-match "inbox" file)))
          org-agenda-files)))
+
+;;;###autoload
+(defun aj-org-ql-sort-by-scheduled (a b)
+  "Sort A and B by their scheduled timestamp.
+When habit, sort by average of its date range instead."
+  (let ((get-time
+         (lambda (elm-or-str)
+           (or (ignore-errors
+                 (org-time-string-to-absolute
+                  (if (char-or-string-p elm-or-str)
+                      (org-entry-get (get-text-property 0 'marker elm-or-str) "SCHEDULED")
+                    (plist-get
+                     (car (cdr (org-element-property :scheduled elm-or-str)))
+                     :raw-value))))
+               0))))
+    (<
+     (funcall get-time a)
+     (funcall get-time b))))
 
 ;;;###autoload
 (defun aj-org-ql-sort-by-effort (a b)
@@ -2668,9 +2713,7 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 (defun aj/org-refile-link-to-archived-resources (file &optional level)
   "Archive link under the point into \"RESOURCES\" drawer of some archived org file."
   (interactive)
-  (let* ((headings (lambda ()
-                     (aj-org-get-pretty-heading-path t t nil t)))
-         (ivy-height (round (* (frame-height) 0.80)))
+  (let* ((ivy-height (round (* (frame-height) 0.40)))
          (link-text (lambda ()
                       (concat "- " (org-make-link-string
                                     (nth 0 (car org-stored-links))
@@ -2680,11 +2723,14 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
     (ivy-read
      "Resources at: "
      (append (list file)
-             (org-ql-query
-               :select headings
-               :from file
-               :where `(and (level <= ,(or level 3))
-                            (regexp ":RESOURCES:"))))
+             (->>
+              (org-ql-query
+                :from file
+                :where `(and (level <= ,(or level 3))
+                             (regexp ":RESOURCES:")))
+              (-map
+               (lambda (elm)
+                 (aj-org-pretty-format-element elm t t nil t)))))
      :action (lambda (x)
                (if
                    (cl-member x (directory-files-recursively
@@ -2733,16 +2779,17 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 ;;;###autoload
 (defun aj-org-teleport-heading-here (file)
   "Copy heading from FILE to the current point."
-  (let ((headings (lambda ()
-                    (aj-org-get-pretty-heading-path t t nil t)))
-        (ivy-height (round (* (frame-height) 0.80)))
+  (let ((ivy-height (round (* (frame-height) 0.40)))
         (org-yank-adjusted-subtrees t)
         heading ivy-sort-functions-alist timer)
     (ivy-read
      "Go to: "
-     (org-ql-query
-       :select headings
-       :from file)
+     (->>
+      (org-ql-query
+        :from file)
+      (-map
+       (lambda (elm)
+         (aj-org-pretty-format-element elm t t nil t))))
      :action (lambda (x)
                (setq heading (get-text-property 0 'marker x))))
     (with-current-buffer (marker-buffer heading)
@@ -2777,15 +2824,14 @@ Optional argument NO-FILTER cancels filering according to `aj-org-notes-filter-p
 ;;;###autoload
 (defun aj-org-refile-region (file-or-files)
   "Refile current region under heading in FILE-OR-FILES."
-  (let ((headings (lambda ()
-                    (aj-org-get-pretty-heading-path t t nil t)))
-        (ivy-height (round (* (frame-height) 0.80)))
+  (let ((ivy-height (round (* (frame-height) 0.40)))
         ivy-sort-functions-alist timer)
     (ivy-read
      "Go to: "
-     (org-ql-query
-       :select headings
-       :from file)
+     (->> (org-ql-query
+            :from file)
+          (-map (lambda (elm)
+                  (aj-org-pretty-format-element elm t t nil t))))
      :action (lambda (x)
                (my/move-region-to-heading
                 (get-text-property 0 'marker x))))))

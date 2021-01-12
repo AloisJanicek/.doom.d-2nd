@@ -951,13 +951,13 @@
   (setq
    ivy-posframe-border-width 10
    ivy-posframe-size-function
-        (lambda ()
-          (list
-           :height (+ ivy-height 1)
-           :width (round (* (frame-width) 0.72))
-           :min-height (+ ivy-height 1)
-           :min-width (round (* (frame-width) 0.72))))
-        )
+   (lambda ()
+     (list
+      :height (+ ivy-height 1)
+      :width (round (* (frame-width) 0.72))
+      :min-height (+ ivy-height 1)
+      :min-width (round (* (frame-width) 0.72))))
+   )
 
   )
 
