@@ -414,6 +414,8 @@
                 (add-to-list 'imenu-generic-expression imenu-exp)))
             t)
 
+  (remove-hook 'emacs-lisp-mode-hook #'outline-minor-mode)
+  (remove-hook 'emacs-lisp-mode-hook #'outline-minor-mode t)
   )
 
 (after! elisp-demos
