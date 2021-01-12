@@ -1122,7 +1122,7 @@ Tickler is not scheduled nor it doesn't have deadline.
                                       ;; Show past scheduled / deadline items if any
                                       ((org-ql-select (org-agenda-files) (aj-org-ql-past-dues-query))
                                        (org-ql-search (org-agenda-files) (aj-org-ql-past-dues-query)
-                                         :sort #'aj-org-ql-sort-by-scheduled
+                                         :sort #'aj-org-ql-sort-by-active-timestamp
                                          :title "Past dues"))
 
                                       ;; Show today's scheduled / deadline items without "HH:MM" if any
@@ -1203,7 +1203,7 @@ Tickler is not scheduled nor it doesn't have deadline.
   ("b" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-future-dues-query)
-         :sort #'aj-org-ql-sort-by-scheduled
+         :sort #'aj-org-ql-sort-by-active-timestamp
          :super-groups '((:auto-category t))
          :title "Future dues")
    "future dues")
@@ -1274,7 +1274,7 @@ Tickler is not scheduled nor it doesn't have deadline.
   ("H" (org-ql-search
          (aj-org-combined-agenda-files)
          (aj-org-ql-habits-query)
-         :sort #'aj-org-ql-sort-by-scheduled
+         :sort #'aj-org-ql-sort-by-active-timestamp
          :title "Habits")
    "Habits")
 
@@ -2371,8 +2371,8 @@ Org manual: 8.4.2 The clock table.
          org-agenda-files)))
 
 ;;;###autoload
-(defun aj-org-ql-sort-by-scheduled (a b)
-  "Sort A and B by their scheduled timestamp.
+(defun aj-org-ql-sort-by-active-timestamp (a b)
+  "Sort A and B by their active timestamp.
 When habit, sort by average of its date range instead."
   (let ((get-time
          (lambda (elm)

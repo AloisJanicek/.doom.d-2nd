@@ -923,20 +923,20 @@
                                                                    :query (aj-org-ql-all-active-tasks-query)))
    :desc "past due NO-F"        "a" (cmd! (aj/org-agenda-headlines :prompt "past due"
                                                                    :query (aj-org-ql-past-dues-query)
-                                                                   :sort-fn #'aj-org-ql-sort-by-scheduled :time t :capture-key "t"))
+                                                                   :sort-fn #'aj-org-ql-sort-by-active-timestamp :time t :capture-key "t"))
    :desc "future due NO-F"      "b" (cmd! (aj/org-agenda-headlines :prompt "future due"
                                                                    :query (aj-org-ql-future-dues-query)
-                                                                   :sort-fn #'aj-org-ql-sort-by-scheduled
+                                                                   :sort-fn #'aj-org-ql-sort-by-active-timestamp
                                                                    :time t :capture-key "t"))
    :desc "tickler reminders"    "B" (cmd! (aj/org-agenda-headlines :prompt "tickler reminders"
                                                                    :query (aj-org-ql-custom-ticklers-query)
-                                                                   :sort-fn #'aj-org-ql-sort-by-scheduled :time t :capture-key "d"))
+                                                                   :sort-fn #'aj-org-ql-sort-by-active-timestamp :time t :capture-key "d"))
    :desc "archived"             "A" (cmd! (aj/org-agenda-headlines :prompt "archived"
                                                                    :query (aj-org-ql-done-query)
                                                                    :files (aj-org-get-filtered-org-files :preset aj-org-agenda-filter :archived t)  :capture-key "k"))
    :desc "habits"               "H" (cmd! (aj/org-agenda-headlines :prompt "habits"
                                                                    :query (aj-org-ql-habits-query)
-                                                                   :sort-fn #'aj-org-ql-sort-by-scheduled :time t :capture-key "t"))
+                                                                   :sort-fn #'aj-org-ql-sort-by-active-timestamp :time t :capture-key "t"))
    :desc "jump all headings"    "j" (cmd! (aj-org-jump-to-headline-at :files (aj-org-combined-agenda-files) :level 9))
    :desc "inbox"                "i" (cmd! (aj-org-jump-to-headline-at :files (list aj-org-inbox-file) :level 1))
    :desc "next"                 "n" (cmd! (aj/org-agenda-headlines :prompt "next"
