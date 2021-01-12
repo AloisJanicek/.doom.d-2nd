@@ -1340,6 +1340,7 @@
   (org-link-set-parameters "calibre" :follow #'aj-org-calibre-follow :store #'aj-org-calibre-store)
 
   (setq
+   org-use-fast-todo-selection 'expert
    org-global-properties '(( "Effort_ALL" . "00:05 00:10 00:15 00:30 01:00 02:00 03:00 04:00 05:00 06:00 07:00"))
    org-icalendar-combined-agenda-file (expand-file-name "agenda.ics" org-directory)
    org-icalendar-combined-name "OrgAgenda"
