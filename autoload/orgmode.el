@@ -2376,48 +2376,45 @@ Org manual: 8.4.2 The clock table.
   "Sort A and B by their scheduled timestamp.
 When habit, sort by average of its date range instead."
   (let ((get-time
-         (lambda (elm-or-str)
-           (or (ignore-errors
+         (lambda (elm)
+           (or (when-let* ((habit-data
+                            (org-with-point-at (org-element-property :org-marker elm)
+                              (when (org-is-habit-p)
+                                (org-habit-parse-todo))))
+                           (scheduled-date (nth 0 habit-data))
+                           (scheduled-repeater (nth 1 habit-data))
+                           (deadline-date (nth 2 habit-data))
+                           (deadline-repeater (nth 3 habit-data))
+                           (half (- (+ scheduled-date deadline-repeater)
+                                    (/ (+ scheduled-repeater deadline-repeater) 2))))
+                 half)
+               (ignore-errors
                  (org-time-string-to-absolute
-                  (if (char-or-string-p elm-or-str)
-                      (org-entry-get (get-text-property 0 'marker elm-or-str) "SCHEDULED")
-                    (plist-get
-                     (car (cdr (org-element-property :scheduled elm-or-str)))
-                     :raw-value))))
+                  (or
+                   (plist-get (car (cdr (org-element-property :scheduled elm))) :raw-value)
+                   (plist-get (car (cdr (org-element-property :deadline elm))) :raw-value)
+                   (org-entry-get (org-element-property :org-marker elm) "TIMESTAMP"))))
                0))))
-    (<
-     (funcall get-time a)
-     (funcall get-time b))))
+    (< (funcall get-time a)
+       (funcall get-time b))))
 
 ;;;###autoload
 (defun aj-org-ql-sort-by-effort (a b)
   "Return non-nil if effort of the A is lower then effort of the B."
-  (let ((get-effort (lambda (elm-or-str)
+  (let ((get-effort (lambda (elm)
                       (string-to-number
                        (replace-regexp-in-string
                         "[[:punct:]]" ""
-                        (or
-                         (if (char-or-string-p elm-or-str)
-                             (org-entry-get (get-text-property 0 'marker elm-or-str) "EFFORT")
-                           (org-element-property :EFFORT elm-or-str))
-                         "999"
-                         ))))))
+                        (or (org-element-property :EFFORT elm) "999"))))))
     (< (funcall get-effort a)
-       (funcall get-effort b)
-       )
-    )
-  )
+       (funcall get-effort b))))
 
 ;;;###autoload
 (defun aj-org-ql-sort-by-todo (a b)
-  "Return non-nil if todo of A is less then todo of the B according to their order in `org-todo-keywords'.
-"
+  "Return non-nil if todo of A is less then todo of the B according to their order in `org-todo-keywords'."
   (let ((get-todo-keyword
-         (lambda (elm-or-str)
-           (or (if (char-or-string-p elm-or-str)
-                   (org-entry-get (get-text-property 0 'marker elm-or-str) "TODO")
-                 (org-element-property :todo-keyword elm-or-str))
-               "")))
+         (lambda (elm)
+           (or (org-element-property :todo-keyword elm) "")))
         (todo-keyword-less-p (lambda (a b)
                                (> (length (cl-member a (cdar org-todo-keywords) :test #'string-match))
                                   (length (cl-member b (cdar org-todo-keywords) :test #'string-match))))))
