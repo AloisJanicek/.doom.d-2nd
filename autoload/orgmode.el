@@ -1276,7 +1276,7 @@ Tickler is not scheduled nor it doesn't have deadline.
          (aj-org-combined-agenda-files)
          (aj-org-ql-habits-query)
          :sort #'aj-org-ql-sort-by-scheduled
-         :title "Habits"1)
+         :title "Habits")
    "Habits")
 
   ("c" (org-ql-search
@@ -1829,6 +1829,7 @@ replicated by calling this function again with arguments saved in this variable.
          (prompt (or prompt "agenda headlines"))
          (initial-input (or initial-input ""))
          (args-list `(,(current-time) ,query ,prompt ,files ,sort-fn ,reverse ,time ,capture-key))
+         (ivy-height 26)
          ivy-sort-functions-alist)
 
     (let* ((keyword (if (string-match "descendants" prompt) :level2 :level1)))
@@ -2037,14 +2038,22 @@ TIME string.
                       (funcall timestamp-str :scheduled)))
          (deadline (unless habit
                      (funcall timestamp-str :deadline)))
+         (a-timestamp (unless habit
+                        (ignore-errors
+                          (org-ql-view--format-relative-date
+                           (- today
+                              (org-time-string-to-absolute
+                               (org-entry-get marker "TIMESTAMP")))))))
          (active-timestamp
           (if habit
               habit
-            (if scheduled
-                (if deadline
-                    (concat scheduled " " (replace-regexp-in-string "in " "" deadline))
-                  scheduled)
-              deadline)))
+            (if a-timestamp
+                a-timestamp
+              (if scheduled
+                  (if deadline
+                      (concat scheduled " " (replace-regexp-in-string "in " "" deadline))
+                    scheduled)
+                deadline))))
          (title (concat (if habit
                             "⚒ "
                           (when active-timestamp "◔ "))
@@ -2053,15 +2062,15 @@ TIME string.
          (keyword (when keyword (ignore-errors (substring-no-properties (plist-get headline :todo-keyword)))))
          (effort (when effort (or (plist-get headline :EFFORT) "  :  " )))
          (tag (when tag (plist-get headline :tags)))
-         (tags (when (or tag habit scheduled deadline)
+         (tags (when (or tag habit a-timestamp scheduled deadline)
                  (let ((tag-str
                         (concat ":"
                                 (mapconcat #'substring-no-properties
                                            (append (or tag "")
                                                    (when habit (list "habit"))
+                                                   (when a-timestamp (list "tickler"))
                                                    (when scheduled (list "scheduled"))
                                                    (when deadline (list "deadline")))
-
                                            ":")
                                 ":")))
                    (unless (string-equal "::" tag-str)
@@ -2074,6 +2083,7 @@ TIME string.
                                      (re-search-backward (concat "* " parent)))
                                  t))))
          (outline (when outline (with-current-buffer buf
+                                  (goto-char marker)
                                   (org-get-outline-path))))
          (depth (length outline))
          (level (plist-get headline :level))
@@ -2115,9 +2125,6 @@ TIME string.
                             (string-equal "PROJECT" keyword))))
               (unless time active-timestamp))
       (put-text-property 0 (length title) 'face 'ivy-virtual title))
-
-    (when time
-      (put-text-property 0 (length title) 'face 'org-drawer title))
 
     (when filename
       (put-text-property 0 (length filename) 'face 'bold filename))
