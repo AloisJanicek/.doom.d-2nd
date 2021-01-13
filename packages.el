@@ -17,7 +17,7 @@
                     (insert "(fset 'org-release (lambda () \"9.5\"))\n"
                             "(fset 'org-git-version #'ignore)\n"
                             "(provide 'org-version)\n")))
-  :pin "e1aa10dc5357e346f067afec934b68dad0f12b38"
+  :pin "f28b2d6a80e81ff3547578045415566484a02d80"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -99,7 +99,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "2a4ee8e1bb0421461f0a677e62c711314af059bc"
+  :pin "a4d248386e6ba7a7d60f076e0794f446634d2fc8"
   )
 
 (package! eslintd-fix
