@@ -1802,7 +1802,7 @@ When optional UP-LEVEL, return from nested search of level2
 (cl-defun aj/org-agenda-headlines (&key query prompt
                                         (files (aj-org-combined-agenda-files))
                                         (sort-fn #'aj-org-ql-sort-by-todo)
-                                        reverse time capture-key initial-input)
+                                        reverse time clock capture-key initial-input)
   "Jump to a todo headline in `org-agenda-files'.
 
 Function accepts optionally following keywords arguments:
@@ -1812,6 +1812,7 @@ Function accepts optionally following keywords arguments:
 - sorting keyword or function SORT-FN
 - REVERSE (bool) to reverse search results
 - TIME (bool) to show timestamp of the items
+- CLOCK to show clocked 
 - INITIAL-INPUT
 
 This function filters agenda headlines according to `aj-org-agenda-filter' and
@@ -1824,10 +1825,9 @@ replicated by calling this function again with arguments saved in this variable.
                     (if tags
                         `(and (todo) ,tags)
                       '(todo))))
-         (time (when time t))
          (prompt (or prompt "agenda headlines"))
          (initial-input (or initial-input ""))
-         (args-list `(,(current-time) ,query ,prompt ,files ,sort-fn ,reverse ,time ,capture-key))
+         (args-list `(,(current-time) ,query ,prompt ,files ,sort-fn ,reverse ,time ,capture-key ,clock))
          (ivy-height 26)
          ivy-sort-functions-alist)
 
@@ -1850,7 +1850,7 @@ replicated by calling this function again with arguments saved in this variable.
                             :order-by sort-fn)
                           (-map
                            (lambda (elm)
-                             (aj-org-pretty-format-element elm nil nil t t t time))))))
+                             (aj-org-pretty-format-element elm nil nil t t t time clock))))))
                 (if (ignore-errors reverse)
                     (reverse results)
                   results))
@@ -1989,13 +1989,13 @@ Optionally specify heading LEVEL (default is 3).
        (number-to-string minutes)))))
 
 ;;;###autoload
-(defun aj-org-pretty-format-element (elm &optional filename outline keyword tag effort time)
+(defun aj-org-pretty-format-element (elm &optional filename outline keyword tag effort time clock)
   "Pretty format org-heading ELM.
 ELM is org-mode headline returned by `org-element-headline-parser'.
 
 Optional arguments specifies which additional features should be shown
-like FILENAME, whole file's OUTLINE, todo KEYWORD, TAG, EFFORT string or
-TIME string.
+like FILENAME, whole file's OUTLINE, todo KEYWORD, TAG, EFFORT string,
+TIME string or CLOCK info string.
 "
   (require 'org-ql-view)
   (let* ((headline (car (cdr elm)))
@@ -2060,6 +2060,12 @@ TIME string.
                          (substring-no-properties (plist-get headline :raw-value)))))
          (keyword (when keyword (ignore-errors (substring-no-properties (plist-get headline :todo-keyword)))))
          (effort (when effort (or (plist-get headline :EFFORT) "  :  " )))
+         (clock (when clock (concat
+                             "◌ "
+                             (with-current-buffer buf
+                               (goto-char marker)
+                               (org-duration-from-minutes
+                                (org-clock-sum-current-item))))))
          (tag (when tag (plist-get headline :tags)))
          (tags (when (or tag habit a-timestamp scheduled deadline)
                  (let ((tag-str
@@ -2143,6 +2149,7 @@ TIME string.
           (when filename (concat filename "/"))
           (mapconcat #'identity outline "/") "/"
           (when keyword (concat (when effort (concat effort spc))
+                                (when clock (concat clock spc))
                                 keyword spc))
           title (when tags (concat spc tags))
           (when active-timestamp
@@ -2150,6 +2157,7 @@ TIME string.
        (concat
         (when filename (concat filename "/"))
         (when keyword (concat (when effort (concat effort spc))
+                              (when clock (concat clock spc))
                               keyword spc))
         title (when tags (concat spc tags))
         (when active-timestamp

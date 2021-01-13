@@ -918,7 +918,7 @@
 
   (:prefix ("o" . "open agenda")
    :desc "clocked"              "c" (cmd! (aj/org-agenda-headlines :prompt "clocked"
-                                                                   :query (aj-org-ql-custom-clocked-task-query) :sort-fn 'date :capture-key "k"))
+                                                                   :query (aj-org-ql-custom-clocked-task-query) :sort-fn 'date :capture-key "k" :clock t))
    :desc "all active"           "o" (cmd! (aj/org-agenda-headlines :prompt "all active"
                                                                    :query (aj-org-ql-all-active-tasks-query)))
    :desc "past due NO-F"        "a" (cmd! (aj/org-agenda-headlines :prompt "past due"
@@ -959,7 +959,7 @@
    :desc "cancelled"            "C" (cmd! (aj/org-agenda-headlines :prompt "cancelled"
                                                                    :query (aj-org-ql-simple-task-query "CANCELLED") :sort-fn 'date :capture-key "k"))
    :desc "done"                 "D" (cmd! (aj/org-agenda-headlines :prompt "done"
-                                                                   :query (aj-org-ql-simple-task-query "DONE") :sort-fn 'date :capture-key "k"))
+                                                                   :query (aj-org-ql-simple-task-query "DONE") :sort-fn 'date :capture-key "k" :clock t))
    )
   )
 
