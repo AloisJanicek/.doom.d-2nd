@@ -371,28 +371,21 @@
             (when (bound-and-true-p cyphejor-mode)
               (cyphejor--hook))))
 
-  (when (featurep! :editor evil)
-    (add-hook 'eaf-mode-hook #'evil-normal-state))
-
-  (eaf-bind-key nil "C-h" eaf-browser-keybinding)
-
-  (map!
-   :map eaf-mode-map*
-   "C-h" #'evil-window-left
-   :ie "C-h" #'evil-window-left
-   "C-M-g" #'aj/eaf-browser-org-store-link
-   "C-M-b" #'aj/eaf-browser-org-capture-link
-   "C-;" #'aj/eaf-show-keys-help
-   "<ESC>" #'popup/close
-   )
+  (eaf-enable-evil-intergration)
+  (eaf-bind-key evil-window-left "C-h" eaf-browser-keybinding)
+  (eaf-bind-key aj/eaf-browser-org-store-link "C-g" eaf-browser-keybinding)
+  (eaf-bind-key aj/eaf-browser-org-capture-link "C-b" eaf-browser-keybinding)
+  (eaf-bind-key aj/eaf-browser-org-roam-protocol "C-r" eaf-browser-keybinding)
+  (eaf-bind-key nil "<space>" eaf-browser-keybinding)
+  (eaf-bind-key doom/escape "<escape>" eaf-browser-keybinding)
 
   (eaf-setq eaf-browser-dark-mode "false")
-  (eaf-setq eaf-browser-enable-history "false")
   (eaf-setq eaf-browser-enable-plugin "false")
   (eaf-setq eaf-browser-enable-adblocker "true")
   (eaf-setq eaf-browser-enable-autofill "false")
 
   (setq eaf-buffer-title-format "*eaf %s*")
+  (setq eaf-evil-leader-key "SPC")
 
   (add-to-list 'eaf-app-display-function-alist
                '("browser" . pop-to-buffer))

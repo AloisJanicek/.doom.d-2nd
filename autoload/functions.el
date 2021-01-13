@@ -989,6 +989,30 @@ Me prefixing helpful headings with asterisk makes the original fn fail.
       (org-protocol-store-link (list :url eaf--buffer-url :title eaf--bookmark-title)))))
 
 ;;;###autoload
+(defun aj/eaf-browser-org-roam-protocol ()
+  "Emulate org-roam-protocol from browser.
+Adopted from `org-roam-protocol-open-ref'.
+"
+  (interactive)
+  (let* ((title eaf--bookmark-title)
+         (url eaf--buffer-url)
+         (slug (org-roam--title-to-slug title))
+         (decoded-alist
+          `((slug . ,slug)
+            (body . nil)
+            (title . ,title)
+            (ref . ,url)
+            (template . "r"))))
+    (let* ((org-roam-capture-templates org-roam-capture-ref-templates)
+           (org-roam-capture--context 'ref)
+           (org-roam-capture--info decoded-alist)
+           (org-capture-link-is-already-stored t)
+           (template (cdr (assoc 'template decoded-alist))))
+      (raise-frame)
+      (org-roam-capture--capture nil template)
+      (org-roam-message "Item captured."))))
+
+;;;###autoload
 (defun aj/eaf-show-keys-help ()
   (interactive)
   (which-key--create-buffer-and-show nil nil (lambda (key)
