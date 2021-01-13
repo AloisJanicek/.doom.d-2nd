@@ -361,7 +361,7 @@
 (use-package! eaf
   :unless (or (aj-wsl-p)
               (not (display-graphic-p)))
-  :commands eaf-open-browser
+  :commands eaf-open-browser eaf-open-browser-with-history
   :config
   (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
   (advice-add

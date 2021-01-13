@@ -1288,7 +1288,7 @@ Tickler is not scheduled nor it doesn't have deadline.
 
   ("C" (aj-org-ql-simple-task-search "CANCELLED") "cancelled")
 
-  ("d" (aj-org-ql-simple-task-search "DONE") "done")
+  ("D" (aj-org-ql-simple-task-search "DONE") "done")
 
   ("r" (let ((org-agenda-tag-filter aj-org-agenda-filter))
          (org-ql-search

@@ -911,7 +911,7 @@
   :desc "agenda"                   "A" #'org-agenda
   :desc "agenda"                   "a" #'aj/org-agenda-gtd-hydra/body
   :desc "browse eww"               "b" #'eww
-  :desc "browse eaf"               "B" #'eaf-open-browser
+  :desc "browse eaf"               "B" #'eaf-open-browser-with-history
   :desc "imenu-list"               "i" #'imenu-list-smart-toggle
   :desc "search eww"               "s" (cmd! (counsel-web-search nil "Search web with eww: " nil #'eww))
   :desc "search eaf"               "S" (cmd! (counsel-web-search nil "Search web with eaf: " nil #'eaf-open-browser))
@@ -958,7 +958,7 @@
                                                                    :query (aj-org-ql-simple-task-query "MAYBE") :sort-fn 'random :capture-key "t"))
    :desc "cancelled"            "C" (cmd! (aj/org-agenda-headlines :prompt "cancelled"
                                                                    :query (aj-org-ql-simple-task-query "CANCELLED") :sort-fn 'date :capture-key "k"))
-   :desc "done"                 "d" (cmd! (aj/org-agenda-headlines :prompt "done"
+   :desc "done"                 "D" (cmd! (aj/org-agenda-headlines :prompt "done"
                                                                    :query (aj-org-ql-simple-task-query "DONE") :sort-fn 'date :capture-key "k"))
    )
   )
