@@ -8,6 +8,7 @@
 ;;            :files ("*.el" "lisp/*.el" "contrib/lisp/*.el"))
 ;;   :pin "8402c4a778")
 
+(package! mini-frame)
 (package! org-mode
   :recipe (:host github
            :repo "yantar92/org"

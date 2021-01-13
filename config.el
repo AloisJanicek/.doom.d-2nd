@@ -1177,6 +1177,25 @@
   :after js2-mode
   )
 
+(use-package! mini-frame
+  :when (display-graphic-p)
+  :config
+  (mini-frame-mode +1)
+  (mini-frame-mode -1)
+  (setq mini-frame-ignore-commands
+        '(eval-expression "edebug-eval-expression" debugger-eval-expression ivy counsel-M-x "ivy")
+        )
+  (setq mini-frame-resize 'grow-only)
+  (setq mini-frame-background-color-function (lambda (&optional frame)
+                                               (doom-color 'base2)))
+  (setq mini-frame-show-parameters
+        '((left . 0.5)
+          (top . 0)
+          (width . 1.0)
+          (height . 1))
+        )
+  )
+
 (after! woman
   (setq woman-fill-column 80
         woman-ll-fill-column 80)
