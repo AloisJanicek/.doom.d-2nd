@@ -363,6 +363,12 @@
               (not (display-graphic-p)))
   :commands eaf-open-browser eaf-open-browser-with-history
   :config
+
+  (setq
+   ;; Don't include "pdf" and "epub"
+   eaf-pdf-extension-list
+   '("xps" "oxps" "cbz" "fb2" "fbz" "djvu"))
+
   (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
   (advice-add
    #'eaf--update-buffer-details
