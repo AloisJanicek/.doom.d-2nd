@@ -1782,7 +1782,7 @@ When optional UP-LEVEL, return from nested search of level2
          (initial-input (or initial-input ""))
          )
 
-    (cl-destructuring-bind (_ query prompt files sort-fn reverse time capture-key)
+    (cl-destructuring-bind (_ query prompt files sort-fn reverse time capture-key clock)
         (if (and inside-level2 (not up-level)) level2-search level1-search)
       (aj/org-agenda-headlines
        :query query
@@ -1791,6 +1791,7 @@ When optional UP-LEVEL, return from nested search of level2
        :sort-fn sort-fn
        :reverse reverse
        :time time
+       :clock clock
        :capture-key capture-key
        :initial-input initial-input
        )
