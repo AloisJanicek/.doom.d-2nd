@@ -385,7 +385,7 @@
   (eaf-bind-key nil "<space>" eaf-browser-keybinding)
   (eaf-bind-key doom/escape "<escape>" eaf-browser-keybinding)
 
-  (eaf-setq eaf-browser-dark-mode "false")
+  (eaf-setq eaf-browser-dark-mode "true")
   (eaf-setq eaf-browser-enable-plugin "false")
   (eaf-setq eaf-browser-enable-adblocker "true")
   (eaf-setq eaf-browser-enable-autofill "false")
