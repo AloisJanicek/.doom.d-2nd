@@ -48,7 +48,7 @@ Which operation will be executed depends on value of ENCRYPT."
 (defun aj-decrypt-encrypt-files-directory (directory &optional encrypt)
   "Decrypt or encrypt files in directory DIRECTORY.
 Which operation will be executed depends on value of ENCRYPT."
-  (let ((files (directory-files-recursively directory ".org"))
+  (let ((files (directory-files-recursively directory ".org$"))
         encrypted decrypted)
     (dolist (i files)
       (if (string-match "BEGIN PGP MESSAGE"
