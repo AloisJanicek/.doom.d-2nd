@@ -17,14 +17,14 @@
                     (insert "(fset 'org-release (lambda () \"9.5\"))\n"
                             "(fset 'org-git-version #'ignore)\n"
                             "(provide 'org-version)\n")))
-  :pin "f28b2d6a80e81ff3547578045415566484a02d80"
+  :pin "6a1844d271320663742f0944dd19d0b9f99aef82"
   :shadow 'org)
 
 (package! org-roam-server-light
   :recipe (:host github :repo "AloisJanicek/org-roam-server-light"
            :files ("*")
            )
-  :pin "06634216f275dff246638fa2f9812cbdfb5ddd09")
+  :pin "dd0b5edf1918949a81dc6098000c2f1babed0f41")
 
 (defun aj-wsl-p ()
   "Return non-nil value if Emacs is running inside WSL."
