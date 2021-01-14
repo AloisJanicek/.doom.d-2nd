@@ -85,23 +85,23 @@ Works also in `org-agenda'."
                 (buffer-file-name (org-base-buffer (current-buffer)))
                 (ivy-read "File: " files)))
          ivy-sort-functions-alist
-         (heading-pos (unless heading
-                        (get-text-property
-                         0
-                         'marker
-                         (ivy-read "Heading: "
-                                   (->> (org-ql-query
-                                          :from file
-                                          :where '(and (todo)
-                                                       (not (todo "MAYBE"))
-                                                       (not (todo "SOMEDAY")))
-                                          :order-by (lambda (a b) nil)
-                                          :narrow t)
-                                        (-map
-                                         (lambda (elm)
-                                           (aj-org-pretty-format-element elm t t t t))))))))
+         (heading-pos (save-excursion
+                        (unless heading
+                          (get-text-property
+                           0
+                           'marker
+                           (ivy-read "Heading: "
+                                     (->> (org-ql-query
+                                            :from file
+                                            :where '(and (todo)
+                                                         (not (todo "MAYBE"))
+                                                         (not (todo "SOMEDAY")))
+                                            :order-by (lambda (a b) nil)
+                                            )
+                                          (-map
+                                           (lambda (elm)
+                                             (aj-org-pretty-format-element elm t t t t)))))))))
          (rfloc (list heading file nil heading-pos)))
-    (message "%s" rfloc)
     (if (memq major-mode aj-org-agenda-similar-modes)
         (org-agenda-refile nil rfloc)
       (org-refile nil nil rfloc))))
