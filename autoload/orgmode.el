@@ -691,7 +691,7 @@ and all its children are revealed."
                            (aj-org-narrow-and-show)))))
              ivy-sort-functions-alist)
         (widen)
-        (point-min)
+        (goto-char (point-min))
         (search-forward "* ")
         (funcall menu)))))
 
