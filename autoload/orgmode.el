@@ -93,11 +93,11 @@ Works also in `org-agenda'."
                            (ivy-read "Heading: "
                                      (->> (org-ql-query
                                             :from file
-                                            :where '(and (todo)
-                                                         (not (todo "MAYBE"))
-                                                         (not (todo "SOMEDAY")))
-                                            :order-by (lambda (a b) nil)
-                                            )
+                                            :where '(or (and (todo)
+                                                             (not (todo "MAYBE"))
+                                                             (not (todo "SOMEDAY")))
+                                                        (not (todo)))
+                                            :order-by (lambda (a b) nil))
                                           (-map
                                            (lambda (elm)
                                              (aj-org-pretty-format-element elm t t t t)))))))))
