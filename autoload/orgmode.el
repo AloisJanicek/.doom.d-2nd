@@ -1299,6 +1299,8 @@ Tickler is not scheduled nor it doesn't have deadline."
   ("M" (aj-org-ql-simple-task-search "MAYBE") "Maybe")
 
   ("q" (aj-org-ql-dispatch-custom-query-search 'search) "query:")
+
+  ("Q" (aj-org-ql-select-history-queries "EDIT past queries: ") "edit query")
   )
 
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
@@ -1763,21 +1765,30 @@ When optional UP-LEVEL, return from nested search of level2
 
 (doom-store-persist doom-store-location '(aj-org-ql-queries-history))
 
-(defun aj-org-ql-select-history-queries ()
-  "Select past custom org-ql query from `aj-org-ql-queries-history'."
-  ;; TODO Name this ivy and add dispatch action for deleting queries
-  (ivy-read "Selet past query: "
-            (remove nil aj-org-ql-queries-history)))
+(defun aj-org-ql-select-history-queries (&optional prompt initial-input)
+  "Select past custom org-ql query from `aj-org-ql-queries-history'.
+
+Optionally accept ivy PROMPT or INITIAL-INPUT.
+"
+  (ivy-read (or prompt "Selet past query: ")
+            (remove nil aj-org-ql-queries-history)
+            :caller 'aj-org-ql-select-history-queries
+            :initial-input (or initial-input "")
+            )
+  )
 
 ;;;###autoload
-(defun aj-org-ql-dispatch-custom-query-search (interface)
+(defun aj-org-ql-dispatch-custom-query-search (interface &optional query)
   "Ask for query and dispatch search using INTERFACE.
 
 Results are shown using INTERFACE which is 'search for `org-ql-search'
 or 'agenda-headlines for `aj/org-agenda-headlines'.
+
+Optionally accept valid org-ql QUERY.
 "
   (require 'org-ql-search)
-  (when-let* ((query (aj-org-ql-select-history-queries))
+  (when-let* ((query (or query
+                         (aj-org-ql-select-history-queries)))
               ;; coppied from `org-ql-search' function
               (query (cl-etypecase query
                        (string (if (or (string-prefix-p "(" query)
@@ -1787,9 +1798,8 @@ or 'agenda-headlines for `aj/org-agenda-headlines'.
                                  ;; Parse non-sexp query into sexp query.
                                  (org-ql--query-string-to-sexp query)))
                        (list query))))
-    (message "query: %s" query)
     (when query
-      (add-to-list 'aj-org-ql-queries-history (cons (prin1-to-string query) query)))
+      (add-to-list 'aj-org-ql-queries-history `(,(prin1-to-string query) . ,query)))
     (pcase interface
       ('search
        (org-ql-search (aj-org-combined-agenda-files) query))
@@ -1836,7 +1846,7 @@ replicated by calling this function again with arguments saved in this variable.
 
     (when (string-match "descendants" prompt)
       (setq prompt (format "descendants of \"%s\"" (car (cdr (car (cdr query)))))))
-    (ivy-read (format "%s %s: " prompt (or (cdr (aj-org-ql-custom-agenda-filter-tags)) ":"))
+    (ivy-read (format "%s [+%s]: " prompt (or (car (cdr (aj-org-ql-custom-agenda-filter-tags))) ":"))
               (let ((results
                      (->> (org-ql-query
                             :select 'element-with-markers

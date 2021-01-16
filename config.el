@@ -785,6 +785,42 @@
     :display-transformer-fn #'aj-org-roam-ivy-backlinks-transformer)
 
   (ivy-add-actions
+   #'aj-org-ql-select-history-queries
+   '(("s" (lambda (x)
+            (let* ((query x)
+                   (query (cl-etypecase query
+                            (string (if (or (string-prefix-p "(" query)
+                                            (string-prefix-p "\"" query))
+                                        ;; Read sexp query.
+                                        (read query)
+                                      ;; Parse non-sexp query into sexp query.
+                                      (org-ql--query-string-to-sexp query)))
+                            (list query))))
+              (add-to-list 'aj-org-ql-queries-history `(,(prin1-to-string query) . ,query))
+              (aj-org-ql-dispatch-custom-query-search 'agenda-headlines (prin1-to-string query))))
+      "save")
+     ("e" (lambda (x)
+            (setq aj-org-ql-queries-history
+                  (remove (assoc
+                           (car x)
+                           aj-org-ql-queries-history)
+                          aj-org-ql-queries-history))
+            (aj-org-ql-select-history-queries "EDIT past queries: " (car x)))
+      "edit")
+     ("c" (lambda (x)
+            (aj-org-ql-select-history-queries "EDIT past queries: " (car x)))
+      "copy")
+     ("k" (lambda (x)
+            (setq aj-org-ql-queries-history
+                  (remove (assoc
+                           (car x)
+                           aj-org-ql-queries-history)
+                          aj-org-ql-queries-history))
+            (aj-org-ql-select-history-queries "EDIT past queries: "))
+      "delete")
+     ))
+
+  (ivy-add-actions
    #'aj-org-roam-ivy
    '(("x" aj-org-roam-ivy-backlinks-action "backlinks")
      ("k" aj-org-roam-ivy-delete-action "delete")
