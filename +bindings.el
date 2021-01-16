@@ -960,6 +960,7 @@
                                                                    :query (aj-org-ql-simple-task-query "CANCELLED") :sort-fn 'date :capture-key "k"))
    :desc "done"                 "D" (cmd! (aj/org-agenda-headlines :prompt "done"
                                                                    :query (aj-org-ql-simple-task-query "DONE") :sort-fn 'date :capture-key "k" :clock t))
+   :desc "query"                "q" (cmd! (aj-org-ql-dispatch-custom-query-search 'agenda-headlines))
    )
   )
 

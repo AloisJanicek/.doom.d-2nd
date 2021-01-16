@@ -1336,10 +1336,7 @@ Tickler is not scheduled nor it doesn't have deadline.
 
   ("M" (aj-org-ql-simple-task-search "MAYBE") "Maybe")
 
-  ("q" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (ivy-read "query: " nil))
-   "query:")
+  ("q" (aj-org-ql-dispatch-custom-query-search 'search) "query:")
   )
 
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
@@ -1798,6 +1795,45 @@ When optional UP-LEVEL, return from nested search of level2
       )
     )
   )
+
+(defvar aj-org-ql-queries-history nil
+  "List of last used custom org-ql queries")
+
+(doom-store-persist doom-store-location '(aj-org-ql-queries-history))
+
+(defun aj-org-ql-select-history-queries ()
+  "Select past custom org-ql query from `aj-org-ql-queries-history'."
+  ;; TODO Name this ivy and add dispatch action for deleting queries
+  (ivy-read "Selet past query: "
+            (remove nil aj-org-ql-queries-history)))
+
+;;;###autoload
+(defun aj-org-ql-dispatch-custom-query-search (interface)
+  "Ask for query and dispatch search using INTERFACE.
+
+Results are shown using INTERFACE which is 'search for `org-ql-search'
+or 'agenda-headlines for `aj/org-agenda-headlines'.
+"
+  (require 'org-ql-search)
+  (when-let* ((query (aj-org-ql-select-history-queries))
+              ;; coppied from `org-ql-search' function
+              (query (cl-etypecase query
+                       (string (if (or (string-prefix-p "(" query)
+                                       (string-prefix-p "\"" query))
+                                   ;; Read sexp query.
+                                   (read query)
+                                 ;; Parse non-sexp query into sexp query.
+                                 (org-ql--query-string-to-sexp query)))
+                       (list query))))
+    (message "query: %s" query)
+    (when query
+      (add-to-list 'aj-org-ql-queries-history (cons (prin1-to-string query) query)))
+    (pcase interface
+      ('search
+       (org-ql-search (aj-org-combined-agenda-files) query))
+      ('agenda-headlines
+       (aj/org-agenda-headlines :prompt (format "query search: %s" query)
+                                :query query :sort-fn 'date :capture-key "k")))))
 
 ;;;###autoload
 (cl-defun aj/org-agenda-headlines (&key query prompt
