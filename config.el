@@ -2018,7 +2018,8 @@ When in org-roam file, also create top-level ID.
   :after org-roam
   :commands org-roam-server-light-mode
   :config
-  (setq org-roam-server-light-dir (expand-file-name ".local/straight/repos/org-roam-server-light" user-emacs-directory)
+  (require 'straight)
+  (setq org-roam-server-light-dir (straight--repos-dir (symbol-name 'org-roam-server-light))
         org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
         org-roam-server-light-style "body.darkmode { background-color: #121212!important; }"
         org-roam-server-light-default-include-filters "null"
