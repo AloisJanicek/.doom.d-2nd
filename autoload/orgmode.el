@@ -894,40 +894,14 @@ is closer to maximum of the range rather then to the scheduled date.
 
 (defun aj-org-ql-stucked-projects-query ()
   "Stucked projects query for org-ql."
-  '(or
-    (and (todo)
-         (children (or (todo)
-                       (todo "DONE")
-                       (todo "CANCELLED")
-                       (todo "WAIT")
-                       (todo "HOLD")
-                       (todo "SOMEDAY")
-                       (todo "MAYBE")
-                       ))
-         (not (descendants (todo "NEXT")))
-         (not (todo "WAIT"))
-         (not (todo "HOLD"))
-         (not (todo "SOMEDAY"))
-         (not (todo "MAYBE"))
-         )
-
-    (and (or (todo "HOLD")
-             (todo "WAIT")
-             (todo "SOMEDAY")
-             (todo "MAYBE")
-             )
-         (children (or (todo)
-                       (todo "DONE")
-                       (todo "CANCELLED")))
-         (not (children (or
-                         (todo "HOLD")
-                         (todo "WAIT")
-                         (todo "SOMEDAY")
-                         (todo "MAYBE")
-                         ))))
-
-    )
-  )
+  '(and (todo)
+        (descendants (todo))
+        (not (descendants (todo "NEXT")))
+        (not (and (or (todo "HOLD")
+                      (todo "WAIT")
+                      (todo "SOMEDAY")
+                      (todo "MAYBE"))
+                  (descendants (todo))))))
 
 (defun aj-org-ql-past-dues-query ()
   "Return valid org-ql query searching for past dues."
@@ -938,15 +912,11 @@ is closer to maximum of the range rather then to the scheduled date.
 
 (defun aj-org-ql-habits-query ()
   "Return valid org-ql query searching for habits."
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (if tags
-        `(and (habit) ,tags)
-      '(habit))))
+  `(and (habit) ,(aj-org-ql-custom-agenda-filter-tags)))
 
 (defun aj-org-ql-future-dues-query ()
   "Return valid org-ql query searching for future dues."
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags))
-        (up-to (if current-prefix-arg 365 2)))
+  (let ((up-to (if current-prefix-arg 365 2)))
     `(or (and (planning :from ,(ts-now) :to ,up-to))
          (and (habit)
               (planning :to ,up-to)
@@ -964,62 +934,54 @@ Respects `aj-org-agenda-filter'.
 
 (defun aj-org-ql-simple-task-query (keyword)
   "Return valid org-ql query searching for todo KEYWORD.
-Respects `aj-org-agenda-filter'.
-"
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (if tags
-        `(and (todo ,keyword) ,tags)
-      `(todo ,keyword))))
+Respects `aj-org-agenda-filter'."
+  (remove nil `(and (todo ,keyword)
+                    ,(aj-org-ql-custom-agenda-filter-tags)
+                    ,(if current-prefix-arg
+                         nil
+                       '(not (ancestors (todo)))))))
 
 (defun aj-org-ql-non-complete-tasks-query ()
   "Return valid org-ql query searching for non-complete tasks.
 Respects `aj-org-agenda-filter'."
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (if tags
-        `(and (todo) ,tags)
-      `(todo))))
+  `(and (todo)
+        ,(aj-org-ql-custom-agenda-filter-tags)))
 
 (defun aj-org-ql-done-query ()
   "Return valid org-ql query searching completed tasks.
-Respects `aj-org-agenda-filter'.
-"
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (if tags
-        `(and (done) ,tags)
-      `(done))))
+Respects `aj-org-agenda-filter'."
+  `(and (done)
+        ,(aj-org-ql-custom-agenda-filter-tags)))
 
-(defun aj-org-ql-custom-todo-task-query ()
-  "Return custom org-ql queary for TO DO and PROJECT task."
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (remove nil `(and (or (todo "TODO")
-                          (todo "PROJECT"))
-                      ,(if tags tags)
-                      (not (ts-active))
-                      (not (children (todo)))
-                      (not (parent (todo)))))))
+(defun aj-org-ql-stand-alone-task-query ()
+  "Return custom org-ql queary for stand-alone tasks.
+Accepted are either \"TO DO\" or \"PROJECT\" keywords."
+  `(and (or (todo "TODO")
+            (todo "PROJECT"))
+        ,(aj-org-ql-custom-agenda-filter-tags)
+        (not (ts-active))
+        (not (descendants (todo)))
+        (not (ancestors (todo)))))
 
 (defun aj-org-ql-custom-next-task-query ()
   "Return custom org-ql queary for NEXT task."
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (remove nil `(and
-                  (todo "NEXT")
-                  ,(if tags tags)
-                  (not (or (parent "WAIT")
-                           (parent "HOLD")))
-                  (not (ts-active))))))
+  `(and
+    (todo "NEXT")
+    ,(aj-org-ql-custom-agenda-filter-tags)
+    (not (or (parent "WAIT")
+             (parent "HOLD")))
+    (not (ts-active))))
 
 (defun aj-org-ql-custom-projects-query ()
   "Return custom org-ql queary for Projects.
 
 Projects are defined as a todo heading which isn't Someday or Maybe
-and has todo childre.
-"
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (remove nil `(and (todo)
-                      ,(if tags tags)
-                      (children (todo))
-                      (not (or (todo "SOMEDAY")
-                               (todo "MAYBE")))))))
+and has todo childre."
+  `(and (todo)
+        ,(aj-org-ql-custom-agenda-filter-tags)
+        (descendants (todo))
+        (not (or (todo "SOMEDAY")
+                 (todo "MAYBE")))))
 
 (defun aj-org-ql-project-descendants-query (h-title)
   "Return all descendants of heading matching H-TITLE."
@@ -1027,36 +989,37 @@ and has todo childre.
 
 (defun aj-org-ql-custom-wait-task-query ()
   "Return custom org-ql queary for WAIT task."
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (remove nil `(and (todo "WAIT" )
-                      ,(if tags tags)
-                      (not (children (todo)))))))
+  `(and (todo "WAIT" )
+        ,(aj-org-ql-custom-agenda-filter-tags)
+        (not (ancestors
+              (or (todo "HOLD")
+                  (todo "WAIT")
+                  (todo "SOMEDAY")
+                  (todo "MAYBE"))))))
 
 (defun aj-org-ql-custom-hold-task-query ()
   "Return custom org-ql queary for HOLD task."
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (remove nil `(and (todo "HOLD" )
-                      ,(if tags tags)
-                      (not (children (todo)))))))
+  `(and (todo "HOLD" )
+        ,(aj-org-ql-custom-agenda-filter-tags)
+        (not (ancestors
+              (or (todo "HOLD")
+                  (todo "WAIT")
+                  (todo "SOMEDAY")
+                  (todo "MAYBE"))))))
 
 (defun aj-org-ql-custom-clocked-task-query ()
   "Return custom org-ql queary for all recently clocked tasks."
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (if tags
-        `(and (clocked) ,tags)
-      `(clocked))))
+  `(and (clocked) ,(aj-org-ql-custom-agenda-filter-tags)))
 
 (defun aj-org-ql-custom-ticklers-query ()
   "Return custom org-ql queary for tickler items.
 
 Tickler is just plain reminder, calendar note,
  org-heading without task keyword but with active timestamp.
-Tickler is not scheduled nor it doesn't have deadline.
-"
-  (let ((tags (aj-org-ql-custom-agenda-filter-tags)))
-    (if tags
-        `(and (ts-active :to 365) (not (planning)) ,tags)
-      `(and (ts-active :to 365) (not (planning))))))
+Tickler is not scheduled nor it doesn't have deadline."
+  `(and (ts-active :to 365)
+        (not (planning))
+        ,(aj-org-ql-custom-agenda-filter-tags)))
 
 (defun aj-org-ql-simple-task-search (task)
   "Search for task `TASK' via `org-ql'."
@@ -1091,18 +1054,19 @@ Tickler is not scheduled nor it doesn't have deadline.
   (let ((org-agenda-tag-filter aj-org-agenda-filter))
     (org-ql-search
       (aj-org-combined-agenda-files)
-      (aj-org-ql-custom-todo-task-query)
+      (aj-org-ql-stand-alone-task-query)
       :sort #'aj-org-ql-sort-by-effort
       :super-groups '((:auto-category t ))
-      :title "Plain Todos")))
+      :title "Stand-alone tasks")))
 
 (defun aj-org-ql-custom-agenda-filter-tags ()
   "Return tags part of org-ql query when `aj-org-agenda-filter' is set. "
-  (when (and aj-org-agenda-filter
-             (not current-prefix-arg))
-    `(tags ,(string-remove-prefix
-             "+" (substring-no-properties
-                  (car aj-org-agenda-filter))))))
+  (if (and aj-org-agenda-filter
+           (not current-prefix-arg))
+      `(tags ,(string-remove-prefix
+               "+" (substring-no-properties
+                    (car aj-org-agenda-filter))))
+    '(tags)))
 
 ;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-agenda-gtd-hydra (:color blue
@@ -1170,20 +1134,18 @@ Tickler is not scheduled nor it doesn't have deadline.
                                       ;; show normal tasks instead
                                       ;; if there are no "normal tasks" for current filtered view (or at all)
                                       ;; show "SOMEDAY" tasks
-                                      (t (if (let* ((tags (aj-org-ql-custom-agenda-filter-tags))
-                                                    (query (aj-org-ql-custom-next-task-query)))
-                                               (catch 'heading
-                                                 (org-ql-select
-                                                   (aj-org-combined-agenda-files)
-                                                   query
-                                                   :action (lambda ()
-                                                             (when (org-get-heading)
-                                                               (throw 'heading t))))))
+                                      (t (if (catch 'heading
+                                               (org-ql-select
+                                                 (aj-org-combined-agenda-files)
+                                                 (aj-org-ql-custom-next-task-query)
+                                                 :action (lambda ()
+                                                           (when (org-get-heading)
+                                                             (throw 'heading t)))))
                                              (aj-org-ql-next-task-search)
                                            (if (catch 'heading
                                                  (org-ql-select
                                                    (aj-org-combined-agenda-files)
-                                                   (aj-org-ql-custom-todo-task-query)
+                                                   (aj-org-ql-stand-alone-task-query)
                                                    :action (lambda ()
                                                              (when (org-get-heading)
                                                                (throw 'heading t)))))
@@ -1857,11 +1819,8 @@ saves the search preset into `aj-org-agenda-headlines-last-search' so the search
 replicated by calling this function again with arguments saved in this variable.
 "
   (interactive "P")
-  (let* ((tags (aj-org-ql-custom-agenda-filter-tags))
-         (query (or query
-                    (if tags
-                        `(and (todo) ,tags)
-                      '(todo))))
+  (let* ((query (or query
+                    `(and (todo) ,(aj-org-ql-custom-agenda-filter-tags))))
          (prompt (or prompt "agenda headlines"))
          (initial-input (or initial-input ""))
          (args-list `(,(current-time) ,query ,prompt ,files ,sort-fn ,reverse ,time ,capture-key ,clock))
@@ -1877,8 +1836,7 @@ replicated by calling this function again with arguments saved in this variable.
 
     (when (string-match "descendants" prompt)
       (setq prompt (format "descendants of \"%s\"" (car (cdr (car (cdr query)))))))
-
-    (ivy-read (format "%s %s: " prompt (cdr (aj-org-ql-custom-agenda-filter-tags)))
+    (ivy-read (format "%s %s: " prompt (or (cdr (aj-org-ql-custom-agenda-filter-tags)) ":"))
               (let ((results
                      (->> (org-ql-query
                             :select 'element-with-markers

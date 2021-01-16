@@ -942,7 +942,7 @@
    :desc "next"                 "n" (cmd! (aj/org-agenda-headlines :prompt "next"
                                                                    :query (aj-org-ql-custom-next-task-query) :capture-key "t"))
    :desc "stand-alone tasks"    "t" (cmd! (aj/org-agenda-headlines :prompt "stand-alone tasks"
-                                                                   :query (aj-org-ql-custom-todo-task-query) :sort-fn 'date :reverse t :capture-key "t"))
+                                                                   :query (aj-org-ql-stand-alone-task-query) :sort-fn 'date :reverse t :capture-key "t"))
    :desc "all tasks"            "T" (cmd! (aj/org-agenda-headlines :prompt "All tasks" :capture-key "t"))
    :desc "projects"             "p" (cmd! (aj/org-agenda-headlines :prompt "projects"
                                                                    :query (aj-org-ql-custom-projects-query) :capture-key "t"))
