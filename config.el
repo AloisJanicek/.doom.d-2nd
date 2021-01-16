@@ -1340,10 +1340,10 @@
 (after! org
   (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
   (aj-org-update-help-files)
-  (set-popup-rule! "^CAPTURE.*\\.org$"                :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
-  (set-popup-rule! "^\\*Org Src"             :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
-  (set-popup-rule! "^\\*Org Agenda.*\\*$"    :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
-  (set-popup-rule! "^\\*Org QL.*\\*$" :vslot 1 :size 86   :side 'right :select t :quit t   :ttl nil :modeline t)
+  (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
+  (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
+  (set-popup-rule! "^\\*Org Agenda.*\\*$"       :vslot 1 :size `(max (/ ,(frame-width) 2) 80) :side 'right :select t :quit t   :ttl nil :modeline t)
+  (set-popup-rule! "^\\*Org QL.*\\*$"           :vslot 1 :size `(max (/ ,(frame-width) 2) 80) :side 'right :select t :quit t   :ttl nil :modeline t)
 
   (add-to-list '+format-on-save-enabled-modes 'org-mode t)
   (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
@@ -1614,7 +1614,7 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
                               (tags      . "  %-6t %6e ")
                               (search    . "%l")
                               )
-   org-agenda-tags-column 74
+   org-agenda-tags-column 80
    org-agenda-todo-list-sublevels t
    org-agenda-log-mode-items '(closed clock state)
    org-agenda-start-with-log-mode nil
