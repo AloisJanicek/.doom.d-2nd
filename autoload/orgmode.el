@@ -1018,8 +1018,7 @@ Tickler is just plain reminder, calendar note,
  org-heading without task keyword but with active timestamp.
 Tickler is not scheduled nor it doesn't have deadline."
   `(and (ts-active :to 365)
-        (not (planning))
-        ,(aj-org-ql-custom-agenda-filter-tags)))
+        (not (planning))))
 
 (defun aj-org-ql-simple-task-search (task)
   "Search for task `TASK' via `org-ql'."
