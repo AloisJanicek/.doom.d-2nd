@@ -2304,23 +2304,6 @@ item candidates from COLLECTION to PRESET.
         (counsel-rg nil dir)))))
 
 ;;;###autoload
-(defun aj-org-update-help-files ()
-  "Update definiton of `aj-org-help-files'."
-  (async-start
-   `(lambda ()
-      (async-inject-variables "org-directory")
-      (directory-files-recursively ,org-directory ".org"))
-   (lambda (result)
-     (setq aj-org-help-files (mapcar
-                              #'file-truename
-                              (delq
-                               nil
-                               (delete-dups
-                                (append
-                                 result
-                                 (aj-org-combined-agenda-files)))))))))
-
-;;;###autoload
 (cl-defun aj-org-ql-hide-header-a (&key (buffer org-ql-view-buffer) header string)
   "Advice for removing headerline in org-ql buffers."
   (with-current-buffer buffer
@@ -3127,26 +3110,14 @@ from backlinks back to top-level search or when opening org-roam ivy again.")
   )
 
 ;;;###autoload
-(defun aj-calibre-org-update-org-noter-files ()
-  "Set value of `aj-calibre-org-files'."
-  (message "Updating value of `aj-calibre-org-files'...")
-  (setq aj-calibre-org-files (directory-files-recursively aj-calibre-path ".org$"))
-  (message "Updating value of `aj-calibre-org-files'...done")
-  ;; add to help files
-  (setq aj-org-help-files (append aj-org-help-files aj-calibre-org-files)))
-
-;;;###autoload
 (defun aj/calibre-org-open-org-noter-note ()
-  "Open one of the `aj-calibre-org-files' specially."
+  "Open org-file from `aj-calibre-path' in a special way."
   (interactive)
-  (unless aj-calibre-org-noter-files-first-run
-    (aj-calibre-org-update-org-noter-files)
-    (setq aj-calibre-org-noter-files-first-run t))
   (ivy-read "Select book note: "
             (seq-map
              (lambda (file)
                (cons (file-name-nondirectory file) file))
-             aj-calibre-org-files)
+             (directory-files-recursively aj-calibre-path ".org$"))
             :action
             (lambda (file-pair)
               (let* ((file (cdr file-pair)))
@@ -3245,7 +3216,7 @@ Item must be a string containing mark pointing to valid org-mode headline to act
 (defun aj-org-roam-setup-dailies-file-h ()
   "Setup org-roam dailies file to my taste.
 Initialy create id inside top-level \":PROPERTIES:\" drawer.
-Save buffer and update `aj-org-help-files'.
+Finally save buffer.
 "
   (let ((fname (or (buffer-file-name)
                    (buffer-file-name (buffer-base-buffer))))
@@ -3253,8 +3224,7 @@ Save buffer and update `aj-org-help-files'.
     ;; Run this only when file is newly created (hasn't been saved yet)
     (unless (file-exists-p fname)
       (org-id-get-create)
-      (save-buffer)
-      (aj-org-update-help-files))
+      (save-buffer))
 
     (goto-char (point-max))
     (newline)

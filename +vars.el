@@ -70,11 +70,6 @@ dotdrop --cfg=/home/username/dotfiles_repo/config.yaml --profile=my_profile
 (defvar aj-last-popup-win nil
   "Last popup window.")
 
-(defvar aj-org-help-files  nil
-  "List of special org files.
-Either they are contributing to org-agenda or are notes files from org-directory.
-")
-
 (defvar aj-modes-tests-alist '()
   "Contains alist specifying shell test tool per major mode.
 
@@ -106,11 +101,3 @@ Cdr is list of one or more strings returned `aj-org-notes-get-filetags'.")
 
 (defvar aj-currently-refiling nil
   "Indicates if there is refile operation running and some files should not be encrypted.")
-
-(defvar aj-calibre-org-files nil
-  "List of all org-noter org files saved for pdf and epub files anywhere under `aj-calibre-path'.")
-
-(doom-store-persist doom-store-location '(aj-calibre-org-files))
-
-(defvar aj-calibre-org-noter-files-first-run nil
-  "Indicatec if `aj/calibre-org-open-org-noter-note' has been previosly executed in this session.")

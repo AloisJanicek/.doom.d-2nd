@@ -1201,9 +1201,7 @@
                                                (message "Cleared filter preset for %s" org-brain-path)
                                                (aj/org-notes-set-filter-preset))
                                            (aj/org-notes-set-filter-preset)))
-  :desc "Update IDs and other" "u" (cmd! (aj/org-id-update-recursively)
-                                         (aj-org-update-help-files)
-                                         (message "Updated `aj-org-help-files' definition."))
+  :desc "Update IDs"            "u" #'aj/org-id-update-recursively
   :desc "indirect"             "I" (cmd! (aj-open-file-switch-create-indirect-buffer-per-persp
                                           (buffer-file-name (current-buffer))))
   :desc "journal jump"         "j" (cmd! (aj-org-jump-to-datetree

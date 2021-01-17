@@ -754,8 +754,7 @@ Around advice for `ivy--switch-buffer-action'.
 "
   (if (aj-help-buffer-p
        (if (not (bufferp buffer))
-           (get-buffer buffer))
-       aj-org-help-files)
+           (get-buffer buffer)))
       (cl-letf (((symbol-function 'switch-to-buffer)
                  (lambda (buffer &rest _)
                    (cond ((equal (with-current-buffer buffer major-mode) 'org-mode)
@@ -781,8 +780,8 @@ See variable `aj-help-buffer-modes' for more details.
                            (and (not (eq buffer (current-buffer)))
                                 (+workspace-contains-buffer-p buffer)
                                 (if help
-                                    (aj-help-buffer-p buffer aj-org-help-files)
-                                  (not (aj-help-buffer-p buffer aj-org-help-files))))))
+                                    (aj-help-buffer-p buffer)
+                                  (not (aj-help-buffer-p buffer))))))
             :update-fn (lambda ()
                          (let (ivy-use-virtual-buffers ivy--virtual-buffers)
                            (counsel--switch-buffer-update-fn)))
@@ -854,11 +853,12 @@ url as its argument."
      (funcall fun (cdr item)))))
 
 ;;;###autoload
-(defun aj-help-buffer-p (buffer org-files-to-keep)
+(defun aj-help-buffer-p (buffer)
   "Returns true if BUFFER is to be considered help buffer.
 
 Either file's major-mode is one of defined in `aj-help-buffer-modes'
-or in case of org-mode files, file must be one of ORG-FILES-TO-KEEP.
+or in case of org-mode files, file must come from `org-directory' or
+`aj-calibre-path' or any of their sub-directories.
 
 Other org-mode files will be considered as regular files and buffers.
 "
@@ -867,12 +867,13 @@ Other org-mode files will be considered as regular files and buffers.
     (let* ((special (or (doom-special-buffer-p buffer)
                         (derived-mode-p 'nov-mode)
                         (derived-mode-p 'pdf-view-mode)))
-           (buffer-file (unless special
-                          (buffer-file-name)))
+           (file (unless special
+                   (buffer-file-name)))
            (org-to-keep
-            (unless special
-              (member buffer-file
-                      org-files-to-keep)))
+            (when file
+              (and (derived-mode-p 'org-mode)
+                   (or (file-in-directory-p file org-directory)
+                       (file-in-directory-p file aj-calibre-path)))))
            (help-buff (memq major-mode aj-help-buffer-modes)))
       (or (and help-buff special)
           (unless special

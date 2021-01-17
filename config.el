@@ -1339,7 +1339,6 @@
 
 (after! org
   (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
-  (aj-org-update-help-files)
   (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Agenda.*\\*$"       :vslot 1 :size `(max (/ ,(frame-width) 2) 80) :side 'right :select t :quit t   :ttl nil :modeline t)
@@ -1948,10 +1947,6 @@ When in org-roam file, also create top-level ID.
   (setq
    org-checkbox-hierarchical-statistics t))
 
-(after! org-noter
-  (advice-add #'org-noter :after #'aj-calibre-org-update-org-noter-files)
-  )
-
 (after! org-pomodoro
   (advice-add #'org-pomodoro-update-mode-line :override (lambda () "Do nothing." t))
   (setq alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
@@ -1971,7 +1966,6 @@ When in org-roam file, also create top-level ID.
    (lambda ()
      (org-id-get-create)
      (save-buffer)
-     (aj-org-update-help-files)
      (org-roam-db-update)))
 
   (doom-store-persist doom-store-location '(org-roam-directory))
