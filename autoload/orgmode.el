@@ -96,7 +96,8 @@ Works also in `org-agenda'."
                                             :where '(or (and (todo)
                                                              (not (todo "MAYBE"))
                                                              (not (todo "SOMEDAY")))
-                                                        (not (todo)))
+                                                        (and (not (todo))
+                                                             (not (done))))
                                             :order-by (lambda (a b) nil))
                                           (-map
                                            (lambda (elm)
