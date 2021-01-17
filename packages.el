@@ -14,17 +14,17 @@
            :branch "feature/org-fold"
            :files ("*.el" "lisp/*.el" "contrib/lisp/*.el")
            :pre-build (with-temp-file (expand-file-name "org-version.el" (straight--repos-dir "org"))
-                    (insert "(fset 'org-release (lambda () \"9.5\"))\n"
-                            "(fset 'org-git-version #'ignore)\n"
-                            "(provide 'org-version)\n")))
-  :pin "6a1844d271320663742f0944dd19d0b9f99aef82"
+                        (insert "(fset 'org-release (lambda () \"9.5\"))\n"
+                                "(fset 'org-git-version #'ignore)\n"
+                                "(provide 'org-version)\n")))
+  :pin "627c35b7ca8fd20fcb72a8e2e1f0e08eb52cdf1f"
   :shadow 'org)
 
 (package! org-roam-server-light
   :recipe (:host github :repo "AloisJanicek/org-roam-server-light"
            :files ("*")
            )
-  :pin "dd0b5edf1918949a81dc6098000c2f1babed0f41")
+  :pin "f22903a2aadd1cb6b3fb6f011b229d6847009ec4")
 
 (defun aj-wsl-p ()
   "Return non-nil value if Emacs is running inside WSL."
@@ -99,12 +99,12 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "a4d248386e6ba7a7d60f076e0794f446634d2fc8"
+  :pin "fce341d7bf3ee94e38265ace2f2c21f875b9e29a"
   )
 
 (package! eslintd-fix
   :recipe (:host github :repo "aaronjensen/eslintd-fix")
-  :pin "f287e61208a5ae532f6722e369400a530b697ea0")
+  :pin "5f9daecd4a02418515070b8084cb06e2251e2119")
 
 (package! esqlite
   :pin "08a779a821f8d32c1a1985d8d9eb6cf21646ce2e")
