@@ -1529,6 +1529,7 @@ got renamed while clock were running.
   ("e" #'org-clock-modify-effort-estimate "modify effort")
   ("o" #'org-clock-out "out")
   ("p" #'org-pomodoro "pomodoro")
+  ("d" #'aj/clock-display "Display clock")
   ("g" #'counsel-org-clock-goto "goto")
   ("k" #'counsel-org-clock-context "kontext")
   ("h" #'counsel-org-clock-history "history")
@@ -1607,6 +1608,52 @@ If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
       )
     )
   )
+
+(defvar aj-clock-display-timer nil
+  "Timer for updating clock display buffer.")
+
+(defhydra aj/clock-display-control (:color teal)
+  "clock-display"
+  ("q" (lambda ()
+         (interactive)
+         (cancel-timer aj-clock-display-timer)
+         (delete-frame))))
+
+(defun aj/clock-display ()
+  "Display clock info in special buffer in new frame."
+  (interactive)
+  (let ((clock-display-buffer (get-buffer-create "*clock-timer-info*")))
+    (setq aj-clock-display-timer
+          (run-with-timer
+           0 10
+           (lambda ()
+             (with-current-buffer clock-display-buffer
+               (erase-buffer)
+               (hide-mode-line-mode +1)
+               (mixed-pitch-mode +1)
+               (text-scale-set 13)
+               (insert "\n")
+               (insert
+                (cond ((equal :none org-pomodoro-state)
+                       (if (org-clock-is-active)
+                           (format "%d m / %s \n %s "
+                                   (org-clock-get-clocked-time)
+                                   org-clock-effort
+                                   (substring-no-properties org-clock-heading))
+                         "- no active task - "))
+                      ((equal :pomodoro org-pomodoro-state)
+                       (format "%d m (%d) \n %s"
+                               (/ (org-pomodoro-remaining-seconds) 60)
+                               org-pomodoro-count
+                               (substring-no-properties org-clock-heading)))
+                      ((equal :short-break org-pomodoro-state) "Short Break")
+                      ((equal :long-break org-pomodoro-state) "Long Break")))))))
+    (with-current-buffer clock-display-buffer
+      (make-frame))
+    (progn
+      (switch-to-buffer-other-frame clock-display-buffer)
+      (toggle-frame-maximized))
+    (aj/clock-display-control/body)))
 
 ;; ORG LINKS
 ;;;###autoload
