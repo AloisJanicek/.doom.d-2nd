@@ -872,8 +872,7 @@
             (aj-org-agenda-headlines-custom-action-helper
              headline
              (lambda ()
-               (org-clock-in)
-               (aj-org-agenda-headlines-dispatch-last nil ivy-text))))
+               (org-clock-in))))
       "clock in")
      ("C" (lambda (headline)
             (aj-org-agenda-headlines-custom-action-helper
@@ -892,7 +891,8 @@
       "Priority")
      ("p" (lambda (headline)
             (aj-org-agenda-headlines-custom-action-helper headline #'org-pomodoro)
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
+            (when (equal org-pomodoro-state :none)
+              (aj-org-agenda-headlines-dispatch-last nil ivy-text)))
       "pomodoro")
      ("s" (lambda (headline)
             (aj-org-agenda-headlines-custom-action-helper
