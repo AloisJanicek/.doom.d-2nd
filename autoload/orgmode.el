@@ -1763,7 +1763,14 @@ When optional UP-LEVEL, return from nested search of level2
 (defvar aj-org-ql-queries-history nil
   "List of last used custom org-ql queries")
 
-(doom-store-persist doom-store-location '(aj-org-ql-queries-history))
+;; HACK doom-store can't handle non-ASCII characters properly
+(when (doom-store-persist doom-store-location '(aj-org-ql-queries-history))
+  (setq aj-org-ql-queries-history
+        (seq-map (lambda (i)
+                   (cons
+                    (decode-coding-string (car i) 'utf-8)
+                    (cdr i)))
+                 aj-org-ql-queries-history)))
 
 (defun aj-org-ql-select-history-queries (&optional prompt initial-input)
   "Select past custom org-ql query from `aj-org-ql-queries-history'.
@@ -1789,6 +1796,11 @@ Optionally accept valid org-ql QUERY.
   (require 'org-ql-search)
   (when-let* ((query (or query
                          (aj-org-ql-select-history-queries)))
+              ;; HACK doom-store can't handle non-ASCII characters properly
+              (query (if (char-or-string-p query)
+                         (decode-coding-string
+                          query 'utf-8)
+                       query))
               ;; coppied from `org-ql-search' function
               (query (cl-etypecase query
                        (string (if (or (string-prefix-p "(" query)
@@ -1798,7 +1810,8 @@ Optionally accept valid org-ql QUERY.
                                  ;; Parse non-sexp query into sexp query.
                                  (org-ql--query-string-to-sexp query)))
                        (list query))))
-    (when query
+    (when (and query
+               (not (assoc (prin1-to-string query) aj-org-ql-queries-history)))
       (add-to-list 'aj-org-ql-queries-history `(,(prin1-to-string query) . ,query)))
     (pcase interface
       ('search
