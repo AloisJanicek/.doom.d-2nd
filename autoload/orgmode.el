@@ -1784,17 +1784,9 @@ Optionally accept ivy PROMPT or INITIAL-INPUT.
   )
 
 ;;;###autoload
-(defun aj-org-ql-dispatch-custom-query-search (interface &optional query)
-  "Ask for query and dispatch search using INTERFACE.
-
-Results are shown using INTERFACE which is 'search for `org-ql-search'
-or 'agenda-headlines for `aj/org-agenda-headlines'.
-
-Optionally accept valid org-ql QUERY.
-"
-  (require 'org-ql-search)
-  (when-let* ((query (or query
-                         (aj-org-ql-select-history-queries)))
+(defun aj-org-ql-normalize-save-query (query)
+  "Normalize QUERY, save it into `aj-org-ql-queries' and return it."
+  (when-let* (
               ;; HACK doom-store can't handle non-ASCII characters properly
               (query (if (char-or-string-p query)
                          (decode-coding-string
@@ -1809,9 +1801,23 @@ Optionally accept valid org-ql QUERY.
                                  ;; Parse non-sexp query into sexp query.
                                  (org-ql--query-string-to-sexp query)))
                        (list query))))
-    (when (and query
-               (not (assoc (prin1-to-string query) aj-org-ql-queries-history)))
+    (when (not (assoc (prin1-to-string query) aj-org-ql-queries-history))
       (add-to-list 'aj-org-ql-queries-history `(,(prin1-to-string query) . ,query)))
+    query))
+
+;;;###autoload
+(defun aj-org-ql-dispatch-custom-query-search (interface &optional query)
+  "Ask for query and dispatch search using INTERFACE.
+
+Results are shown using INTERFACE which is 'search for `org-ql-search'
+or 'agenda-headlines for `aj/org-agenda-headlines'.
+
+Optionally accept valid org-ql QUERY.
+"
+  (require 'org-ql-search)
+  (when-let* ((query (aj-org-ql-normalize-save-query
+                      (or query
+                          (aj-org-ql-select-history-queries)))))
     (pcase interface
       ('search
        (org-ql-search (aj-org-combined-agenda-files) query))
