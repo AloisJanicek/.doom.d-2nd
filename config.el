@@ -2012,9 +2012,7 @@ When in org-roam file, also create top-level ID.
   :after org-roam
   :commands org-roam-server-light-mode
   :config
-  (require 'straight)
-  (setq org-roam-server-light-dir (straight--repos-dir (symbol-name 'org-roam-server-light))
-        org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
+  (setq org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
         org-roam-server-light-style "body.darkmode { background-color: #121212!important; }"
         org-roam-server-light-default-include-filters "null"
         org-roam-server-light-default-exclude-filters "[{ \"id\": \"journal\", \"parent\" : \"tags\"  }]"
