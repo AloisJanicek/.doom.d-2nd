@@ -837,16 +837,15 @@ This function is meant to be used as advice for `org-agenda-filter-apply'"
   (interactive)
   (org-agenda-filter-apply
    (remove nil
-           (seq-map
-            (lambda (str)
-              (if (string-prefix-p "+" str)
-                  str
-                (concat "+" str)))
-            (aj-org-notes-set-filter-preset--ivy
-             "Select agenda tag"
-             (aj-org-agenda-get-all-tags)
-             aj-org-agenda-filter))
-           )
+           (aj-org-notes-set-filter-preset--ivy
+            "Select agenda tag"
+            (seq-map
+             (lambda (str)
+               (if (string-prefix-p "+" str)
+                   str
+                 (concat "+" str)))
+             (aj-org-agenda-get-all-tags))
+            aj-org-agenda-filter))
    'tag
    )
   )
