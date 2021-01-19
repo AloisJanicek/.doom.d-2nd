@@ -485,6 +485,7 @@
   :m "." (lambda ()
            (interactive)
            (let ((aj-org-agenda-gtd-hydra-no-auto t))
+             (setq aj-org-agenda-gtd-interface 'agenda-search)
              (aj/org-agenda-gtd-hydra/body)))
   :m "C-j"   #'org-agenda-next-line
   :m "j"     #'org-agenda-next-item
@@ -903,62 +904,16 @@
    )
 
   :desc "agenda"                   "A" #'org-agenda
-  :desc "agenda"                   "a" #'aj/org-agenda-gtd-hydra/body
+  :desc "agenda headlines"              "a" (cmd! (setq aj-org-agenda-gtd-interface 'agenda-search)
+                                                  (aj/org-agenda-gtd-hydra/body))
   :desc "browse eww"               "b" #'eww
   :desc "browse eaf"               "B" #'eaf-open-browser-with-history
   :desc "imenu-list"               "i" #'imenu-list-smart-toggle
   :desc "search eww"               "s" (cmd! (counsel-web-search nil "Search web with eww: " nil #'eww))
   :desc "search eaf"               "S" (cmd! (counsel-web-search nil "Search web with eaf: " nil #'eaf-open-browser))
 
-  (:prefix ("o" . "open agenda")
-   :desc "clocked"              "c" (cmd! (aj/org-agenda-headlines :prompt "clocked"
-                                                                   :query (aj-org-ql-custom-clocked-task-query) :sort-fn 'date :capture-key "k" :clock t))
-   :desc "all active"           "o" (cmd! (aj/org-agenda-headlines :prompt "all active"
-                                                                   :query (aj-org-ql-all-active-tasks-query)))
-   :desc "past due NO-F"        "a" (cmd! (aj/org-agenda-headlines :prompt "past due"
-                                                                   :query (aj-org-ql-past-dues-query)
-                                                                   :sort-fn #'aj-org-ql-sort-by-active-timestamp :time t :capture-key "t"))
-   :desc "future due NO-F"      "b" (cmd! (aj/org-agenda-headlines :prompt "future due"
-                                                                   :query (aj-org-ql-future-dues-query)
-                                                                   :sort-fn #'aj-org-ql-sort-by-active-timestamp
-                                                                   :time t :capture-key "t"))
-   :desc "tickler reminders"    "B" (cmd! (aj/org-agenda-headlines :prompt "tickler reminders"
-                                                                   :query (aj-org-ql-custom-ticklers-query)
-                                                                   :sort-fn #'aj-org-ql-sort-by-active-timestamp :time t :capture-key "d"))
-   :desc "archived"             "A" (cmd! (aj/org-agenda-headlines :prompt "archived"
-                                                                   :query (aj-org-ql-done-query)
-                                                                   :files (aj-org-get-filtered-org-files :preset aj-org-agenda-filter :archived t)  :capture-key "k"))
-   :desc "habits"               "H" (cmd! (aj/org-agenda-headlines :prompt "habits"
-                                                                   :query (aj-org-ql-habits-query)
-                                                                   :sort-fn #'aj-org-ql-sort-by-active-timestamp :time t :capture-key "t"))
-   :desc "jump all headings"    "j" (cmd! (aj-org-jump-to-headline-at :files (aj-org-combined-agenda-files) :level 9))
-   :desc "inbox"                "i" (cmd! (aj-org-jump-to-headline-at :files (list aj-org-inbox-file) :level 1))
-   :desc "next"                 "n" (cmd! (aj/org-agenda-headlines :prompt "next"
-                                                                   :query (aj-org-ql-custom-next-task-query) :capture-key "t"))
-   :desc "stand-alone tasks"    "t" (cmd! (aj/org-agenda-headlines :prompt "stand-alone tasks"
-                                                                   :query (aj-org-ql-stand-alone-task-query) :sort-fn 'date :reverse t :capture-key "t"))
-   :desc "all tasks"            "T" (cmd! (aj/org-agenda-headlines :prompt "All tasks" :capture-key "t"))
-   :desc "projects"             "p" (cmd! (aj/org-agenda-headlines :prompt "projects"
-                                                                   :query (aj-org-ql-custom-projects-query) :capture-key "t"))
-   :desc "set filter"           "f" #'aj/org-agenda-set-filter
-   :desc "clear filter"         "F" #'aj/org-agenda-clear-filter-refresh-view
-   :desc "wait"                 "w" (cmd! (aj/org-agenda-headlines :prompt "wait"
-                                                                   :query (aj-org-ql-custom-wait-task-query) :sort-fn 'date :capture-key "t"))
-   :desc "hold"                 "h" (cmd! (aj/org-agenda-headlines :prompt "hold"
-                                                                   :query (aj-org-ql-custom-hold-task-query) :sort-fn 'date :capture-key "t"))
-   :desc "someday"              "s" (cmd! (aj/org-agenda-headlines :prompt "stucked projects"
-                                                                   :query (aj-org-ql-stucked-projects-query) :sort-fn 'date :capture-key "t"))
-   :desc "someday"              "S" (cmd! (aj/org-agenda-headlines :prompt "someday"
-                                                                   :query (aj-org-ql-simple-task-query "SOMEDAY") :sort-fn 'random :capture-key "t"))
-   :desc "maybe"                "M" (cmd! (aj/org-agenda-headlines :prompt "maybe"
-                                                                   :query (aj-org-ql-simple-task-query "MAYBE") :sort-fn 'random :capture-key "t"))
-   :desc "cancelled"            "C" (cmd! (aj/org-agenda-headlines :prompt "cancelled"
-                                                                   :query (aj-org-ql-simple-task-query "CANCELLED") :sort-fn 'date :capture-key "k"))
-   :desc "done"                 "D" (cmd! (aj/org-agenda-headlines :prompt "done"
-                                                                   :query (aj-org-ql-simple-task-query "DONE") :sort-fn 'date :capture-key "k" :clock t))
-   :desc "query"                "q" (cmd! (aj-org-ql-dispatch-custom-query-search 'agenda-headlines))
-   :desc "edit query"           "Q" (cmd! (aj-org-ql-select-history-queries "EDIT past queries: "))
-   )
+  :desc "agenda headlines"              "o" (cmd! (setq aj-org-agenda-gtd-interface 'agenda-headlines)
+                                                  (aj/org-agenda-gtd-hydra/body))
   )
 
  (:prefix ("p" . "project")
@@ -1000,7 +955,8 @@
 
  ;; next                   "]"
 
- :desc "agenda"                    "a" #'aj/org-agenda-gtd-hydra/body
+ :desc "agenda headlines"              "a" (cmd! (setq aj-org-agenda-gtd-interface 'agenda-search)
+                                                 (aj/org-agenda-gtd-hydra/body))
 
  (:prefix ("s" . "search")
   :desc "google at point"          "g" #'counsel-web-thing-at-point

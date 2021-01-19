@@ -1047,7 +1047,7 @@ Tickler is not scheduled nor it doesn't have deadline."
     :title "Stucked Projects")
   )
 
-(defun aj-org-ql-custom-task-search ()
+(defun aj-org-ql-stand-alone-task-search ()
   "Search for stand-alone tasks."
   (org-ql-search
     (aj-org-combined-agenda-files)
@@ -1069,114 +1069,214 @@ Tickler is not scheduled nor it doesn't have deadline."
                aj-org-agenda-filter))
     '(tags)))
 
+(defun aj-org-agenda-gtd-try-query-match (query &optional files)
+  "Try if org-ql QUERY matches against org-agenda files or FILES."
+  (let ((files (or files (aj-org-combined-agenda-files))))
+    (catch 'heading (org-ql-select
+                      files
+                      query
+                      :action (lambda ()
+                                (when (org-get-heading)
+                                  (throw 'heading t)))))))
+
+(defun aj-org-agenda-gtd-precheck ()
+  "Based on some checks, auto-launch corresponding org-ql searches."
+  ;; Don't auto-pop following if true
+  (unless aj-org-agenda-gtd-hydra-no-auto
+    (let* ((today (format-time-string "%F" (current-time)))
+           (space " ")
+           ;; NOTE I need to start search today with at least 1 second offset
+           ;; otherwise the scheduled-today-hh-mm-query query will include also
+           ;; items without explicitly specified HH:MM and I could not leverage
+           ;; its difference against scheduled-today-query
+           (start (concat today space "00:00:01"))
+           (end (concat today space "23:59"))
+           (scheduled-today-query
+            `(or (and (ts-active :on ,today)
+                      (not (habit))
+                      (not (done)))
+                 (habit-half-due)))
+           (scheduled-today-hh-mm-query
+            `(or (and (ts-active :from ,start :to ,end)
+                      (not (habit))
+                      (not (done)))
+                 (habit-half-due)))
+           (scheduled-today-without-hh-mm-query
+            `(and ,scheduled-today-query
+                  (not ,scheduled-today-hh-mm-query))))
+
+      (cond
+       ;; Visit running clock if any
+       ((bound-and-true-p org-clock-current-task)
+        (org-clock-goto))
+
+       ;; Show past scheduled / deadline items if any
+       ((aj-org-agenda-gtd-try-query-match (aj-org-ql-past-dues-query))
+        (pcase aj-org-agenda-gtd-interface
+          ('agenda-search
+           (org-ql-search (org-agenda-files) (aj-org-ql-past-dues-query)
+             :sort #'aj-org-ql-sort-by-active-timestamp
+             :title "Past dues"))
+          ('agenda-headlines
+           (aj/org-agenda-headlines
+            :prompt "Past dues"
+            :query (aj-org-ql-past-dues-query)
+            :sort-fn #'aj-org-ql-sort-by-active-timestamp
+            :time t
+            :capture-key "t"))))
+
+       ;; Show today's scheduled / deadline items without "HH:MM" if any
+       ((aj-org-agenda-gtd-try-query-match scheduled-today-without-hh-mm-query)
+        (pcase aj-org-agenda-gtd-interface
+          ('agenda-search
+           ;; (org-ql-search
+           ;;   (aj-org-combined-agenda-files)
+           ;;   scheduled-today-without-hh-mm-query
+           ;;   :title "Scheduled today without HH:MM")
+           (let ((org-agenda-start-with-log-mode t)
+                 (org-agenda-span 1)
+                 (org-agenda-start-day nil)
+                 (org-agenda-use-time-grid t)
+                 (org-pretty-tags-agenda-unpretty-habits t)
+                 (org-agenda-time-grid '((daily today require-timed)
+                                         (700 800 900 1000 1100 1200
+                                              1300 1400 1500 1600 1700
+                                              1800 1900 2000 2100)
+                                         "......" "----------------")))
+             (ignore-errors (org-agenda nil "a"))))
+          ('agenda-headlines
+           (aj/org-agenda-headlines
+            :prompt "Scheduled today without HH:MM"
+            :query scheduled-today-without-hh-mm-query
+            :sort-fn 'date
+            :capture-key "t"
+            :clock t))))
+
+       ;; Show stucked projects if any
+       ((aj-org-agenda-gtd-try-query-match (aj-org-ql-past-dues-query))
+        (pcase aj-org-agenda-gtd-interface
+          ('agenda-search
+           (aj-org-ql-stucked-projects-search))
+          ('agenda-headlines
+           (aj/org-agenda-headlines
+            :prompt "Stucked projects"
+            :query (aj-org-ql-stucked-projects-query)
+            :sort-fn 'date
+            :capture-key "t"))))
+
+       ;; otherwise default to showing "NEXT" tasks
+       ;; if there are no "NEXT" tasks for current filtered view (or at all)
+       ;; show normal tasks instead
+       ;; if there are no "normal tasks" for current filtered view (or at all)
+       ;; show "SOMEDAY" tasks
+       (t (if (aj-org-agenda-gtd-try-query-match (aj-org-ql-custom-next-task-query))
+              (pcase aj-org-agenda-gtd-interface
+                ('agenda-search
+                 (aj-org-ql-next-task-search))
+                ('agenda-headlines
+                 (aj/org-agenda-headlines
+                  :prompt "next"
+                  :query (aj-org-ql-custom-next-task-query)
+                  :capture-key "t")))
+            (if (aj-org-agenda-gtd-try-query-match (aj-org-ql-stand-alone-task-query))
+                (pcase aj-org-agenda-gtd-interface
+                  ('agenda-search
+                   (aj-org-ql-stand-alone-task-search))
+                  ('agenda-headlines
+                   (aj/org-agenda-headlines
+                    :prompt "Stand-alone tasks"
+                    :query (aj-org-ql-stand-alone-task-query)
+                    :sort-fn 'date
+                    :reverse t
+                    :capture-key "t")))
+              (aj-org-ql-simple-task-search "SOMEDAY")))
+          )
+       )
+      )
+    )
+  )
+
+(defvar aj-org-agenda-gtd-interface 'agenda-search
+  "Default interface for `aj/org-agenda-gtd-hydra'.")
+
 ;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-agenda-gtd-hydra (:color blue
                                    :hint nil
                                    :columns 4
                                    :idle which-key-idle-delay
                                    :body-pre
-
-                                   ;; Don't auto-pop following if true
-                                   (unless aj-org-agenda-gtd-hydra-no-auto
-
-                                     (cond
-                                      ;; Visit running clock if any
-                                      ((bound-and-true-p org-clock-current-task)
-                                       (org-clock-goto))
-
-                                      ;; Show past scheduled / deadline items if any
-                                      ((org-ql-select (org-agenda-files) (aj-org-ql-past-dues-query))
-                                       (org-ql-search (org-agenda-files) (aj-org-ql-past-dues-query)
-                                         :sort #'aj-org-ql-sort-by-active-timestamp
-                                         :title "Past dues"))
-
-                                      ;; Show today's scheduled / deadline items without "HH:MM" if any
-                                      ((let* ((scheduled-today (org-ql-select
-                                                                 (org-agenda-files)
-                                                                 '(or (and (ts-active :on 0)
-                                                                           (not (habit))
-                                                                           (not (done)))
-                                                                      (habit-half-due))))
-                                              (scheduled-today-hm (org-ql-select
-                                                                    (org-agenda-files)
-                                                                    `(or (and (ts-active :from 0 :to 0)
-                                                                              (not (habit))
-                                                                              (not (done)))
-                                                                         (habit-half-due))))
-                                              (scheduled-today-without-hm (seq-filter
-                                                                           (lambda (x)
-                                                                             (not (member x scheduled-today-hm)))
-                                                                           scheduled-today)))
-                                         (when scheduled-today-without-hm
-                                           t))
-                                       (let ((org-agenda-start-with-log-mode t)
-                                             (org-agenda-span 1)
-                                             (org-agenda-start-day nil)
-                                             (org-agenda-use-time-grid t)
-                                             (org-agenda-time-grid '((daily today require-timed)
-                                                                     (700 800 900 1000 1100 1200
-                                                                          1300 1400 1500 1600 1700
-                                                                          1800 1900 2000 2100)
-                                                                     "......" "----------------")))
-                                         (org-agenda nil "a")))
-
-                                      ;; Show stucked projects if any
-                                      ((catch 'heading
-                                         (org-ql-select
-                                           (aj-org-combined-agenda-files)
-                                           (aj-org-ql-stucked-projects-query)
-                                           :action (lambda ()
-                                                     (when (org-get-heading)
-                                                       (throw 'heading t)))))
-                                       (aj-org-ql-stucked-projects-search))
-
-                                      ;; otherwise default to showing "NEXT" tasks
-                                      ;; if there are no "NEXT" tasks for current filtered view (or at all)
-                                      ;; show normal tasks instead
-                                      ;; if there are no "normal tasks" for current filtered view (or at all)
-                                      ;; show "SOMEDAY" tasks
-                                      (t (if (catch 'heading
-                                               (org-ql-select
-                                                 (aj-org-combined-agenda-files)
-                                                 (aj-org-ql-custom-next-task-query)
-                                                 :action (lambda ()
-                                                           (when (org-get-heading)
-                                                             (throw 'heading t)))))
-                                             (aj-org-ql-next-task-search)
-                                           (if (catch 'heading
-                                                 (org-ql-select
-                                                   (aj-org-combined-agenda-files)
-                                                   (aj-org-ql-stand-alone-task-query)
-                                                   :action (lambda ()
-                                                             (when (org-get-heading)
-                                                               (throw 'heading t)))))
-                                               (aj-org-ql-custom-task-search)
-                                             (aj-org-ql-simple-task-search "SOMEDAY")))
-                                         )
-                                      )
-                                     )
+                                   (unless (equal aj-org-agenda-gtd-interface 'agenda-headlines)
+                                     (aj-org-agenda-gtd-precheck))
                                    )
   "Agenda search"
 
-  ("a" (let ((org-agenda-start-day "today")
-             (org-agenda-span 1))
-         (org-agenda nil "a"))
+  ("a" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (let ((org-agenda-start-day "today")
+                (org-agenda-span 1))
+            (org-agenda nil "a")))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "past due"
+           :query (aj-org-ql-past-dues-query)
+           :sort-fn #'aj-org-ql-sort-by-active-timestamp
+           :time t
+           :capture-key "t")))
    "agenda")
 
-  ("b" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (aj-org-ql-future-dues-query)
-         :sort #'aj-org-ql-sort-by-active-timestamp
-         :super-groups '((:auto-category t))
-         :title "Future dues")
+  ("A" (let ((files (aj-org-get-filtered-org-files
+                     :preset aj-org-agenda-filter
+                     :archived t)))
+         (pcase aj-org-agenda-gtd-interface
+           ('agenda-search
+            (org-ql-search
+              files
+              (aj-org-ql-done-query)
+              :sort 'date
+              :super-groups '((:auto-category t))
+              :title "ARCHIVED"))
+           ('agenda-headlines
+            (aj/org-agenda-headlines
+             :prompt "archived"
+             :query (aj-org-ql-done-query)
+             :files files
+             :capture-key "k"))))
+   "Archived")
+
+  ("b" (let ((title "Future dues"))
+         (pcase aj-org-agenda-gtd-interface
+           ('agenda-search
+            (org-ql-search
+              (aj-org-combined-agenda-files)
+              (aj-org-ql-future-dues-query)
+              :sort #'aj-org-ql-sort-by-active-timestamp
+              :super-groups '((:auto-category t))
+              :title title))
+           ('agenda-headlines
+            (aj/org-agenda-headlines
+             :prompt title
+             :query (aj-org-ql-future-dues-query)
+             :sort-fn #'aj-org-ql-sort-by-active-timestamp
+             :time t
+             :capture-key "t"))))
    "future dues")
 
-  ("B" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (aj-org-ql-custom-ticklers-query)
-         :sort 'date
-         :super-groups '((:auto-category t))
-         :title "Tickler reminders")
+  ("B" (let ((title "Tickler reminders"))
+         (pcase aj-org-agenda-gtd-interface
+           ('agenda-search
+            (org-ql-search
+              (aj-org-combined-agenda-files)
+              (aj-org-ql-custom-ticklers-query)
+              :sort #'aj-org-ql-sort-by-active-timestamp
+              :super-groups '((:auto-category t))
+              :title "Tickler reminders"))
+           ('agenda-headlines
+            (aj/org-agenda-headlines
+             :prompt "tickler reminders"
+             :query (aj-org-ql-custom-ticklers-query)
+             :sort-fn #'aj-org-ql-sort-by-active-timestamp
+             :time t
+             :capture-key "d"))))
    "reminders")
 
   ("W" (let ((org-agenda-start-day "today")
@@ -1187,68 +1287,163 @@ Tickler is not scheduled nor it doesn't have deadline."
   ("l" (let ((org-agenda-start-with-log-mode t)
              (org-agenda-span 1)
              (org-agenda-start-day nil)
-             (org-agenda-use-time-grid t))
-         (org-agenda nil "a"))
+             (org-agenda-use-time-grid t)
+             (org-pretty-tags-agenda-unpretty-habits t)
+             (org-agenda-time-grid '((daily today require-timed)
+                                     (700 800 900 1000 1100 1200
+                                          1300 1400 1500 1600 1700
+                                          1800 1900 2000 2100)
+                                     "......" "----------------")))
+         (ignore-errors (org-agenda nil "a")))
    "agenda with log mode")
 
-  ("i" (org-ql-search
-         `(,aj-org-inbox-file)
-         '(level 1)
-         :title "Inbox"
-         ;; :sort '(date)
-         )
+  ("i" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (org-ql-search
+            `(,aj-org-inbox-file)
+            '(level 1)
+            :title "Inbox"))
+         ('agenda-headlines
+          (aj-org-jump-to-headline-at
+           :files (list aj-org-inbox-file)
+           :level 1)))
    "inbox")
 
-  ("n" (aj-org-ql-next-task-search)
-   "next action")
+  ("n" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (aj-org-ql-next-task-search))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "next"
+           :query (aj-org-ql-custom-next-task-query)
+           :capture-key "t")))
+   "next")
 
-  ("t" (aj-org-ql-custom-task-search) "task")
+  ("t" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (aj-org-ql-stand-alone-task-search))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "Stand-alone tasks"
+           :query (aj-org-ql-stand-alone-task-query)
+           :sort-fn 'date
+           :reverse t
+           :capture-key "t")))
+   "Stand-alone tasks")
 
-  ("p" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (aj-org-ql-custom-projects-query)
-         :sort #'aj-org-ql-sort-by-todo
-         :super-groups '((:auto-category t))
-         :title "Projects")
+  ("p" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (org-ql-search
+            (aj-org-combined-agenda-files)
+            (aj-org-ql-custom-projects-query)
+            :sort #'aj-org-ql-sort-by-todo
+            :super-groups '((:auto-category t))
+            :title "Projects"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "Projects"
+           :query (aj-org-ql-custom-projects-query)
+           :capture-key "t")))
    "projects")
 
-  ("s" (aj-org-ql-stucked-projects-search)
+  ("s" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (aj-org-ql-stucked-projects-search))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "Stucked projects"
+           :query (aj-org-ql-stucked-projects-query)
+           :sort-fn 'date
+           :capture-key "t")))
    "stucked projects")
 
-  ("w" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (aj-org-ql-custom-wait-task-query)
-         :sort '(date priority todo)
-         :super-groups '((:auto-parent t))
-         :title "WAIT")
-   "wait")
+  ("w" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (org-ql-search
+            (aj-org-combined-agenda-files)
+            (aj-org-ql-custom-wait-task-query)
+            :sort '(date priority todo)
+            :super-groups '((:auto-parent t))
+            :title "Wait"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "Wait"
+           :query (aj-org-ql-custom-wait-task-query)
+           :sort-fn 'date
+           :capture-key "t")))
+   "Wait")
 
-  ("h" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (aj-org-ql-custom-hold-task-query)
-         :sort '(date priority todo)
-         :super-groups '((:auto-parent t))
-         :title "HOLD")
+  ("h" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (org-ql-search
+            (aj-org-combined-agenda-files)
+            (aj-org-ql-custom-hold-task-query)
+            :sort '(date priority todo)
+            :super-groups '((:auto-parent t))
+            :title "hold"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "hold"
+           :query (aj-org-ql-custom-hold-task-query)
+           :sort-fn 'date
+           :capture-key "t")))
    "hold")
 
-  ("H" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (aj-org-ql-habits-query)
-         :sort #'aj-org-ql-sort-by-active-timestamp
-         :title "Habits")
+  ("H" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (org-ql-search
+            (aj-org-combined-agenda-files)
+            (aj-org-ql-habits-query)
+            :sort #'aj-org-ql-sort-by-active-timestamp
+            :title "Habits"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "habits"
+           :query (aj-org-ql-habits-query)
+           :sort-fn #'aj-org-ql-sort-by-active-timestamp
+           :time t
+           :capture-key "t")))
    "Habits")
 
-  ("c" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (aj-org-ql-custom-clocked-task-query)
-         :sort 'date
-         :super-groups '((:auto-category t ))
-         :title "Clocked")
-   "clocked")
+  ("c" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (org-ql-search
+            (aj-org-combined-agenda-files)
+            (aj-org-ql-custom-clocked-task-query)
+            :sort 'date
+            :super-groups '((:auto-category t ))
+            :title "Clocked"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "Clocked"
+           :query (aj-org-ql-custom-clocked-task-query)
+           :sort-fn 'date
+           :capture-key "k"
+           :clock t)))
+   "Clocked")
 
-  ("C" (aj-org-ql-simple-task-search "CANCELLED") "cancelled")
+  ("C" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (aj-org-ql-simple-task-search "cancelled"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "cancelled"
+           :query (aj-org-ql-simple-task-query "CANCELLED")
+           :sort-fn 'date
+           :capture-key "k")))
+   "cancelled")
 
-  ("D" (aj-org-ql-simple-task-search "DONE") "done")
+  ("D" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (aj-org-ql-simple-task-search "done"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "done"
+           :query (aj-org-ql-simple-task-query "DONE")
+           :sort-fn 'date
+           :capture-key "k"
+           :clock t)))
+   "done")
 
   ("r" (org-ql-search
          (aj-org-combined-agenda-files)
@@ -1266,35 +1461,73 @@ Tickler is not scheduled nor it doesn't have deadline."
          :sort '(date priority todo)
          :super-groups '((:auto-ts t))
          :title "Archived Recent")
-   "archvied Recent"
-   )
+   "archvied Recent")
 
-  ("T" (org-ql-search
-         (aj-org-combined-agenda-files)
-         (aj-org-ql-non-complete-tasks-query)
-         :sort #'aj-org-ql-sort-by-todo
-         :super-groups '((:auto-category t))
-         :title "All Todos")
-   "All Todos"
-   )
+  ("T" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (org-ql-search
+            (aj-org-combined-agenda-files)
+            (aj-org-ql-non-complete-tasks-query)
+            :sort #'aj-org-ql-sort-by-todo
+            :super-groups '((:auto-category t))
+            :title "All tasks"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "All tasks"
+           :capture-key "t")))
+   "All tasks")
 
-  ("A" (org-ql-search
-         (aj-org-get-filtered-org-files
-          :preset aj-org-agenda-filter
-          :archived t)
-         (aj-org-ql-done-query)
-         :sort 'date
-         :super-groups '((:auto-category t))
-         :title "ARCHIVED")
-   "Archived")
+  ("S" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (aj-org-ql-simple-task-search "SOMEDAY"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "someday"
+           :query (aj-org-ql-simple-task-query "SOMEDAY")
+           :sort-fn 'random
+           :capture-key "t")))
+   "Someday")
 
-  ("S" (aj-org-ql-simple-task-search "SOMEDAY") "Someday")
+  ("M" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (aj-org-ql-simple-task-search "MAYBE"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "maybe"
+           :query (aj-org-ql-simple-task-query "MAYBE")
+           :sort-fn 'random
+           :capture-key "t")))
+   "Maybe")
 
-  ("M" (aj-org-ql-simple-task-search "MAYBE") "Maybe")
+  ("q" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (aj-org-ql-dispatch-custom-query-search 'search))
+         ('agenda-headlines
+          (aj-org-ql-dispatch-custom-query-search 'agenda-headlines)))
+   "query:")
 
-  ("q" (aj-org-ql-dispatch-custom-query-search 'search) "query:")
+  ("o" (pcase aj-org-agenda-gtd-interface
+         ('agenda-search
+          (org-ql-search
+            (aj-org-combined-agenda-files)
+            (aj-org-ql-all-active-tasks-query)
+            :sort #'aj-org-ql-sort-by-todo
+            :super-groups '((:auto-category t))
+            :title "All active"))
+         ('agenda-headlines
+          (aj/org-agenda-headlines
+           :prompt "All active"
+           :query (aj-org-ql-all-active-tasks-query))))
+   "All active")
+
+  ("J" (aj-org-jump-to-headline-at
+        :files (aj-org-combined-agenda-files)
+        :level 9)
+   "jump")
 
   ("Q" (aj-org-ql-select-history-queries "EDIT past queries: ") "edit query")
+  ("f" #'aj/org-agenda-set-filter "set filter")
+  ("F" #'aj/org-agenda-clear-filter-refresh-view "clear filter")
   )
 
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
