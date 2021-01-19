@@ -373,16 +373,7 @@ If HEADLINE, capture under it instead of top level."
   ("k" (org-capture nil "k") "k inbox")
   ("t" (aj/org-capture-task) "task")
   ("T" (aj/org-capture-clocked-task) "clocked Task")
-  ("j" (aj-org-capture-into-journal-in
-        (if (and aj-org-agenda-filter
-                 (not current-prefix-arg))
-            (car (aj-org-return-filtered-agenda-file))
-          (aj/choose-file-from
-           (seq-filter
-            (lambda (file)
-              (not (string-match "inbox" file)))
-            org-agenda-files))))
-   "journal")
+  ("j" (aj-org-funcall-with-filtered-agenda-files #'aj-org-capture-into-journal-in) "journal")
   ("q" nil)
   )
 
@@ -449,14 +440,7 @@ which is suitable for insertion into org-capture template."
 ;;;###autoload
 (defun aj--org-capture-task (&optional clock-in)
   "Capture task my way. 'CLOCK-IN' the task with optional argument."
-  (let* ((file (if (and aj-org-agenda-filter
-                        (not current-prefix-arg))
-                   (car (aj-org-return-filtered-agenda-file))
-                 (aj/choose-file-from
-                  (seq-filter
-                   (lambda (file)
-                     (not (string-match "inbox" file)))
-                   org-agenda-files))))
+  (let* ((file (aj-org-funcall-with-filtered-agenda-files #'identity))
          (title (concat " " (ivy-read "Title: " nil
                                       :initial-input (if aj-org-capture-prefered-template-key
                                                          (current-kill 0)
@@ -565,15 +549,7 @@ Type can be:
 QUERY is valid org-ql query which searches file or files selected
 according to current `aj-org-agenda-filter'. Type is one of types
 specified in `aj-org-capture-file-heading'."
-  (let* ((file (if (and aj-org-agenda-filter
-                        (not current-prefix-arg)
-                        (car (aj-org-return-filtered-agenda-file)))
-                   (car (aj-org-return-filtered-agenda-file))
-                 (aj/choose-file-from
-                  (seq-filter
-                   (lambda (file)
-                     (not (string-match "inbox" file)))
-                   org-agenda-files))))
+  (let* ((file (aj-org-funcall-with-filtered-agenda-files #'identity))
          (project-heading
           (substring-no-properties
            (car
@@ -841,11 +817,38 @@ Then moves the point to the end of the line."
   (let ((org-agenda-files (list (buffer-file-name))))
     (org-agenda-list)))
 
+(defun aj-org-agenda-get-all-tags ()
+  "Get all agenda tags as list of strings."
+  (seq-map
+   (lambda (x)
+     (substring-no-properties (car x)))
+   (org-global-tags-completion-table
+    (org-agenda-files))))
+
 ;;;###autoload
-(defun aj-org-agenda-copy-set-filter-a (string &rest _)
-  "Set `STRING' as a value of `aj-org-agenda-filter'.
+(defun aj-org-agenda-copy-set-filter-a (preset &rest _)
+  "Set `PRESET' as a value of `aj-org-agenda-filter'.
 This function is meant to be used as advice for `org-agenda-filter-apply'"
-  (setq aj-org-agenda-filter string)
+  (setq aj-org-agenda-filter preset))
+
+;;;###autoload
+(defun aj/org-agenda-set-filter ()
+  "Choose `org-agenda' filter from all agenda tags."
+  (interactive)
+  (org-agenda-filter-apply
+   (remove nil
+           (seq-map
+            (lambda (str)
+              (if (string-prefix-p "+" str)
+                  str
+                (concat "+" str)))
+            (aj-org-notes-set-filter-preset--ivy
+             "Select agenda tag"
+             (aj-org-agenda-get-all-tags)
+             aj-org-agenda-filter))
+           )
+   'tag
+   )
   )
 
 ;;;###autoload
@@ -854,9 +857,9 @@ This function is meant to be used as advice for `org-agenda-filter-apply'"
 Also remove agenda filter using built-in `org-agenda-filter-show-all-tag'.
 On top of this refresh view."
   (interactive)
-  (progn
+  (setq aj-org-agenda-filter nil)
+  (when (derived-mode-p 'org-agenda-mode)
     (org-agenda-filter-show-all-tag)
-    (setq aj-org-agenda-filter nil)
     (if (string-match "Org QL" (buffer-name))
         (org-ql-view-refresh)
       (org-agenda-redo))))
@@ -925,7 +928,6 @@ is closer to maximum of the range rather then to the scheduled date.
 
 (defun aj-org-ql-all-active-tasks-query ()
   "Return valid org-ql query searching for all active tasks.
-Respects `aj-org-agenda-filter'.
 "
   `(and (todo)
         (not (todo "SOMEDAY"))
@@ -934,8 +936,7 @@ Respects `aj-org-agenda-filter'.
         ,(aj-org-ql-custom-agenda-filter-tags)))
 
 (defun aj-org-ql-simple-task-query (keyword)
-  "Return valid org-ql query searching for todo KEYWORD.
-Respects `aj-org-agenda-filter'."
+  "Return valid org-ql query searching for todo KEYWORD."
   (remove nil `(and (todo ,keyword)
                     ,(aj-org-ql-custom-agenda-filter-tags)
                     ,(if current-prefix-arg
@@ -943,14 +944,12 @@ Respects `aj-org-agenda-filter'."
                        '(not (ancestors (todo)))))))
 
 (defun aj-org-ql-non-complete-tasks-query ()
-  "Return valid org-ql query searching for non-complete tasks.
-Respects `aj-org-agenda-filter'."
+  "Return valid org-ql query searching for non-complete tasks."
   `(and (todo)
         ,(aj-org-ql-custom-agenda-filter-tags)))
 
 (defun aj-org-ql-done-query ()
-  "Return valid org-ql query searching completed tasks.
-Respects `aj-org-agenda-filter'."
+  "Return valid org-ql query searching completed tasks."
   `(and (done)
         ,(aj-org-ql-custom-agenda-filter-tags)))
 
@@ -1050,22 +1049,25 @@ Tickler is not scheduled nor it doesn't have deadline."
   )
 
 (defun aj-org-ql-custom-task-search ()
-  "Search for tasks."
-  (let ((org-agenda-tag-filter aj-org-agenda-filter))
-    (org-ql-search
-      (aj-org-combined-agenda-files)
-      (aj-org-ql-stand-alone-task-query)
-      :sort #'aj-org-ql-sort-by-effort
-      :super-groups '((:auto-category t ))
-      :title "Stand-alone tasks")))
+  "Search for stand-alone tasks."
+  (org-ql-search
+    (aj-org-combined-agenda-files)
+    (aj-org-ql-stand-alone-task-query)
+    :sort #'aj-org-ql-sort-by-effort
+    :super-groups '((:auto-category t ))
+    :title "Stand-alone tasks"))
 
 (defun aj-org-ql-custom-agenda-filter-tags ()
   "Return tags part of org-ql query when `aj-org-agenda-filter' is set. "
   (if (and aj-org-agenda-filter
            (not current-prefix-arg))
-      `(tags ,(string-remove-prefix
-               "+" (substring-no-properties
-                    (car aj-org-agenda-filter))))
+      (append '(tags)
+              (seq-map
+               (lambda (str)
+                 (if (string-prefix-p "+" str)
+                     (string-trim-left str "+")
+                   str))
+               aj-org-agenda-filter))
     '(tags)))
 
 ;;;###autoload (autoload 'aj/org-agenda-gtd-hydra/body "autoload/orgmode" nil t)
@@ -1203,34 +1205,31 @@ Tickler is not scheduled nor it doesn't have deadline."
 
   ("t" (aj-org-ql-custom-task-search) "task")
 
-  ("p" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search
-           (aj-org-combined-agenda-files)
-           (aj-org-ql-custom-projects-query)
-           :sort #'aj-org-ql-sort-by-todo
-           :super-groups '((:auto-category t))
-           :title "Projects"))
+  ("p" (org-ql-search
+         (aj-org-combined-agenda-files)
+         (aj-org-ql-custom-projects-query)
+         :sort #'aj-org-ql-sort-by-todo
+         :super-groups '((:auto-category t))
+         :title "Projects")
    "projects")
 
   ("s" (aj-org-ql-stucked-projects-search)
    "stucked projects")
 
-  ("w" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search
-           (aj-org-combined-agenda-files)
-           (aj-org-ql-custom-wait-task-query)
-           :sort '(date priority todo)
-           :super-groups '((:auto-parent t))
-           :title "WAIT"))
+  ("w" (org-ql-search
+         (aj-org-combined-agenda-files)
+         (aj-org-ql-custom-wait-task-query)
+         :sort '(date priority todo)
+         :super-groups '((:auto-parent t))
+         :title "WAIT")
    "wait")
 
-  ("h" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search
-           (aj-org-combined-agenda-files)
-           (aj-org-ql-custom-hold-task-query)
-           :sort '(date priority todo)
-           :super-groups '((:auto-parent t))
-           :title "HOLD"))
+  ("h" (org-ql-search
+         (aj-org-combined-agenda-files)
+         (aj-org-ql-custom-hold-task-query)
+         :sort '(date priority todo)
+         :super-groups '((:auto-parent t))
+         :title "HOLD")
    "hold")
 
   ("H" (org-ql-search
@@ -1252,26 +1251,22 @@ Tickler is not scheduled nor it doesn't have deadline."
 
   ("D" (aj-org-ql-simple-task-search "DONE") "done")
 
-  ("r" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search
-           (aj-org-combined-agenda-files)
-           '(ts :from -7 :to today)
-           :sort '(date priority todo)
-           :super-groups '((:auto-ts t))
-           :title "Recent"
-           ))
+  ("r" (org-ql-search
+         (aj-org-combined-agenda-files)
+         '(ts :from -7 :to today)
+         :sort '(date priority todo)
+         :super-groups '((:auto-ts t))
+         :title "Recent")
    "recent")
 
-  ("R" (let ((org-agenda-tag-filter aj-org-agenda-filter))
-         (org-ql-search
-           (aj-org-get-filtered-org-files
-            :preset aj-org-agenda-filter
-            :archived t)
-           '(ts :from -21 :to today)
-           :sort '(date priority todo)
-           :super-groups '((:auto-ts t))
-           :title "Archived Recent"
-           ))
+  ("R" (org-ql-search
+         (aj-org-get-filtered-org-files
+          :preset aj-org-agenda-filter
+          :archived t)
+         '(ts :from -21 :to today)
+         :sort '(date priority todo)
+         :super-groups '((:auto-ts t))
+         :title "Archived Recent")
    "archvied Recent"
    )
 
@@ -1553,6 +1548,7 @@ got renamed while clock were running.
   "Return status info about `org-pomodoro'.
 If `org-pomodoro' is not running, try to print info about org-clock.
 If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
+  ;; TODO adjust for multiple tags
   (when (and
          (featurep 'org)
          (featurep 'org-capture))
@@ -1766,9 +1762,7 @@ Otherwise dispatch default commands.
       (catch 'tag
         (dolist (tag (split-string
                       (+org-get-global-property "FILETAGS" file) ":" t))
-          (when (cl-member tag preset :test #'string-match) (throw 'tag t)))))
-    )
-  )
+          (when (cl-member tag preset :test #'string-match) (throw 'tag t)))))))
 
 (defvar aj-org-agenda-headlines-last-search '(:level1 nil :level2 nil)
   "Store preset for the last search dispatched by `aj/org-agenda-headlines'.")
@@ -1890,9 +1884,8 @@ Function accepts optionally following keywords arguments:
 - CLOCK to show clocked 
 - INITIAL-INPUT
 
-This function filters agenda headlines according to `aj-org-agenda-filter' and
-saves the search preset into `aj-org-agenda-headlines-last-search' so the search can be
-replicated by calling this function again with arguments saved in this variable.
+This function saves the search preset into `aj-org-agenda-headlines-last-search'
+so the search can be replicated by calling this function again with arguments saved in this variable.
 "
   (interactive "P")
   (let* ((query (or query
@@ -1912,7 +1905,7 @@ replicated by calling this function again with arguments saved in this variable.
 
     (when (string-match "descendants" prompt)
       (setq prompt (format "descendants of \"%s\"" (car (cdr (car (cdr query)))))))
-    (ivy-read (format "%s [+%s]: " prompt (or (car (cdr (aj-org-ql-custom-agenda-filter-tags))) ":"))
+    (ivy-read (format "%s [%s]: " prompt (aj-org-agenda-tag-filter-string))
               (let ((results
                      (->> (org-ql-query
                             :select 'element-with-markers
@@ -1929,6 +1922,14 @@ replicated by calling this function again with arguments saved in this variable.
               :update-fn #'aj-ivy-update-fn-timer
               :action #'aj-org-jump-to-heading-action
               :caller 'aj/org-agenda-headlines)))
+
+(defun aj-org-agenda-tag-filter-string ()
+  "Return current tag filter string from `aj-org-agenda-filter'."
+  (mapconcat
+   #'identity
+   (ignore-errors
+     (cdr (aj-org-ql-custom-agenda-filter-tags)))
+   ", "))
 
 ;;;###autoload
 (defun aj-org-jump-to-heading-action (x)
@@ -2033,8 +2034,10 @@ Optionally specify heading LEVEL (default is 3).
 "
   (require 'org)
   (let* ((ivy-height (round (* (frame-height) 0.40)))
+         (file (if (listp file) (car file) file))
+         (tag (if (listp tag) (car tag) file))
          ivy-sort-functions-alist timer)
-    (aj-org-datetree-access (if (listp file) (car file) file) tag)
+    (aj-org-datetree-access file tag)
     (ivy-read
      "Go to: "
      (->> (org-ql-query
@@ -2257,7 +2260,10 @@ item candidates from COLLECTION to PRESET.
   (let ((prompt (lambda ()
                   (format "%s: (%s) "
                           prompt
-                          (mapconcat #'identity preset ", "))))
+                          (substring-no-properties
+                           (mapconcat #'identity preset ", ")
+                           )
+                          )))
         ivy-sort-functions-alist
         )
     (ivy-read (funcall prompt)
@@ -2364,31 +2370,62 @@ item candidates from COLLECTION to PRESET.
 
 ;;;###autoload
 (defun aj-org-datetree-access (file tag)
-  "Decrypt org item of TAG in FILE.
-"
-  (let ((buff (find-buffer-visiting file)))
-    (with-current-buffer buff
-      (goto-char
-       (plist-get (nth 1 (car (org-ql-select buff `(tags ,tag)))) :begin))
-      (org-decrypt-entry)
-      (when (org-at-encrypted-entry-p)
-        (error "org-datetree-access error: heading is not decrypted")))))
+  "Decrypt org item of TAG in FILE."
+  (require 'org-crypt)
+  (if-let* ((buff (find-file-noselect file))
+            (year (format-time-string "%Y"))
+            (query `(and (heading ,year) (tags ,tag))))
+      (with-current-buffer buff
+        ;; TODO make this work for past years too
+        (if-let* ((pos (plist-get (nth 1 (car (org-ql-select
+                                                (current-buffer)
+                                                query)))
+                                  :begin)))
+            (progn
+              (goto-char pos)
+              (org-decrypt-entry)
+              (when (org-at-encrypted-entry-p)
+                (error "org-datetree-access error: heading is not decrypted")))
+          (progn
+            (when
+                (y-or-n-p
+                 (format
+                  "There is no journal for year %s in file %s, want to create one?" year file))
+              (aj-org-capture-into-journal-in (buffer-file-name (org-base-buffer (current-buffer))))))))))
 
 ;;;###autoload
-(defun aj-org-return-filtered-agenda-file ()
-  "Return org-agenda file matching `aj-org-agenda-filter' representing unique filetag."
-  (delq nil
-        (mapcar (lambda (file)
-                  (catch 'file
-                    (when (+org-get-global-property "FILETAGS" file)
-                      (when
-                          (cl-member
-                           (string-trim-left (car aj-org-agenda-filter) "+")
-                           (split-string
-                            (+org-get-global-property "FILETAGS" file) ":" t)
-                           :test #'string-match)
-                        (throw 'file file)))))
-                org-agenda-files)))
+(defun aj-org-filtered-agenda-files ()
+  "Keep file in list if its filetag matches one of the tags in `aj-org-agenda-filter'."
+  (if current-prefix-arg
+      (aj-org-combined-agenda-files)
+    (when-let* ((taglist (seq-map
+                          (lambda (tag)
+                            (string-trim-left tag "+"))
+                          aj-org-agenda-filter)))
+      (seq-filter
+       (lambda (file)
+         (when-let* ((filetag-raw (+org-get-global-property "FILETAGS" file))
+                     (filetag (string-trim filetag-raw ":" ":")))
+           (cl-member filetag taglist :test #'string-match)))
+       (aj-org-combined-agenda-files)))))
+
+;;;###autoload
+(defun aj-org-funcall-with-filtered-agenda-files (fn &rest args)
+  "Run function FN with file as its first argument.
+
+File will be determined according to `aj-org-agenda-filter'.
+Any other argument will be passed to the FN after the file.
+"
+  (let* ((file-list (aj-org-filtered-agenda-files))
+         (just-one-file (equal (length file-list) 1))
+         (file (if file-list
+                   (if just-one-file
+                       (car file-list)
+                     (aj/choose-file-from file-list))
+                 (aj/choose-file-from (aj-org-combined-agenda-files)))))
+    (if args
+        (funcall fn file args)
+      (funcall fn file))))
 
 ;;;###autoload
 (defun aj-org-clock-datetree-report (file block &optional week)

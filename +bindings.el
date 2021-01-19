@@ -497,13 +497,7 @@
 ;;; org-agenda
  (:after org-agenda
   :map org-agenda-mode-map
-  :m "f" (cmd! (org-agenda-filter-apply
-                (list (concat "+"
-                              (ivy-read "Select tag: "
-                                        (org-global-tags-completion-table
-                                         (org-agenda-files)))))
-                'tag))
-
+  :m "f" #'aj/org-agenda-set-filter
   :m "F" #'aj/org-agenda-clear-filter-refresh-view
 
   (:prefix ("c" . "clock")
@@ -946,6 +940,8 @@
    :desc "all tasks"            "T" (cmd! (aj/org-agenda-headlines :prompt "All tasks" :capture-key "t"))
    :desc "projects"             "p" (cmd! (aj/org-agenda-headlines :prompt "projects"
                                                                    :query (aj-org-ql-custom-projects-query) :capture-key "t"))
+   :desc "set filter"           "f" #'aj/org-agenda-set-filter
+   :desc "clear filter"         "F" #'aj/org-agenda-clear-filter-refresh-view
    :desc "wait"                 "w" (cmd! (aj/org-agenda-headlines :prompt "wait"
                                                                    :query (aj-org-ql-custom-wait-task-query) :sort-fn 'date :capture-key "t"))
    :desc "hold"                 "h" (cmd! (aj/org-agenda-headlines :prompt "hold"
@@ -1204,22 +1200,10 @@
   :desc "Update IDs"            "u" #'aj/org-id-update-recursively
   :desc "indirect"             "I" (cmd! (aj-open-file-switch-create-indirect-buffer-per-persp
                                           (buffer-file-name (current-buffer))))
-  :desc "journal jump"         "j" (cmd! (aj-org-jump-to-datetree
-                                          (if (and aj-org-agenda-filter
-                                                   (not current-prefix-arg))
-                                              (aj-org-return-filtered-agenda-file)
-                                            (aj/choose-file-from org-agenda-files))
-                                          "JOURNAL"))
+  :desc "journal jump"         "j" (cmd! (aj-org-funcall-with-filtered-agenda-files #'aj-org-jump-to-datetree "JOURNAL"))
   "c" nil
-  :desc "clock report at"        "ca" (cmd! (aj-org-clock-datetree-report
-                                             (if (and aj-org-agenda-filter
-                                                      (not current-prefix-arg))
-                                                 (car (aj-org-return-filtered-agenda-file))
-                                               (aj/choose-file-from
-                                                (seq-filter
-                                                 (lambda (file)
-                                                   (not (string-match "inbox" file)))
-                                                 org-agenda-files)))
+  :desc "clock report at"        "ca" (cmd! (aj-org-funcall-with-filtered-agenda-files
+                                             #'aj-org-clock-datetree-report
                                              (ivy-read "Select time block: "
                                                        '(today thisweek thismonth))))
   :desc "clock report today all" "cA" (cmd! (mapc (lambda (file)

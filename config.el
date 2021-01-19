@@ -1754,15 +1754,7 @@ When in org-roam file, also create top-level ID.
 
                            ("t" "Task" entry (file
                                               (lambda ()
-                                                (if (and aj-org-agenda-filter
-                                                         (not current-prefix-arg)
-                                                         (car (aj-org-return-filtered-agenda-file)))
-                                                    (car (aj-org-return-filtered-agenda-file))
-                                                  (aj/choose-file-from
-                                                   (seq-filter
-                                                    (lambda (file)
-                                                      (not (string-match "inbox" file)))
-                                                    org-agenda-files)))))
+                                                (aj-org-funcall-with-filtered-agenda-files #'identity)))
                             ,(concat
                               "* TO" "DO %(ivy-read \"Title: \" nil :initial-input (if aj-org-capture-prefered-template-key (current-kill 0) \"\")) \n"
                               ":PROPERTIES:\n"
@@ -1779,15 +1771,7 @@ When in org-roam file, also create top-level ID.
 
                            ("T" "Task clocked-in" entry (file
                                                          (lambda ()
-                                                           (if (and aj-org-agenda-filter
-                                                                    (not current-prefix-arg)
-                                                                    (car (aj-org-return-filtered-agenda-file)))
-                                                               (car (aj-org-return-filtered-agenda-file))
-                                                             (aj/choose-file-from
-                                                              (seq-filter
-                                                               (lambda (file)
-                                                                 (not (string-match "inbox" file)))
-                                                               org-agenda-files)))))
+                                                           (aj-org-funcall-with-filtered-agenda-files #'identity)))
                             ,(concat
                               "* TO" "DO %^{PROMPT} \n"
                               ":PROPERTIES:\n"
