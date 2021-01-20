@@ -3331,10 +3331,11 @@ from backlinks back to top-level search or when opening org-roam ivy again.")
 ;;;###autoload
 (defun aj-org-roam-ivy (prompt collection &optional from)
   "Exclusive ivy interface for org-roam."
-  (let* ((descended-into (equal from 'ivy-read-action/lambda-x-and-exit))
+  (let* ((descended-into (or (equal from 'ivy-read-action/lambda-x-and-exit)
+                             (equal from 'ivy-posframe-dispatching-done)))
          (preset (aj-org-roam-filter-preset--get org-roam-directory))
          (preset-str (when preset (concat (mapconcat #'identity preset " ") " ")))
-         (init-input (or (unless descended-into aj-org-roam-latest-ivy-text) preset-str "")))
+         (init-input (unless descended-into (or  aj-org-roam-latest-ivy-text preset-str) "")))
     (ivy-read prompt collection
               :initial-input init-input
               :caller 'aj-org-roam-ivy
