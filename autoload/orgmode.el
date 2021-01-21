@@ -2296,180 +2296,188 @@ Optionally specify heading LEVEL (default is 3).
        (number-to-string minutes)))))
 
 ;;;###autoload
-(defun aj-org-pretty-format-element (elm &optional filename outline keyword tag effort time clock)
-  "Pretty format org-heading ELM.
-ELM is org-mode headline returned by `org-element-headline-parser'.
+(defun aj-org-pretty-format-element (element &optional filename outline keyword tag effort time clock)
+  "Pretty format org-heading ELEMENT.
+ELEMENT is org-mode headline returned by `org-element-headline-parser'.
 
 Optional arguments specifies which additional features should be shown
 like FILENAME, whole file's OUTLINE, todo KEYWORD, TAG, EFFORT string,
 TIME string or CLOCK info string.
+
+Can be used as a drop-in replacement for `org-ql-view--format-element' from
+which addopted some code snippets.
 "
   (require 'org-ql-view)
-  (let* ((headline (car (cdr elm)))
-         (today (org-today))
-         (marker (or (org-element-property :org-hd-marker elm)
-                     (org-element-property :org-marker elm)))
-         (buf (marker-buffer marker))
-         (habit (when-let*
-                    ((habit (string-equal "habit" (plist-get headline :STYLE)))
-                     (habit-data (with-current-buffer buf
-                                   (org-habit-parse-todo marker)
-                                   ))
-                     (scheduled-date (nth 0 habit-data))
-                     (scheduled-str
-                      (ignore-errors
-                        (org-ql-view--format-relative-date (- today scheduled-date))))
-                     (deadline-date (nth 2 habit-data))
-                     (deadline-str
-                      (ignore-errors
-                        (org-ql-view--format-relative-date (- today deadline-date))))
-                     (h-hh-mm (aj-org-hh-mm-from-timestamp (plist-get headline :scheduled)))
-                     (h-human-str (concat scheduled-str " / " (replace-regexp-in-string "in " "" deadline-str))))
-                  (if (string-equal h-hh-mm "00:00")
-                      h-human-str
-                    (concat h-human-str " - " h-hh-mm))))
-         (timestamp-str (lambda (keyword)
-                          "For KEYWORD :scheduled or :deadline return human-friendly timestamp string."
-                          (ignore-errors
-                            (when-let* ((timestamp (plist-get headline keyword))
-                                        (human-str (org-ql-view--format-relative-date
-                                                    (- today
-                                                       (org-time-string-to-absolute
-                                                        (org-element-timestamp-interpreter timestamp 'ignore)))))
-                                        (hh-mm (aj-org-hh-mm-from-timestamp timestamp)))
-                              (if (string-equal hh-mm "00:00")
-                                  human-str
-                                (concat human-str " - " hh-mm))))))
-         (scheduled (unless habit
-                      (funcall timestamp-str :scheduled)))
-         (deadline (unless habit
-                     (funcall timestamp-str :deadline)))
-         (a-timestamp (unless habit
+  (if (not element)
+      ""
+    (let* ((headline (car (cdr element)))
+           (properties (cl-loop for (key val) on headline by #'cddr
+                                for symbol = (intern (cl-subseq (symbol-name key) 1))
+                                unless (member symbol '(parent))
+                                append (list symbol val)))
+           (today (org-today))
+           (marker (or (org-element-property :org-hd-marker element)
+                       (org-element-property :org-marker element)))
+           (buf (marker-buffer marker))
+           (habit (when-let*
+                      ((habit (string-equal "habit" (plist-get headline :STYLE)))
+                       (habit-data (with-current-buffer buf
+                                     (org-habit-parse-todo marker)
+                                     ))
+                       (scheduled-date (nth 0 habit-data))
+                       (scheduled-str
                         (ignore-errors
-                          (org-ql-view--format-relative-date
-                           (- today
-                              (org-time-string-to-absolute
-                               (org-entry-get marker "TIMESTAMP")))))))
-         (active-timestamp
-          (if habit
-              habit
-            (if a-timestamp
-                a-timestamp
-              (if scheduled
-                  (if deadline
-                      (concat scheduled " " (replace-regexp-in-string "in " "" deadline))
-                    scheduled)
-                deadline))))
-         (title (concat (if habit
-                            "⚒ "
-                          (when active-timestamp "◔ "))
-                        (org-link-display-format
-                         (substring-no-properties (plist-get headline :raw-value)))))
-         (keyword (when keyword (ignore-errors (substring-no-properties (plist-get headline :todo-keyword)))))
-         (effort (when effort (or (plist-get headline :EFFORT) "  :  " )))
-         (clock (when clock (concat
-                             "◌ "
-                             (with-current-buffer buf
-                               (goto-char marker)
-                               (org-duration-from-minutes
-                                (org-clock-sum-current-item))))))
-         (tag (when tag (plist-get headline :tags)))
-         (tags (when (or tag habit a-timestamp scheduled deadline)
-                 (let ((tag-str
-                        (concat ":"
-                                (mapconcat #'substring-no-properties
-                                           (append (or tag "")
-                                                   (when habit (list "habit"))
-                                                   (when a-timestamp (list "tickler"))
-                                                   (when scheduled (list "scheduled"))
-                                                   (when deadline (list "deadline")))
-                                           ":")
-                                ":")))
-                   (unless (string-equal "::" tag-str)
-                     tag-str))))
-         (todo-parent-maybe (org-with-wide-buffer
-                             (when-let ((parent (car (last (org-get-outline-path)))))
-                               (unless
-                                   (ignore-errors
-                                     ;; this is nil for heading with todo keyword
-                                     (re-search-backward (concat "* " parent)))
-                                 t))))
-         (outline (when outline (with-current-buffer buf
+                          (org-ql-view--format-relative-date (- today scheduled-date))))
+                       (deadline-date (nth 2 habit-data))
+                       (deadline-str
+                        (ignore-errors
+                          (org-ql-view--format-relative-date (- today deadline-date))))
+                       (h-hh-mm (aj-org-hh-mm-from-timestamp (plist-get headline :scheduled)))
+                       (h-human-str (concat scheduled-str " / " (replace-regexp-in-string "in " "" deadline-str))))
+                    (if (string-equal h-hh-mm "00:00")
+                        h-human-str
+                      (concat h-human-str " - " h-hh-mm))))
+           (timestamp-str (lambda (keyword)
+                            "For KEYWORD :scheduled or :deadline return human-friendly timestamp string."
+                            (ignore-errors
+                              (when-let* ((timestamp (plist-get headline keyword))
+                                          (human-str (org-ql-view--format-relative-date
+                                                      (- today
+                                                         (org-time-string-to-absolute
+                                                          (org-element-timestamp-interpreter timestamp 'ignore)))))
+                                          (hh-mm (aj-org-hh-mm-from-timestamp timestamp)))
+                                (if (string-equal hh-mm "00:00")
+                                    human-str
+                                  (concat human-str " - " hh-mm))))))
+           (scheduled (unless habit
+                        (funcall timestamp-str :scheduled)))
+           (deadline (unless habit
+                       (funcall timestamp-str :deadline)))
+           (a-timestamp (unless habit
+                          (ignore-errors
+                            (org-ql-view--format-relative-date
+                             (- today
+                                (org-time-string-to-absolute
+                                 (org-entry-get marker "TIMESTAMP")))))))
+           (active-timestamp (-some--> (if habit
+                                           habit
+                                         (if a-timestamp
+                                             a-timestamp
+                                           (if scheduled
+                                               (if deadline
+                                                   (concat
+                                                    scheduled
+                                                    " "
+                                                    (replace-regexp-in-string "in " "" deadline))
+                                                 scheduled)
+                                             deadline)))
+                               (org-add-props it nil 'face 'org-date)))
+           (keyword (when keyword
+                      (ignore-errors
+                        (substring-no-properties (plist-get headline :todo-keyword)))))
+           (effort (when effort
+                     (-some--> (or (plist-get headline :EFFORT) "  :  " )
+                       (org-add-props it nil 'face 'org-tag))))
+           (clock (when clock
+                    (when-let* ((clock-time (with-current-buffer buf
+                                              (goto-char marker)
+                                              (org-duration-from-minutes
+                                               (org-clock-sum-current-item))))
+                                (clock-time (unless (string-equal "0:00" clock-time) clock-time)))
+                      (concat "◌ " clock-time))))
+           (tag (when tag (plist-get headline :tags)))
+           (tags (when (or tag habit a-timestamp scheduled deadline)
+                   (-some--> (let ((tag-str
+                                    (concat ":"
+                                            (mapconcat #'substring-no-properties
+                                                       (append (or tag "")
+                                                               (when habit (list "habit"))
+                                                               (when a-timestamp (list "tickler"))
+                                                               (when scheduled (list "scheduled"))
+                                                               (when deadline (list "deadline")))
+                                                       ":")
+                                            ":")))
+                               (unless (string-equal "::" tag-str)
+                                 tag-str))
+                     (org-add-props it nil 'face 'org-tag))))
+           (todo-parent-maybe (org-with-wide-buffer
+                               (when-let ((parent (car (last (org-get-outline-path)))))
+                                 (unless
+                                     (ignore-errors
+                                       ;; this is nil for heading with todo keyword
+                                       (re-search-backward (concat "* " parent)))
+                                   t))))
+           (level (plist-get headline :level))
+           (filename (when filename
+                       (-some--> (with-current-buffer buf
+                                   (or
+                                    (+org-get-global-property "TITLE")
+                                    (file-name-sans-extension
+                                     (file-name-nondirectory
+                                      (or buffer-file-name
+                                          (buffer-file-name (buffer-base-buffer)))))))
+                         (org-add-props it nil 'face 'bold))))
+           (colorize-keyword (lambda (color)
+                               (add-face-text-property 0 (length keyword) 'bold t keyword)
+                               (add-face-text-property 0 (length keyword) `(:foreground ,color) t keyword)))
+           (i 0)
+           (colorize-outline (lambda (outline)
+                               ;; Appropriately colorize outline path
+                               (while (< i (length outline))
+                                 (let ((ancestor (nth i outline)))
+                                   (org-add-props ancestor nil 'face (format "outline-%d" (+ i 1))))
+                                 (setq i (+ i 1)))
+                               outline))
+           (outline (when outline
+                      (-some--> (with-current-buffer buf
                                   (goto-char marker)
-                                  (org-get-outline-path))))
-         (depth (length outline))
-         (level (plist-get headline :level))
-         (filename (when filename
-                     (with-current-buffer buf
-                       (or
-                        (+org-get-global-property "TITLE")
-                        (file-name-sans-extension
-                         (file-name-nondirectory
-                          (or buffer-file-name
-                              (buffer-file-name (buffer-base-buffer)))))))))
-         (colorize-keyword (lambda (color)
-                             (add-face-text-property 0 (length keyword) 'bold t keyword)
-                             (add-face-text-property 0 (length keyword) `(:foreground ,color) t keyword)))
-         (spc " ")
-         (i 0))
+                                  (org-get-outline-path))
+                        (funcall colorize-outline it))))
+           (depth (length outline))
+           (colorize-title (lambda (title)
+                             (org-add-props title nil 'face (format "outline-%d" level))
+                             ;; Don't colorize titles of headings with todos other then TO DO, PROJECT or NEXT
+                             (when keyword
+                               (org-ql-view--add-todo-face keyword)
+                               (if (string-match (concat "TO" "DO" "\\|PROJECT\\|NEXT") keyword)
+                                   (org-add-props title nil 'face 'outline-1)
+                                 (org-add-props title nil 'face 'bold)))
 
-    (put-text-property 0 (length title) 'face (format "outline-%d" level) title)
+                             ;; Grayout scheduled items or subtasks of the project having todo keywords other then NEXT or PROJECT
+                             (when (or (and todo-parent-maybe
+                                            (not (or (string-equal "NEXT" keyword)
+                                                     (string-equal "PROJECT" keyword))))
+                                       (unless time active-timestamp))
+                               (org-add-props title nil 'face 'ivy-virtual))
+                             title))
+           (title (-some--> (concat (if habit
+                                        "⚒ "
+                                      (when active-timestamp "◔ "))
+                                    (org-link-display-format
+                                     (substring-no-properties (plist-get headline :raw-value))))
+                    (funcall colorize-title it)))
+           (spc " ")
+           (final-string (concat
+                          (when filename (concat filename "/"))
+                          (when outline (concat (mapconcat #'identity outline "/") "/"))
+                          (when keyword (concat (when effort (concat effort spc))
+                                                (when clock (concat clock spc))
+                                                keyword spc))
+                          title (when tags (concat spc tags))
+                          (when active-timestamp
+                            (concat spc active-timestamp)))))
 
-    (when outline
-      (while (< i depth)
-        (let ((ancestor (nth i outline)))
-          (put-text-property 0 (length ancestor) 'face (format "outline-%d" (+ i 1)) ancestor))
-        (setq i (+ i 1))))
-
-    (when keyword
-      (funcall colorize-keyword (catch 'color
-                                  (dolist (i org-todo-keyword-faces)
-                                    (when (equal (car i) keyword)
-                                      (throw 'color (cdr i))))))
-
-      (if (string-match (concat "TO" "DO" "\\|PROJECT\\|NEXT") keyword)
-          (put-text-property 0 (length title) 'face 'outline-1 title)
-        (put-text-property 0 (length title) 'face 'bold title)))
-
-    ;; I don't want to my attention to be stolen by subtasks from projects other then NEXT or scheduled items
-    (when (or (and todo-parent-maybe
-                   (not (or (string-equal "NEXT" keyword)
-                            (string-equal "PROJECT" keyword))))
-              (unless time active-timestamp))
-      (put-text-property 0 (length title) 'face 'ivy-virtual title))
-
-    (when filename
-      (put-text-property 0 (length filename) 'face 'bold filename))
-
-    (when tags
-      (put-text-property 0 (length tags) 'face 'org-tag tags))
-
-    (when effort
-      (put-text-property 0 (length effort) 'face 'org-tag effort))
-
-    (when active-timestamp
-      (put-text-property 0 (length active-timestamp) 'face 'org-date active-timestamp))
-
-    (propertize
-     (if outline
-         (concat
-          (when filename (concat filename "/"))
-          (mapconcat #'identity outline "/") "/"
-          (when keyword (concat (when effort (concat effort spc))
-                                (when clock (concat clock spc))
-                                keyword spc))
-          title (when tags (concat spc tags))
-          (when active-timestamp
-            (concat spc active-timestamp)))
-       (concat
-        (when filename (concat filename "/"))
-        (when keyword (concat (when effort (concat effort spc))
-                              (when clock (concat clock spc))
-                              keyword spc))
-        title (when tags (concat spc tags))
-        (when active-timestamp
-          (concat spc active-timestamp))))
-     'marker marker)))
+      (--> final-string
+        (concat "  " it)
+        (org-add-props it properties
+          'org-agenda-type 'search
+          'todo-state keyword
+          'tags tags
+          'marker marker
+          'org-habit-p habit))
+      )
+    )
+  )
 
 ;;;###autoload
 (defun aj-org-notes-get-filetags (dir)

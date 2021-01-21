@@ -1512,7 +1512,12 @@
   )
 
 (after! org-ql-view
-  (advice-add #'org-ql-view--format-element :override #'aj-org-ql-view--format-element-a)
+  (advice-add
+   #'org-ql-view--format-element
+   :override
+   (lambda (element)
+     "Format org-ql-views with custom `aj-org-pretty-format-element'."
+     (aj-org-pretty-format-element element nil nil t t t t t)))
   (advice-add #'org-ql-view--display :after #'aj-org-ql-hide-header-a)
   (advice-add #'org-ql-view-refresh :after (lambda (&rest _)
                                              "Blacklist certain Org-QL views from re-applying agenda filter."
