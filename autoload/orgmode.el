@@ -2124,6 +2124,7 @@ so the search can be replicated by calling this function again with arguments sa
                     `(and (todo) ,(aj-org-ql-custom-agenda-filter-tags))))
          (prompt (or prompt "agenda headlines"))
          (initial-input (or initial-input ""))
+         (global-tags (not aj-org-agenda-filter))
          (args-list `(,(current-time) ,query ,prompt ,files ,sort-fn ,reverse ,time ,capture-key ,clock))
          (ivy-height 26)
          ivy-sort-functions-alist)
@@ -2146,7 +2147,7 @@ so the search can be replicated by calling this function again with arguments sa
                             :order-by sort-fn)
                           (-map
                            (lambda (elm)
-                             (aj-org-pretty-format-element elm nil nil t t t time clock))))))
+                             (aj-org-pretty-format-element elm nil nil t t t time clock global-tags))))))
                 (if (ignore-errors reverse)
                     (reverse results)
                   results))
@@ -2296,13 +2297,15 @@ Optionally specify heading LEVEL (default is 3).
        (number-to-string minutes)))))
 
 ;;;###autoload
-(defun aj-org-pretty-format-element (element &optional filename outline keyword tag effort time clock)
+(defun aj-org-pretty-format-element (element &optional filename outline keyword tag effort time clock global-tags)
   "Pretty format org-heading ELEMENT.
 ELEMENT is org-mode headline returned by `org-element-headline-parser'.
 
 Optional arguments specifies which additional features should be shown
 like FILENAME, whole file's OUTLINE, todo KEYWORD, TAG, EFFORT string,
 TIME string or CLOCK info string.
+
+Optional GLOBAL-TAGS arg controls whether to show inherited (file) tag(s).
 
 Can be used as a drop-in replacement for `org-ql-view--format-element' from
 which addopted some code snippets.
@@ -2385,7 +2388,17 @@ which addopted some code snippets.
                                                (org-clock-sum-current-item))))
                                 (clock-time (unless (string-equal "0:00" clock-time) clock-time)))
                       (concat "◌ " clock-time))))
-           (tag (when tag (plist-get headline :tags)))
+           (tag (if global-tags
+                    (if-let* ((tags (with-current-buffer buf
+                                      (org-with-wide-buffer
+                                       (goto-char marker)
+                                       (cl-loop for type in (org-ql--tags-at marker)
+                                                unless (or (eq 'org-ql-nil type)
+                                                           (not type))
+                                                append type)))))
+                        tags
+                      (org-element-property :tags headline))
+                  (org-element-property :tags element)))
            (tags (when (or tag habit a-timestamp scheduled deadline)
                    (-some--> (let ((tag-str
                                     (concat ":"
