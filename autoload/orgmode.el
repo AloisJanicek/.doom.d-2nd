@@ -2388,22 +2388,22 @@ which addopted some code snippets.
                                                (org-clock-sum-current-item))))
                                 (clock-time (unless (string-equal "0:00" clock-time) clock-time)))
                       (concat "◌ " clock-time))))
-           (tag (if global-tags
-                    (if-let* ((tags (with-current-buffer buf
-                                      (org-with-wide-buffer
-                                       (goto-char marker)
-                                       (cl-loop for type in (org-ql--tags-at marker)
-                                                unless (or (eq 'org-ql-nil type)
-                                                           (not type))
-                                                append type)))))
-                        tags
-                      (org-element-property :tags headline))
-                  (org-element-property :tags element)))
-           (tags (when (or tag habit a-timestamp scheduled deadline)
+           (tag-list (if global-tags
+                         (if-let* ((tags (with-current-buffer buf
+                                           (org-with-wide-buffer
+                                            (goto-char marker)
+                                            (cl-loop for type in (org-ql--tags-at marker)
+                                                     unless (or (eq 'org-ql-nil type)
+                                                                (not type))
+                                                     append type)))))
+                             tags
+                           (org-element-property :tags headline))
+                       (org-element-property :tags element)))
+           (tags (when (or tag-list habit a-timestamp scheduled deadline)
                    (-some--> (let ((tag-str
                                     (concat ":"
                                             (mapconcat #'substring-no-properties
-                                                       (append (or tag "")
+                                                       (append (or tag-list "")
                                                                (when habit (list "habit"))
                                                                (when a-timestamp (list "tickler"))
                                                                (when scheduled (list "scheduled"))
@@ -2485,7 +2485,7 @@ which addopted some code snippets.
         (org-add-props it properties
           'org-agenda-type 'search
           'todo-state keyword
-          'tags tags
+          'tags tag-list
           'marker marker
           'org-habit-p habit))
       )
