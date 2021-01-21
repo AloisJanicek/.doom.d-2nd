@@ -1424,7 +1424,7 @@ Tickler is not scheduled nor it doesn't have deadline."
 
   ("C" (pcase aj-org-agenda-gtd-interface
          ('agenda-search
-          (aj-org-ql-simple-task-search "cancelled"))
+          (aj-org-ql-simple-task-search "CANCELLED"))
          ('agenda-headlines
           (aj/org-agenda-headlines
            :prompt "cancelled"
@@ -1435,7 +1435,7 @@ Tickler is not scheduled nor it doesn't have deadline."
 
   ("D" (pcase aj-org-agenda-gtd-interface
          ('agenda-search
-          (aj-org-ql-simple-task-search "done"))
+          (aj-org-ql-simple-task-search "DONE"))
          ('agenda-headlines
           (aj/org-agenda-headlines
            :prompt "done"
