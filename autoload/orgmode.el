@@ -430,7 +430,7 @@ which is suitable for insertion into org-capture template."
                      (aj-org-get-filtered-org-files
                       :dir org-directory
                       :preset aj-org-agenda-filter))))
-         (selected-tags (aj-org-notes-set-filter-preset--ivy
+         (selected-tags (filter-preset-ivy
                          "Tags: " tag-list nil)))
     (if selected-tags
         (concat " :" (mapconcat #'identity selected-tags ":") ":")
@@ -837,7 +837,7 @@ This function is meant to be used as advice for `org-agenda-filter-apply'"
   (interactive)
   (org-agenda-filter-apply
    (remove nil
-           (aj-org-notes-set-filter-preset--ivy
+           (filter-preset-ivy
             "Select agenda tag"
             (seq-map
              (lambda (str)
@@ -2505,7 +2505,7 @@ which addopted some code snippets.
                         (+org-get-global-property "FILETAGS" file) ":" t)))
                    (directory-files-recursively dir ".org$")))))))
 
-(defun aj-org-notes-set-filter-preset--ivy (prompt collection preset)
+(defun filter-preset-ivy (prompt collection preset)
   "Helper ivy prompt for setting multiple-valued filter presets.
 Its prompt will be updated every time user selects or unselects
 item candidates from COLLECTION to PRESET.
@@ -2535,7 +2535,7 @@ item candidates from COLLECTION to PRESET.
                         (if (eq this-command 'ivy-call)
                             (with-selected-window (active-minibuffer-window)
                               (delete-minibuffer-contents))))
-              :caller 'aj-org-notes-set-filter-preset--ivy)
+              :caller 'filter-preset-ivy)
     preset)
   )
 
@@ -2555,31 +2555,10 @@ item candidates from COLLECTION to PRESET.
   (interactive)
   (aj-org-notes-filter-preset--set
    org-brain-path
-   (aj-org-notes-set-filter-preset--ivy
+   (filter-preset-ivy
     "Tags"
     (cadr (aj-org-notes-get-filetags org-brain-path))
     (aj-org-notes-filter-preset--get org-brain-path))))
-
-(defun aj-org-roam-filter-preset--set (dir new-val)
-  "Getter helper fn for `aj/org-roam-set-filter-preset'."
-  (if (aj-org-roam-filter-preset--get dir)
-      (setcdr (assoc dir aj-org-roam-filter-preset) new-val)
-    (add-to-list 'aj-org-roam-filter-preset (cons dir new-val))))
-
-(defun aj-org-roam-filter-preset--get (dir)
-  "Setter helper fn for `aj/org-roam-set-filter-preset'."
-  (cdr (assoc dir aj-org-roam-filter-preset)))
-
-;;;###autoload
-(defun aj/org-roam-set-filter-preset ()
-  "Set value of `aj-org-roam-filter-preset'."
-  (interactive)
-  (let ((new-preset (aj-org-notes-set-filter-preset--ivy
-                     "Tags"
-                     (org-roam-db--get-tags)
-                     (aj-org-roam-filter-preset--get org-roam-directory))))
-    (aj-org-roam-filter-preset--set org-roam-directory new-preset)
-    (setq aj-org-roam-latest-ivy-text (concat (car new-preset) " "))))
 
 ;;;###autoload
 (defun aj/org-notes-search-no-link (&optional directory)
@@ -3253,28 +3232,31 @@ either eaf-browser or default browser.
 ;;;###autoload (autoload 'aj/org-roam-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-roam-hydra (:color blue
                              :columns 4
-                             :body-pre (if (or (eq (car current-prefix-arg) 4)
-                                               (not org-roam-directory))
-                                           (aj/org-roam-choose-update-dir)))
+                             :body-pre
+                             (progn
+                               (require 'org-roam)
+                               (if (or (eq (car current-prefix-arg) 4)
+                                       (not org-roam-directory))
+                                   (aj/org-roam-choose-update-dir))))
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
   ("d" (lambda ()
          (interactive)
-         (aj-org-roam-delete-file
+         (org-roam-ivy--delete-file
           (buffer-file-name (org-base-buffer (current-buffer)))))
    "delete")
-  ("r" (let (aj-org-roam-filter-preset
-             aj-org-roam-latest-ivy-text)
-         (aj/org-roam-find-refs))
+  ("r" (let (org-roam-ivy-filter-preset-set
+             org-roam-ivy--latest-ivy-text)
+         (org-roam-ivy-find-refs))
    "refs")
-  ("R" #'aj/org-roam-set-filter-preset "filter")
-  ("f" #'aj/org-roam-find-file "file")
+  ("R" #'org-roam-ivy-filter-preset-set "filter")
+  ("f" #'org-roam-ivy-find-file "file")
   ("k" #'aj/re-capture-as-org-roam-entry "re-capture entry")
   ("K" #'aj/re-capture-as-org-roam-ref "re-capture link ref")
-  ("F" (let (aj-org-roam-filter-preset
-             aj-org-roam-latest-ivy-text)
-         (aj/org-roam-find-file))
+  ("F" (let (org-roam-ivy-filter-preset-set
+             org-roam-ivy--latest-ivy-text)
+         (org-roam-ivy-find-file))
    "file unfiltered")
   ("s" #'aj/start-open-org-roam-server-light "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
@@ -3286,171 +3268,16 @@ either eaf-browser or default browser.
   ("i" #'org-roam-jump-to-index "index")
   ("a" (lambda ()
          (interactive)
-         (aj-org-roam-set-aliases
+         (org-roam-ivy--set-aliases
           (org-base-buffer (current-buffer))))
    "aliases")
   ("t" (lambda ()
          (interactive)
-         (aj-org-roam-set-tag
+         (org-roam-ivy--set-tags
           (org-base-buffer (current-buffer))))
    "tags")
   ("I" #'org-roam-insert "insert")
   ("T" #'org-roam-buffer-toggle-display "toggle")
-  )
-
-;;;###autoload
-(defun aj-org-roam-set-aliases (file)
-  (let* ((file-aliases (org-roam--extract-titles-alias)))
-    (org-roam--set-global-prop
-     "roam_alias"
-     (combine-and-quote-strings
-      (seq-uniq
-       (aj-org-notes-set-filter-preset--ivy
-        "Aliases" file-aliases file-aliases))))
-    (save-buffer)))
-
-;;;###autoload
-(defun aj-org-roam-set-tag (file)
-  (let* ((all-tags (org-roam-db--get-tags))
-         (file-tags (org-roam--extract-tags-prop file)))
-    (org-roam--set-global-prop
-     "roam_tags"
-     (combine-and-quote-strings
-      (seq-uniq
-       (aj-org-notes-set-filter-preset--ivy
-        "Tags" all-tags file-tags))))
-    (save-buffer)))
-
-;;;###autoload
-(defun aj-org-roam-refs-ivy-url-open-action (x)
-  "Open roam_key url from file X."
-  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-    (browse-url (+org-get-global-property "roam_key"))))
-
-;;;###autoload
-(defun aj/org-roam-find-refs ()
-  "Exclusive ivy interface for org-roam refs."
-  (interactive)
-  (setq aj-org-roam-last-ivy 'aj/org-roam-find-refs)
-  (let (aj-org-roam-filter-preset)
-    (aj-org-roam-ivy "Refs: " (org-roam--get-ref-path-completions 1))))
-
-;;;###autoload
-(defun aj/org-roam-find-file ()
-  "Exclusive ivy interface for org-roam find file."
-  (interactive)
-  (setq aj-org-roam-last-ivy 'aj/org-roam-find-file)
-  (aj-org-roam-ivy "File: " (org-roam--get-title-path-completions)))
-
-(defvar aj-org-roam-latest-ivy-text nil
-  "Variable storing latest ivy-text suitable for restoration org roam ivy.
-
-When using org-roam ivy interfaces, store valaue of the `ivy-text'
-into this variable and use it to restore the input when returning
-from backlinks back to top-level search or when opening org-roam ivy again.")
-
-;;;###autoload
-(defun aj-org-roam-ivy (prompt collection &optional from)
-  "Exclusive ivy interface for org-roam."
-  (let* ((descended-into (or (equal from 'ivy-read-action/lambda-x-and-exit)
-                             (equal from 'ivy-posframe-dispatching-done)))
-         (preset (aj-org-roam-filter-preset--get org-roam-directory))
-         (preset-str (when preset (concat (mapconcat #'identity preset " ") " ")))
-         (init-input (unless descended-into (or  aj-org-roam-latest-ivy-text preset-str) "")))
-    (ivy-read prompt collection
-              :initial-input init-input
-              :caller 'aj-org-roam-ivy
-              :update-fn #'aj-ivy-update-fn-timer
-              :action (lambda (x)
-                        (unless (string-match "Backlinks of" ivy--prompt)
-                          (setq aj-org-roam-latest-ivy-text ivy-text))
-                        (if-let ((f (ignore-errors (plist-get (cdr x) :path))))
-                            (pop-to-buffer (find-file-noselect f))
-                          (progn
-                            ;; prevent :initial-input becoming part of the newly captured file's #+title:
-                            (when init-input
-                              (aj-org-roam-ivy-capture (substring x (length init-input) (length x))))))))))
-
-(defvar aj-org-roam-last-ivy nil
-  "Store the name of the last used org-roam ivy interface.")
-
-;;;###autoload
-(defun aj-org-roam-ivy-capture (x)
-  "Capture action from org-roam."
-  (let ((org-roam-capture--info
-         `((title . ,x)
-           (slug  . ,(funcall org-roam-title-to-slug-function x))))
-        (org-roam-capture--context 'title))
-    (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
-    (org-roam-capture--capture)))
-
-(defun aj-org-roam-ivy-backlinks-action (x)
-  "Browse backlinks of X."
-  (let* ((f (plist-get (cdr x) :path))
-         (from this-command))
-    (if-let ((backlinks (org-roam--get-backlinks f)))
-        (aj-org-roam-ivy (format "Backlinks of %s: " (org-roam-db--get-title f))
-                         (seq-map
-                          (lambda (bklink)
-                            (cons
-                             (org-roam--prepend-tag-string
-                              (org-roam-db--get-title (car bklink))
-                              (org-roam--extract-tags f))
-                             `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
-                          backlinks)
-                         from)
-      (funcall aj-org-roam-last-ivy))))
-
-;;;###autoload
-(defun aj-org-roam-delete-file (f)
-  "Delete org-roam file F and kill visiting buffers."
-  (kill-buffer (find-buffer-visiting f))
-  (move-file-to-trash f)
-  (message "%s moved to trash." (file-name-nondirectory f))
-  (org-roam-db-mark-dirty))
-
-;;;###autoload
-(defun aj-org-roam-ivy-delete-action (x)
-  "Delete org-roam file X action for ivy."
-  (let ((f (plist-get (cdr x) :path)))
-    (aj-org-roam-delete-file f)
-    (when aj-org-roam-last-ivy
-      (funcall aj-org-roam-last-ivy))))
-
-;;;###autoload
-(defun aj-org-roam-ivy-rename-action (x)
-  "Change title of org-roam file X."
-  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-    (interactive)
-    (goto-char (point-min))
-    (re-search-forward "^#\\+title:" (point-max) t)
-    (re-search-forward "^[[:space:]]*#\\+TITLE:" (point-max) t)
-    (kill-line)
-    (insert " ")
-    (insert (completing-read "New title: " nil nil nil (car kill-ring)))
-    (save-buffer)
-    (kill-current-buffer)
-    (org-roam-db-mark-dirty))
-  (when aj-org-roam-last-ivy
-    (funcall aj-org-roam-last-ivy))
-  )
-
-;;;###autoload
-(defun aj-org-roam-ivy-move-action (x)
-  "Move org-roam file X."
-  (let* ((f (plist-get (cdr x) :path))
-         (fname (file-name-nondirectory f))
-         (fdir (file-name-directory f))
-         (dest (file-name-as-directory
-                (read-directory-name "New location: " fdir)))
-         (new (expand-file-name fname dest)))
-    (unless (file-directory-p dest)
-      (mkdir dest t))
-    (rename-file f dest)
-    (message "%s moved to new location: %s." fname dest)
-    (org-roam-db-mark-dirty))
-  (when aj-org-roam-last-ivy
-    (funcall aj-org-roam-last-ivy))
   )
 
 ;;;###autoload
@@ -3589,7 +3416,7 @@ Finally save buffer.
 ;;;###autoload
 (defun aj-org-roam-append-tag-string-a (str tags)
   "Append instead of prepend TAGS to STR.
-Advice for `org-roam--prepend-tag-string'.
+Advice for `org-roam--add-tag-string'.
 "
   (concat
    str
@@ -3610,47 +3437,6 @@ Intended as :filter-return advice manipulating string RESULT.
          (put-text-property url-beg url-end 'face 'org-tag str))
        (cons str (cdr elm))))
    result))
-
-;;;###autoload
-(defun aj-org-roam-ivy-backlinks-transformer (str)
-  "Improve appereance of org-roam ivy.
-
-Makes url of org-refs less prominent. Strips unnecessary parentheses
-around urls and tags. Adds number of backlinks in front of each item.
-Prepends org-roam-ref items with \"link\" icon.
-"
-  (let ((prepend-backlinks-num
-         (lambda (f-title)
-           (let* ((f-title (substring-no-properties f-title))
-                  (f-path (caar
-                           (org-roam-db-query [:select [file] :from titles :where (= title $s1)]
-                                              f-title)))
-                  (backlinks-num (length
-                                  (org-roam-db-query [:select * :from links :where (= dest $s1)] f-path)))
-                  (backlinks-num-str (number-to-string backlinks-num))
-                  (is-ref (org-roam-db-query [:select file :from [refs] :where (= file $s1)] f-path))
-                  (ico (concat
-                        (if is-ref
-                            (all-the-icons-octicon "link" :v-adjust 0.05)
-                          (all-the-icons-octicon "file-text" :v-adjust 0.05))
-                        " ")))
-             (put-text-property 0 (length backlinks-num-str) 'face
-                                (if (equal 0 backlinks-num) 'org-warning 'org-tag)
-                                backlinks-num-str)
-             (put-text-property 0 (length ico) 'face 'org-tag ico)
-             (concat backlinks-num-str " " ico f-title)))))
-    (cond ((string-match "(//" str 0)
-           (let* ((str-list (split-string str "(//" nil))
-                  (url (string-trim-right (car (cdr str-list)) ")"))
-                  (f-title (string-trim (car str-list))))
-             (put-text-property 0 (length url) 'face 'org-tag url)
-             (concat (funcall prepend-backlinks-num f-title) " " url)))
-          ((string-match ") " str 0)
-           (let* ((str-list (split-string str ") " nil))
-                  (f-title (substring-no-properties (car (cdr str-list))))
-                  (tags (string-trim-left (car str-list) "(")))
-             (concat (funcall prepend-backlinks-num f-title) " " tags)))
-          (t (funcall prepend-backlinks-num str)))))
 
 ;;;###autoload
 (defun aj-org-heading-title-without-statistics-cookie ()

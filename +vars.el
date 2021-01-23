@@ -93,11 +93,5 @@ Cdr is list of one or more strings returned `aj-org-notes-get-filetags'.")
 
 (doom-store-persist doom-store-location '(aj-org-notes-filter-preset))
 
-
-(defvar aj-org-roam-filter-preset nil
-  "Store custom filter for org-roam.")
-
-(doom-store-persist doom-store-location '(aj-org-roam-filter-preset))
-
 (defvar aj-currently-refiling nil
   "Indicates if there is refile operation running and some files should not be encrypted.")

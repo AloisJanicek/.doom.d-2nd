@@ -778,10 +778,8 @@
   )
 
 (after! ivy
+  (advice-add #'+ivy/project-search :override #'+ivy/project-search-a)
   (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
-
-  (ivy-configure 'aj-org-roam-ivy
-    :display-transformer-fn #'aj-org-roam-ivy-backlinks-transformer)
 
   (ivy-add-actions
    #'aj-org-ql-select-history-queries
@@ -818,40 +816,6 @@
             (aj-org-ql-select-history-queries "EDIT past queries: "))
       "delete")
      ))
-
-  (ivy-add-actions
-   #'aj-org-roam-ivy
-   '(("x" aj-org-roam-ivy-backlinks-action "backlinks")
-     ("k" aj-org-roam-ivy-delete-action "delete")
-     ("b" aj-org-roam-refs-ivy-url-open-action "browse url")
-     ("B" (lambda (x)
-            (let ((browse-url-chromium-arguments browse-url-chromium-arguments))
-              (add-to-list 'browse-url-chromium-arguments "--incognito")
-              (aj-org-roam-refs-ivy-url-open-action x)))
-      "browse url Incognito")
-     ("h" (lambda (x)
-            (funcall aj-org-roam-last-ivy))
-      "Back")
-     ("t" (lambda (x)
-            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-              (aj-org-roam-set-tag
-               (org-base-buffer (current-buffer))))
-            (funcall aj-org-roam-last-ivy))
-      "tags")
-     ("r" aj-org-roam-ivy-rename-action "rename")
-     ("a" (lambda (x)
-            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-              (aj-org-roam-set-aliases
-               (org-base-buffer (current-buffer))))
-            (funcall aj-org-roam-last-ivy))
-      "aliases")
-     ("m" aj-org-roam-ivy-move-action "move")
-     ("H" (lambda (x)
-            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-              (org-roam-doctor)))
-      "health")
-     )
-   )
 
   (ivy-set-actions
    #'aj/org-agenda-headlines
@@ -1337,6 +1301,7 @@
          (org-open-at-point))))))
 
 (after! org
+  (load! "lisp/filter-preset-ivy")
   (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
   (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
@@ -1948,6 +1913,12 @@ When in org-roam file, also create top-level ID.
   )
 
 (after! org-roam
+  (when (load! "lisp/org-roam-ivy" nil t)
+    (after! org-roam-ivy
+      (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
+      (advice-add #'org-roam-ivy :around #'aj-org-open-file-respect-sanity-a)
+      (advice-add #'org-roam-ivy :around #'aj-org-buffer-to-popup-a)))
+
   (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
   (add-hook
    'org-roam-capture-after-find-file-hook
@@ -1982,8 +1953,6 @@ When in org-roam file, also create top-level ID.
            :head "#+title: %<%A, %d %B %Y>\n"))
         )
 
-  (advice-add #'aj-org-roam-ivy :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'aj-org-roam-ivy :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam--find-file :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'org-roam--find-file :around #'aj-org-buffer-to-popup-a)
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
