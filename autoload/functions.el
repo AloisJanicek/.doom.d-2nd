@@ -1234,6 +1234,30 @@ Intended as an override advice for `posframe--mouse-banish'.
   (call-process "/bin/bash" nil t 0 "-c"
                 (concat "nohup xdotool mousemove 500 100"
                         " >/dev/null 2>&1 &")))
+;;;###autoload
+(defun +ivy/project-search-a (&optional arg initial-query directory)
+  "Performs a live project search from the project root using ripgrep.
+
+If ARG (universal argument), include all files, even hidden or compressed ones,
+in the search.
+
+Override advice for `+ivy/project-search'.
+"
+  (interactive "P")
+  (let ((initial-query (or initial-query (format "%s" (or (symbol-at-point) "")))))
+    (+ivy-file-search :query initial-query :in directory :all-files arg)))
+
+;;;###autoload
+(defun aj/swiper ()
+  "Run `swiper' with `symbol-at-point'."
+  (interactive)
+  (swiper (format "%s" (or (symbol-at-point) ""))))
+
+;;;###autoload
+(defun aj/swiper-all ()
+  "Run `swiper-all' with `symbol-at-point'."
+  (interactive)
+  (swiper-all (format "%s" (or (symbol-at-point) ""))))
 
 (provide 'functions)
 

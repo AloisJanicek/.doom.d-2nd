@@ -19,8 +19,8 @@
  :ni "C-l"       #'evil-window-right
  :nmiev "C-S-l"  #'recenter-top-bottom
  "M-a"       #'mark-whole-buffer
- "M-f"       #'swiper
- "M-F"       #'swiper-all
+ "M-f"       #'aj/swiper
+ "M-F"       #'aj/swiper-all
  "M-p"       #'ivy-yasnippet
  "M-q"       #'save-buffers-kill-terminal
  "M-s"       #'save-buffer
