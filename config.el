@@ -3,6 +3,7 @@
 (load! "stylelintd-fix")
 (load! "+vars")
 (load! "+hacks")
+(add-load-path! "lisp")
 
 (dolist (i '(ol-info ol-eww org-id))
   (add-to-list 'org-modules i))
