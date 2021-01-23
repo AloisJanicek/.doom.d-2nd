@@ -1,6 +1,7 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
 
+(unpin! format-all)
 (package! saveplace-pdf-view :disable t)
 (unpin! org-roam)
 ;; (package! org-mode
@@ -17,7 +18,7 @@
                         (insert "(fset 'org-release (lambda () \"9.5\"))\n"
                                 "(fset 'org-git-version #'ignore)\n"
                                 "(provide 'org-version)\n")))
-  :pin "627c35b7ca8fd20fcb72a8e2e1f0e08eb52cdf1f"
+  :pin "fa24d3b032a28de92534244869537f89f7eeebd3"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -52,7 +53,7 @@
   :pin "422606a7bf08d13646e3db4f6c2bddb69bd61dec")
 
 (package! ace-link
-  :pin "298f02f7dd117f9ec01f6aa2a2ddfecae0efb7f4")
+  :pin "e1b1c91b280d85fce2194fea861a9ae29e8b03dd")
 
 (package! ahk-mode
   :pin "729007b5f22a49f5187ff47fca18c0d674e73047")
@@ -74,11 +75,11 @@
   :pin "2de315abddb6af088a2346e142cc305889dcd775")
 
 (package! d-mode
-  :pin "1931ec9ee7af6767883452a822914ad3fd98ddad")
+  :pin "80fad305784b21a818683010bc27d48302ec7110")
 
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock")
-  :pin "c5f781f241f8b16b7c3b6fb3e56e2938ba1dd87a")
+  :pin "6ba0f2ac7e4e5b8c1baec90296d9f24407d8d632")
 
 (package! counsel-tramp
   :pin "719b38ba2242cc1c6d1d79cab106c8c8b1afa775")
@@ -99,7 +100,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "fce341d7bf3ee94e38265ace2f2c21f875b9e29a"
+  :pin "bf993fb1132a50a1897b3c2d7461ce50a9c252bf"
   )
 
 (package! eslintd-fix
