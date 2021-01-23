@@ -130,10 +130,6 @@
 (package! hungry-delete
   :pin "0513152525c38519a5597db2d6495b56dd9cc3f0")
 
-(package! hydra-posframe
-  :recipe (:host github :repo "Ladicle/hydra-posframe")
-  :pin "343a269b52d6fb6e5ae6c09d91833ff4620490ec")
-
 (package! indium
   :pin "b870d1ed6b350d3753e7a148c61c373ca76ba78a")
 

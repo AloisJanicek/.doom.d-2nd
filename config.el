@@ -690,15 +690,14 @@
   (global-hungry-delete-mode 1))
 
 
-(use-package! hydra-posframe
-  :after hydra
-  :when (display-graphic-p)
-  :config
-  (hydra-posframe-mode +1)
-  (setq hydra-posframe-poshandler #'posframe-poshandler-frame-center
-        hydra-posframe-border-width 10
-        )
-  )
+(after! hydra
+  (when (display-graphic-p)
+    (setq hydra-hint-display-type
+          'posframe)
+    (setq hydra-posframe-show-params
+          `(:internal-border-width 10
+            :internal-border-color ,(doom-color 'base0)
+            :poshandler posframe-poshandler-frame-center))))
 
 (after! hl-todo
   (advice-add #'hl-todo-next :after #'doom-recenter-a)
