@@ -1198,7 +1198,7 @@
   (setq magit-repository-directories `((,aj-repos-dir . 1))
         magit-clone-default-directory `,aj-repos-dir
         )
-  ;; (magit-todos-mode)
+  (magit-todos-mode)
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (remove-hook 'Man-mode-hook #'hide-mode-line-mode)
