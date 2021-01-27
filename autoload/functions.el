@@ -5,15 +5,18 @@
 ;; Various functions for my Emacs configuration
 
 ;;; Code:
+(require 'hydra)
+(require 'dash)
+(require 's)
 
 ;;;###autoload
 (defun aj-decrypt-encrypt-file (file &optional encrypt)
   "Decrypt or encrypt whole content of a file FILE.
 Which operation will be executed depends on value of ENCRYPT."
   (with-current-buffer (find-file-noselect file)
-    (unless (or (and (aj-org-file-encrypted-p file)
+    (unless (or (and (+org-file-encrypted-p file)
                      encrypt)
-                (and (not (aj-org-file-encrypted-p file))
+                (and (not (+org-file-encrypted-p file))
                      (not encrypt)))
       (let* ((start (point-min))
              (end (point-max))
@@ -137,7 +140,7 @@ Which operation will be executed depends on value of ENCRYPT."
 (defun counsel-yank-bash-history ()
   "Yank the bash history."
   (interactive)
-  (let (hist-cmd collection val ivy-sort-functions-alist)
+  (let (collection val ivy-sort-functions-alist)
     (shell-command "history -r") ; reload history
     (setq collection
           (nreverse
@@ -162,11 +165,11 @@ Which operation will be executed depends on value of ENCRYPT."
     ))
 
 ;;;###autoload
-(defun aj-chromium-browse-url-dispatch (url &optional _new-window)
+(defun aj-chromium-browse-url-dispatch (url &optional new-window)
   "Open URL with chromium or default Windows browser if under wsl."
   (if (aj-wsl-p)
-      (wsl-browse-url url _new-window)
-    (browse-url-chromium url _new-window)))
+      (wsl-browse-url url new-window)
+    (browse-url-chromium url new-window)))
 
 ;;;###autoload
 (defun wsl-browse-url (url &rest _)
@@ -264,11 +267,8 @@ Requires esqlite."
                    (concat "." (downcase (car (car formats)))))))
     (concat library-path path "/" name format)))
 
-;;;###autoload
-(defun +javascript*sort-imenu-index-by-position (orig-fn)
-  "Advise tide-menu-index (`ORIG-FN') for better symbol names in imenu."
-  (let ((tide-imenu-flatten t))
-    (cl-sort (funcall orig-fn) #'< :key #'cdr)))
+(defvar hydra-stack nil
+  "Holds names of hydras for display when nesting them.")
 
 ;;;###autoload
 (defun hydra-push (expr)
@@ -317,18 +317,8 @@ Functions is intended as a replacement for `ob-javascript--node-path'."
 ;;;###autoload
 (defun aj-get-project-org-file ()
   "Return list of path pointing to README.org in current projectile project."
-  (let ((file (expand-file-name aj-project-readme-task-filename (projectile-project-root))))
+  (let ((file (expand-file-name agenda-filter-project-readme-filename (projectile-project-root))))
     (if (file-exists-p file) file nil)))
-
-;;;###autoload
-(defun aj-get-all-projectile-README-org-files (&optional existing)
-  "Return list of existing projectile projects' README.org files.
-When optional argument `EXISTING' is supplied, it returns only actual existing files."
-  (let ((files (mapcar (lambda (project-path)
-                         (expand-file-name aj-project-readme-task-filename project-path))
-                       projectile-known-projects)))
-    (if existing
-        (seq-filter 'file-exists-p files) files)))
 
 ;;;###autoload
 (defun aj/agenda-project ()
@@ -344,8 +334,8 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
 (defun aj/agenda-project-all ()
   "Show agenda for all projectile projects."
   (interactive)
-  (let* ((readmes (aj-get-all-projectile-README-org-files t))
-         (projects (aj-get-all-projectile-README-org-files))
+  (let* ((readmes (agenda-filter-all-projectile-README-org-files t))
+         (projects (agenda-filter-all-projectile-README-org-files))
          (readmes-n (length readmes))
          (projects-n (length projects))
          (without-readme (- projects-n readmes-n)))
@@ -419,7 +409,7 @@ Optionally create associated repository on `gitlab'."
   (let* ((project (read-string "New project name: "))
          (directory (read-directory-name "Directory: " aj-repos-dir))
          (template (ivy-read "Template: " '("web-starter-kit" "other")))
-         (gitlab (ivy-read "Gitlab?:" '("yes" "no")))
+         (gitlab (y-or-n-p "Gitlab: ?"))
          (full-path (expand-file-name project directory)))
     ;; create directory
     (make-directory full-path)
@@ -428,8 +418,8 @@ Optionally create associated repository on `gitlab'."
         (progn
           (call-process-shell-command (concat "git clone git@gitlab.com:AloisJanicek/web-starter-kit.git " full-path))
           (delete-directory (expand-file-name ".git" full-path) t)
-          (aj-new-project-init-and-register full-path project t))
-      (aj-new-project-init-and-register full-path project t))))
+          (aj-new-project-init-and-register full-path project gitlab))
+      (aj-new-project-init-and-register full-path project gitlab))))
 
 ;; PDF BOOKMARS
 
@@ -448,8 +438,8 @@ Epub files often has very poor quality."
 ;;;###autoload
 (defun helm-howdoyou--transform-candidate (str)
   "Transform `STR' representing helm candidate."
-  (if-let* ((title-with-dashes
-             (s-with (s-match "questions/[0-9]+/\\([-a-z]+\\)" str) cadr)))
+  (if-let ((title-with-dashes
+            (s-with (s-match "questions/[0-9]+/\\([-a-z]+\\)" str) cadr)))
       (s-replace "-" " " title-with-dashes)
     ""))
 
@@ -626,6 +616,7 @@ https://github.com/Konfekt/wsl-gui-bins/blob/master/zeal
 ;;;###autoload
 (defun shrface-shr-tag-pre-highlight (pre)
   "Highlighting code in PRE."
+  (require 'shr)
   (let* ((shr-folding-mode 'none)
          (shr-current-font 'default)
          (code (with-temp-buffer
@@ -681,6 +672,11 @@ Version 2017-11-10"
             (rename-buffer name t)
           (rename-buffer "*eww*" t))))))
 
+(defvar aj-help-buffer-modes
+  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode
+             Man-mode woman-mode org-mode org-brain-visualize-mode tldr-mode)
+  "List of major modes for buffers to be consider as help buffers.")
+
 ;;;###autoload
 (defun aj--switch-buffer-maybe-pop-action-a (orig-fn buffer)
   "Pop BUFFER if its major mode is one of `aj-help-buffer-modes'.
@@ -692,7 +688,7 @@ Around advice for `ivy--switch-buffer-action'.
       (cl-letf (((symbol-function 'switch-to-buffer)
                  (lambda (buffer &rest _)
                    (cond ((equal (with-current-buffer buffer major-mode) 'org-mode)
-                          (aj-display-org-buffer-popup buffer))
+                          (org-persp-pop-org-buffer buffer))
                          (t (pop-to-buffer buffer))))))
         (funcall orig-fn buffer))
     (funcall orig-fn buffer)))
@@ -702,8 +698,7 @@ Around advice for `ivy--switch-buffer-action'.
   "Switch perspective buffers.
 
 When HELP, switch only help buffers.
-See variable `aj-help-buffer-modes' for more details.
-"
+See variable `aj-help-buffer-modes' for more details."
   (interactive)
   (ivy-read prompt 'internal-complete-buffer
             :action #'ivy--switch-buffer-action
@@ -729,8 +724,7 @@ See variable `aj-help-buffer-modes' for more details.
 ;;;###autoload
 (defun aj-collect-all-links-in-buffer ()
   "Collect all links in the current buffer.
-Coppie from `link-hint--collect-visible-links' of `link-hint'.
-"
+Coppie from `link-hint--collect-visible-links' of `link-hint'."
   (let (all-link-positions)
     (dolist (type '(link-hint-shr-url link-hint-nov-link))
       (setq all-link-positions
@@ -748,8 +742,7 @@ Coppie from `link-hint--collect-visible-links' of `link-hint'.
 FN takes cons pair in form of (title . url).
 "
   (require 'link-hint)
-  (let ((buffer (current-buffer))
-        (prepare-list (lambda (collected)
+  (let ((prepare-list (lambda (collected)
                         (mapcar
                          (lambda (x)
                            (cons
@@ -908,6 +901,7 @@ Me prefixing helpful headings with asterisk makes the original fn fail.
 (defun aj/eaf-browser-org-capture-link ()
   "Capture web link from eaf browser buffers."
   (interactive)
+  (require 'eaf)
   (when (eq major-mode 'eaf-mode)
     (when (string-equal "browser" eaf--buffer-app-name)
       (require 'org-protocol)
@@ -918,6 +912,7 @@ Me prefixing helpful headings with asterisk makes the original fn fail.
 (defun aj/eaf-browser-org-store-link ()
   "Store web link from eaf browser buffers."
   (interactive)
+  (require 'eaf)
   (when (eq major-mode 'eaf-mode)
     (when (string-equal "browser" eaf--buffer-app-name)
       (require 'org-protocol)
@@ -929,6 +924,7 @@ Me prefixing helpful headings with asterisk makes the original fn fail.
 Adopted from `org-roam-protocol-open-ref'.
 "
   (interactive)
+  (require 'eaf)
   (let* ((title eaf--bookmark-title)
          (url eaf--buffer-url)
          (slug (org-roam--title-to-slug title))
@@ -981,6 +977,21 @@ Depends on \"jsdv\" yasnippet snippet expanding to jsdoc docstring.
         (cons 'dart project)
       (cons 'transient dir))))
 
+(defvar aj-modes-tests-alist '()
+  "Contains alist specifying shell test tool per major mode.
+
+  Car is a symbol representing major mode and cdr is plist where:
+
+DIR represents directory from within should shell command be executed
+and can be string, variable or lambda producing valid value for `default-directory'.
+
+FN represents function launching shell command.
+(typically `compile', `shell-command' or `async-shell-command')
+
+CMD is a string representing shell command which will execute tests
+(something like \"make test\" or \"ruby *_test.rb\")
+")
+
 ;;;###autoload
 (defun aj/run-some-code-test-tool ()
   "Run shell test tool specified per major modes in `aj-modes-tests-alist'.
@@ -988,7 +999,6 @@ If there is no associated entry present for current major mode, throw warning.
 "
   (interactive)
   (let* ((item (cdr (assoc major-mode aj-modes-tests-alist )))
-         (maybe-dir (plist-get item :dir))
          (default-directory (if (eq (type-of (plist-get item :dir)) 'cons)
                                 (funcall (plist-get item :dir))
                               (eval (plist-get item :dir))))
@@ -1036,135 +1046,6 @@ If there is no associated entry present for current major mode, throw warning.
     (counsel-imenu)))
 
 ;;;###autoload
-(defun aj-dotdrop-modified ()
-  "Return list modified files managed by dotdrop."
-  (remove
-   nil
-   (seq-map
-    (lambda (elm)
-      (if (string-match "^f_" elm)
-          (replace-regexp-in-string ":" "" elm)
-        nil))
-    (split-string
-     (shell-command-to-string
-      (format "%s compare --file-only | grep compare " aj-dotdrop-base-cmd))))))
-
-;;;###autoload
-(defun aj-dotdrop-all-files ()
-  (require 'cl-seq)
-  (let* ((cmd-output (shell-command-to-string
-                      (format "%s files -G | grep dst: | sed 's/,link.*//'" aj-dotdrop-base-cmd))))
-    (seq-map
-     (lambda (elm)
-       (split-string
-        (replace-regexp-in-string
-         ",src:"
-         " "
-         (replace-regexp-in-string
-          ",dst:"
-          " "
-          elm))))
-     (split-string
-      (substring
-       cmd-output
-       (string-search "f_" cmd-output)
-       (length cmd-output))))))
-
-;;;###autoload
-(defun aj-dotdrop-dotfile-record (dotfile)
-  "For given DOTFILE return its dotdrop record entry.
-DOTFILE can be either dotdrop label, eg.\"f_vimrc\" or
-file path corresponding with dotfile destination :dest key.
-"
-  (when dotfile
-    (let ((dotfile-record
-           (car
-            (seq-filter
-             (lambda (entry)
-               (or
-                (string-equal (nth 0 entry) (string-trim-right dotfile ":"))
-                (string-equal (nth 1 entry) (string-trim-right dotfile ":"))))
-             (aj-dotdrop-all-files)))))
-      dotfile-record)
-    )
-  )
-
-;;;###autoload
-(defun aj/dotdrop-compare ()
-  "Diff the dotdrop files in emacs with ediff.
-"
-  (interactive)
-  (ivy-read
-   "ediff dotfile: "
-   (aj-dotdrop-modified)
-   :action (lambda (dotfile)
-             (let ((dotfile-record (aj-dotdrop-dotfile-record dotfile)))
-               (ediff (nth 1 dotfile-record) (nth 2 dotfile-record))))))
-
-;;;###autoload
-(defun aj/dotdrop-update ()
-  "Run dotdrop update on current file.
-If the current file isn't managed by dotdrop,
-ask user to choose one of modified dotdrop files instead.
-
-If the selected file cannot be directly updated, like in case of
-the dotfile that is generated from dotdrop template, automatically
-launch ediff session for manual file adjustment.
-
-At the end check if dotdrop repository (at DOTDROP_HOME env variable)
-is modified and offer to launch magit-status in it.
-"
-  (interactive)
-  (let* ((file (buffer-file-name))
-         (dotfile-record-maybe (aj-dotdrop-dotfile-record file))
-         (modified-files (aj-dotdrop-modified))
-         (dotfile-record
-          (or
-           (when (or (eq (car current-prefix-arg) 4)
-                     (not dotfile-record-maybe)
-                     (not (cl-member (car dotfile-record-maybe) modified-files :test #'string-match)))
-             (aj-dotdrop-dotfile-record
-              (ivy-read
-               "Chose file to update: "
-               modified-files)))
-           dotfile-record-maybe)))
-
-    (unless (or (ignore-errors (string-empty-p dotfile-record))
-                (not dotfile-record))
-      (if (equal 0 (shell-command
-                    (format
-                     "yes | %s update %s"
-                     aj-dotdrop-base-cmd
-                     (nth 1 dotfile-record))))
-          (aj-dotdrop-commit-maybe)
-        (progn
-          (add-hook 'ediff-quit-hook #'aj-dotdrop-commit-maybe 100)
-          (ediff
-           (nth 1 dotfile-record)
-           (nth 2 dotfile-record)))))))
-
-;;;###autoload
-(defun aj-dotdrop-commit-maybe ()
-  "Check if DOTDROP_HOME is modified and offer user commit changes."
-  (remove-hook 'ediff-quit-hook #'aj-dotdrop-commit-maybe)
-  (when (projectile-check-vcs-status (getenv "DOTDROP_HOME"))
-    (if (y-or-n-p "Commit changes to the DOTFILES?")
-        (magit-status (getenv "DOTDROP_HOME"))
-      (message "Ok."))))
-
-;;;###autoload
-(defun aj/dotdrop-import ()
-  "Import current file into dotdrop.
-With user prefix ask for the file.
-"
-  (interactive)
-  (let ((file (if (eq (car current-prefix-arg) 4)
-                  (read-file-name "File: ")
-                (buffer-file-name))))
-    (shell-command (format "%s import %s" aj-dotdrop-base-cmd file))
-    (aj-dotdrop-commit-maybe)))
-
-;;;###autoload
 (defun ea-github-conversation-p (window-title)
   "Return t if window title is one of usual github conversations."
   (or (string-match-p "Pull Request" window-title)
@@ -1172,7 +1053,7 @@ With user prefix ask for the file.
       ))
 
 ;;;###autoload
-(defun ea-popup-handler (app-name window-title x y w h)
+(defun ea-popup-handler (_app-name window-title x y w h)
   "Handle popup helper function for emacs_anywhere."
   (cond
    ((ea-github-conversation-p window-title) (gfm-mode))
@@ -1227,7 +1108,7 @@ Override adivce for annoying `pdf-info-check-epdfinfo'
   (advice-mapc (lambda (advice _props) (advice-remove sym advice)) sym))
 
 ;;;###autoload
-(defun my-posframe--mouse-banish-a (parentframe frame)
+(defun my-posframe--mouse-banish-a (_parentframe _frame)
   "Move the cursort out of the way from posframe frames.
 Intended as an override advice for `posframe--mouse-banish'.
 "

@@ -1,0 +1,234 @@
+;;; lisp/agenda-queries.el -*- lexical-binding: t; -*-
+
+(require 'org-ql)
+
+;; Org-ql search predicates
+(org-ql-defpred habit-half-due ()
+  "Search for habits which are at least half-due.
+
+Normally habits appear in agenda on their scheduled day. I think this is
+too soon for habits with ranges.
+For habit with repeater of \".+2d/18d\", return non-nil only if today
+is closer to maximum of the range rather then to the scheduled date.
+"
+  :body (when-let* ((headline (car (cdr (org-element-headline-parser (line-end-position)))))
+                    (habit (string-equal "habit" (plist-get headline :STYLE)))
+                    (habit-data (when habit (org-habit-parse-todo)))
+                    (scheduled-date (nth 0 habit-data))
+                    (scheduled-repeater (nth 1 habit-data))
+                    (deadline-date (nth 2 habit-data))
+                    (deadline-repeater (nth 3 habit-data))
+                    (half (- (+ scheduled-date deadline-repeater)
+                             (/ (+ scheduled-repeater deadline-repeater) 2))))
+          (< half (org-today))))
+
+;; Org-ql sort predicates
+(defun agenda-queries-sort-by-active-timestamp (a b)
+  "Sort A and B by their active timestamp.
+
+When item is habit, sort by average of
+its date range instead of its scheduled time.
+
+For items on the same day use hh:mm
+to resole their precedence.
+"
+  (let ((get-time
+         (lambda (elm)
+           (let* ((habit (when-let* ((habit-data
+                                      (org-with-point-at (org-element-property :org-marker elm)
+                                        (when (org-is-habit-p)
+                                          (org-habit-parse-todo))))
+                                     (scheduled-date (nth 0 habit-data))
+                                     (scheduled-repeater (nth 1 habit-data))
+                                     (deadline-date (nth 2 habit-data))
+                                     (deadline-repeater (nth 3 habit-data))
+                                     (half (- (+ scheduled-date deadline-repeater)
+                                              (/ (+ scheduled-repeater deadline-repeater) 2))))
+                           half))
+                  (timestamp
+                   (or (plist-get (car (cdr (org-element-property :scheduled elm))) :raw-value)
+                       (plist-get (car (cdr (org-element-property :deadline elm))) :raw-value)
+                       (org-entry-get (org-element-property :org-marker elm) "TIMESTAMP")))
+                  (hh-mm
+                   (cl-destructuring-bind (_ minutes hours _ _ _ _ _ _)
+                       (org-parse-time-string timestamp)
+                     (list hours minutes)))
+                  (time (or habit
+                            (ignore-errors
+                              (org-time-string-to-absolute
+                               timestamp))
+                            0)))
+             (cons time hh-mm)))))
+    (let* ((a (funcall get-time a))
+           (b (funcall get-time b))
+           (time-a (car a))
+           (time-b (car b))
+           (hh-mm-a (cdr a))
+           (hh-mm-b (cdr b)))
+      (if (equal time-a time-b)
+          (time-less-p hh-mm-a hh-mm-b)
+        (< time-a time-b)))))
+
+(defun agenda-queries-sort-by-effort (a b)
+  "Return non-nil if effort of the A is lower then effort of the B."
+  (let ((get-effort (lambda (elm)
+                      (string-to-number
+                       (replace-regexp-in-string
+                        "[[:punct:]]" ""
+                        (or (org-element-property :EFFORT elm) "999"))))))
+    (< (funcall get-effort a)
+       (funcall get-effort b))))
+
+(defun agenda-queries-sort-by-todo (a b)
+  "Return non-nil if todo of A is less then todo of the B according to their order in `org-todo-keywords'."
+  (let ((get-todo-keyword
+         (lambda (elm)
+           (or (org-element-property :todo-keyword elm) "")))
+        (todo-keyword-less-p (lambda (a b)
+                               (> (length (cl-member a (cdar org-todo-keywords) :test #'string-match))
+                                  (length (cl-member b (cdar org-todo-keywords) :test #'string-match))))))
+    (funcall
+     todo-keyword-less-p
+     (funcall get-todo-keyword a)
+     (funcall get-todo-keyword b))))
+
+;; Queries
+
+(defun agenda-queries--filter-tags-query ()
+  "Return tags part of org-ql query when `agenda-filter-preset' is set. "
+  (if (and agenda-filter-preset
+           (not current-prefix-arg))
+      (append '(tags)
+              (seq-map
+               (lambda (str)
+                 (if (string-prefix-p "+" str)
+                     (string-trim-left str "+")
+                   str))
+               agenda-filter-preset))
+    '(tags)))
+
+(defun agenda-queries--stucked-projects-query ()
+  "Stucked projects query for org-ql."
+  '(and (todo)
+        (descendants (todo))
+        (not (descendants (todo "NEXT")))
+        (not (and (or (todo "HOLD")
+                      (todo "WAIT")
+                      (todo "SOMEDAY")
+                      (todo "MAYBE"))
+                  (descendants (todo))))))
+
+(defun agenda-queries--past-dues-query ()
+  "Return valid org-ql query searching for past dues."
+  `(or (and (ts-active :to ,(ts-now))
+            (not (habit))
+            (not (done)))
+       (habit-half-due)))
+
+(defun agenda-queries--habits-query ()
+  "Return valid org-ql query searching for habits."
+  `(and (habit) ,(agenda-queries--filter-tags-query)))
+
+(defun agenda-queries--future-dues-query ()
+  "Return valid org-ql query searching for future dues."
+  (let ((up-to (if current-prefix-arg 365 2)))
+    `(or (and (planning :from ,(ts-now) :to ,up-to))
+         (and (habit)
+              (planning :to ,up-to)
+              (not (habit-half-due))))))
+
+(defun agenda-queries--all-active-tasks-query ()
+  "Return valid org-ql query searching for all active tasks.
+"
+  `(and (todo)
+        (not (todo "SOMEDAY"))
+        (not (todo "MAYBE"))
+        (not (done))
+        ,(agenda-queries--filter-tags-query)))
+
+(defun agenda-queries--simple-task-query (keyword)
+  "Return valid org-ql query searching for todo KEYWORD."
+  (remove nil `(and (todo ,keyword)
+                    ,(agenda-queries--filter-tags-query)
+                    ,(if current-prefix-arg
+                         nil
+                       '(not (ancestors (todo)))))))
+
+(defun agenda-queries--non-complete-tasks-query ()
+  "Return valid org-ql query searching for non-complete tasks."
+  `(and (todo)
+        ,(agenda-queries--filter-tags-query)))
+
+(defun agenda-queries--done-query ()
+  "Return valid org-ql query searching completed tasks."
+  `(and (done)
+        ,(agenda-queries--filter-tags-query)))
+
+(defun agenda-queries--stand-alone-task-query ()
+  "Return custom org-ql queary for stand-alone tasks.
+Accepted are either \"TO DO\" or \"PROJECT\" keywords."
+  `(and (or (todo "TODO")
+            (todo "PROJECT"))
+        ,(agenda-queries--filter-tags-query)
+        (not (ts-active))
+        (not (descendants (todo)))
+        (not (ancestors (todo)))))
+
+(defun agenda-queries--next-task-query ()
+  "Return custom org-ql queary for NEXT task."
+  `(and
+    (todo "NEXT")
+    ,(agenda-queries--filter-tags-query)
+    (not (or (parent "WAIT")
+             (parent "HOLD")))
+    (not (ts-active))))
+
+(defun agenda-queries--projects-query ()
+  "Return custom org-ql queary for Projects.
+
+Projects are defined as a todo heading which isn't Someday or Maybe
+and has todo childre."
+  `(and (todo)
+        ,(agenda-queries--filter-tags-query)
+        (descendants (todo))
+        (not (or (todo "SOMEDAY")
+                 (todo "MAYBE")))))
+
+(defun agenda-queries--project-descendants-query (h-title)
+  "Return all descendants of heading matching H-TITLE."
+  `(ancestors (heading ,h-title)))
+
+(defun agenda-queries--custom-wait-task-query ()
+  "Return custom org-ql queary for WAIT task."
+  `(and (todo "WAIT" )
+        ,(agenda-queries--filter-tags-query)
+        (not (ancestors
+              (or (todo "HOLD")
+                  (todo "WAIT")
+                  (todo "SOMEDAY")
+                  (todo "MAYBE"))))))
+
+(defun agenda-queries--custom-hold-task-query ()
+  "Return custom org-ql queary for HOLD task."
+  `(and (todo "HOLD" )
+        ,(agenda-queries--filter-tags-query)
+        (not (ancestors
+              (or (todo "HOLD")
+                  (todo "WAIT")
+                  (todo "SOMEDAY")
+                  (todo "MAYBE"))))))
+
+(defun agenda-queries--custom-clocked-task-query ()
+  "Return custom org-ql queary for all recently clocked tasks."
+  `(and (clocked) ,(agenda-queries--filter-tags-query)))
+
+(defun agenda-queries--custom-ticklers-query ()
+  "Return custom org-ql queary for tickler items.
+
+Tickler is just plain reminder, calendar note,
+ org-heading without task keyword but with active timestamp.
+Tickler is not scheduled nor it doesn't have deadline."
+  `(and (ts-active :to 365)
+        (not (planning))))
+
+(provide 'agenda-queries)

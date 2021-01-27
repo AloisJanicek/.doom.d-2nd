@@ -1,8 +1,32 @@
 ;;;  -*- lexical-binding: t; -*-
 
-(load! "stylelintd-fix")
-(load! "+vars")
-(load! "+hacks")
+(defvar aj-home-base-dir nil
+  "Variable which equals to ~ on linux or to a specified host home directory
+if running under WSL")
+
+(defvar aj-wsl-win-root "/mnt/c"
+  "Mount point of the Windows system partition")
+
+(setq aj-home-base-dir (if (aj-wsl-p)
+                           (expand-file-name (aj-get-wsl-user-name) (concat aj-wsl-win-root  "/Users/"))
+                         (setq aj-home-base-dir (expand-file-name "~/"))))
+
+(defvar aj-reference-dir (expand-file-name "MEGAsync" aj-home-base-dir)
+  "Location of the Reference folder.")
+
+(defvar aj-library-dir "Libraries"
+  "Name of the directory housing Calibre libraries.")
+
+(defvar aj-calibre-path (expand-file-name aj-library-dir aj-reference-dir)
+  "Path of the Calibre libraries.")
+
+(defvar aj-repos-dir (expand-file-name "repos" "~")
+  "Path of the repos folder.")
+
+(setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir)))
+
+(setq gtd-agenda-inbox-file (expand-file-name "inbox.org" org-directory))
+
 (add-load-path! "lisp")
 
 (dolist (i '(ol-info ol-eww org-id))
@@ -137,6 +161,7 @@
   (setq calendar-week-start-day 1))
 
 (after! (:any css-mode scss-mode)
+  (load! "lisp/stylelintd-fix" nil t)
   (set-docsets! '(css-mode scss-mode)
     "CSS" "HTML"
     ["Sass" (memq major-mode '(scss-mode))])
@@ -220,11 +245,11 @@
   (add-hook 'counsel-grep-post-action-hook  #'recenter)
   (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj-org-open-file-respect-sanity-a)
   (advice-add #'counsel-org-clock--run-context-action :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'counsel-org-clock--run-context-action :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'counsel-org-clock--run-context-action :around #'org-persp-pop-buffer-a)
   (advice-add #'counsel-org-clock--run-history-action :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'counsel-org-clock--run-history-action :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'counsel-org-clock--run-history-action :around #'org-persp-pop-buffer-a)
   (advice-add #'aj-org-find-file :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'aj-org-find-file :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'aj-org-find-file :around #'org-persp-pop-buffer-a)
   (advice-add #'counsel-org-goto-action :after (lambda (&rest _) (recenter 0 t)))
   (advice-add
    #'counsel--mark-ring-update-fn
@@ -782,144 +807,6 @@
   (advice-add #'+ivy/project-search :override #'+ivy/project-search-a)
   (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
 
-  (ivy-add-actions
-   #'aj-org-ql-select-history-queries
-   '(("s" (lambda (x)
-            (let* ((query x)
-                   (query (cl-etypecase query
-                            (string (if (or (string-prefix-p "(" query)
-                                            (string-prefix-p "\"" query))
-                                        ;; Read sexp query.
-                                        (read query)
-                                      ;; Parse non-sexp query into sexp query.
-                                      (org-ql--query-string-to-sexp query)))
-                            (list query))))
-              (add-to-list 'aj-org-ql-queries-history `(,(prin1-to-string query) . ,query))
-              (aj-org-ql-dispatch-custom-query-search 'agenda-headlines (prin1-to-string query))))
-      "save")
-     ("e" (lambda (x)
-            (setq aj-org-ql-queries-history
-                  (remove (assoc
-                           (car x)
-                           aj-org-ql-queries-history)
-                          aj-org-ql-queries-history))
-            (aj-org-ql-select-history-queries "EDIT past queries: " (car x)))
-      "edit")
-     ("c" (lambda (x)
-            (aj-org-ql-select-history-queries "EDIT past queries: " (car x)))
-      "copy")
-     ("k" (lambda (x)
-            (setq aj-org-ql-queries-history
-                  (remove (assoc
-                           (car x)
-                           aj-org-ql-queries-history)
-                          aj-org-ql-queries-history))
-            (aj-org-ql-select-history-queries "EDIT past queries: "))
-      "delete")
-     ))
-
-  (ivy-set-actions
-   #'aj/org-agenda-headlines
-   '(("e" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper headline #'org-set-effort)
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "effort")
-     ("t" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper headline #'org-todo)
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "todo")
-     ("g" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper headline #'counsel-org-tag)
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "tags")
-     ("c" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper
-             headline
-             (lambda ()
-               (org-clock-in))))
-      "clock in")
-     ("C" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper
-             headline
-             (lambda ()
-               (org-clock-out)
-               (aj-org-agenda-headlines-dispatch-last nil ivy-text))))
-      "clock out")
-     ("a" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper headline #'org-archive-subtree)
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "archive")
-     ("P" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper headline #'org-priority)
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "Priority")
-     ("p" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper headline #'org-pomodoro)
-            (when (equal org-pomodoro-state :none)
-              (aj-org-agenda-headlines-dispatch-last nil ivy-text)))
-      "pomodoro")
-     ("s" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper
-             headline
-             (lambda ()
-               (interactive)
-               (org-schedule current-prefix-arg)))
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "schedule")
-     ("d" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper
-             headline
-             (lambda ()
-               (interactive)
-               (org-deadline current-prefix-arg)))
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "deadline")
-     ("x" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper
-             headline
-             (lambda ()
-               (let ((h-title (aj-org-heading-title-without-statistics-cookie)))
-                 ;; HACK because I am experiencing some weird issue with narrowing and widening
-                 ;; I am dropping org-ql cache for this buffer / file in this scenario
-                 (puthash (org-base-buffer (current-buffer)) nil org-ql-cache)
-
-                 (aj/org-agenda-headlines
-                  :query (aj-org-ql-project-descendants-query h-title)
-                  :prompt "descendants: "
-                  :files (buffer-file-name (org-base-buffer (current-buffer)))
-                  :sort-fn (lambda (a b) t)
-                  :reverse t
-                  :time t
-                  :capture-key "x"
-                  )
-                 ))))
-      "descendants")
-     ("r" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper
-             headline
-             (lambda ()
-               (my/org-rename-header
-                (read-string "Header: "
-                             (aj-org-heading-title-without-statistics-cookie)))))
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "rename")
-     ("R" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper
-             headline
-             (lambda ()
-               (aj/org-refile-to-current-file nil)))
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "Refile")
-     ("k" (lambda (headline)
-            (aj-org-agenda-headlines-custom-action-helper headline #'org-cut-subtree)
-            (aj-org-agenda-headlines-dispatch-last nil ivy-text))
-      "delete")
-     ("h" (lambda (x)
-            (aj-org-agenda-headlines-dispatch-last t))
-      "Back")
-     )
-   )
-
   (ivy-set-actions
    'counsel-projectile-bookmark
    '(("d" bookmark-delete "delete")
@@ -1303,6 +1190,22 @@
 
 (after! org
   (load! "lisp/filter-preset-ivy")
+  (when (load! "lisp/brain")
+    (doom-store-persist doom-store-location '(notes-filter-preset)))
+
+
+  (when (and (load! "lisp/gtd-agenda")
+             (doom-store-persist doom-store-location '(gtd-agenda-queries-history))
+             (doom-store-persist doom-store-location '(agenda-filter-preset)))
+
+    ;; HACK doom-store can't handle non-ASCII characters properly
+    (setq gtd-agenda-queries-history
+          (seq-map (lambda (i)
+                     (cons
+                      (decode-coding-string (car i) 'utf-8)
+                      (cdr i)))
+                   gtd-agenda-queries-history)))
+
   (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
   (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
@@ -1317,7 +1220,7 @@
   (add-hook 'org-mode-hook #'visual-line-mode)
   (add-hook 'org-mode-hook #'mixed-pitch-mode)
   (advice-add #'org-goto-marker-or-bmk :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-goto-marker-or-bmk :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-goto-marker-or-bmk :around #'org-persp-pop-buffer-a)
   (advice-add #'org-refile :after #'aj-org-buffers-respect-sanity-a)
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
@@ -1332,7 +1235,7 @@
    (lambda (orig-fn &rest args)
      (let ((path (nth 0 args)))
        (if (string-equal "org" (file-name-extension path))
-           (cl-letf (((symbol-function 'pop-to-buffer) #'aj-display-org-buffer-popup))
+           (cl-letf (((symbol-function 'pop-to-buffer) #'org-persp-pop-org-buffer))
              (apply orig-fn args))
          (apply orig-fn args)))))
   (setcdr (assoc "\\.x?html?\\'" org-file-apps) #'aj-browse-zeal-local-file)
@@ -1396,6 +1299,7 @@
   (when (featurep! :editor evil)
     (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode))
   :config
+  (require 'notes-filter)
   (set-popup-rule! "^\\*org-brain\\*$" :vslot -1 :size 60 :side 'left :select t :quit t :ttl nil :modeline t)
   (add-hook 'org-brain-visualize-mode-hook (lambda ()
                                              (doom-mark-buffer-as-real-h)
@@ -1412,9 +1316,9 @@
                                         "Recenter visited heading to the top of the buffer."
                                         (recenter 0 t)
                                         (when (org-at-heading-p)
-                                          (aj-org-narrow-and-show))
+                                          (+org-narrow-and-show))
                                         (turn-off-solaire-mode)))
-  (advice-add #'org-brain-goto :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-brain-goto :around #'org-persp-pop-buffer-a)
 
   (advice-add #'org-brain-switch-brain :around (lambda (orig-fn directory)
                                                  (let ((encrypted-dir
@@ -1424,13 +1328,13 @@
                                                    (when (and (file-equal-p
                                                                (file-truename directory)
                                                                encrypted-dir)
-                                                              (not aj-currently-refiling))
+                                                              (not +org-brain-currently-refiling))
                                                      (aj-decrypt-encrypt-files-directory directory))
                                                    (funcall orig-fn directory)
                                                    (when (and (file-equal-p
                                                                encrypted-dir
                                                                (file-truename old-brain))
-                                                              (not aj-currently-refiling))
+                                                              (not +org-brain-currently-refiling))
                                                      (aj-decrypt-encrypt-files-directory old-brain t)))))
 
   (doom-store-persist doom-store-location '(org-brain-path))
@@ -1481,9 +1385,16 @@
    #'org-ql-view--format-element
    :override
    (lambda (element)
-     "Format org-ql-views with custom `aj-org-pretty-format-element'."
-     (aj-org-pretty-format-element element nil nil t t t t t (not aj-org-agenda-filter))))
-  (advice-add #'org-ql-view--display :after #'aj-org-ql-hide-header-a)
+     "Format org-ql-views with custom `gtd-agenda-format-element'."
+     (gtd-agenda-format-element element nil nil t t t t t (not agenda-filter-preset))))
+
+
+  (cl-defun +org-ql-view-hide-header-a (&key (buffer org-ql-view-buffer) _header _string)
+    "Advice for removing headerline in org-ql buffers."
+    (with-current-buffer buffer
+      (setq-local header-line-format nil)))
+
+  (advice-add #'org-ql-view--display :after #'+org-ql-view-hide-header-a)
   (advice-add #'org-ql-view-refresh :after (lambda (&rest _)
                                              "Blacklist certain Org-QL views from re-applying agenda filter."
                                              (let ((buffer (prin1-to-string (current-buffer))))
@@ -1491,7 +1402,7 @@
                                                            (string-match "Stucked Projects" buffer)
                                                            (string-match "All Todos" buffer)
                                                            (string-match "ARCHIVED" buffer))
-                                                 (org-agenda-filter-apply aj-org-agenda-filter 'tag)))))
+                                                 (org-agenda-filter-apply agenda-filter-preset 'tag)))))
   )
 
 (use-package! org-sidebar
@@ -1521,7 +1432,7 @@
               (lambda (&rest _)
                 "Narrow and show children after switching."
                 (widen)
-                (aj-org-narrow-and-show)
+                (+org-narrow-and-show)
                 (turn-off-solaire-mode)))
   (advice-add #'org-agenda-switch-to :around #'aj-org-open-file-respect-sanity-a)
   (advice-add
@@ -1538,14 +1449,13 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
                (title (substring-no-properties (car (org-get-at-bol 'title)))))
            (org-ql-search
              (buffer-file-name (org-base-buffer buffer))
-             (aj-org-ql-project-descendants-query title)
-             :sort (lambda (a b) nil)
+             (agenda-queries--project-descendants-query title)
+             :sort (lambda (_a _b) nil)
              :title (format "Descendants of: %s" title)))
        (apply orig-fn args))))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-exit :after #'aj-org-buffers-respect-sanity-a)
-  (advice-add #'org-agenda-filter-apply :after #'aj-org-agenda-copy-set-filter-a)
   (advice-add #'org-agenda-set-mode-name :after (lambda (&rest _)
                                                   "Ensure modes are formated with cyphejor."
                                                   (cyphejor--hook)))
@@ -1631,7 +1541,7 @@ When in org-roam file, also create top-level ID.
          (alert body)))))
   (setq
    org-protocol-default-template-key "L"
-   org-capture-templates `(("p" "Protocol" entry (file ,aj-org-inbox-file)
+   org-capture-templates `(("p" "Protocol" entry (file ,gtd-agenda-inbox-file)
                             ,(concat
                               "* [[%:link][%(my-transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
                               ":PROPERTIES:\n"
@@ -1647,7 +1557,7 @@ When in org-roam file, also create top-level ID.
                             :prepend nil
                             )
 
-                           ("L" "Protocol Link" entry (file ,aj-org-inbox-file)
+                           ("L" "Protocol Link" entry (file ,gtd-agenda-inbox-file)
                             ,(concat
                               "* [[%:link][%(my-transform-square-brackets-to-round-ones \"%:description\")]] :link:\n"
                               ":PROPERTIES:\n"
@@ -1659,7 +1569,7 @@ When in org-roam file, also create top-level ID.
                             :prepend nil
                             )
 
-                           ("w" "Website" entry (file ,aj-org-inbox-file)
+                           ("w" "Website" entry (file ,gtd-agenda-inbox-file)
                             ,(concat
                               "* %c :website:\n"
                               ":PROPERTIES:\n"
@@ -1675,9 +1585,9 @@ When in org-roam file, also create top-level ID.
                             :prepend t
                             )
 
-                           ("k" "Capture" entry (file ,aj-org-inbox-file)
+                           ("k" "Capture" entry (file ,gtd-agenda-inbox-file)
                             ,(concat
-                              "* %(ivy-read \"Title: \" nil :initial-input (if aj-org-capture-prefered-template-key (current-kill 0) \"\")) \n"
+                              "* %(ivy-read \"Title: \" nil :initial-input (if agenda-headlines--prefered-template-key (current-kill 0) \"\")) \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
                               ":END:\n"
@@ -1705,7 +1615,7 @@ When in org-roam file, also create top-level ID.
                             :empty-lines 1
                             )
 
-                           ("s" "Snippet" entry (file ,aj-org-inbox-file)
+                           ("s" "Snippet" entry (file ,gtd-agenda-inbox-file)
                             ,(concat
                               "* %^{PROMPT} :src: \n"
                               ":PROPERTIES:\n"
@@ -1724,9 +1634,9 @@ When in org-roam file, also create top-level ID.
 
                            ("t" "Task" entry (file
                                               (lambda ()
-                                                (aj-org-funcall-with-filtered-agenda-files #'identity)))
+                                                (agenda-filter-funcall-with-filtered-agenda-files #'identity)))
                             ,(concat
-                              "* TO" "DO %(ivy-read \"Title: \" nil :initial-input (if aj-org-capture-prefered-template-key (current-kill 0) \"\")) \n"
+                              "* TO" "DO %(ivy-read \"Title: \" nil :initial-input (if agenda-headlines--prefered-template-key (current-kill 0) \"\")) \n"
                               ":PROPERTIES:\n"
                               ":CREATED: %U\n"
                               ":END:\n"
@@ -1741,7 +1651,7 @@ When in org-roam file, also create top-level ID.
 
                            ("T" "Task clocked-in" entry (file
                                                          (lambda ()
-                                                           (aj-org-funcall-with-filtered-agenda-files #'identity)))
+                                                           (agenda-filter-funcall-with-filtered-agenda-files #'identity)))
                             ,(concat
                               "* TO" "DO %^{PROMPT} \n"
                               ":PROPERTIES:\n"
@@ -1816,7 +1726,7 @@ When in org-roam file, also create top-level ID.
                                        (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
   (advice-add #'org-clock-goto :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-clock-goto :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-clock-goto :around #'org-persp-pop-buffer-a)
   (advice-add #'org-clock-report :after (lambda (&rest _)
                                           "Save all opened org-mode files."
                                           (org-save-all-org-buffers)))
@@ -1824,7 +1734,7 @@ When in org-roam file, also create top-level ID.
                                         "Narrow view after switching."
                                         (interactive)
                                         (widen)
-                                        (aj-org-narrow-and-show)))
+                                        (+org-narrow-and-show)))
 
   (setq
    org-clock-clocked-in-display nil
@@ -1885,7 +1795,7 @@ When in org-roam file, also create top-level ID.
       (aj/org-id-update-recursively)))
 
   (advice-add #'org-id-open :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-id-open :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-id-open :around #'org-persp-pop-buffer-a)
   )
 
 (doom-store-persist doom-store-location '(org-roam-directory))
@@ -1918,7 +1828,7 @@ When in org-roam file, also create top-level ID.
     (after! org-roam-ivy
       (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
       (advice-add #'org-roam-ivy :around #'aj-org-open-file-respect-sanity-a)
-      (advice-add #'org-roam-ivy :around #'aj-org-buffer-to-popup-a)))
+      (advice-add #'org-roam-ivy :around #'org-persp-pop-buffer-a)))
 
   (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
   (add-hook
@@ -1955,15 +1865,15 @@ When in org-roam file, also create top-level ID.
         )
 
   (advice-add #'org-roam--find-file :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-roam--find-file :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-roam--find-file :around #'org-persp-pop-buffer-a)
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
   (advice-add #'org-roam-doctor :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
   (advice-add #'org-roam-unlinked-references :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-roam-unlinked-references :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-roam-unlinked-references :around #'org-persp-pop-buffer-a)
   (advice-add #'org-roam-protocol-open-file :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-roam-protocol-open-file :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-roam-protocol-open-file :around #'org-persp-pop-buffer-a)
   (advice-add #'org-roam-capture--capture :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'org-roam-capture--capture :around #'aj-org-buffer-to-popup-a)
+  (advice-add #'org-roam-capture--capture :around #'org-persp-pop-buffer-a)
   )
 
 (use-package! org-roam-server-light
@@ -1971,7 +1881,7 @@ When in org-roam file, also create top-level ID.
   :commands org-roam-server-light-mode
   :config
   (setq org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
-        org-roam-server-light-style "body.darkmode { background-color: #121212!important; }"
+        org-roam-server-light-style "body.darkmode { background-color: #00212b!important; }"
         org-roam-server-light-default-include-filters "null"
         org-roam-server-light-default-exclude-filters "[{ \"id\": \"journal\", \"parent\" : \"tags\"  }]"
         )
@@ -2025,8 +1935,6 @@ When in org-roam file, also create top-level ID.
         persp-autokill-buffer-on-remove nil
         )
   (advice-add #'persp-remove-buffer :around #'doom-shut-up-a)
-  (dolist (file (directory-files-recursively org-directory ".org$"))
-    (add-to-list 'aj-persp-blacklist `,(file-name-nondirectory file)))
   )
 
 (after! perl-mode
@@ -2429,16 +2337,16 @@ When in org-roam file, also create top-level ID.
 
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
 
-(advice-add #'aj/org-notes-search-no-link :around #'aj-org-open-file-respect-sanity-a)
-(advice-add #'aj/org-notes-search-no-link :around #'aj-org-buffer-to-popup-a)
-(advice-add #'aj/org-notes-search-no-link :after (lambda (&rest _)
+(advice-add #'+org-notes/format-org-links :around #'aj-org-open-file-respect-sanity-a)
+(advice-add #'+org-notes/format-org-links :around #'org-persp-pop-buffer-a)
+(advice-add #'+org-notes/format-org-links :after (lambda (&rest _)
                                                    "Narrow view after switching."
                                                    (interactive)
-                                                   (aj-org-narrow-and-show)))
+                                                   (+org-narrow-and-show)))
 
-(advice-add #'aj/org-agenda-headlines :around #'aj-org-buffer-to-popup-a)
-(advice-add #'aj-org-jump-to-headline-at :around #'aj-org-buffer-to-popup-a)
-(advice-add #'aj-org-jump-to-datetree :around #'aj-org-buffer-to-popup-a)
+(advice-add #'agenda-headlines-goto-query :around #'org-persp-pop-buffer-a)
+(advice-add #'agenda-headlines-goto-any :around #'org-persp-pop-buffer-a)
+(advice-add #'aj-org-jump-to-datetree :around #'org-persp-pop-buffer-a)
 
 ;;; theme-settings
 (add-hook 'doom-load-theme-hook
@@ -2545,11 +2453,6 @@ When in org-roam file, also create top-level ID.
           `(solaire-alt-face :background nil)
           `(solaire-fringe-face :background nil)))))
 
-(load! "+bindings")
-
-(when (file-readable-p (expand-file-name "+local.el" doom-private-dir))
-  (load! "+local"))
-
 (autoload
   (function server-running-p)
   "server" nil t)
@@ -2561,3 +2464,8 @@ When in org-roam file, also create top-level ID.
 
 ;; emacs-anywhere settings
 (add-hook 'ea-popup-hook #'ea-popup-handler)
+
+(load! "lisp/dotdrop")
+(load! "+bindings")
+(load! "+hacks")
+(load! "+local" nil t)

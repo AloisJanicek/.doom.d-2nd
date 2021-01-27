@@ -22,7 +22,7 @@
 
 ;;;###autoload
 (defun filter-preset-ivy (prompt-str collection preset)
-"Helper ivy interface for setting multiple value filter presets.
+  "Helper ivy interface for setting multiple value filter presets.
 
 Its prompt contructed from PROMPT-STR and PRESET will be updated
 every time user selects or unselects item candidates from COLLECTION
@@ -50,7 +50,7 @@ Adopted from `counsel-org-tag-action'."
                         (if (eq this-command 'ivy-call)
                             (with-selected-window (active-minibuffer-window)
                               (delete-minibuffer-contents))))
-              :caller 'aj-org-notes-set-filter-preset--ivy)
+              :caller 'filter-preset-ivy)
     preset)
   )
 

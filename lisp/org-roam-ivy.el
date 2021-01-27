@@ -24,7 +24,7 @@
 
 ;;; Variables
 
-(defvar org-roam-ivy--latest-ivy-text nil
+(defvar org-roam-ivy--last-ivy-text ""
   "Variable storing latest `ivy-text' suitable for restoration in org-roam-ivy.
 
 When using org-roam-ivy interfaces, store valaue of the `ivy-text'
@@ -72,7 +72,7 @@ filter preset."
                      (org-roam-db--get-tags)
                      (org-roam-ivy--filter-preset-get org-roam-directory))))
     (org-roam-ivy--filter-preset-set org-roam-directory new-preset)
-    (setq org-roam-ivy--latest-ivy-text (concat (car new-preset) " "))))
+    (setq org-roam-ivy--last-ivy-text (concat (car new-preset) " "))))
 
 ;;; Helper org-roam functions
 (defun org-roam-ivy--set-aliases ()
@@ -264,24 +264,6 @@ Prepend org-roam-ref items with \"link\" icon."
              (concat (funcall prepend-backlinks-num f-title) " " tags)))
           (t (funcall prepend-backlinks-num str)))))
 
-(defun org-roam-ivy--update-fn-timer ()
-  "Update function for ivy with timer."
-  (when (ignore-errors org-roam-ivy--timer)
-    (cancel-timer org-roam-ivy--timer))
-  (setq org-roam-ivy--timer
-        (run-with-timer
-         0.2
-         nil
-         `(lambda ()
-            (ignore-errors
-              (with-ivy-window
-                (funcall
-                 (ivy--get-action ivy-last)
-                 (if (consp (car-safe (ivy-state-collection ivy-last)))
-                     (assoc (ivy-state-current ivy-last)
-                            (ivy-state-collection ivy-last))
-                   (ivy-state-current ivy-last)))))))))
-
 ;;; org-roam-ivy
 (defun org-roam-ivy (prompt collection &optional from)
   "Exclusive ivy interface for org-roam.
@@ -297,17 +279,17 @@ of org-roam item by tag string doesn't make much sense."
                        (concat (mapconcat #'identity preset " ") " ")))
          (init-input (if descended-into
                          ""
-                       (or (when (string-empty-p org-roam-ivy--latest-ivy-text)
+                       (or (when (string-empty-p org-roam-ivy--last-ivy-text)
                              preset-str)
-                           org-roam-ivy--latest-ivy-text))))
+                           org-roam-ivy--last-ivy-text))))
     (ivy-read prompt collection
               :initial-input init-input
               :caller 'org-roam-ivy
               :update-fn (when org-roam-ivy-auto-preview
-                           #'org-roam-ivy--update-fn-timer)
+                           #'ivy-common-update-fn-timer)
               :action (lambda (x)
                         (unless (string-match "Backlinks of" ivy--prompt)
-                          (setq org-roam-ivy--latest-ivy-text ivy-text))
+                          (setq org-roam-ivy--last-ivy-text ivy-text))
                         (if-let ((f (ignore-errors (plist-get (cdr x) :path))))
                             (pop-to-buffer (find-file-noselect f))
                           (progn
@@ -341,6 +323,18 @@ of org-roam item by tag string doesn't make much sense."
  '(("x" org-roam-ivy--backlinks-action "backlinks")
    ("k" org-roam-ivy--delete-action "delete")
    ("b" org-roam-ivy--refs-url-open-action "browse url")
+   ("e" (lambda (x)
+          "Encrypt every Level 1 heading by adding crypt tag specified in `org-crypt-tag-matcher'."
+          (when-let* ((beg (+ 1 (string-match "+" org-crypt-tag-matcher)))
+                      (end (string-match "-" org-crypt-tag-matcher))
+                      (crypt-tag (substring org-crypt-tag-matcher beg end)))
+            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+              (org-map-entries
+               (lambda ()
+                 (org-toggle-tag crypt-tag 'on))
+               "LEVEL=1")
+              (save-buffer))))
+    "encrypt headings")
    ("B" (lambda (x)
           ;; FIXME Make this work with other browsers too
           (let ((browse-url-chromium-arguments browse-url-chromium-arguments))

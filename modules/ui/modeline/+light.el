@@ -484,7 +484,7 @@ lines are selected, or the NxM dimensions of a block selection.")
                      "Org Agenda")))
       (if org-ql-view-title
           (concat title
-                  (concat " [" (aj-org-agenda-tag-filter-string) "]")
+                  (concat " [" (agenda-filter-preset-string) "]")
                   "::"
                   (file-name-nondirectory org-brain-path)
                   )

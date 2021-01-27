@@ -119,7 +119,6 @@
  upload
 
  :os
- (:if IS-MAC macos)
  tty
 
  :lang
