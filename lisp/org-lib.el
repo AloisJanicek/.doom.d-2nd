@@ -193,11 +193,9 @@ specified in `+org/capture-file-heading'."
 
 (defun +org-narrow-and-show ()
   "Narrow to subtree, show children and entry"
-  (when (require 'org-fold)
-    ;; FIXME Works only with experimental `org-fold' branch
-    (org-narrow-to-subtree)
-    (org-fold-show-children)
-    (org-fold-show-entry)))
+  (org-narrow-to-subtree)
+  (org-show-children)
+  (org-show-entry))
 
 (defun +org-heading-title-without-statistics-cookie ()
   "Return title of org heading but without statistics cookie."
@@ -308,8 +306,7 @@ FN is function taking two arguments url and title."
 
   (org-back-to-heading)
   (when (org-at-heading-p)
-    ;; FIXME Works only with experimental `org-fold' branch
-    (org-fold-show-entry)
+    (org-show-entry)
     (org-toggle-item nil)
     (let* ((current-prefix-arg nil)
            (orig-buff (current-buffer))

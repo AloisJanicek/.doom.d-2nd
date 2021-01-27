@@ -119,8 +119,7 @@ Optional argument NO-FILTER cancels filering according to `notes-filter-preset'.
      results
      :action (lambda (x)
                (goto-char (cdr x))
-               ;; FIXME Works only with experimental `org-fold' branch
-               (org-fold-show-entry)))))
+               (org-show-entry)))))
 
 (defun +org-brain/refile-link-to-archived-resources (file &optional level)
   "Archive link under the point into \"RESOURCES\" drawer of some archived org file."
