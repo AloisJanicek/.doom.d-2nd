@@ -18,7 +18,7 @@
                         (insert "(fset 'org-release (lambda () \"9.5\"))\n"
                                 "(fset 'org-git-version #'ignore)\n"
                                 "(provide 'org-version)\n")))
-  :pin "fa24d3b032a28de92534244869537f89f7eeebd3"
+  :pin "96ab3747f0049f26d057eb3929a6198ada5b622e"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -60,7 +60,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "6eb63a158cd5e1b47635704ebdd3e010e7b914f8")
+  :pin "3cfc62cea6f26279e062d6056fa0fec7b6f7ac1c")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -100,7 +100,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "bf993fb1132a50a1897b3c2d7461ce50a9c252bf"
+  :pin "c28e88c50d52b0706b2af535762b72239cf7e38e"
   )
 
 (package! eslintd-fix
@@ -188,7 +188,7 @@
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "6b349997b4953f8574eb6c8c1c7a95ddacc4ba77")
+  :pin "181cffb37f27ce058579f2ecb7a03bc2139baf08")
 
 (package! org-ql
   :pin "208e103ecc146db71d878df3bd09c6eb60c2797d")
