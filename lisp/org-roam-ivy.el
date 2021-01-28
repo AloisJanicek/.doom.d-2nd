@@ -223,7 +223,8 @@ Adopted from `org-roam'."
            (slug  . ,(funcall org-roam-title-to-slug-function x))))
         (org-roam-capture--context 'title))
     (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
-    (org-roam-capture--capture)))
+    (org-roam-capture--capture)
+    (setq org-roam-ivy--last-ivy-text "")))
 
 (defun org-roam-ivy--backlinks-transformer (str)
   "Improve appereance of org-roam ivy.
@@ -303,7 +304,8 @@ of org-roam item by tag string doesn't make much sense."
   (interactive)
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-refs)
   (plist-put org-roam-ivy--last-ivy :backlinks nil)
-  (let (org-roam-ivy-filter-preset)
+  (let ((org-roam-ivy--last-ivy-text "")
+        org-roam-ivy-filter-preset)
     (org-roam-ivy "Refs: " (org-roam--get-ref-path-completions 1))))
 
 ;;;###autoload

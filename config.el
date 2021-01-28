@@ -1830,6 +1830,7 @@ When in org-roam file, also create top-level ID.
       (advice-add #'org-roam-ivy :around #'aj-org-open-file-respect-sanity-a)
       (advice-add #'org-roam-ivy :around #'org-persp-pop-buffer-a)))
 
+  (require 'org-roam-hydra)
   (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
   (add-hook
    'org-roam-capture-after-find-file-hook

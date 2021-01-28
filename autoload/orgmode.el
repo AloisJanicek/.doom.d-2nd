@@ -1093,95 +1093,6 @@ Org manual: 8.4.2 The clock table.
                 (get-text-property 0 'marker x))))))
 
 ;;;###autoload
-(defun aj/start-open-org-roam-server-light ()
-  "Start `org-roam-server-light' and pop up browser window.
-Depending on current platform emacs is running on open
-either eaf-browser or default browser.
-"
-  (interactive)
-  (unless (ignore-errors org-roam-server-light-mode)
-    (org-roam-server-light-mode))
-  (if (and (display-graphic-p)
-           (not (aj-wsl-p)))
-      (let ((server-buff (get-buffer "*eaf Org Roam Server*"))
-            (pop-size (round (/ (frame-width) 1.6))))
-        (if server-buff
-            (if org-roam-server-light-mode
-                (progn
-                  (+popup-buffer server-buff
-                                 `((side . right)
-                                   (size . ,pop-size)
-                                   (slot)
-                                   (vslot . 1)
-                                   (window-parameters
-                                    (ttl)
-                                    (quit . t)
-                                    (select . t)
-                                    (modeline . t)
-                                    (autosave . nil))))
-                  (let ((script (executable-find "eaf-org-roam-adjust-scroll.py")))
-                    (when script
-                      (async-start-process
-                       "eaf-scroll"
-                       script
-                       nil))))
-              (kill-buffer server-buff))
-          (when org-roam-server-light-mode
-            (eaf-open-browser "http://127.0.0.1:8080"))))
-    (browse-url "http://127.0.0.1:8080")))
-
-;;;###autoload (autoload 'aj/org-roam-hydra/body "autoload/orgmode" nil t)
-(defhydra aj/org-roam-hydra (:color blue
-                             :columns 4
-                             :body-pre
-                             (progn
-                               (require 'org-roam)
-                               (if (or (eq (car current-prefix-arg) 4)
-                                       (not org-roam-directory))
-                                   (aj/org-roam-choose-update-dir))))
-  "
-%(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
-"
-  ("d" (lambda ()
-         (interactive)
-         (org-roam-ivy--delete-file
-          (buffer-file-name (org-base-buffer (current-buffer)))))
-   "delete")
-  ("r" (let (org-roam-ivy-filter-preset
-             org-roam-ivy--last-ivy-text)
-         (org-roam-ivy-find-refs))
-   "refs")
-  ("R" #'org-roam-ivy-filter-preset-set "filter")
-  ("f" #'org-roam-ivy-find-file "file")
-  ("k" #'+org-roam/re-capture-as-entry "re-capture entry")
-  ("K" #'+org-roam/re-capture-as-ref "re-capture link ref")
-  ("F" (let (org-roam-ivy-filter-preset
-             org-roam-ivy--last-ivy-text)
-         (org-roam-ivy-find-file))
-   "file unfiltered")
-  ("s" #'aj/start-open-org-roam-server-light "server")
-  ("S" (org-roam-server-light-mode -1) "Stop")
-  ("g" (+org-notes/format-org-links org-roam-directory) "grep")
-  ("j" #'org-roam-dailies-date "journal create")
-  ("J" (let (org-roam-dailies-find-file-hook)
-         (org-roam-dailies-date))
-   "journal jump")
-  ("i" #'org-roam-jump-to-index "index")
-  ("a" (lambda ()
-         (interactive)
-         (org-roam-ivy--set-aliases
-          (org-base-buffer (current-buffer))))
-   "aliases")
-  ("t" (lambda ()
-         (interactive)
-         (org-roam-ivy--set-tags
-          (org-base-buffer (current-buffer))))
-   "tags")
-  ("I" #'org-roam-insert "insert")
-  ("T" #'org-roam-buffer-toggle-display "toggle")
-  )
-
-;;;###autoload
 (defun aj/calibre-org-open-org-noter-note ()
   "Open org-file from `aj-calibre-path' in a special way."
   (interactive)
@@ -1195,40 +1106,6 @@ either eaf-browser or default browser.
               (let* ((file (cdr file-pair)))
                 (org-persp-pop-org-buffer (or (get-file-buffer file)
                                                  (find-file-noselect file)))))))
-
-;;;###autoload
-(defun aj/org-roam-choose-update-dir ()
-  "Choose and update `org-roam-directory'."
-  (interactive)
-  (require 'ffap)
-  (let* ((dir (file-truename
-               (ivy-read "Choose roam directory: "
-                         (seq-filter
-                          (lambda (dir)
-                            (string-match "roam" dir))
-                          (ffap-all-subdirs org-directory 1)))))
-         (db-dir (concat doom-etc-dir (file-name-nondirectory dir))))
-    (unless (file-exists-p db-dir)
-      (make-directory db-dir))
-    (setq org-roam-directory dir
-          org-roam-db-location (expand-file-name "org-roam.db" db-dir)))
-
-  (let ((tmp-dir org-roam-server-light-tmp-dir))
-    (unless (file-exists-p tmp-dir)
-      (make-directory tmp-dir))
-    (f-write-text org-roam-directory
-                  'utf-8
-                  (format (concat tmp-dir "%s") (symbol-name 'org-roam-directory))))
-
-  (org-roam-db-build-cache)
-
-  (when (get-process "org-roam-server-light")
-    (delete-process "org-roam-server-light")
-    (let ((default-directory org-roam-server-light-dir))
-      (start-process-shell-command
-       "org-roam-server-light"
-       "*org-roam-server-light-output-buffer*"
-       "python main.py"))))
 
 ;;;###autoload
 (defun jmm-org-ql-ivy-prompt-for-link (filelist)

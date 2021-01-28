@@ -1106,7 +1106,7 @@
                                                (org-brain-open-resource
                                                 (org-brain-choose-entry "Resource from: " 'all))
                                              (+org/brain-open-from-all-resources))))
-  :desc "roam"                 "r" #'aj/org-roam-hydra/body
+  :desc "roam"                 "r" #'org-roam-hydra/body
   :desc "notes grep"           "g" (cmd! (+org-notes/format-org-links
                                           org-brain-path))
   :desc "notes grep"           "G" (cmd! (let ((current-prefix-arg '(4)))
