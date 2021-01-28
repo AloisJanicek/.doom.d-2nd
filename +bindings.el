@@ -8,7 +8,7 @@
  "C-s"       (lambda () (interactive) (ispell-word))
  "C-~"       (cmd! (if (derived-mode-p 'org-mode)
                        (cl-letf (((symbol-function 'pop-to-buffer)
-                                  #'org-persp-window-for-org-bufferwindow-for-org-buffer))
+                                  #'org-persp-window-for-org-buffer))
                          (message "%s rised." (+popup/raise (selected-window) t)))
                      (+popup/raise (selected-window) t)))
  :i  "C-;"       #'backward-char

@@ -8,16 +8,16 @@
   "Last popup window.")
 
 (defun org-persp-pop-buffer-a (orig-fn &rest args)
-  "Override `org-persp-window-for-org-bufferwindow-for-org-buffer' with `org-persp-pop-org-buffer'.
+  "Override `org-persp-window-for-org-buffer' with `org-persp-pop-org-buffer'.
 Intended for overriding default behavior of `org-persp-switch-create-indirect-buffer-per-persp'
 to allow pop org buffer into popup window."
-  (cl-letf (((symbol-function 'org-persp-window-for-org-bufferwindow-for-org-buffer)
+  (cl-letf (((symbol-function 'org-persp-window-for-org-buffer)
              #'org-persp-pop-org-buffer))
     (apply orig-fn args)))
 
 (defun org-persp-pop-org-buffer (buffer-or-name &rest _)
   "Display org-mode BUFFER-OR-NAME in popup window.
-Similar to `org-persp-window-for-org-bufferwindow-for-org-buffer' but displays org buffer
+Similar to `org-persp-window-for-org-buffer' but displays org buffer
 in temporarily popup window on the right side of the frame.
 "
   (let ((buffer (or (when (bufferp buffer-or-name) buffer-or-name)
@@ -56,7 +56,7 @@ in temporarily popup window on the right side of the frame.
 
       (message "this is not buffer: %s" buffer-or-name))))
 
-(defun org-persp-window-for-org-bufferwindow-for-org-buffer (buffer)
+(defun org-persp-window-for-org-buffer (buffer)
   "Take `BUFFER' and try to find suitable window for it.
 First look for available `org-mode' buffers.
 If there isn't one, select fist window which isn't current window.
@@ -163,7 +163,7 @@ Designed as an override advice for file or buffer opening functions like `pop-to
             (with-current-buffer output-buffer
               (widen))
 
-            (org-persp-window-for-org-bufferwindow-for-org-buffer output-buffer))
+            (org-persp-window-for-org-buffer output-buffer))
 
         (message "this is not buffer or valid file path: %s" buffer-or-path)))))
 
