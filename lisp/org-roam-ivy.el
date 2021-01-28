@@ -347,9 +347,14 @@ of org-roam item by tag string doesn't make much sense."
               (save-buffer))))
     "encrypt headings")
    ("B" (lambda (x)
-          ;; FIXME Make this work with other browsers too
-          (let ((browse-url-chromium-arguments browse-url-chromium-arguments))
+          ;; Whenever user uses firefox or chrome, ensure link will be
+          ;; opened in private or incognito window of that browser
+          (let ((browse-url-chrome-arguments browse-url-chrome-arguments)
+                (browse-url-chromium-arguments browse-url-chromium-arguments)
+                (browse-url-firefox-arguments browse-url-firefox-arguments))
             (add-to-list 'browse-url-chromium-arguments "--incognito")
+            (add-to-list 'browse-url-chrome-arguments "--incognito")
+            (add-to-list 'browse-url-firefox-arguments "--private-window")
             (org-roam-ivy--refs-url-open-action x)))
     "browse url Incognito")
    ("h" (lambda (x)
