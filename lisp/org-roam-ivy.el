@@ -168,6 +168,7 @@ filter preset."
             (list `(,prompt ,collection ,from))
             (plist-get org-roam-ivy--last-ivy :backlinks)))
           (org-roam-ivy prompt collection from))
+      (message "Item \"%s\" has no backlinks" (org-roam-db--get-title f))
       (org-roam-ivy--last-ivy))))
 
 ;;; org-mode helpers and utilities
