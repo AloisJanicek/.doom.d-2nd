@@ -81,9 +81,8 @@ to resole their precedence.
 
 (defun agenda-queries-sort-by-todo (a b)
   "Return non-nil if todo of A is less then todo of the B according to their order in `org-todo-keywords'."
-  (let ((get-todo-keyword
-         (lambda (elm)
-           (or (org-element-property :todo-keyword elm) "")))
+  (let ((get-todo-keyword (lambda (elm)
+                            (or (org-element-property :todo-keyword elm) "")))
         (todo-keyword-less-p (lambda (a b)
                                (> (length (cl-member a (cdar org-todo-keywords) :test #'string-match))
                                   (length (cl-member b (cdar org-todo-keywords) :test #'string-match))))))

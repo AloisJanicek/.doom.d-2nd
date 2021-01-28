@@ -102,10 +102,12 @@ Optionally specify heading LEVEL (default is 3)."
      :caller 'agenda-headlines-goto-any)))
 
 ;;;###autoload
-(cl-defun agenda-headlines-goto-query (&key query prompt
+(cl-defun agenda-headlines-goto-query (&key (query '(todo))
+                                            (prompt "agenda headlines")
                                             (files (agenda-filter-combined-agenda-files))
-                                            (sort-fn #'agenda-queries-sort-by-todo)
-                                            reverse time clock capture-key initial-input)
+                                            (sort-fn 'todo)
+                                            (initial-input "")
+                                            reverse time clock capture-key)
   "Jump to a todo headline in `org-agenda-files'.
 
 Function accepts optionally following keywords arguments:
@@ -122,11 +124,7 @@ This function saves the search preset into `agenda-headlines--last-search'
 so the search can be replicated by calling this function again with arguments saved in this variable.
 "
   (interactive "P")
-  (let* ((query (or query
-                    '(todo)))
-         (prompt (or prompt "agenda headlines"))
-         (initial-input (or initial-input ""))
-         (global-tags (not agenda-filter-preset))
+  (let* ((global-tags (not agenda-filter-preset))
          (args-list `(,(current-time) ,query ,prompt ,files ,sort-fn ,reverse ,time ,capture-key ,clock))
          (ivy-height 26)
          ivy-sort-functions-alist)
