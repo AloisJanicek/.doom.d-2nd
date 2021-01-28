@@ -322,7 +322,15 @@ of org-roam item by tag string doesn't make much sense."
 
 (ivy-add-actions
  #'org-roam-ivy
- '(("x" org-roam-ivy--backlinks-action "backlinks")
+ '(("x" org-roam-ivy--backlinks-action "show backlinks")
+   ("i" (lambda (x)
+          (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+            (goto-char (point-max))
+            (newline)
+            (org-roam-insert)
+            (save-buffer))
+          (org-roam-ivy--last-ivy))
+    "insert backlink")
    ("k" org-roam-ivy--delete-action "delete")
    ("b" org-roam-ivy--refs-url-open-action "browse url")
    ("e" (lambda (x)
