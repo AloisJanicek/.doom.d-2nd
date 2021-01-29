@@ -1031,7 +1031,7 @@
                                                  (eq major-mode 'debugger-mode))
                                              (helpful-at-point)
                                            (counsel-dash-at-point)))
-  :desc "switch helper buffers"    "," (cmd! (aj/switch-buffers "Help buffer: " t))
+  :desc "switch helper buffers"    "," (cmd! (help-buffers-switch-buffers "Help buffer: " t))
 
   )
 
@@ -1115,14 +1115,7 @@
                                                     (lambda (&rest _)
                                                       (directory-files-recursively org-brain-path ".org$"))))
                                            (call-interactively #'org-ql-search)))
-  :desc "notes headings"       "n" (cmd! (agenda-headlines-goto-any
-                                          :files (if (not current-prefix-arg)
-                                                     (agenda-filter-filtered-org-files
-                                                      :recursive t
-                                                      :dir org-brain-path
-                                                      :preset (notes-filter-preset--get org-brain-path))
-                                                   (directory-files-recursively org-brain-path ".org$"))
-                                          :level (if (eq (car current-prefix-arg) 16) 9 2)))
+  :desc "notes headings"       "n" #'notes-filter/goto-headings
   :desc "notes open"           "N" (cmd! (if current-prefix-arg
                                              (aj-org-find-file org-directory)
                                            (aj-org-find-file org-brain-path)))
@@ -1173,7 +1166,7 @@
 
  ;; "m" :localleader
 
- :desc "switch buffer"            "," (cmd! (aj/switch-buffers "Buffer: "))
+ :desc "switch buffer"            "," (cmd! (help-buffers-switch-buffers "Buffer: "))
 
  ;; find file              "."
 

@@ -1,11 +1,47 @@
-; lisp/org-persp.el -*- lexical-binding: t; -*-
+; org-persp.el --- Special treatment for wild org buffers -*- lexical-binding: t; -*-
 
+;;; Commentary:
+;; Treat org files coming from org-directory specially:
+;;
+;; - create independent copies of requested org-files as indirect buffers
+;;   specific for current persp-mode perspective
+;;
+;; - place org-mode buffers specially within the frame using `org-persp-window-for-org-buffer'
+;;
+;; - pop org-mode buffers into popups using `org-persp-pop-org-buffer'
+;;
+;; NOTE: A lot of following code is inevitably specific for doom emacs
+;; and will not be much usefull anywhere else
+
+
+;;; Code:
 (require 'persp-mode)
 (require 'cl-lib)
 (require 'agenda-filter)
 
 (defvar org-persp-last-popup-window nil
   "Last popup window.")
+
+(defun org-persp-open-file-respect-sanity-a (orig-fn &rest args)
+  "Advice any command opening `org-mode' files.
+For execution of advised command this functions overrides
+`pop-to-buffer-same-window' and `pop-to-buffer' with heavily
+customized alternative `org-persp-switch-create-indirect-buffer-per-persp'.
+Argument ORIG-FN represents advised function.
+Optional argument ARGS are argument passed to `ORIG-FN'."
+  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+             #'org-persp-switch-create-indirect-buffer-per-persp)
+            ((symbol-function 'pop-to-buffer)
+             #'org-persp-switch-create-indirect-buffer-per-persp))
+    (apply orig-fn args)))
+
+(defun org-persp-respect-sanity-a (&rest _)
+  "This is meant as an advice to all commands which like to opens a lot of org files."
+  (let ((persp-autokill-buffer-on-remove nil))
+    (org-save-all-org-buffers)
+    (dolist (buf (persp-buffers (get-current-persp)))
+      (unless (help-buffers-help-buffer-p buf)
+        (persp-remove-buffer buf)))))
 
 (defun org-persp-pop-buffer-a (orig-fn &rest args)
   "Override `org-persp-window-for-org-buffer' with `org-persp-pop-org-buffer'.

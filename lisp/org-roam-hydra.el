@@ -1,5 +1,11 @@
-;;; lisp/org-roam-hydra.el -*- lexical-binding: t; -*-
+;;; org-roam-hydra.el --- hydra dispatching org-roam commands -*- lexical-binding: t; -*-
 
+;;; Commentary:
+;;  Hydra dispatching various org-roam commands.
+;;  With user-prefix it will prompt for selecting org-roam-directory
+;;  using `+org-roam/switch-roam'.
+
+;;; Code:
 (require 'hydra)
 (require 'org-roam-lib)
 (require 'org-roam-ivy)

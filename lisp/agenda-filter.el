@@ -1,5 +1,12 @@
-;;; lisp/agenda-filter.el -*- lexical-binding: t; -*-
+;;; agenda-filter.el --- Persistently filter agenda searches -*- lexical-binding: t; -*-
 
+;;; Commentary:
+;; Persistently filter agenda searches
+;; Preserve value of `org-agenda-filter' between different org-agenda
+;; searches and apply it also to org-ql searches
+
+
+;;; Code:
 (require 'cl-macs)
 (require 'cl-seq)
 (require 'seq)

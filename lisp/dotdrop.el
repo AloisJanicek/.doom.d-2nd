@@ -1,5 +1,9 @@
-;;; lisp/dotdrop.el -*- lexical-binding: t; -*-
+;;; dotdrop.el --- Manage dotfiles with dotdrop in emacs -*- lexical-binding: t; -*-
 
+;;; Commentary:
+;; Manage dotfiles with dotdrop in emacs
+
+;;; Code:
 (require 'seq)
 
 (defcustom dotdrop-base-cmd (getenv "DOTDROP_BASE_CMD")
@@ -7,8 +11,6 @@
 example:
 dotdrop --cfg=/home/username/dotfiles_repo/config.yaml --profile=my_profile")
 
-
-;;;###autoload
 (defun dotdrop-modified ()
   "Return list modified files managed by dotdrop."
   (remove
@@ -22,7 +24,6 @@ dotdrop --cfg=/home/username/dotfiles_repo/config.yaml --profile=my_profile")
      (shell-command-to-string
       (format "%s compare --file-only | grep compare " dotdrop-base-cmd))))))
 
-;;;###autoload
 (defun dotdrop-all-files ()
   (let* ((cmd-output (shell-command-to-string
                       (format "%s files -G | grep dst: | sed 's/,link.*//'" dotdrop-base-cmd))))
@@ -42,7 +43,6 @@ dotdrop --cfg=/home/username/dotfiles_repo/config.yaml --profile=my_profile")
        (string-search "f_" cmd-output)
        (length cmd-output))))))
 
-;;;###autoload
 (defun dotdrop--dotfile-record (dotfile)
   "For given DOTFILE return its dotdrop record entry.
 DOTFILE can be either dotdrop label, eg.\"f_vimrc\" or
@@ -60,6 +60,14 @@ file path corresponding with dotfile destination :dest key.
       dotfile-record)
     )
   )
+
+(defun dotdrop-commit-maybe ()
+  "Check if DOTDROP_HOME is modified and offer user commit changes."
+  (remove-hook 'ediff-quit-hook #'dotdrop-commit-maybe)
+  (when (projectile-check-vcs-status (getenv "DOTDROP_HOME"))
+    (if (y-or-n-p "Commit changes to the DOTFILES?")
+        (magit-status (getenv "DOTDROP_HOME"))
+      (message "Ok."))))
 
 ;;;###autoload
 (defun dotdrop-compare ()
@@ -114,15 +122,6 @@ is modified and offer to launch magit-status in it.
           (ediff
            (nth 1 dotfile-record)
            (nth 2 dotfile-record)))))))
-
-;;;###autoload
-(defun dotdrop-commit-maybe ()
-  "Check if DOTDROP_HOME is modified and offer user commit changes."
-  (remove-hook 'ediff-quit-hook #'dotdrop-commit-maybe)
-  (when (projectile-check-vcs-status (getenv "DOTDROP_HOME"))
-    (if (y-or-n-p "Commit changes to the DOTFILES?")
-        (magit-status (getenv "DOTDROP_HOME"))
-      (message "Ok."))))
 
 ;;;###autoload
 (defun dotdrop-import ()

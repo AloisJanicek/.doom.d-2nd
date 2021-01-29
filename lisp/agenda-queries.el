@@ -1,4 +1,8 @@
-;;; lisp/agenda-queries.el -*- lexical-binding: t; -*-
+;;; agenda-queries.el --- Org-ql queries and predicates -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;;  Provides custom org-ql queries, sorting or search predicates
+;;  reflecting either canonical GTD methodology or my personal needs
 
 (require 'org-ql)
 

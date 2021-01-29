@@ -1,5 +1,9 @@
-;;; lisp/brain.el -*- lexical-binding: t; -*-
+;;; brain-lib.el --- Misc org-brain related functions  -*- lexical-binding: t; -*-
 
+;;; Commentary:
+;; Loose collection of various org-brain related functions one may or may not need.
+
+;;; Code:
 (require 'org-brain)
 (require 'org)
 (require 'ivy)
@@ -187,7 +191,6 @@ Optional argument NO-FILTER cancels filering according to `notes-filter-preset'.
                      (save-buffer))))
                x))))
 
-;;;###autoload
 (defun +org-brain/refile-link-to-resources-drawer ()
   "Refile current link under point into RESOURCES drawer of one of the org-brain items.
 
@@ -237,4 +240,4 @@ At the end, source link is deleted.
 
     (select-window (get-buffer-window buff-orig))))
 
-(provide 'brain)
+(provide 'brain-lib)

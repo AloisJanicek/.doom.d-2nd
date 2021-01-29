@@ -32,6 +32,9 @@ if running under WSL")
 (dolist (i '(ol-info ol-eww org-id))
   (add-to-list 'org-modules i))
 
+(when (require 'help-buffers)
+  (add-to-list 'help-buffers-directories aj-calibre-path))
+
 (cd aj-home-base-dir)
 
 (setq user-mail-address "janicek.dev@gmail.com"
@@ -243,12 +246,12 @@ if running under WSL")
         )
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil :modeline t)
   (add-hook 'counsel-grep-post-action-hook  #'recenter)
-  (advice-add #'counsel-org-agenda-headlines-action-goto :around #'aj-org-open-file-respect-sanity-a)
-  (advice-add #'counsel-org-clock--run-context-action :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-agenda-headlines-action-goto :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-clock--run-context-action :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'counsel-org-clock--run-context-action :around #'org-persp-pop-buffer-a)
-  (advice-add #'counsel-org-clock--run-history-action :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-clock--run-history-action :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'counsel-org-clock--run-history-action :around #'org-persp-pop-buffer-a)
-  (advice-add #'aj-org-find-file :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'aj-org-find-file :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'aj-org-find-file :around #'org-persp-pop-buffer-a)
   (advice-add #'counsel-org-goto-action :after (lambda (&rest _) (recenter 0 t)))
   (advice-add
@@ -805,7 +808,6 @@ if running under WSL")
 
 (after! ivy
   (advice-add #'+ivy/project-search :override #'+ivy/project-search-a)
-  (advice-add #'ivy--switch-buffer-action :around #'aj--switch-buffer-maybe-pop-action-a)
 
   (ivy-set-actions
    'counsel-projectile-bookmark
@@ -815,11 +817,6 @@ if running under WSL")
   (ivy-add-actions
    #'ivy-yasnippet
    '(("e" aj-ivy-yasnippet--copy-edit-snippet-action "Edit snippet as your own")))
-
-  (ivy-add-actions
-   #'ivy-switch-buffer
-   '(("c" aj/kill-helpful-buffers "kill helpful-mode buffers")
-     ("C" aj/kill-all-help-buffers "kill all help modes buffers")))
 
   (ivy-add-actions
    #'counsel-describe-variable
@@ -1190,7 +1187,7 @@ if running under WSL")
 
 (after! org
   (load! "lisp/filter-preset-ivy")
-  (when (load! "lisp/brain")
+  (when (load! "lisp/brain-lib")
     (doom-store-persist doom-store-location '(notes-filter-preset)))
 
 
@@ -1219,9 +1216,9 @@ if running under WSL")
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (add-hook 'org-mode-hook #'mixed-pitch-mode)
-  (advice-add #'org-goto-marker-or-bmk :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-goto-marker-or-bmk :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-goto-marker-or-bmk :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-refile :after #'aj-org-buffers-respect-sanity-a)
+  (advice-add #'org-refile :after #'org-persp-respect-sanity-a)
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
@@ -1305,13 +1302,13 @@ if running under WSL")
                                              (doom-mark-buffer-as-real-h)
                                              (persp-add-buffer (current-buffer))
                                              (visual-line-mode)))
-  (advice-add #'org-brain-visualize :after #'aj-org-buffers-respect-sanity-a)
+  (advice-add #'org-brain-visualize :after #'org-persp-respect-sanity-a)
   (advice-add #'org-brain-entry-at-pt :around (lambda (orig-fn &rest args)
                                                 (let ((buffer-file-name (or buffer-file-name
                                                                             (buffer-file-name (buffer-base-buffer))))
                                                       (org-brain-path (file-truename org-brain-path)))
                                                   (apply orig-fn args))))
-  (advice-add #'org-brain-goto :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-brain-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-brain-goto :after (lambda (&rest _)
                                         "Recenter visited heading to the top of the buffer."
                                         (recenter 0 t)
@@ -1434,7 +1431,7 @@ if running under WSL")
                 (widen)
                 (+org-narrow-and-show)
                 (turn-off-solaire-mode)))
-  (advice-add #'org-agenda-switch-to :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-agenda-switch-to :around #'org-persp-open-file-respect-sanity-a)
   (advice-add
    #'org-agenda-switch-to
    :around
@@ -1455,11 +1452,11 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
        (apply orig-fn args))))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
-  (advice-add #'org-agenda-exit :after #'aj-org-buffers-respect-sanity-a)
+  (advice-add #'org-agenda-exit :after #'org-persp-respect-sanity-a)
   (advice-add #'org-agenda-set-mode-name :after (lambda (&rest _)
                                                   "Ensure modes are formated with cyphejor."
                                                   (cyphejor--hook)))
-  (advice-add #'org-agenda-refile :after #'aj-org-buffers-respect-sanity-a)
+  (advice-add #'org-agenda-refile :after #'org-persp-respect-sanity-a)
   (advice-add #'org-agenda-refile :after (lambda (&rest _)
                                            "Refresh view."
                                            (if (string-match "Org QL" (buffer-name))
@@ -1475,7 +1472,7 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
                                               (org-save-all-org-buffers)))
   (advice-add #'org-cut-special :after #'org-save-all-org-buffers)
   (advice-add #'counsel-org-tag :after #'org-save-all-org-buffers)
-  (advice-add #'org-agenda-goto :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-agenda-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-agenda-todo :after #'aj-org-agenda-save-and-refresh-a)
   (advice-add #'org-todo :after (lambda (&rest _)
                                   (org-save-all-org-buffers)))
@@ -1725,7 +1722,7 @@ When in org-roam file, also create top-level ID.
                                        "Save all opened org-mode files."
                                        (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
-  (advice-add #'org-clock-goto :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-clock-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-clock-goto :around #'org-persp-pop-buffer-a)
   (advice-add #'org-clock-report :after (lambda (&rest _)
                                           "Save all opened org-mode files."
@@ -1794,7 +1791,7 @@ When in org-roam file, also create top-level ID.
         (org-id-locations-load)
       (aj/org-id-update-recursively)))
 
-  (advice-add #'org-id-open :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-id-open :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-id-open :around #'org-persp-pop-buffer-a)
   )
 
@@ -1827,7 +1824,7 @@ When in org-roam file, also create top-level ID.
   (when (load! "lisp/org-roam-ivy" nil t)
     (after! org-roam-ivy
       (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
-      (advice-add #'org-roam-ivy :around #'aj-org-open-file-respect-sanity-a)
+      (advice-add #'org-roam-ivy :around #'org-persp-open-file-respect-sanity-a)
       (advice-add #'org-roam-ivy :around #'org-persp-pop-buffer-a)))
 
   (require 'org-roam-hydra)
@@ -1865,15 +1862,15 @@ When in org-roam file, also create top-level ID.
            :head "#+title: %<%A, %d %B %Y>\n"))
         )
 
-  (advice-add #'org-roam--find-file :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-roam--find-file :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-roam--find-file :around #'org-persp-pop-buffer-a)
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
   (advice-add #'org-roam-doctor :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add #'org-roam-unlinked-references :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-roam-unlinked-references :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-roam-unlinked-references :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-roam-protocol-open-file :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-roam-protocol-open-file :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-roam-protocol-open-file :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-roam-capture--capture :around #'aj-org-open-file-respect-sanity-a)
+  (advice-add #'org-roam-capture--capture :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-roam-capture--capture :around #'org-persp-pop-buffer-a)
   )
 
@@ -2338,7 +2335,7 @@ When in org-roam file, also create top-level ID.
 
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
 
-(advice-add #'+org-notes/format-org-links :around #'aj-org-open-file-respect-sanity-a)
+(advice-add #'+org-notes/format-org-links :around #'org-persp-open-file-respect-sanity-a)
 (advice-add #'+org-notes/format-org-links :around #'org-persp-pop-buffer-a)
 (advice-add #'+org-notes/format-org-links :after (lambda (&rest _)
                                                    "Narrow view after switching."

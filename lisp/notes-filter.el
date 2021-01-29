@@ -1,10 +1,16 @@
-;;; lisp/notes-filter.el -*- lexical-binding: t; -*-
+;;; notes-filter.el --- Interface for filtering directory of org files -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; Interface for filtering directory of org files
+;; FIXME: Separate this entirely from org-brain
+
+;;; Code:
 
 (require 'ivy)
 (require 'counsel)
 (require 'filter-preset-ivy)
 (require 'org-lib)
-(require 'brain)
+(require 'brain-lib)
 
 (defvar notes-filter-preset '()
   "Alist storing preset for filtering notes searching.
@@ -45,5 +51,21 @@ Cdr is list of one or more strings returned `notes-filter-get-filetags'.")
     "Tags"
     (cadr (notes-filter-get-filetags org-brain-path))
     (notes-filter-preset--get org-brain-path))))
+
+;;;###autoload
+(defun notes-filter/goto-headings ()
+  "Goto any heading in `org-brain-dir' filtered by `notes-filter-preset'.
+
+With one user prefix arg cancell the filter. With two user prefix
+show headings up to 9 levels deep."
+  (interactive)
+  (agenda-headlines-goto-any
+   :files (if (not current-prefix-arg)
+              (agenda-filter-filtered-org-files
+               :recursive t
+               :dir org-brain-path
+               :preset (notes-filter-preset--get org-brain-path))
+            (directory-files-recursively org-brain-path ".org$"))
+   :level (if (eq (car current-prefix-arg) 16) 9 2)))
 
 (provide 'notes-filter)

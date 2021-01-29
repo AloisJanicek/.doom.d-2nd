@@ -1,8 +1,12 @@
-;;; lisp/org-lib.el -*- lexical-binding: t; -*-
-;; Catch-all file for all miscellaneous org-mode related functions
+;;; org-lib.el -*- lexical-binding: t; -*-
 
-;; '+org-*' functions from doom emacs
+;;; Commentary:
+;; Loose collection of various org-mode related functions one may or may not need.
+
+;; `+org-get-global-property' comes from doom emacs
 ;; https://github.com/hlissner/doom-emacs/blob/develop/modules/lang/org/autoload/org.el
+
+;;; Code:
 
 (require 'ivy)
 (require 'counsel)

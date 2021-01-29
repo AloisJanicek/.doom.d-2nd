@@ -1,4 +1,9 @@
-;;; lisp/org-roam-lib.el -*- lexical-binding: t; -*-
+;;; org-roam-lib.el --- Misc org-roam related functions -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; Loose collection of various org-roam related functions one may or may not need.
+
+;;; Code:
 
 (require 'org-roam)
 

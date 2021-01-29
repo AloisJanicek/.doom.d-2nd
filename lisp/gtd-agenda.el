@@ -1,4 +1,4 @@
-;;; gtd-agenda.el --- Description -*- lexical-binding: t; -*-
+;;; gtd-agenda.el --- GTD-like agenda -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2021 Alois Janíček
 ;;
@@ -12,11 +12,14 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; Commentary:
-;;
-;;  Description
-;;
+;;  Gtd-like agenda and searches using org-ql-search and org-agenda.
+;;  Main entry point is `gtd-agenda-hydra' which serves as dispatcher
+;;  for the various different searches.
+;;  In the :body-pre of the gtd-agenda-hydra, the `gtd-agenda-hydra-precheck'
+;;  is being executed. Its purpose is to automate as many usual GTD-related
+;;  usually manual checking and decisions as possible.
+
 ;;; Code:
-;;; Variables
 
 (require 'org)
 (require 'org-ql)
@@ -27,6 +30,7 @@
 (require 'agenda-headlines)
 (require 'agenda-filter)
 
+;;; Variables
 (defcustom gtd-agenda-inbox-file (expand-file-name "inbox.org" org-directory)
   "File where all stuff goes initially.")
 
@@ -478,7 +482,6 @@ Optionally accept valid org-ql QUERY.
     )
   )
 
-;;;###autoload (autoload 'gtd-agenda-hydra/body "lisp/gtd-agenda" nil t)
 (defhydra gtd-agenda-hydra (:color blue
                             :hint nil
                             :columns 4

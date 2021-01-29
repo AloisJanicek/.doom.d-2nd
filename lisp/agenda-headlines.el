@@ -1,6 +1,16 @@
-;;; lisp/agenda-headlines.el -*- lexical-binding: t; -*-
+;;; agenda-headlines.el --- Ivy interface for gtd-agenda -*- lexical-binding: t; -*-
 
-(require 'ivy-common)
+;;; Commentary:
+;;;
+;;  Ivy interface for gtd-agenda.
+;;  It shares queries and hydra with `gtd-agenda' but instead of showing results
+;;  in org-ql-search buffer, it uses ivy interface.
+;;  There are number of actions available to execute upon the selected candidate
+;;  like renaming the heading, clocking, changing effort, changing todo keyword
+;;  or showing all descendants of the selected item which comes handy when
+;;  working with projects.
+
+(require 'ivy-lib)
 (require 'org-lib)
 (require 'org-persp)
 (require 'agenda-queries)
@@ -97,7 +107,7 @@ Optionally specify heading LEVEL (default is 3)."
           (-map
            (lambda (elm)
              (gtd-agenda-format-element elm t t t t t))))
-     :update-fn #'ivy-common-update-fn-timer
+     :update-fn #'ivy-update-fn-timer
      :action #'agenda-headlines--goto-heading-action
      :caller 'agenda-headlines-goto-any)))
 
@@ -152,7 +162,7 @@ so the search can be replicated by calling this function again with arguments sa
                     (reverse results)
                   results))
               :initial-input initial-input
-              :update-fn #'ivy-common-update-fn-timer
+              :update-fn #'ivy-update-fn-timer
               :action #'agenda-headlines--goto-heading-action
               :caller 'agenda-headlines-goto-query)))
 

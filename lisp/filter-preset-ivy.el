@@ -1,4 +1,4 @@
-;;; filter-preset-ivy.el --- Helper ivy interface -*- lexical-binding: t; -*-
+;;; filter-preset-ivy.el --- Helper ivy interface for tags and filters -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2021 Alois Janíček
 ;;

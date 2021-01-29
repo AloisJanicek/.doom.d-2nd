@@ -487,7 +487,7 @@ and all its children are revealed."
                            (-map
                             (lambda (elm)
                               (gtd-agenda-format-element elm t t nil t))))
-                      :update-fn #'ivy-common-update-fn-timer
+                      :update-fn #'ivy-update-fn-timer
                       :caller 'aj/org-mode-menu
                       :action (lambda (headline)
                                 (widen)
@@ -623,30 +623,6 @@ which one is currently active."
 
 
 ;; ORG-MODE BUFFERS HEAD ACHE AND PERSPECTIVE-MODE TWEAKS
-
-;;;###autoload
-(defun aj-org-open-file-respect-sanity-a (orig-fn &rest args)
-  "Advice any command opening `org-mode' files.
-For execution of advised command this functions overrides
-`pop-to-buffer-same-window' and `pop-to-buffer' with heavily
-customized alternative `org-persp-switch-create-indirect-buffer-per-persp'.
-Argument ORIG-FN represents advised function.
-Optional argument ARGS are argument passed to `ORIG-FN'."
-  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-             #'org-persp-switch-create-indirect-buffer-per-persp)
-            ((symbol-function 'pop-to-buffer)
-             #'org-persp-switch-create-indirect-buffer-per-persp))
-    (apply orig-fn args)))
-
-;;;###autoload
-(defun aj-org-buffers-respect-sanity-a (&rest _)
-  "This is meant as an advice to all commands which like to opens a lot of org files."
-  (let ((persp-autokill-buffer-on-remove nil))
-    (org-save-all-org-buffers)
-    (dolist (buf (persp-buffers (get-current-persp)))
-      (unless (aj-help-buffer-p buf)
-        (persp-remove-buffer buf)))))
-
 ;;;###autoload
 (defun aj-org-find-file (dir)
   "Wrapper for `counsel-find-file' so it can be advised."
@@ -936,7 +912,7 @@ Otherwise dispatch default commands.
           (-map
            (lambda (elm)
              (gtd-agenda-format-element elm t t nil t))))
-     :update-fn #'ivy-common-update-fn-timer
+     :update-fn #'ivy-update-fn-timer
      :action #'agenda-headlines--goto-heading-action
      :caller 'agenda-headlines-goto-any)))
 

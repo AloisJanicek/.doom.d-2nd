@@ -288,7 +288,7 @@ of org-roam item by tag string doesn't make much sense."
               :initial-input init-input
               :caller 'org-roam-ivy
               :update-fn (when org-roam-ivy-auto-preview
-                           #'ivy-common-update-fn-timer)
+                           #'ivy-update-fn-timer)
               :action (lambda (x)
                         (unless (string-match "Backlinks of" ivy--prompt)
                           (setq org-roam-ivy--last-ivy-text ivy-text))
