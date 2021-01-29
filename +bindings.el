@@ -498,7 +498,7 @@
 ;;; org-agenda
  (:after org-agenda
   :map org-agenda-mode-map
-  :m "f" #'agenda-filter/set-filter
+  :m "f" #'agenda-filter-set-filter
   :m "F" #'agenda-filter-clear-filter
 
   (:prefix ("c" . "clock")
