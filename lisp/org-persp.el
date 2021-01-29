@@ -18,6 +18,7 @@
 (require 'persp-mode)
 (require 'cl-lib)
 (require 'agenda-filter)
+(require 'help-buffers)
 
 (defvar org-persp-last-popup-window nil
   "Last popup window.")
