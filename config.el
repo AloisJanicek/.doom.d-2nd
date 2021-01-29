@@ -247,13 +247,6 @@ if running under WSL")
         )
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil :modeline t)
   (add-hook 'counsel-grep-post-action-hook  #'recenter)
-  (advice-add #'counsel-org-agenda-headlines-action-goto :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'counsel-org-clock--run-context-action :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'counsel-org-clock--run-context-action :around #'org-persp-pop-buffer-a)
-  (advice-add #'counsel-org-clock--run-history-action :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'counsel-org-clock--run-history-action :around #'org-persp-pop-buffer-a)
-  (advice-add #'aj-org-find-file :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'aj-org-find-file :around #'org-persp-pop-buffer-a)
   (advice-add #'counsel-org-goto-action :after (lambda (&rest _) (recenter 0 t)))
   (advice-add
    #'counsel--mark-ring-update-fn
@@ -1217,9 +1210,6 @@ if running under WSL")
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (add-hook 'org-mode-hook #'mixed-pitch-mode)
-  (advice-add #'org-goto-marker-or-bmk :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-goto-marker-or-bmk :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-refile :after #'org-persp-respect-sanity-a)
   (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
@@ -1227,15 +1217,6 @@ if running under WSL")
                                                   (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
-  (advice-add
-   #'org-open-file
-   :around
-   (lambda (orig-fn &rest args)
-     (let ((path (nth 0 args)))
-       (if (string-equal "org" (file-name-extension path))
-           (cl-letf (((symbol-function 'pop-to-buffer) #'org-persp-pop-org-buffer))
-             (apply orig-fn args))
-         (apply orig-fn args)))))
   (setcdr (assoc "\\.x?html?\\'" org-file-apps) #'aj-browse-zeal-local-file)
   (org-link-set-parameters "calibre" :follow #'aj-org-calibre-follow :store #'aj-org-calibre-store)
 
@@ -1303,21 +1284,17 @@ if running under WSL")
                                              (doom-mark-buffer-as-real-h)
                                              (persp-add-buffer (current-buffer))
                                              (visual-line-mode)))
-  (advice-add #'org-brain-visualize :after #'org-persp-respect-sanity-a)
   (advice-add #'org-brain-entry-at-pt :around (lambda (orig-fn &rest args)
                                                 (let ((buffer-file-name (or buffer-file-name
                                                                             (buffer-file-name (buffer-base-buffer))))
                                                       (org-brain-path (file-truename org-brain-path)))
                                                   (apply orig-fn args))))
-  (advice-add #'org-brain-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-brain-goto :after (lambda (&rest _)
                                         "Recenter visited heading to the top of the buffer."
                                         (recenter 0 t)
                                         (when (org-at-heading-p)
                                           (+org-narrow-and-show))
                                         (turn-off-solaire-mode)))
-  (advice-add #'org-brain-goto :around #'org-persp-pop-buffer-a)
-
   (advice-add #'org-brain-switch-brain :around (lambda (orig-fn directory)
                                                  (let ((encrypted-dir
                                                         (file-truename (expand-file-name "private" org-directory)))
@@ -1432,7 +1409,6 @@ if running under WSL")
                 (widen)
                 (+org-narrow-and-show)
                 (turn-off-solaire-mode)))
-  (advice-add #'org-agenda-switch-to :around #'org-persp-open-file-respect-sanity-a)
   (advice-add
    #'org-agenda-switch-to
    :around
@@ -1453,11 +1429,9 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
        (apply orig-fn args))))
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
-  (advice-add #'org-agenda-exit :after #'org-persp-respect-sanity-a)
   (advice-add #'org-agenda-set-mode-name :after (lambda (&rest _)
                                                   "Ensure modes are formated with cyphejor."
                                                   (cyphejor--hook)))
-  (advice-add #'org-agenda-refile :after #'org-persp-respect-sanity-a)
   (advice-add #'org-agenda-refile :after (lambda (&rest _)
                                            "Refresh view."
                                            (if (string-match "Org QL" (buffer-name))
@@ -1473,7 +1447,6 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
                                               (org-save-all-org-buffers)))
   (advice-add #'org-cut-special :after #'org-save-all-org-buffers)
   (advice-add #'counsel-org-tag :after #'org-save-all-org-buffers)
-  (advice-add #'org-agenda-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-agenda-todo :after #'aj-org-agenda-save-and-refresh-a)
   (advice-add #'org-todo :after (lambda (&rest _)
                                   (org-save-all-org-buffers)))
@@ -1723,8 +1696,6 @@ When in org-roam file, also create top-level ID.
                                        "Save all opened org-mode files."
                                        (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
-  (advice-add #'org-clock-goto :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-clock-goto :around #'org-persp-pop-buffer-a)
   (advice-add #'org-clock-report :after (lambda (&rest _)
                                           "Save all opened org-mode files."
                                           (org-save-all-org-buffers)))
@@ -1791,9 +1762,6 @@ When in org-roam file, also create top-level ID.
     (if (ignore-errors (doom-file-size org-id-locations-file))
         (org-id-locations-load)
       (aj/org-id-update-recursively)))
-
-  (advice-add #'org-id-open :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-id-open :around #'org-persp-pop-buffer-a)
   )
 
 (doom-store-persist doom-store-location '(org-roam-directory))
@@ -1824,9 +1792,7 @@ When in org-roam file, also create top-level ID.
 (after! org-roam
   (when (load! "lisp/org-roam-ivy" nil t)
     (after! org-roam-ivy
-      (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
-      (advice-add #'org-roam-ivy :around #'org-persp-open-file-respect-sanity-a)
-      (advice-add #'org-roam-ivy :around #'org-persp-pop-buffer-a)))
+      (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))))
 
   (require 'org-roam-hydra)
   (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
@@ -1863,16 +1829,8 @@ When in org-roam file, also create top-level ID.
            :head "#+title: %<%A, %d %B %Y>\n"))
         )
 
-  (advice-add #'org-roam--find-file :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam--find-file :around #'org-persp-pop-buffer-a)
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
   (advice-add #'org-roam-doctor :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add #'org-roam-unlinked-references :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-unlinked-references :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-roam-protocol-open-file :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-protocol-open-file :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-roam-capture--capture :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-capture--capture :around #'org-persp-pop-buffer-a)
   )
 
 (use-package! org-roam-server-light
@@ -2336,15 +2294,11 @@ When in org-roam file, also create top-level ID.
 
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
 
-(advice-add #'+org-notes/format-org-links :around #'org-persp-open-file-respect-sanity-a)
-(advice-add #'+org-notes/format-org-links :around #'org-persp-pop-buffer-a)
 (advice-add #'+org-notes/format-org-links :after (lambda (&rest _)
                                                    "Narrow view after switching."
                                                    (interactive)
                                                    (+org-narrow-and-show)))
 
-(advice-add #'agenda-headlines-goto-query :around #'org-persp-pop-buffer-a)
-(advice-add #'agenda-headlines-goto-any :around #'org-persp-pop-buffer-a)
 (advice-add #'aj-org-jump-to-datetree :around #'org-persp-pop-buffer-a)
 
 ;;; theme-settings

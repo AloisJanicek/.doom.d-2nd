@@ -1,4 +1,4 @@
-; org-persp.el --- Special treatment for wild org buffers -*- lexical-binding: t; -*-
+;;; org-persp.el --- Special treatment for wild org buffers -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Treat org files coming from org-directory specially:
@@ -203,5 +203,69 @@ Designed as an override advice for file or buffer opening functions like `pop-to
             (org-persp-window-for-org-buffer output-buffer))
 
         (message "this is not buffer or valid file path: %s" buffer-or-path)))))
+
+(after! counsel
+  (advice-add #'counsel-org-agenda-headlines-action-goto :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-clock--run-context-action :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-clock--run-context-action :around #'org-persp-pop-buffer-a)
+  (advice-add #'counsel-org-clock--run-history-action :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'counsel-org-clock--run-history-action :around #'org-persp-pop-buffer-a)
+  (advice-add #'aj-org-find-file :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'aj-org-find-file :around #'org-persp-pop-buffer-a))
+
+(after! org
+  (advice-add #'org-goto-marker-or-bmk :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-goto-marker-or-bmk :around #'org-persp-pop-buffer-a)
+  (advice-add #'org-refile :after #'org-persp-respect-sanity-a)
+  (advice-add
+   #'org-open-file
+   :around
+   (lambda (orig-fn &rest args)
+     (let ((path (nth 0 args)))
+       (if (string-equal "org" (file-name-extension path))
+           (cl-letf (((symbol-function 'pop-to-buffer) #'org-persp-pop-org-buffer))
+             (apply orig-fn args))
+         (apply orig-fn args))))))
+
+(after! org-id
+  (advice-add #'org-id-open :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-id-open :around #'org-persp-pop-buffer-a))
+
+(after! org-clock
+  (advice-add #'org-clock-goto :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-clock-goto :around #'org-persp-pop-buffer-a))
+
+(after! org-agenda
+  (advice-add #'org-agenda-switch-to :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-agenda-goto :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-agenda-refile :after #'org-persp-respect-sanity-a)
+  (advice-add #'org-agenda-exit :after #'org-persp-respect-sanity-a))
+
+(after! org-brain
+  (advice-add #'org-brain-visualize :after #'org-persp-respect-sanity-a)
+  (advice-add #'org-brain-goto :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-brain-goto :around #'org-persp-pop-buffer-a))
+
+(after! org-roam
+  (advice-add #'org-roam--find-file :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-roam--find-file :around #'org-persp-pop-buffer-a)
+  (advice-add #'org-roam-unlinked-references :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-roam-unlinked-references :around #'org-persp-pop-buffer-a)
+  (advice-add #'org-roam-protocol-open-file :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-roam-protocol-open-file :around #'org-persp-pop-buffer-a)
+  (advice-add #'org-roam-capture--capture :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-roam-capture--capture :around #'org-persp-pop-buffer-a))
+
+(after! org-roam-ivy
+  (advice-add #'org-roam-ivy :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-roam-ivy :around #'org-persp-pop-buffer-a))
+
+(after! org-lib
+  (advice-add #'+org-notes/format-org-links :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'+org-notes/format-org-links :around #'org-persp-pop-buffer-a))
+
+(after! agenda-headlines
+  (advice-add #'agenda-headlines-goto-query :around #'org-persp-pop-buffer-a)
+  (advice-add #'agenda-headlines-goto-any :around #'org-persp-pop-buffer-a))
 
 (provide 'org-persp)
