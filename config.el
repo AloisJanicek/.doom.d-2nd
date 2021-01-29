@@ -33,6 +33,7 @@ if running under WSL")
   (add-to-list 'org-modules i))
 
 (when (require 'help-buffers)
+  (add-to-list 'help-buffers-directories org-directory)
   (add-to-list 'help-buffers-directories aj-calibre-path))
 
 (cd aj-home-base-dir)
