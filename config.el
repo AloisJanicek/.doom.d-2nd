@@ -828,6 +828,7 @@ if running under WSL")
    'ivy-posframe-display-functions-alist
    '(ivy-yasnippet . ivy-display-function-fallback))
   (setq
+   ivy-read-action-function #'ivy-posframe-read-action-by-key
    ivy-posframe-border-width 10
    ivy-posframe-size-function
    (lambda ()
