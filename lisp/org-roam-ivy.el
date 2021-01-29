@@ -75,16 +75,17 @@ filter preset."
     (setq org-roam-ivy--last-ivy-text (concat (car new-preset) " "))))
 
 ;;; Helper org-roam functions
-(defun org-roam-ivy--set-aliases ()
+(defun org-roam-ivy--set-aliases (buffer)
   "For org-roam file set some tags."
-  (let* ((file-aliases (org-roam--extract-titles-alias)))
-    (org-roam--set-global-prop
-     "roam_alias"
-     (combine-and-quote-strings
-      (seq-uniq
-       (filter-preset-ivy
-        "Aliases" file-aliases file-aliases))))
-    (save-buffer)))
+  (with-current-buffer buffer
+    (let* ((file-aliases (org-roam--extract-titles-alias)))
+      (org-roam--set-global-prop
+       "roam_alias"
+       (combine-and-quote-strings
+        (seq-uniq
+         (filter-preset-ivy
+          "Aliases" file-aliases file-aliases))))
+      (save-buffer))))
 
 (defun org-roam-ivy--set-tag (file)
   "For org-roam FILE set some aliases."
