@@ -19,6 +19,7 @@
 
 (require 'org-roam)
 (require 'ivy)
+(require 'ivy-lib)
 (require 'filter-preset-ivy)
 (require 'all-the-icons)
 
