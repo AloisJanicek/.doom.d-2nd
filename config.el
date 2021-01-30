@@ -714,13 +714,26 @@ if running under WSL")
 
 
 (after! hydra
+  (when (require 'ivy-hydra)
+    (defhydra+ hydra-ivy ()
+      ("q" keyboard-escape-quit :exit t)
+      ("<escape>" keyboard-escape-quit :exit t)))
+
   (when (display-graphic-p)
     (setq hydra-hint-display-type
           'posframe)
     (setq hydra-posframe-show-params
           `(:internal-border-width 10
             :internal-border-color ,(doom-color 'base0)
-            :poshandler posframe-poshandler-frame-center))))
+            :poshandler posframe-poshandler-frame-top-center))
+
+    (after! ivy-posframe
+      (when (require 'ivy-hydra)
+        (defhydra+ hydra-ivy ()
+          ("a" (let ((ivy-read-action-function #'ivy-posframe-read-action-by-key))
+                 (ivy-read-action))))))
+    )
+  )
 
 (after! hl-todo
   (advice-add #'hl-todo-next :after #'doom-recenter-a)

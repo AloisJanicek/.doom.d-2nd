@@ -70,11 +70,6 @@
   "TAB" #'ivy-alt-done
   "RET" #'ivy-done
   "C-f" #'ivy-call
-  "M-o" (cmd! (let ((hydra-posframe-show-params
-                     `(:internal-border-width 10
-                       :internal-border-color ,(doom-color 'base0)
-                       :poshandler posframe-poshandler-frame-top-center)))
-                (hydra-ivy/body)))
   "C-d" #'ivy-immediate-done
   "C-;" #'ivy-restrict-to-matches
   "S-SPC" nil
