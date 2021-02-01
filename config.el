@@ -1457,7 +1457,7 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
                                       (org-save-all-org-buffers)))
   (advice-add #'org-deadline :after (lambda (&rest _)
                                       (org-save-all-org-buffers)))
-  (advice-add #'my/org-rename-header :after (lambda (&rest _)
+  (advice-add #'+org-change-title :after (lambda (&rest _)
                                               (org-save-all-org-buffers)))
   (advice-add #'org-cut-special :after #'org-save-all-org-buffers)
   (advice-add #'counsel-org-tag :after #'org-save-all-org-buffers)

@@ -201,12 +201,27 @@ specified in `+org/capture-file-heading'."
   (org-show-children)
   (org-show-entry))
 
+(defun +org-heading--parts ()
+  "Return plist with parts of the org-heading"
+  (require 'toc-org)
+  (unless (org-before-first-heading-p)
+    (save-excursion
+      (org-back-to-heading t)
+      (let ((case-fold-search nil))
+        (looking-at org-complex-heading-regexp)
+        (let* ((todo (match-string 2))
+               (priority (match-string 3))
+               (tags (match-string 5))
+               (headline (match-string 4))
+               (s-cookie (when (string-match toc-org-statistics-cookies-regexp headline)
+                           (match-string 0 headline)))
+               (title (replace-regexp-in-string toc-org-statistics-cookies-regexp "" headline))
+               (h-parts (list :todo todo :priority priority :title title :tags tags :cookie s-cookie)))
+          h-parts)))))
+
 (defun +org-heading-title-without-statistics-cookie ()
   "Return title of org heading but without statistics cookie."
-  (when (org-at-heading-p)
-    (replace-regexp-in-string " *\\[[0-9]*\\(%\\|/[0-9]*\\)\\] *"
-                              ""
-                              (nth 4 (org-heading-components)))))
+  (plist-get (+org-heading--parts) :title))
 
 ;;;###autoload
 (defun +org/capture-calendar ()
@@ -357,5 +372,18 @@ FN is function taking two arguments url and title."
              (not (string-empty-p title)))
         title
       url)))
+
+;;;###autoload
+(defun +org-change-title (heading-parts)
+  "Change title of org-mode heading.
+HEADING-PARTS is plist in a format returned by `+org-heading--parts'.
+
+This function will change only the text part of the org-mode heading
+preserving priority cookie, statistics cookie, todo keyword and tags string."
+  (let* ((old-title (plist-get heading-parts :title))
+         (new-title (read-string "New title: " old-title)))
+    (org-back-to-heading)
+    (search-forward old-title)
+    (replace-match  new-title)))
 
 (provide 'org-lib)

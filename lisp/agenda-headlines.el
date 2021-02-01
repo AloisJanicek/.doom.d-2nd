@@ -246,9 +246,7 @@ so the search can be replicated by calling this function again with arguments sa
           (agenda-headlines--custom-action-helper
            headline
            (lambda ()
-             (my/org-rename-header
-              (read-string "Header: "
-                           (+org-heading-title-without-statistics-cookie)))))
+             (+org-change-title (+org-heading--parts))))
           (agenda-headlines--dispatch-last nil ivy-text))
     "rename")
    ("R" (lambda (headline)

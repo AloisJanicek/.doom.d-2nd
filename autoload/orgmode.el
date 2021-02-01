@@ -590,18 +590,6 @@ Argument X represents title of the new heading."
     (list (progn (org-back-to-heading) (point))
           (progn (org-end-of-subtree)  (point)))))
 
-;;;###autoload
-(defun my/org-rename-header (label)
-  "Rename the current section's header to `LABEL'.
-Then moves the point to the end of the line."
-  ;; TODO Review this if this works with task count cookie [3/10]
-  (interactive (list
-                (read-string "Header: "
-                             (substring-no-properties (org-get-heading t t t t)))))
-  (org-back-to-heading)
-  (search-forward (org-get-heading t t t t))
-  (replace-match  label))
-
 ;; ORG-AGENDA
 ;;;###autoload
 (defun aj/org-agenda-current-file ()
