@@ -924,10 +924,10 @@ if running under WSL")
 (after! loaddefs
   (setq browse-url-handlers
         '(
-          ("github" . aj-chromium-browse-url-dispatch)
-          ("reddit" . aj-chromium-browse-url-dispatch)
-          ("gitlab" . aj-chromium-browse-url-dispatch)
-          ("youtube" . aj-chromium-browse-url-dispatch)
+          ("github" . aj-chrome-browse-url-dispatch)
+          ("reddit" . aj-chrome-browse-url-dispatch)
+          ("gitlab" . aj-chrome-browse-url-dispatch)
+          ("youtube" . aj-chrome-browse-url-dispatch)
           ("eslint.org" . aj-eaf-browse-url-maybe)
           ("stylelint.io" .  aj-eaf-browse-url-maybe)
           ("thefreedictionary\\.com" . eww-browse-url)

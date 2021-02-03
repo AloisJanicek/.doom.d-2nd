@@ -165,11 +165,11 @@ Which operation will be executed depends on value of ENCRYPT."
     ))
 
 ;;;###autoload
-(defun aj-chromium-browse-url-dispatch (url &optional new-window)
-  "Open URL with chromium or default Windows browser if under wsl."
+(defun aj-chrome-browse-url-dispatch (url &optional new-window)
+  "Open URL with chrome or default Windows browser if under wsl."
   (if (aj-wsl-p)
       (wsl-browse-url url new-window)
-    (browse-url-chromium url new-window)))
+    (browse-url-chrome url new-window)))
 
 ;;;###autoload
 (defun wsl-browse-url (url &rest _)
@@ -191,7 +191,7 @@ Optional argument ARGS represents arguments passed to advised function."
      (if (or (not (display-graphic-p))
              (y-or-n-p (concat "link: " "Browse with EAF browser? ")))
          #'aj-eaf-browse-url-maybe
-       #'aj-chromium-browse-url-dispatch
+       #'aj-chrome-browse-url-dispatch
        )
      args)))
 
@@ -908,16 +908,16 @@ If there is no associated entry present for current major mode, throw warning.
       (warn "%s isn't configured in `aj-modes-tests-alist'" major-mode))))
 
 ;;;###autoload
-(defun aj/chromium-toggle-incognito ()
-  "Toggle incognito mode for link opened with Chromium browser."
+(defun aj/chrome-toggle-incognito ()
+  "Toggle incognito mode for link opened with Google Chrome browser."
   (interactive)
-  (if (cl-member "--incognito" browse-url-chromium-arguments :test #'string-match)
+  (if (cl-member "--incognito" browse-url-chrome-arguments :test #'string-match)
       (progn
-        (setq browse-url-chromium-arguments (cl-remove "--incognito" browse-url-chromium-arguments :test #'equal))
-        (message "Turning OFF incognito mode for Chromium: %s" browse-url-chromium-arguments))
+        (setq browse-url-chrome-arguments (cl-remove "--incognito" browse-url-chrome-arguments :test #'equal))
+        (message "Turning OFF incognito mode for Google Chrome: %s" browse-url-chrome-arguments))
     (progn
-      (add-to-list 'browse-url-chromium-arguments "--incognito")
-      (message "Turning ON incognito mode for Chromium: %s " browse-url-chromium-arguments))))
+      (add-to-list 'browse-url-chrome-arguments "--incognito")
+      (message "Turning ON incognito mode for Google Chrome: %s " browse-url-chrome-arguments))))
 
 ;;;###autoload
 (defun aj-fix-buffer-file-name-for-indirect-buffers-a (orig-fn &rest args)
