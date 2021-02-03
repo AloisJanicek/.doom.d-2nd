@@ -27,6 +27,12 @@
            )
   :pin "f22903a2aadd1cb6b3fb6f011b229d6847009ec4")
 
+(package! org-appear
+  :recipe (:host github :repo "awth13/org-appear"
+           :branch "feature/org-fold-support"
+           )
+  )
+
 (defun aj-wsl-p ()
   "Return non-nil value if Emacs is running inside WSL."
   (string-match "Microsoft"

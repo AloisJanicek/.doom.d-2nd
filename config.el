@@ -1266,10 +1266,11 @@ if running under WSL")
    org-enforce-todo-dependencies nil ;; if t, it hides todo entries with todo children from agenda
    org-enforce-todo-checkbox-dependencies nil
    org-provide-todo-statistics t
+   org-pretty-entities t
    org-hierarchical-todo-statistics t
 
    org-startup-with-inline-images t
-   org-hide-emphasis-markers nil
+   org-hide-emphasis-markers t
    org-fontify-whole-heading-line nil
    org-src-fontify-natively t
    org-imenu-depth 9
@@ -1285,6 +1286,16 @@ if running under WSL")
    org-log-into-drawer "LOGBOOK"
    org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA"
    )
+  )
+
+(use-package! org-appear
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'org-appear-mode)
+  (setq org-appear-autoemphasis t
+        org-appear-autolinks t
+        org-appear-autosubmarkers t
+        )
   )
 
 (use-package! org-brain
