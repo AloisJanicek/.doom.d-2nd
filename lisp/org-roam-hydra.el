@@ -7,17 +7,18 @@
 
 ;;; Code:
 (require 'hydra)
+(require 'org-lib)
 (require 'org-roam-lib)
 (require 'org-roam-ivy)
 
 (defhydra org-roam-hydra (:color blue
-                             :columns 4
-                             :body-pre
-                             (progn
-                               (require 'org-roam)
-                               (if (or (eq (car current-prefix-arg) 4)
-                                       (not org-roam-directory))
-                                   (+org-roam/switch-roam))))
+                          :columns 4
+                          :body-pre
+                          (progn
+                            (require 'org-roam)
+                            (if (or (eq (car current-prefix-arg) 4)
+                                    (not org-roam-directory))
+                                (+org-roam/switch-roam))))
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
 "
@@ -37,7 +38,12 @@
    "file unfiltered")
   ("s" #'+org-roam/start-open-org-roam-server-light "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
-  ("g" (+org-notes/format-org-links org-roam-directory) "grep")
+  ("g" (+org-notes/format-org-links
+        (format "Search %s: "
+                (file-name-nondirectory (string-trim-right org-roam-directory "/")))
+        org-roam-directory
+        #'+org-roam-filtered-files)
+   "grep")
   ("j" #'org-roam-dailies-date "journal create")
   ("J" (let (org-roam-dailies-find-file-hook)
          (org-roam-dailies-date))

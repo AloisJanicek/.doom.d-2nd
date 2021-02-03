@@ -1108,7 +1108,10 @@
                                              (+org/brain-open-from-all-resources))))
   :desc "roam"                 "r" #'org-roam-hydra/body
   :desc "notes grep"           "g" (cmd! (+org-notes/format-org-links
-                                          org-brain-path))
+                                          (format "Search %s: "
+                                                  (file-name-nondirectory (string-trim-right org-brain-path "/")))
+                                          org-brain-path
+                                          #'+org-brain-filtered-files))
   :desc "notes grep"           "G" (cmd! (let ((current-prefix-arg '(4)))
                                            (+org-notes/format-org-links)))
   :desc "notes query"          "q" (cmd! (cl-letf (((symbol-function 'org-ql-view--complete-buffers-files)

@@ -9,6 +9,7 @@
 (require 'ivy)
 (require 'counsel)
 (require 'filter-preset-ivy)
+(require 'agenda-filter)
 
 (defvar +org-brain-currently-refiling nil
   "Indicates if there is refile operation running and some files should not be encrypted.")
@@ -239,5 +240,18 @@ At the end, source link is deleted.
       (setq +org-brain-currently-refiling nil))
 
     (select-window (get-buffer-window buff-orig))))
+
+;;;###autoload
+(defun +org-brain-filtered-files ()
+  "Return list of org files from `org-brain-path' filtered by `notes-filter-preset'."
+  (if current-prefix-arg
+      nil
+    (seq-map
+     (lambda (file)
+       (file-name-nondirectory file))
+     (agenda-filter-filtered-org-files
+      :recursive t
+      :dir org-brain-path
+      :preset (cdr (assoc org-brain-path notes-filter-preset))))))
 
 (provide 'brain-lib)

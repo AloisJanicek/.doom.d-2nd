@@ -281,17 +281,15 @@ specified in `+org/capture-file-heading'."
   (+org-capture-task))
 
 ;;;###autoload
-(defun +org-notes/format-org-links (&optional directory)
+(defun +org-notes/format-org-links (&optional prompt directory filtered-files-fn)
   "Remove org link syntax from grep search results."
-  ;; FIXME extract the org-brain related stuff
   (interactive)
-  (let* ((orig-fn (symbol-function 'counsel-git-grep-transformer))
-         (dir (or directory
-                  (read-directory-name "Search directory: " org-directory)))
-         (cancel-filter (when (eq (car current-prefix-arg) 4) t))
-         (search-archive (when (eq (car current-prefix-arg) 16)
-                           (setq cancel-filter t)
-                           t))
+  (let* ((prompt (or prompt "Search notes: "))
+         (directory (or directory
+                        (read-directory-name "Search directory: " org-directory)))
+         (filtered-files-fn (or filtered-files-fn (lambda () nil)))
+         (search-archive (eq (car current-prefix-arg) 16))
+         (orig-fn (symbol-function 'counsel-git-grep-transformer))
          (counsel-rg-base-command
           "rg -M 300 --no-heading --line-number --color never %s"))
     (cl-letf (((symbol-function 'counsel-git-grep-transformer)
@@ -299,20 +297,11 @@ specified in `+org/capture-file-heading'."
                  (funcall orig-fn (org-link-display-format str))))
               ((symbol-function 'counsel--rg-targets)
                (lambda ()
-                 (if (or cancel-filter
-                         (not (string-prefix-p org-brain-path directory)))
-                     nil
-                   (seq-map
-                    (lambda (file)
-                      (file-name-nondirectory file))
-                    (agenda-filter-filtered-org-files
-                     :recursive t
-                     :dir org-brain-path
-                     :preset (cdr (assoc org-brain-path notes-filter-preset))))))))
+                 (funcall filtered-files-fn))))
       (when search-archive
-        (setq dir (expand-file-name "archive" dir)))
+        (setq directory (expand-file-name "archive" directory)))
       (let ((current-prefix-arg nil))
-        (counsel-rg nil dir)))))
+        (counsel-rg nil directory nil prompt)))))
 
 (defun +org-store-link (url title)
   "Run org-protocol-store-link for URL and TITLE"

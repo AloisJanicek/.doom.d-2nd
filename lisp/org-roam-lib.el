@@ -150,4 +150,26 @@ either eaf-browser or default browser."
             (eaf-open-browser "http://127.0.0.1:8080")))
       (browse-url "http://127.0.0.1:8080"))))
 
+(defun +org-roam-filtered-files ()
+  "Return list of org files from `org-roam-dir' filtered by `org-roam-ivy-filter-preset'."
+  nil
+  ;; NOTE: following doesn't work with files from subdirectories and it never will
+  ;; (if current-prefix-arg
+  ;;     nil
+  ;;   (let ((tag-filter-preset (org-roam-ivy--filter-preset-get org-roam-directory)))
+  ;;     (remove nil
+  ;;             (seq-map
+  ;;              (lambda (file-tag)
+  ;;                (let ((has-tag (lambda (tag-list)
+  ;;                                 (catch 'tag
+  ;;                                   (dolist (tag-filter tag-filter-preset)
+  ;;                                     (dolist (tag tag-list)
+  ;;                                       (when  (cl-member tag-filter tag :test #'string-match)
+  ;;                                         (throw 'tag t))))))))
+  ;;                  (when (funcall has-tag (cdr file-tag))
+  ;;                    (file-name-nondirectory (car file-tag)))))
+  ;;              (org-roam-db-query [:select [tags:file, tags:tags] :from tags]))))
+  ;;   )
+  )
+
 (provide 'org-roam-lib)
