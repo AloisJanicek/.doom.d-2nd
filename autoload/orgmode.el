@@ -881,7 +881,6 @@ Otherwise dispatch default commands.
             (year (format-time-string "%Y"))
             (query `(and (heading ,year) (tags ,tag))))
       (with-current-buffer buff
-        ;; TODO make this work for past years too
         (if-let* ((pos (plist-get (nth 1 (car (org-ql-select
                                                 (current-buffer)
                                                 query)))
