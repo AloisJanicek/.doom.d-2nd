@@ -1471,7 +1471,7 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
   (advice-add #'org-deadline :after (lambda (&rest _)
                                       (org-save-all-org-buffers)))
   (advice-add #'+org-change-title :after (lambda (&rest _)
-                                              (org-save-all-org-buffers)))
+                                           (org-save-all-org-buffers)))
   (advice-add #'org-cut-special :after #'org-save-all-org-buffers)
   (advice-add #'counsel-org-tag :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-todo :after #'aj-org-agenda-save-and-refresh-a)
