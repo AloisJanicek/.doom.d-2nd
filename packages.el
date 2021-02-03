@@ -17,8 +17,9 @@
            :pre-build (with-temp-file (expand-file-name "org-version.el" (straight--repos-dir "org"))
                         (insert "(fset 'org-release (lambda () \"9.5\"))\n"
                                 "(fset 'org-git-version #'ignore)\n"
-                                "(provide 'org-version)\n")))
-  :pin "96ab3747f0049f26d057eb3929a6198ada5b622e"
+                                "(provide 'org-version)\n"))
+           )
+  :pin "20b571efacbe5ab72a4d03fd238b8e723c1675e8"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -106,7 +107,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "c28e88c50d52b0706b2af535762b72239cf7e38e"
+  :pin "a36661727a6e20c1720dd225b7b3c0ad5aee43f8"
   )
 
 (package! eslintd-fix
@@ -179,7 +180,7 @@
 
 (package! org-brain
   :recipe (:host github :repo "Kungsgeten/org-brain")
-  :pin "f7939ef5071895930eebccf490ea7cb25cc54b2c")
+  :pin "e9b9b3e5bb3c63cecb1367df49205c346d9c050a")
 
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags")
