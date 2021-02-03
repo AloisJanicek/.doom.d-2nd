@@ -253,7 +253,7 @@ so the search can be replicated by calling this function again with arguments sa
           (agenda-headlines--custom-action-helper
            headline
            (lambda ()
-             (+org/refile-to-current-file nil)))
+             (+org/refile-to-current-file-special nil)))
           (agenda-headlines--dispatch-last nil ivy-text))
     "Refile")
    ("k" (lambda (headline)

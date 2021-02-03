@@ -208,7 +208,7 @@ Works also in `org-agenda'."
   ("x" #'aj/private-refile/body "xprivate")
   ("o" #'+org/refile-to-other-window "other window")
   ("O" #'+org/refile-to-other-buffer "Other buffer")
-  ("." #'+org/refile-to-current-file "current file")
+  ("." #'+org/refile-to-current-file-special "current file")
   ("c" #'+org/refile-to-running-clock "clock")
   ("l" #'+org/refile-to-last-location "last location")
   ("r" #'+org-brain/refile-link-to-resources-drawer "resources")

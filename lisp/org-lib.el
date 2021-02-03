@@ -242,7 +242,7 @@ specified in `+org/capture-file-heading'."
     (org-capture nil "c")))
 
 ;;;###autoload
-(defun +org/refile-to-current-file (&optional files file heading)
+(defun +org/refile-to-current-file-special (&optional files file heading)
   "Refile to FILE and HEADING and ask user for both if they aren't provided."
   (interactive)
   (let* ((files (or files (agenda-filter-combined-agenda-files)))
