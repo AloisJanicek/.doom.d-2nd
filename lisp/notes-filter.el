@@ -2,7 +2,6 @@
 
 ;;; Commentary:
 ;; Interface for filtering directory of org files
-;; FIXME: Separate this entirely from org-brain
 
 ;;; Code:
 
@@ -10,13 +9,19 @@
 (require 'counsel)
 (require 'filter-preset-ivy)
 (require 'org-lib)
-(require 'brain-lib)
 
 (defvar notes-filter-preset '()
   "Alist storing preset for filtering notes searching.
 
-Car is one of the directory returned by `+org-brain-get-all-brains'.
+Car is directory returned by `notes-filter--directory-function'.
 Cdr is list of one or more strings returned `notes-filter-get-filetags'.")
+
+(defun notes-filter--org-brain-path ()
+  "Return current value of `org-brain-paht'."
+  org-brain-path)
+
+(defcustom notes-filter--directory-function #'notes-filter--org-brain-path
+  "Function returning default directory for notes-filter to act upon.")
 
 (defun notes-filter-preset--set (dir new-val)
   "Setter helper fn for `notes-filter-set-filter-preset'."
@@ -46,15 +51,15 @@ Cdr is list of one or more strings returned `notes-filter-get-filetags'.")
   "Set value of `notes-filter-preset'."
   (interactive)
   (notes-filter-preset--set
-   org-brain-path
+   (funcall notes-filter--directory-function)
    (filter-preset-ivy
     "Tags"
-    (cadr (notes-filter-get-filetags org-brain-path))
-    (notes-filter-preset--get org-brain-path))))
+    (cadr (notes-filter-get-filetags (funcall notes-filter--directory-function)))
+    (notes-filter-preset--get (funcall notes-filter--directory-function)))))
 
 ;;;###autoload
 (defun notes-filter/goto-headings ()
-  "Goto any heading in `org-brain-dir' filtered by `notes-filter-preset'.
+  "Goto any heading in directory returned by `notes-filter--directory-function' and filtered by `notes-filter-preset'.
 
 With one user prefix arg cancell the filter. With two user prefix
 show headings up to 9 levels deep."
@@ -63,9 +68,9 @@ show headings up to 9 levels deep."
    :files (if (not current-prefix-arg)
               (agenda-filter-filtered-org-files
                :recursive t
-               :dir org-brain-path
-               :preset (notes-filter-preset--get org-brain-path))
-            (directory-files-recursively org-brain-path ".org$"))
+               :dir (funcall notes-filter--directory-function)
+               :preset (notes-filter-preset--get (funcall notes-filter--directory-function)))
+            (directory-files-recursively (funcall notes-filter--directory-function) ".org$"))
    :level (if (eq (car current-prefix-arg) 16) 9 2)))
 
 (provide 'notes-filter)
