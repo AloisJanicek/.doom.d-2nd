@@ -20,7 +20,7 @@
                                     (not org-roam-directory))
                                 (+org-roam/switch-roam))))
   "
-%(file-name-nondirectory (string-trim-right org-roam-directory \"/\"))
+%(file-name-nondirectory (string-trim-right org-roam-directory \"/\")) %(org-roam-ivy--filter-preset-get org-roam-directory)
 "
   ("d" (lambda ()
          (interactive)

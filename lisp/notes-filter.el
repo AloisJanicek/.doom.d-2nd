@@ -57,6 +57,17 @@ Cdr is list of one or more strings returned `notes-filter-get-filetags'.")
     (cadr (notes-filter-get-filetags (funcall notes-filter--directory-function)))
     (notes-filter-preset--get (funcall notes-filter--directory-function)))))
 
+(defun notes-filter--prompt ()
+  "Prompt for interfaces using notes-filter."
+  (let* ((prompt (mapconcat
+                  (lambda (tag-str)
+                    (string-trim-left tag-str "+"))
+                  (notes-filter-preset--get (funcall notes-filter--directory-function))
+                  ":"))
+         (prompt (unless (string-empty-p prompt)
+                   prompt)))
+    prompt))
+
 ;;;###autoload
 (defun notes-filter/goto-headings ()
   "Goto any heading in directory returned by `notes-filter--directory-function' and filtered by `notes-filter-preset'.
@@ -65,6 +76,7 @@ With one user prefix arg cancell the filter. With two user prefix
 show headings up to 9 levels deep."
   (interactive)
   (agenda-headlines-goto-any
+   :prompt (notes-filter--prompt)
    :files (if (not current-prefix-arg)
               (agenda-filter-filtered-org-files
                :recursive t

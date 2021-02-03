@@ -92,14 +92,14 @@ Item must be a string containing mark pointing to valid org-mode headline to act
         (org-capture nil "k")))))
 
 ;;;###autoload
-(cl-defun agenda-headlines-goto-any (&key files level)
+(cl-defun agenda-headlines-goto-any (&key files level prompt)
   "Jump to org mode heading of any file from FILES.
 Optionally specify heading LEVEL (default is 3)."
   (require 'org)
   (let* ((ivy-height (round (* (frame-height) 0.60)))
          ivy-sort-functions-alist)
     (ivy-read
-     "Go to: "
+     (format "goto %s: " (or prompt "any headline"))
      (->> (org-ql-query
             :select 'element-with-markers
             :from files

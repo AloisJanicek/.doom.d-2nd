@@ -1326,6 +1326,18 @@ if running under WSL")
                                                               (not +org-brain-currently-refiling))
                                                      (aj-decrypt-encrypt-files-directory old-brain t)))))
 
+  (advice-add
+   #'org-brain-choose-entry
+   :around
+   (lambda (orig-fn &rest args)
+     "Set custom prompt indicating current `org-brain-path' directory."
+     (setcar (nthcdr 0 args)
+             (format
+              "Go to (%s:) "
+              (file-name-nondirectory
+               (string-trim-right org-brain-path "/"))))
+     (apply orig-fn args)))
+
   (doom-store-persist doom-store-location '(org-brain-path))
 
   (unless org-brain-path

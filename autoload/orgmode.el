@@ -676,19 +676,15 @@ got renamed while clock were running.
   "Return status info about `org-pomodoro'.
 If `org-pomodoro' is not running, try to print info about org-clock.
 If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
-  ;; TODO adjust for multiple tags
-  (when (and
-         (featurep 'org)
-         (featurep 'org-capture))
+  (when (and (featurep 'org)
+             (featurep 'org-capture))
     (require 'org-pomodoro)
-    (let ((agenda-filter (car agenda-filter-preset))
-          (brain-path (file-name-nondirectory org-brain-path))
-          (notes-filter (car (cdr (assoc org-brain-path notes-filter-preset))))
-          (roam-dir (string-trim-left
-                     (file-name-nondirectory
-                      (string-trim-right org-roam-directory "/"))
-                     "roam-"))
-          (separator "[ - ]"))
+    (let* ((agenda-filter (mapconcat
+                           (lambda (tag-str)
+                             (string-trim-left tag-str "+"))
+                           agenda-filter-preset ":"))
+           (agenda-filter (unless (string-empty-p agenda-filter)
+                            (concat "[" agenda-filter "]"))))
       (concat
        (cond ((equal :none org-pomodoro-state)
               (if (org-clock-is-active)
@@ -704,34 +700,7 @@ If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
                       (substring-no-properties org-clock-heading)))
              ((equal :short-break org-pomodoro-state) "Short Break")
              ((equal :long-break org-pomodoro-state) "Long Break"))
-       (mapconcat
-        #'identity
-        (list
-         (if agenda-filter
-             (substring-no-properties agenda-filter 1 4)
-           separator)
-         (if brain-path
-             (upcase (substring  brain-path 0 4))
-           separator)
-         (if notes-filter
-             (substring notes-filter
-                        0
-                        (let ((filter-len (length notes-filter)))
-                          (if (< filter-len 4)
-                              filter-len
-                            4)))
-           separator)
-         (if roam-dir
-             (upcase (substring
-                      roam-dir
-                      0 4))
-           separator))
-        ":"
-        )
-       )
-      )
-    )
-  )
+       (or agenda-filter "[ - ]")))))
 
 (defvar aj-clock-display-timer nil
   "Timer for updating clock display buffer.")

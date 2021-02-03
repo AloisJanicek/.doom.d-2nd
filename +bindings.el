@@ -1095,7 +1095,8 @@
  (:prefix ("n" . "notes")
   :desc "brain-goto"           "b" (cmd! (if current-prefix-arg
                                              (org-brain-switch-brain
-                                              (ivy-read "Choose brain: "
+                                              (ivy-read (format "Choose brain: (%s) " (file-name-nondirectory
+                                                                                      (string-trim-right org-brain-path "/")))
                                                         (+org-brain-get-all-brains)))
                                            (org-brain-goto nil 'org-persp-switch-create-indirect-buffer-per-persp)))
   :desc "brain-visualize"      "v" #'org-brain-visualize

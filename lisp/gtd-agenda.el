@@ -489,7 +489,9 @@ Optionally accept valid org-ql QUERY.
                             :body-pre
                             (unless (equal gtd-agenda-interface 'agenda-headlines)
                               (gtd-agenda-hydra-precheck)))
-  "Agenda search"
+  "
+GTD Agenda (%(agenda-filter-preset-string))
+"
 
   ("a" (pcase gtd-agenda-interface
          ('agenda-search
