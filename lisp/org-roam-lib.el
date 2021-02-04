@@ -6,6 +6,7 @@
 ;;; Code:
 
 (require 'org-roam)
+(require 'org-roam-ivy)
 
 (defun +org-roam-capture-ref (url title)
   "Capture new org-roam reference entry from URL and TITLE."
@@ -171,5 +172,13 @@ either eaf-browser or default browser."
   ;;              (org-roam-db-query [:select [tags:file, tags:tags] :from tags]))))
   ;;   )
   )
+
+(defun +org-roam-org-file-backlinks ()
+  "Show org-roam backlinks of current org file using `org-roam-ivy'."
+  (interactive)
+  (let (org-roam-ivy--last-ivy-text
+        org-roam-ivy-filter-preset)
+    (org-roam-ivy--backlinks-action
+     (cons nil `(:path ,(buffer-file-name (org-base-buffer (current-buffer))))))))
 
 (provide 'org-roam-lib)

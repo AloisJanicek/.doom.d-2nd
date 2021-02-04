@@ -476,6 +476,7 @@
 
   :desc "todo"         "t" #'org-todo
   :desc "schedule"     "s" #'org-schedule
+  :desc "roam backlinks" "x" #'+org-roam-org-file-backlinks
   )
 
  ;;; evil-org-agenda
