@@ -1868,10 +1868,17 @@ When in org-roam file, also create top-level ID.
                               "org-roam.db"
                               (concat doom-etc-dir (file-name-nondirectory org-roam-directory)))
         org-roam-dailies-directory "journal/"
+        org-roam-capture-templates
+        '(("d" "default" plain #'org-roam-capture--get-point
+           "%?"
+           :file-name "inbox/%<%Y%m%d%H%M%S>-${slug}"
+           :head "#+title: ${title}\n"
+           :unnarrowed t
+           ))
         org-roam-capture-ref-templates
         '(("r" "ref" plain #'org-roam-capture--get-point
            "%?"
-           :file-name "${slug}"
+           :file-name "inbox/${slug}"
            :head "#+title: ${title}\n#+roam_key: ${ref}"
            :unnarrowed t
            :immediate-finish t
@@ -1880,7 +1887,16 @@ When in org-roam file, also create top-level ID.
         `(("d" "default" entry (function org-roam-capture--get-point)
            "* %?"
            :file-name ,(concat org-roam-dailies-directory "%<%Y-%m-%d>")
-           :head "#+title: %<%A, %d %B %Y>\n"))
+           :head "#+title: %<%A, %d %B %Y>\n"
+           ))
+        org-roam-capture-immediate-template
+        '("d" "default" plain #'org-roam-capture--get-point
+          "%?"
+          :file-name "inbox/%<%Y%m%d%H%M%S>-${slug}"
+          :head "#+title: ${title}\n"
+          :unnarrowed t
+          :immediate-finish t
+          )
         )
 
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)

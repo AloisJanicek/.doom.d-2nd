@@ -138,9 +138,8 @@ filter preset."
   "Move org-roam file X."
   (let* ((f (plist-get (cdr x) :path))
          (fname (file-name-nondirectory f))
-         (fdir (file-name-directory f))
          (dest (file-name-as-directory
-                (read-directory-name "New location: " fdir))))
+                (read-directory-name "New location: " org-roam-directory))))
     (unless (file-directory-p dest)
       (mkdir dest t))
     (rename-file f dest)
