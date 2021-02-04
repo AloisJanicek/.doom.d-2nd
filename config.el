@@ -248,6 +248,9 @@ if running under WSL")
         )
   (set-popup-rule! "^\\*ivy-occur"              :size 0.70 :ttl 0 :quit nil :modeline t)
   (add-hook 'counsel-grep-post-action-hook  #'recenter)
+
+  (add-to-list 'ivy-update-fns-alist '(counsel-rg . ivy-update-fn-timer))
+
   (advice-add #'counsel-org-goto-action :after (lambda (&rest _) (recenter 0 t)))
   (advice-add
    #'counsel--mark-ring-update-fn

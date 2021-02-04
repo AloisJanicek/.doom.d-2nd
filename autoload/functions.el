@@ -935,6 +935,7 @@ If there is no associated entry present for current major mode, throw warning.
   "Imenu with increased height."
   (interactive)
   (let ((ivy-height 30)
+        ;; (ivy-update-fns-alist ivy-update-fns-alist)
         (ivy-posframe-size-function
          (lambda ()
            (list
@@ -942,6 +943,7 @@ If there is no associated entry present for current major mode, throw warning.
             :width (round (* (frame-width) 0.72))
             :min-height (+ ivy-height 1)
             :min-width (round (* (frame-width) 0.72))))))
+    ;; (add-to-list 'ivy-update-fns-alist '(counsel-imenu . ivy-update-fn-timer))
     (counsel-imenu)))
 
 ;;;###autoload
