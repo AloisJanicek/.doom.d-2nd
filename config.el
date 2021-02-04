@@ -2319,10 +2319,9 @@ When in org-roam file, also create top-level ID.
   )
 
 (after! writeroom-mode
-  ;; HACK Why is this needed? Where does this comes from?
-  (remove-hook 'writeroom-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'writeroom-mode-enable-hook #'doom-disable-line-numbers-h)
   (add-hook 'writeroom-mode-disable-hook #'doom-enable-line-numbers-h)
+  (setq writeroom-width 100)
   )
 
 (use-package! yankpad
@@ -2339,11 +2338,6 @@ When in org-roam file, also create top-level ID.
   (setq yas-wrap-around-region t
         yas-triggers-in-field t
         ))
-
-(after! writeroom-mode
-  (add-hook #'writeroom-mode-hook  #'doom-disable-line-numbers-h)
-  (setq writeroom-width 100)
-  )
 
 (use-package! zeal-at-point
   :commands (zeal-at-point zeal-at-point-search zeal-at-point-set-docset)
