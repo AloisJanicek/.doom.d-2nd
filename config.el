@@ -2302,6 +2302,13 @@ When in org-roam file, also create top-level ID.
   (set-popup-rule! "*WordNut\*"                 :size 0.4  :side 'top :select t :modeline t)
   )
 
+(after! writeroom-mode
+  ;; HACK Why is this needed? Where does this comes from?
+  (remove-hook 'writeroom-mode-hook #'doom-disable-line-numbers-h)
+  (add-hook 'writeroom-mode-enable-hook #'doom-disable-line-numbers-h)
+  (add-hook 'writeroom-mode-disable-hook #'doom-enable-line-numbers-h)
+  )
+
 (use-package! yankpad
   :commands (yankpad-insert yankpad-set-category yankpad-append-category)
   :init
