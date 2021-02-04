@@ -48,7 +48,10 @@
   ("J" (let (org-roam-dailies-find-file-hook)
          (org-roam-dailies-date))
    "journal jump")
-  ("i" #'org-roam-jump-to-index "index")
+  ("i" (let ((org-roam-ivy--last-ivy-text "inbox "))
+         (org-roam-ivy-find-file))
+   "inbox")
+  ("I" #'org-roam-jump-to-index "index")
   ("a" (lambda ()
          (interactive)
          (org-roam-ivy--set-aliases
@@ -59,7 +62,7 @@
          (org-roam-ivy--set-tags
           (org-base-buffer (current-buffer))))
    "tags")
-  ("I" #'org-roam-insert "insert")
+  ("<tab>" #'org-roam-insert "insert")
   ("T" #'org-roam-buffer-toggle-display "toggle")
   )
 
