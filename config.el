@@ -382,6 +382,10 @@ if running under WSL")
 (after! dart-mode
   (set-docsets! 'dart-mode "Dart"))
 
+(use-package! dotdrop
+  :commands (dotdrop-update dotdrop-compare dotdrop-import)
+  )
+
 (use-package! eaf
   :unless (or (aj-wsl-p)
               (not (display-graphic-p)))
@@ -1194,16 +1198,21 @@ if running under WSL")
          (org-mode)
          (org-open-at-point))))))
 
-(after! org
-  (load! "lisp/filter-preset-ivy")
-  (when (load! "lisp/brain-lib")
-    (doom-store-persist doom-store-location '(notes-filter-preset)))
+(use-package! filter-preset-ivy
+  :after org
+  )
 
+(use-package! brain-lib
+  :after org-brain
+  :config
+  (doom-store-persist doom-store-location '(notes-filter-preset))
+  )
 
-  (when (and (load! "lisp/gtd-agenda")
-             (doom-store-persist doom-store-location '(gtd-agenda-queries-history))
+(use-package! gtd-agenda
+  :after org
+  :config
+  (when (and (doom-store-persist doom-store-location '(gtd-agenda-queries-history))
              (doom-store-persist doom-store-location '(agenda-filter-preset)))
-
     ;; HACK doom-store can't handle non-ASCII characters properly
     (setq gtd-agenda-queries-history
           (seq-map (lambda (i)
@@ -1211,7 +1220,9 @@ if running under WSL")
                       (decode-coding-string (car i) 'utf-8)
                       (cdr i)))
                    gtd-agenda-queries-history)))
+  )
 
+(after! org
   (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
   (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
@@ -1827,12 +1838,17 @@ When in org-roam file, also create top-level ID.
                                      (org-pomodoro-kill))))
   )
 
-(after! org-roam
-  (when (load! "lisp/org-roam-ivy" nil t)
-    (after! org-roam-ivy
-      (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))))
+(use-package org-roam-ivy
+  :after org-roam
+  :config
+  (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
+  )
 
-  (require 'org-roam-hydra)
+(use-package org-roam-hydra
+  :after org-roam
+  )
+
+(after! org-roam
   (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
   (add-hook
    'org-roam-capture-after-find-file-hook
@@ -2463,7 +2479,6 @@ When in org-roam file, also create top-level ID.
 ;; emacs-anywhere settings
 (add-hook 'ea-popup-hook #'ea-popup-handler)
 
-(load! "lisp/dotdrop")
 (load! "+bindings")
 (load! "+hacks")
 (load! "+local" nil t)
