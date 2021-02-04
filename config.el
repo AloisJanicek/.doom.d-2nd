@@ -1398,6 +1398,12 @@ if running under WSL")
         )
   )
 
+(use-package org-persp
+  :after org
+  :config
+  (advice-add #'aj-org-jump-to-datetree :around #'org-persp-pop-buffer-a)
+  )
+
 (use-package! org-ql
   :after org
   :config
@@ -2369,8 +2375,6 @@ When in org-roam file, also create top-level ID.
                                                    "Narrow view after switching."
                                                    (interactive)
                                                    (+org-narrow-and-show)))
-
-(advice-add #'aj-org-jump-to-datetree :around #'org-persp-pop-buffer-a)
 
 ;;; theme-settings
 (add-hook 'doom-load-theme-hook
