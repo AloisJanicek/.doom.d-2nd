@@ -1857,6 +1857,7 @@ When in org-roam file, also create top-level ID.
 
   (setq +org-roam-open-buffer-on-find-file nil
         org-roam-buffer-width 0.2
+        org-roam-buffer-position 'left
         org-roam-tag-sources '(prop vanilla all-directories)
 
         org-roam-prefer-id-links t
