@@ -252,9 +252,8 @@ so the search can be replicated by calling this function again with arguments sa
    ("R" (lambda (headline)
           (agenda-headlines--custom-action-helper
            headline
-           (lambda ()
-             (+org/refile-to-current-file-special nil)))
-          (agenda-headlines--dispatch-last nil ivy-text))
+           #'+org/refile-to-current-file-special)
+          (agenda-headlines--dispatch-last nil nil))
     "Refile")
    ("k" (lambda (headline)
           (agenda-headlines--custom-action-helper headline #'org-cut-subtree)
