@@ -1838,16 +1838,6 @@ When in org-roam file, also create top-level ID.
                                      (org-pomodoro-kill))))
   )
 
-(use-package org-roam-ivy
-  :after org-roam
-  :config
-  (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
-  )
-
-(use-package org-roam-hydra
-  :after org-roam
-  )
-
 (after! org-roam
   (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
   (add-hook
@@ -1901,6 +1891,16 @@ When in org-roam file, also create top-level ID.
 
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
   (advice-add #'org-roam-doctor :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
+  )
+
+(use-package org-roam-hydra
+  :after org-roam
+  )
+
+(use-package org-roam-ivy
+  :after org-roam
+  :config
+  (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
   )
 
 (use-package! org-roam-server-light
