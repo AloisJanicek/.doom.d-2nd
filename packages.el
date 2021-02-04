@@ -19,7 +19,7 @@
                                 "(fset 'org-git-version #'ignore)\n"
                                 "(provide 'org-version)\n"))
            )
-  :pin "20b571efacbe5ab72a4d03fd238b8e723c1675e8"
+  :pin "aac9ea195808887dd87bf05027dcda9f205cee7e"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -107,7 +107,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "a36661727a6e20c1720dd225b7b3c0ad5aee43f8"
+  :pin "537582ecaecd9d5ec7bee5824fe059e182c9f3f7"
   )
 
 (package! eslintd-fix
@@ -195,7 +195,7 @@
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "181cffb37f27ce058579f2ecb7a03bc2139baf08")
+  :pin "c1b20436911f364c9477a17905af2881c765da14")
 
 (package! org-ql
   :pin "208e103ecc146db71d878df3bd09c6eb60c2797d")
