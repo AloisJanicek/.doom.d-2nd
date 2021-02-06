@@ -7,7 +7,7 @@
 
 (require 'org-roam)
 (require 'org-roam-ivy)
-(provide 'code-capture)
+(require 'code-capture)
 
 (defun +org-roam-capture-ref (url title)
   "Capture new org-roam reference entry from URL and TITLE."
