@@ -1312,6 +1312,10 @@ if running under WSL")
         )
   )
 
+(use-package code-capture
+  :after org-capture
+  )
+
 (use-package! org-brain
   :after org
   :init
