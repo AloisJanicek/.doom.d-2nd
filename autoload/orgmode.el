@@ -241,84 +241,11 @@ Works also in `org-agenda'."
 
 ;; ORG-CAPTURE
 
-;;;###autoload
-(defun my-org-capture-get-src-block-string (mode)
-  "Return org mode source block identifier for major mode `MODE'."
-  (let ((mm (intern (replace-regexp-in-string "-mode" "" (format "%s" mode)))))
-    (or (car (rassoc mm org-src-lang-modes)) (format "%s" mm))))
-
-
-(defvar aj-org-src-block-identifiers
-  '("awk" "C" "C++" "clojure" "css" "ditaa" "calc" "elisp" "eshell" "html" "php" "go" "rust"
-    "fortran" "gnuplot" "screen" "dot" "haskell" "java" "js" "latex" "ledger" "racket"
-    "lilypond" "lisp" "lua" "matlab" "ocaml" "octave" "org" "oz" "perl" "plantuml"
-    "processing" "python" "R" "ruby" "sass" "scheme" "sed" "sh" "sql" "sqlite" "vala")
-  "List of Org mode code block language identifiers.
- Useful when capturing code snippets.")
-
-(defvar aj-capturing-in-this-buffer nil
-  "Buffer from where should be obtained information for ongoing org-capture process.")
-
-;;;###autoload
-;; https://www.reddit.com/r/emacs/comments/8fg34h/capture_code_snippet_using_org_capture_template/
-(defun my-org-capture-code-snippet ()
-  "Build `org-mode' source block with code selected in `aj-capturing-in-this-buffer'."
-  (with-current-buffer aj-capturing-in-this-buffer
-    (let* ((code-snippet (replace-regexp-in-string
-                          "\*" ","
-                          (or (when (eq major-mode 'pdf-view-mode)
-                                (pdf-view-active-region-text))
-                              (buffer-substring-no-properties (mark) (point)))))
-           (isprogmode (cl-member
-                        (my-org-capture-get-src-block-string major-mode)
-                        aj-org-src-block-identifiers :test #'string-match-p))
-           (src-identifier (if isprogmode
-                               (my-org-capture-get-src-block-string major-mode)
-                             (ivy-read "Choose language:" aj-org-src-block-identifiers))))
-      (format (concat "#+BEGIN_SRC %s\n"
-                      "%s\n"
-                      "#+END_SRC"
-                      )
-              src-identifier
-              code-snippet))))
-
-;;;###autoload
-(defun aj/org-capture-code-ask-where ()
-  "Ask for file, headline and title of captured item."
-  (interactive)
-  (let* ((file (read-file-name "In file: " org-directory))
-         (headline
-          (substring-no-properties
-           (ivy-read "Under heading: "
-                     (org-ql-query
-                       :select '(org-get-heading t t t t)
-                       :from file
-                       :where '(level 1)))))
-         (title (ivy-read "Choose title: " nil)))
-    (aj-org-capture-code file title headline)))
-
-;;;###autoload
-(defun aj-org-capture-code (file title &optional headline)
-  "Capture code snippet in FILE and called it TITLE.
-If HEADLINE, capture under it instead of top level."
-  (let* ((line (concat "* " title " :src:\n"
-                       ":PROPERTIES:\n"
-                       ":CREATED: %U\n"
-                       ":END:\n\n"
-                       "from: %a\n\n"
-                       "%(my-org-capture-code-snippet)"))
-         (org-capture-templates (if headline
-                                    `(("s" "code snippet" entry (file+headline ,file ,headline)
-                                       ,line :immediate-finish t :empty-lines 1))
-                                  `(("s" "code snippet" entry (file ,file)
-                                     ,line :immediate-finish t :empty-lines 1)))))
-    (setq aj-capturing-in-this-buffer (current-buffer))
-    (org-capture nil "s")))
-
 ;;;###autoload (autoload 'aj/org-capture-code-hydra/body "autoload/orgmode" nil t)
 (defhydra aj/org-capture-code-hydra (:color blue)
   "Code"
-  ("a" #'aj/org-capture-code-ask-where "ask" )
+  ("a" #'code-capture-code-ask-where "ask" )
+  ;; FIXME WTF is this `gtd-agenda-capture-code'? Another ivy-occur left-over/user error?
   ("c" (gtd-agenda-capture-code aj-org-inbox-file (ivy-read "Choose title: " nil) nil) "inbox" )
   ("q" nil "exit")
   )
@@ -336,7 +263,7 @@ If HEADLINE, capture under it instead of top level."
   ("c" #'aj/org-capture-under-clock/body "under clock")
   ("y" (progn
          (require 'yankpad)
-         (aj-org-capture-code yankpad-file
+         (code-capture-code yankpad-file
                               (ivy-read "Choose title: " nil)
                               (or (when (or (eq major-mode 'pdf-view-mode)
                                             (eq major-mode 'nov-mode))
@@ -349,7 +276,7 @@ If HEADLINE, capture under it instead of top level."
    "yankpad")
   ("Y" (progn
          (require 'yankpad)
-         (aj-org-capture-code yankpad-file
+         (code-capture-code yankpad-file
                               (ivy-read "Choose title: " nil)
                               (substring-no-properties
                                (ivy-read "Under heading: "

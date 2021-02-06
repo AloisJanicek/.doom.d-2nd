@@ -7,6 +7,7 @@
 
 (require 'org-roam)
 (require 'org-roam-ivy)
+(provide 'code-capture)
 
 (defun +org-roam-capture-ref (url title)
   "Capture new org-roam reference entry from URL and TITLE."
@@ -180,5 +181,67 @@ either eaf-browser or default browser."
         org-roam-ivy-filter-preset)
     (org-roam-ivy--backlinks-action
      (cons nil `(:path ,(buffer-file-name (org-base-buffer (current-buffer))))))))
+
+(defvar +org-roam-yankpad-capture-info nil
+  "Plist storing title, src-block and yankpad category heading information needed for new yankpad entry.")
+
+(defun +org-roam-capture-yankpad ()
+  "Capture code snippet as org-roam-entry and link it to `yankpad-file'.
+
+Ask for title of the new entry and capture selected code as src block
+under new top-level heading in the newly created org-roam file.
+
+Guess yankpad category (or explicitly ask the user in case of e-books modes)
+and link the top-level heading with its child src block as under category
+heading in `yankpad-file'."
+  (interactive)
+  (require 'yankpad)
+  (let* ((code-capture-current-buffer (current-buffer))
+         (title (completing-read "Choose title: " nil))
+         (yankpad-heading (or (when (or (eq major-mode 'pdf-view-mode)
+                                        (eq major-mode 'nov-mode))
+                                (ivy-read "Under heading: "
+                                          (org-ql-query
+                                            :select '(org-get-heading t t t t)
+                                            :from yankpad-file
+                                            :where '(level 1))))
+                              (prin1-to-string major-mode)))
+         (src-block (code-capture-code-snippet))
+         (org-roam-capture--info
+          `((title . ,title)
+            (slug  . ,(funcall org-roam-title-to-slug-function title))))
+         (org-roam-capture--context 'title))
+    (setq +org-roam-yankpad-capture-info `(:title ,title :src-block ,src-block :heading ,yankpad-heading))
+    (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
+    (add-hook 'org-roam-capture-after-find-file-hook #'+org-roam-insert-src 99)
+    (message "hook: %s" org-roam-capture-after-find-file-hook)
+    (org-roam-capture--capture)))
+
+(defun +org-roam-insert-src ()
+  "From the information in `+org-roam-yankpad-capture-info' insert src-block into current org-mode file.
+
+After insertion link the new src block into `yankpad-file'."
+  (goto-char (point-max))
+  (insert (format "* %s :src:yankpad:" (plist-get +org-roam-yankpad-capture-info :title)))
+  (newline)
+  (org-id-get-create)
+  (newline)
+  (insert (plist-get +org-roam-yankpad-capture-info :src-block))
+  (save-buffer)
+  (remove-hook 'org-roam-capture-after-find-file-hook #'+org-roam-insert-src)
+  (org-back-to-heading)
+  (let* ((id (org-id-get-create))
+         (yankpad-heading (format "* %s" (plist-get +org-roam-yankpad-capture-info :heading)))
+         (item-link (format "** [[id:%s][%s]]"
+                            id
+                            (plist-get +org-roam-yankpad-capture-info :title)
+                            )))
+    (with-current-buffer (find-file-noselect yankpad-file)
+      (goto-char (point-min))
+      (re-search-forward yankpad-heading (point-max))
+      (org-end-of-subtree)
+      (newline)
+      (insert item-link)
+      (save-buffer))))
 
 (provide 'org-roam-lib)

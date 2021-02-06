@@ -521,7 +521,7 @@ present, then search Stack Overflow with `howdoyou-query'.
   (let* ((google-base "https://www.google.com/search?q=")
          (error-message (flycheck-error-message
                          (car (flycheck-overlay-errors-at (point)))))
-         (lang (my-org-capture-get-src-block-string major-mode))
+         (lang (code-capture-get-src-block-string major-mode))
          (query (concat lang " " error-message)))
     (if howdoyou
         (howdoyou-query (concat lang " " error-message))

@@ -1636,7 +1636,7 @@ When in org-roam file, also create top-level ID.
                               "\n"
                               "from %a\n"
                               "\n"
-                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj-org-src-block-identifiers)\n"
+                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" code-capture-src-block-identifiers)\n"
                               "%i\n"
                               "#+END_SRC\n"
                               )
@@ -1653,7 +1653,7 @@ When in org-roam file, also create top-level ID.
                               "\n"
                               "from %a\n"
                               "\n"
-                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj-org-src-block-identifiers)\n"
+                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" code-capture-src-block-identifiers)\n"
                               "%i\n"
                               "#+END_SRC\n"
                               )
@@ -1730,7 +1730,7 @@ When in org-roam file, also create top-level ID.
                               "\n"
                               "from %a\n"
                               "\n"
-                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" aj-org-src-block-identifiers)\n"
+                              "#+BEGIN_SRC %(ivy-read \"Choose language: \" code-capture-src-block-identifiers)\n"
                               "%i\n"
                               "#+END_SRC\n"
                               )
