@@ -214,7 +214,6 @@ heading in `yankpad-file'."
     (setq +org-roam-yankpad-capture-info `(:title ,title :src-block ,src-block :heading ,yankpad-heading))
     (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
     (add-hook 'org-roam-capture-after-find-file-hook #'+org-roam-insert-src 99)
-    (message "hook: %s" org-roam-capture-after-find-file-hook)
     (org-roam-capture--capture)))
 
 (defun +org-roam-insert-src ()
