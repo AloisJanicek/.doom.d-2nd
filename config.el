@@ -1549,6 +1549,7 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
   )
 
 (after! org-capture
+  (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
   (add-hook 'org-capture-after-finalize-hook #'aj/org-clock-update-heading)
   (add-hook
@@ -2356,8 +2357,6 @@ When in org-roam file, also create top-level ID.
 
 (use-package! yankpad
   :commands (yankpad-insert yankpad-set-category yankpad-append-category)
-  :init
-  (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   :config
   (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   )
