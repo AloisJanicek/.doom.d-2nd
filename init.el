@@ -73,7 +73,7 @@
   )
  electric
  ;;ibuffer
- (undo +tree)
+ undo
  vc
 
  :term
