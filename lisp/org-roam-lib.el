@@ -45,13 +45,14 @@ into new org-roam entry.
   (org-back-to-heading)
 
   ;; delete PROPERTIES drawer
-  (re-search-forward org-property-start-re)
-  (when (org-at-property-drawer-p)
-    (delete-region (line-beginning-position)
-                   (save-excursion
-                     (re-search-forward org-property-end-re))))
-  (save-buffer)
-  (org-back-to-heading)
+  (save-excursion
+    (re-search-forward org-property-start-re (org-end-of-subtree) t)
+    (when (org-at-property-drawer-p)
+      (delete-region (line-beginning-position)
+                     (save-excursion
+                       (re-search-forward org-property-end-re))))
+    (save-buffer))
+
   (let* ((orig-buff (current-buffer))
          (title (substring-no-properties (car (plist-get (car (cdr (org-element-headline-parser (line-end-position)))) :title))))
          (body (or (substring-no-properties (org-get-entry)) ""))
