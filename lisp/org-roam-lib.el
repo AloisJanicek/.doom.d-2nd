@@ -46,7 +46,7 @@ into new org-roam entry.
 
   ;; delete PROPERTIES drawer
   (save-excursion
-    (re-search-forward org-property-start-re (org-end-of-subtree) t)
+    (re-search-forward org-property-start-re (save-excursion (org-end-of-subtree)) t)
     (when (org-at-property-drawer-p)
       (delete-region (line-beginning-position)
                      (save-excursion
@@ -59,7 +59,8 @@ into new org-roam entry.
          (org-roam-capture-templates
           `(("d" "default" plain (function org-roam-capture--get-point)
              ,(concat body "\n" "%?")
-             :file-name "%<%Y%m%d%H%M%S>-${slug}"
+             ;; TODO Set file-name via variable
+             :file-name "inbox/%<%Y%m%d%H%M%S>-${slug}"
              :head "#+title: ${title}\n"
              :immediate-finish t
              :unnarrowed t)))
