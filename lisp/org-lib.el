@@ -310,36 +310,23 @@ specified in `+org/capture-file-heading'."
 (defun +org-dispatch-on-heading-link (fn)
   "When on org-mode heading, collect its url and title
 and dispatch FN.
-FN is function taking two arguments url and title."
+FN is function taking two arguments url and title.
 
-  (org-back-to-heading)
-  (when (org-at-heading-p)
-    (org-show-entry)
-    (org-toggle-item nil)
-    (let* ((current-prefix-arg nil)
-           (orig-buff (current-buffer))
-           (str (buffer-substring-no-properties
-                 (line-beginning-position)
-                 (line-end-position)))
-           (url (or
-                 (thing-at-point-url-at-point)
-                 (ignore-errors
-                   (substring str
-                              (+ 2 (string-match (rx "[[") str))
-                              (string-match (rx "][") str)))))
-           (title-maybe (ignore-errors
-                          (substring str
-                                     (+ 2 (string-match (rx "][") str))
-                                     (string-match (rx "]]") str))))
-           (title (if (or (string-equal url title-maybe)
-                          (not (stringp title-maybe)))
-                      (+org-get-web-page-title url)
-                    title-maybe)))
-      (funcall fn url title)
-      (with-current-buffer orig-buff
-        (evil-delete-whole-line (line-beginning-position) (line-end-position))
-        (save-buffer)
-        (widen)))))
+With user prefix, don't delete the source element.
+"
+  (let* ((source-buffer (org-base-buffer (current-buffer)))
+         (elm (org-element-context))
+         (url (org-element-property :raw-link elm))
+         (title (or (ignore-errors
+                      (buffer-substring (org-element-property :contents-begin elm)
+                                        (org-element-property :contents-end elm)))
+                    (+org-get-web-page-title url))))
+    (funcall fn url title)
+    (with-current-buffer source-buffer
+      (unless current-prefix-arg
+        (delete-region (org-element-property :begin elm)
+                       (org-element-property :end elm))
+        (save-buffer)))))
 
 (defun +org-re-store-link ()
   "Re-store current link under the point."
