@@ -245,8 +245,7 @@ Works also in `org-agenda'."
 (defhydra aj/org-capture-code-hydra (:color blue)
   "Code"
   ("a" #'code-capture-code-ask-where "ask" )
-  ;; FIXME WTF is this `gtd-agenda-capture-code'? Another ivy-occur left-over/user error?
-  ("c" (gtd-agenda-capture-code aj-org-inbox-file (ivy-read "Choose title: " nil) nil) "inbox" )
+  ("c" (code-capture-code gtd-agenda-inbox-file (ivy-read "Choose title: " nil) nil) "inbox")
   ("q" nil "exit")
   )
 
