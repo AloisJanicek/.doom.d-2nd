@@ -23,24 +23,25 @@ or in case of org-mode files, file must come from one of the directories
 listed in `help-buffers-directories'.
 
 Other org-mode files will be considered as regular files and buffers."
-  (with-current-buffer (or (buffer-base-buffer buffer) buffer)
-    (let* ((special (or (equal (substring (buffer-name buffer) 0 1) "*")
-                        (derived-mode-p 'nov-mode)
-                        (derived-mode-p 'pdf-view-mode)))
-           (file (unless special
-                   (buffer-file-name)))
-           (org-to-keep
-            (when file
-              (and (derived-mode-p 'org-mode)
-                   (remove nil
-                           (seq-map
-                            (lambda (dir)
-                              (file-in-directory-p file dir))
-                            help-buffers-directories)))))
-           (help-buff (memq major-mode help-buffers-modes)))
-      (or (and help-buff special)
-          (unless special
-            (and help-buff org-to-keep))))))
+  (let ((buffer (or (buffer-base-buffer buffer) buffer)))
+    (with-current-buffer buffer
+      (let* ((special (or (equal (substring (buffer-name buffer) 0 1) "*")
+                          (derived-mode-p 'nov-mode)
+                          (derived-mode-p 'pdf-view-mode)))
+             (file (unless special
+                     (buffer-file-name)))
+             (org-to-keep
+              (when file
+                (and (derived-mode-p 'org-mode)
+                     (remove nil
+                             (seq-map
+                              (lambda (dir)
+                                (file-in-directory-p file dir))
+                              help-buffers-directories)))))
+             (help-buff (memq major-mode help-buffers-modes)))
+        (or (and help-buff special)
+            (unless special
+              (and help-buff org-to-keep)))))))
 
 (defun help-buffers-kill-all-help-buffers (&rest _)
   "Kill all `help-buffers-modes' buffers exept from `org-mode'."
