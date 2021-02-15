@@ -73,7 +73,7 @@ in temporarily popup window on the right side of the frame.
                  (vslot-num (if agenda-buffer 1 3)))
             (+popup-buffer buffer
                            `((side . ,edge)
-                             (size . 82)
+                             (size . 92)
                              (slot)
                              (vslot . ,vslot-num)
                              (window-parameters
