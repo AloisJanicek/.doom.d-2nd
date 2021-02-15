@@ -301,7 +301,7 @@
   :map org-mode-map
   :n   "J"     #'outline-next-visible-heading
   :n   "K"     #'outline-previous-visible-heading
-
+  :nm "f" #'link-hint-open-link
   :ni "C-h" nil
   :ni "C-j" nil
   :ni "C-k" nil
