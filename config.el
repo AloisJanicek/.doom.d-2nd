@@ -162,6 +162,9 @@ if running under WSL")
                                            (bats-run "."))))
   )
 
+(after! better-jumper
+  (add-to-list 'better-jumper-disabled-modes 'org-mode))
+
 (after! calendar
   (setq calendar-week-start-day 1))
 
@@ -1223,6 +1226,28 @@ if running under WSL")
                       (decode-coding-string (car i) 'utf-8)
                       (cdr i)))
                    gtd-agenda-queries-history)))
+  )
+
+(use-package org-jumplist
+  :after org
+  :config
+  (advice-add #'org-persp-pop-org-buffer :after #'org-jumplist-put-a)
+
+  (map!
+   (:after evil-org
+    :map evil-org-mode-map
+    :ienmv "C-o" #'org-jumplist-back
+    :ienmv "C-i" #'org-jumplist-forward))
+
+  ;; HACK can't bind on "C-i"
+  (advice-add
+   #'better-jumper-jump-forward
+   :around
+   (lambda (orig-fn &rest args)
+     "Stupid hack: when in org-mode, run `org-jumplist-forward' instead."
+     (if (derived-mode-p 'org-mode)
+         (org-jumplist-forward)
+       (apply orig-fn args))))
   )
 
 (after! org
