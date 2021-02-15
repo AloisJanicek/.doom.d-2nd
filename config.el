@@ -1250,6 +1250,17 @@ if running under WSL")
        (apply orig-fn args))))
   )
 
+(use-package org-perpetual-clock
+  :after org
+  :config
+  (setq org-perpetual-clock-maintenance-task
+        (cons (expand-file-name "meta.org" org-directory) "Maintenance tracking task"))
+  (org-perpetual-clock +1)
+  ;; FIXME Investiga why this messes up org-files, something with hooks maybe?
+  ;; (org-clock-in-last)
+  ;; (org-perpetual-clock-maintenance-task-clock-in)
+  )
+
 (after! org
   (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
   (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
@@ -1793,9 +1804,10 @@ When in org-roam file, also create top-level ID.
                                         (widen)
                                         (+org-narrow-and-show)))
 
+  (doom-store-persist doom-store-location '(org-clock-out-time))
   (setq
    org-clock-clocked-in-display nil
-   org-clock-history-length 20
+   org-clock-history-length 50
    org-clock-in-resume nil
    org-clock-out-remove-zero-time-clocks t
    org-clock-persist t
