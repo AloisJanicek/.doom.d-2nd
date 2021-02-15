@@ -8,6 +8,7 @@
 (require 'org-roam)
 (require 'org-roam-ivy)
 (require 'code-capture)
+(require 'org-persp)
 
 (defun +org-roam-capture-ref (url title)
   "Capture new org-roam reference entry from URL and TITLE."
@@ -244,5 +245,56 @@ After insertion link the new src block into `yankpad-file'."
       (newline)
       (insert item-link)
       (save-buffer))))
+
+(defun +org-roam-dailies--clock-report (block)
+  "Create org-clock table report skipping excluding files without contribution.
+BLOCK is is valid org-clock time block."
+  (let* ((clock-frame (format
+                       "#+BEGIN: clocktable :scope agenda-with-archives :maxlevel 9 :block %s :stepskip0 t :fileskip0 t \n #+END: clocktable:"
+                       block))
+         (title-report (format "%s clock report" block))
+         (title (format-time-string
+                 (concat "%H:%M " title-report)
+                 (current-time))))
+    ;; find existing heading, remove it including its content
+    (goto-char (point-min))
+    (when (and (re-search-forward title-report (point-max) t)
+               (org-at-heading-p))
+      (org-back-to-heading)
+      (delete-region (point) (org-end-of-subtree))
+      (save-buffer))
+    ;; crate new heading
+    (goto-char (point-max))
+    (insert (format "* %s" title))
+    (newline)
+    ;; create new clocktable
+    (insert clock-frame)
+    (forward-line -1)
+    (org-clock-report)))
+
+(defun +org-roam-dailies-clock-report (block)
+  "Create clock-clock report inside of the today org-roam-dailies journal file."
+  (let* ((f-today (expand-file-name
+                   (format-time-string "%Y-%m-%d.org" (current-time))
+                   (expand-file-name "journal" org-roam-directory)))
+         (f-buffer (find-file-noselect f-today)))
+    (with-current-buffer f-buffer
+      (+org--clock-report block))
+    (org-persp-pop-org-buffer f-buffer)))
+
+(defun +org-roam-dailies-today-clock-report ()
+  "Create clock-clock report for 'today time block inside org-roam-dailies today file"
+  (interactive)
+  (+org-roam-dailies-clock-report 'today))
+
+(defun +org-roam-dailies-thisweek-clock-report ()
+  "Create clock-clock report for 'thisweek time block inside org-roam-dailies today file"
+  (interactive)
+  (+org-roam-dailies-clock-report 'thisweek))
+
+(defun +org-roam-dailies-lastweek-clock-report ()
+  "Create clock-clock report for 'lastweek time block inside org-roam-dailies today file"
+  (interactive)
+  (+org-roam-dailies-clock-report 'lastweek))
 
 (provide 'org-roam-lib)
