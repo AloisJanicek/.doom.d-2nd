@@ -32,10 +32,6 @@ if running under WSL")
 (dolist (i '(ol-info ol-eww org-id))
   (add-to-list 'org-modules i))
 
-(when (require 'help-buffers)
-  (add-to-list 'help-buffers-directories org-directory)
-  (add-to-list 'help-buffers-directories aj-calibre-path))
-
 (cd aj-home-base-dir)
 
 (setq user-mail-address "janicek.dev@gmail.com"
@@ -679,6 +675,14 @@ if running under WSL")
   (advice-add #'helpful--heading :around (lambda (orig-fn &rest args)
                                            "Add leading star to helpful heading"
                                            (funcall orig-fn (concat "* " (car args)))))
+  )
+
+(use-package! help-buffers
+  :after org-persp
+  :config
+  (setq help-buffers-org-files-visit-fn #'org-persp-pop-org-buffer)
+  (add-to-list 'help-buffers-directories org-directory)
+  (add-to-list 'help-buffers-directories aj-calibre-path)
   )
 
 (use-package! highlight-blocks

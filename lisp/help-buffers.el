@@ -7,6 +7,12 @@
 
 (require 'ivy)
 
+(defvar help-buffers-org-files-visit-fn #'pop-to-buffer
+  "Function to use for visiting org-mode file buffers.
+Function takes one argument \"buffer\" and should behave
+equivalently to `pop-to-buffer'."
+  )
+
 (defvar help-buffers-modes
   '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode
              Man-mode woman-mode org-mode org-brain-visualize-mode tldr-mode)
@@ -82,7 +88,7 @@ Around advice for `ivy--switch-buffer-action'."
       (cl-letf (((symbol-function 'switch-to-buffer)
                  (lambda (buffer &rest _)
                    (cond ((equal (with-current-buffer buffer major-mode) 'org-mode)
-                          (org-persp-pop-org-buffer buffer))
+                          (funcall help-buffers-org-files-visit-fn buffer))
                          (t (pop-to-buffer buffer))))))
         (funcall orig-fn buffer))
     (funcall orig-fn buffer)))

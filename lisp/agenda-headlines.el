@@ -12,7 +12,6 @@
 
 (require 'ivy-lib)
 (require 'org-lib)
-(require 'org-persp)
 (require 'agenda-queries)
 
 (defvar agenda-headlines--last-search '(:level1 nil :level2 nil)
@@ -69,7 +68,7 @@ Item must be a string containing mark pointing to valid org-mode headline to act
   (if-let* ((marker (get-text-property 0 'marker x))
             (buffer (when (markerp marker) (marker-buffer marker))))
       (progn
-        (org-persp-switch-create-indirect-buffer-per-persp buffer)
+        (pop-to-buffer buffer)
         (widen)
         (goto-char marker)
         (+org-narrow-and-show)

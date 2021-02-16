@@ -52,6 +52,11 @@ to allow pop org buffer into popup window."
              #'org-persp-pop-org-buffer))
     (apply orig-fn args)))
 
+(defun org-persp-pop-to-buffer-a (orig-fn &rest args)
+  ""
+  (cl-letf (((symbol-function 'pop-to-buffer) #'org-persp-pop-org-buffer))
+    (apply orig-fn args)))
+
 (defun org-persp-pop-org-buffer (buffer-or-name &rest _)
   "Display org-mode BUFFER-OR-NAME in popup window.
 Similar to `org-persp-window-for-org-buffer' but displays org buffer
@@ -267,5 +272,18 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 (after! agenda-headlines
   (advice-add #'agenda-headlines-goto-query :around #'org-persp-pop-buffer-a)
   (advice-add #'agenda-headlines-goto-any :around #'org-persp-pop-buffer-a))
+
+(after! org-jumplist
+  (advice-add #'org-jumplist-back :around #'org-persp-pop-to-buffer-a)
+  (advice-add #'org-jumplist-forward :around #'org-persp-pop-to-buffer-a))
+
+(after! org-roam-lib
+  (advice-add #'+org-roam-dailies-clock-report :around #'org-persp-pop-to-buffer-a)
+  (advice-add #'+org-roam-dailies-open-today :around #'org-persp-pop-to-buffer-a)
+  )
+
+(after! agenda-headlines
+  (advice-add #'agenda-headlines--goto-heading-action :around #'org-persp-open-file-respect-sanity-a)
+  )
 
 (provide 'org-persp)

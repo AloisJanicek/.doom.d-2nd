@@ -8,7 +8,6 @@
 (require 'org-roam)
 (require 'org-roam-ivy)
 (require 'code-capture)
-(require 'org-persp)
 
 (defun +org-roam-capture-ref (url title)
   "Capture new org-roam reference entry from URL and TITLE."
@@ -280,7 +279,7 @@ BLOCK is is valid org-clock time block."
          (f-buffer (find-file-noselect f-today)))
     (with-current-buffer f-buffer
       (+org-roam-dailies--clock-report block))
-    (org-persp-pop-org-buffer f-buffer)))
+    (pop-to-buffer f-buffer)))
 
 (defun +org-roam-dailies-today-clock-report ()
   "Create clock-clock report for 'today time block inside org-roam-dailies today file"
@@ -296,5 +295,12 @@ BLOCK is is valid org-clock time block."
   "Create clock-clock report for 'lastweek time block inside org-roam-dailies today file"
   (interactive)
   (+org-roam-dailies-clock-report 'lastweek))
+
+(defun +org-roam-dailies-open-today ()
+  "Just open today org-roam-dailies file without creating new entry."
+  (pop-to-buffer
+   (find-file-noselect (expand-file-name
+                        (format-time-string "%Y-%m-%d.org" (current-time))
+                        (expand-file-name "journal" org-roam-directory)))))
 
 (provide 'org-roam-lib)

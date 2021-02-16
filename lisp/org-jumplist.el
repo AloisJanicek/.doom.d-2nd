@@ -21,12 +21,12 @@ Intended as an advice for functions opening org-mode buffers."
 (defun org-jumplist-forward ()
   "Jump forward in the history of the recently visited org-mode buffers."
   (interactive)
-  (org-persp-pop-org-buffer (pop org-jumplist-forward)))
+  (pop-to-buffer (pop org-jumplist-forward)))
 
 (defun org-jumplist-back ()
   "Jump backwards in the history of the recently visited org-mode buffers."
   (interactive)
   (setq org-jumplist-forward (append (list (pop org-jumplist-back)) org-jumplist-forward))
-  (org-persp-pop-org-buffer (pop org-jumplist-back)))
+  (pop-to-buffer (pop org-jumplist-back)))
 
 (provide 'org-jumplist)

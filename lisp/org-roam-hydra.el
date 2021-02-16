@@ -47,10 +47,7 @@
    "grep")
   ("j" #'org-roam-dailies-date "journal create")
   ("J" (let ((org-roam-ivy--last-ivy-text "journal "))
-         (org-persp-pop-org-buffer
-          (find-file-noselect (expand-file-name
-                               (format-time-string "%Y-%m-%d.org" (current-time))
-                               (expand-file-name "journal" org-roam-directory))))
+         (+org-roam-dailies-open-today)
          (org-roam-ivy-find-file))
    "journal jump")
   ("i" (let ((org-roam-ivy--last-ivy-text "inbox "))
