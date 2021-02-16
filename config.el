@@ -2539,3 +2539,7 @@ When in org-roam file, also create top-level ID.
 (load! "+bindings")
 (load! "+hacks")
 (load! "+local" nil t)
+
+(use-package yoga
+  :commands yoga-exercise
+  )
