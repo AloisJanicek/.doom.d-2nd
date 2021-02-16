@@ -1261,7 +1261,7 @@ if running under WSL")
         (cons (expand-file-name "meta.org" org-directory) "Maintenance tracking task"))
   (org-perpetual-clock +1)
   (run-with-timer 10 nil (lambda ()
-                           (org-perpetual-clock-maintenance-task-clock-in)))
+                           (org-clock-in-last)))
   )
 
 (after! org
@@ -1787,10 +1787,6 @@ When in org-roam file, also create top-level ID.
   )
 
 (after! org-clock
-  (add-hook 'kill-emacs-hook (lambda ()
-                               (when (bound-and-true-p org-clock-current-task)
-                                 (org-clock-out))))
-
   (advice-add #'org-clock-in :after (lambda (&rest _)
                                       "Save all opened org-mode files."
                                       (org-save-all-org-buffers)))
@@ -1811,7 +1807,7 @@ When in org-roam file, also create top-level ID.
   (setq
    org-clock-clocked-in-display nil
    org-clock-history-length 50
-   org-clock-in-resume nil
+   org-clock-in-resume t
    org-clock-out-remove-zero-time-clocks t
    org-clock-persist t
    org-clock-persist-query-resume nil
