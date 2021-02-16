@@ -279,7 +279,7 @@ BLOCK is is valid org-clock time block."
                    (expand-file-name "journal" org-roam-directory)))
          (f-buffer (find-file-noselect f-today)))
     (with-current-buffer f-buffer
-      (+org--clock-report block))
+      (+org-roam-dailies--clock-report block))
     (org-persp-pop-org-buffer f-buffer)))
 
 (defun +org-roam-dailies-today-clock-report ()
