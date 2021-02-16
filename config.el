@@ -1256,9 +1256,8 @@ if running under WSL")
   (setq org-perpetual-clock-maintenance-task
         (cons (expand-file-name "meta.org" org-directory) "Maintenance tracking task"))
   (org-perpetual-clock +1)
-  ;; FIXME Investiga why this messes up org-files, something with hooks maybe?
-  ;; (org-clock-in-last)
-  ;; (org-perpetual-clock-maintenance-task-clock-in)
+  (run-with-timer 10 nil (lambda ()
+                           (org-perpetual-clock-maintenance-task-clock-in)))
   )
 
 (after! org
