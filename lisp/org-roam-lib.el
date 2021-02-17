@@ -298,9 +298,12 @@ BLOCK is is valid org-clock time block."
 
 (defun +org-roam-dailies-open-today ()
   "Just open today org-roam-dailies file without creating new entry."
-  (pop-to-buffer
-   (find-file-noselect (expand-file-name
-                        (format-time-string "%Y-%m-%d.org" (current-time))
-                        (expand-file-name "journal" org-roam-directory)))))
+  (let ((today-f (expand-file-name
+                  (format-time-string "%Y-%m-%d.org" (current-time))
+                  (expand-file-name "journal" org-roam-directory))))
+    (if (file-exists-p today-f)
+        (pop-to-buffer
+         (find-file-noselect today-f))
+      (org-roam-dailies-find-today))))
 
 (provide 'org-roam-lib)
