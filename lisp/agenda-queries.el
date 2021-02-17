@@ -222,8 +222,25 @@ and has todo childre."
                   (todo "MAYBE"))))))
 
 (defun agenda-queries--custom-clocked-task-query ()
-  "Return custom org-ql queary for all recently clocked tasks."
-  `(and (clocked) (not (done))))
+  "Return custom org-ql queary for relevant clock headings.
+
+Relevant clock heading is either any heading which was clocked
+andis not done or any heading with \"clock\" tag which is not done.
+
+Use case for later is following:
+User wants to define some tasks or headings for future time tracking
+but they weren't clocked in yet. User marks those headings with \"clock\"
+tag, either directly or by inheritance and they will appear among
+results of this org-ql query.
+
+Headings matching \"^Clock$\" are ommited from results - user can mark
+this heading with \"clock\" tag and group clock headings under it.
+"
+  `(or (and (clocked)
+            (not (done)))
+       (and (tags "clock")
+            (not (heading-regexp "^Clock$"))
+            (not (done)))))
 
 (defun agenda-queries--custom-ticklers-query ()
   "Return custom org-ql queary for tickler items.
