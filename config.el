@@ -1214,8 +1214,6 @@ if running under WSL")
 
 (use-package! brain-lib
   :after org-brain
-  :config
-  (doom-store-persist doom-store-location '(notes-filter-preset))
   )
 
 (use-package! gtd-agenda
@@ -1355,13 +1353,18 @@ if running under WSL")
   :after org-capture
   )
 
+(use-package! notes-filter
+  :after org
+  :config
+  (doom-store-persist doom-store-location '(notes-filter-preset))
+  )
+
 (use-package! org-brain
   :after org
   :init
   (when (featurep! :editor evil)
     (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode))
   :config
-  (require 'notes-filter)
   (set-popup-rule! "^\\*org-brain\\*$" :vslot -1 :size 60 :side 'left :select t :quit t :ttl nil :modeline t)
   (add-hook 'org-brain-visualize-mode-hook (lambda ()
                                              (doom-mark-buffer-as-real-h)
