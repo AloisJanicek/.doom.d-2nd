@@ -223,7 +223,7 @@ and has todo childre."
 
 (defun agenda-queries--custom-clocked-task-query ()
   "Return custom org-ql queary for all recently clocked tasks."
-  `(and (clocked) ,(agenda-queries--filter-tags-query)))
+  `(and (clocked) (not (done))))
 
 (defun agenda-queries--custom-ticklers-query ()
   "Return custom org-ql queary for tickler items.
