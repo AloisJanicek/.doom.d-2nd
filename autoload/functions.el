@@ -1016,6 +1016,13 @@ Intended as an override advice for `posframe--mouse-banish'.
   (call-process "/bin/bash" nil t 0 "-c"
                 (concat "nohup xdotool mousemove 500 100"
                         " >/dev/null 2>&1 &")))
+
+(defun aj-symbol-at-point ()
+  "Return symbol at point or empty string.
+Make sure string doesn't start with special characters."
+  (string-trim-left
+   (format "%s" (or (symbol-at-point) "")) "[^A-Za-z0-9]"))
+
 ;;;###autoload
 (defun +ivy/project-search-a (&optional arg initial-query directory)
   "Performs a live project search from the project root using ripgrep.
@@ -1026,20 +1033,20 @@ in the search.
 Override advice for `+ivy/project-search'.
 "
   (interactive "P")
-  (let ((initial-query (or initial-query (format "%s" (or (symbol-at-point) "")))))
+  (let ((initial-query (or initial-query (aj-symbol-at-point))))
     (+ivy-file-search :query initial-query :in directory :all-files arg)))
 
 ;;;###autoload
 (defun aj/swiper ()
   "Run `swiper' with `symbol-at-point'."
   (interactive)
-  (swiper (format "%s" (or (symbol-at-point) ""))))
+  (swiper (aj-symbol-at-point)))
 
 ;;;###autoload
 (defun aj/swiper-all ()
   "Run `swiper-all' with `symbol-at-point'."
   (interactive)
-  (swiper-all (format "%s" (or (symbol-at-point) ""))))
+  (swiper-all (aj-symbol-at-point)))
 
 (provide 'functions)
 
