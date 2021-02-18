@@ -176,7 +176,7 @@ either eaf-browser or default browser."
   ;;   )
   )
 
-(defun +org-roam-org-file-backlinks ()
+(defun +org-roam/org-file-backlinks ()
   "Show org-roam backlinks of current org file using `org-roam-ivy'."
   (interactive)
   (let (org-roam-ivy--last-ivy-text
@@ -187,7 +187,7 @@ either eaf-browser or default browser."
 (defvar +org-roam-yankpad-capture-info nil
   "Plist storing title, src-block and yankpad category heading information needed for new yankpad entry.")
 
-(defun +org-roam-capture-yankpad ()
+(defun +org-roam/capture-yankpad ()
   "Capture code snippet as org-roam-entry and link it to `yankpad-file'.
 
 Ask for title of the new entry and capture selected code as src block
@@ -281,17 +281,17 @@ BLOCK is is valid org-clock time block."
       (+org-roam-dailies--clock-report block))
     (pop-to-buffer f-buffer)))
 
-(defun +org-roam-dailies-today-clock-report ()
+(defun +org-roam/dailies-today-clock-report ()
   "Create clock-clock report for 'today time block inside org-roam-dailies today file"
   (interactive)
   (+org-roam-dailies-clock-report 'today))
 
-(defun +org-roam-dailies-thisweek-clock-report ()
+(defun +org-roam/dailies-thisweek-clock-report ()
   "Create clock-clock report for 'thisweek time block inside org-roam-dailies today file"
   (interactive)
   (+org-roam-dailies-clock-report 'thisweek))
 
-(defun +org-roam-dailies-lastweek-clock-report ()
+(defun +org-roam/dailies-lastweek-clock-report ()
   "Create clock-clock report for 'lastweek time block inside org-roam-dailies today file"
   (interactive)
   (+org-roam-dailies-clock-report 'lastweek))

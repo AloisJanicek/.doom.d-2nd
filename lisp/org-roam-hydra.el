@@ -38,7 +38,7 @@
    "file unfiltered")
   ("s" #'+org-roam/start-open-org-roam-server-light "server")
   ("S" (org-roam-server-light-mode -1) "Stop")
-  ("y" (+org-roam-capture-yankpad) "yankpad")
+  ("y" (+org-roam/capture-yankpad) "yankpad")
   ("g" (+org-notes/format-org-links
         (format "Search %s: "
                 (file-name-nondirectory (string-trim-right org-roam-directory "/")))
