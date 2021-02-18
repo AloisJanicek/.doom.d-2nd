@@ -306,4 +306,35 @@ BLOCK is is valid org-clock time block."
          (find-file-noselect today-f))
       (org-roam-dailies-find-today))))
 
+(defun +org-roam/insert ()
+  "Insert future org roam link into last word (or marked words) before cursor.
+
+\"Future org roam link\" means link to entry which doesn't exist yet and will
+be capture upon first visiting of this link.
+
+This is meant to be little bit more faster & convenient then using `org-roam-insert'
+which will first capture presently non-existing entry before it inserts its link.
+
+With user prefix prompt allow to edit link and title.
+"
+  (interactive)
+  (let* ((title (or (when (use-region-p)
+                      (buffer-substring-no-properties (mark) (point)))
+                    (current-word)))
+         (link (format "roam:%s" title)))
+
+    ;; delete the title
+    (goto-char (line-beginning-position))
+    (re-search-forward title (line-end-position))
+    (replace-match "" nil nil)
+
+    ;; Allow user to edit link
+    (when current-prefix-arg
+      (setq title (read-from-minibuffer "title: " title))
+      (setq link (read-from-minibuffer "link: " (format "roam:%s" title))))
+
+    ;; insert the link
+    (insert (format "[[%s][%s]]" link title))
+    (save-buffer)))
+
 (provide 'org-roam-lib)
