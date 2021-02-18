@@ -19,7 +19,7 @@
                                 "(fset 'org-git-version #'ignore)\n"
                                 "(provide 'org-version)\n"))
            )
-  :pin "aac9ea195808887dd87bf05027dcda9f205cee7e"
+  :pin "c3c2eebeae30d0ad77df39908dd7b98c71b465c6"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -107,7 +107,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "537582ecaecd9d5ec7bee5824fe059e182c9f3f7"
+  :pin "8643126f7bfd151a73c9c4046cd24db31eac4339"
   )
 
 (package! eslintd-fix
@@ -133,7 +133,7 @@
 
 (package! howdoyou
   :recipe (:host github :repo "thanhvg/emacs-howdoyou")
-  :pin "e7c2e75a0365bca16e8910e295f330c35fa016ae")
+  :pin "27e9e015b930175896c07536c25e379a4e1997af")
 
 (package! hungry-delete
   :pin "0513152525c38519a5597db2d6495b56dd9cc3f0")
@@ -228,7 +228,7 @@
   :pin "931c447bc0d6c134ddc9657c664eeee33afbc54d")
 
 (package! systemd
-  :pin "51c148e09a129ddf33d95276aa0e89d4ef6f8dd2")
+  :pin "b6ae63a236605b1c5e1069f7d3afe06ae32a7bae")
 
 (package! tldr
   :pin "269bda7001613c0b70c0662d2a74d200765c1dcb")
@@ -246,7 +246,7 @@
   :pin "e7f28608c7fc9507e407c6b840dff09062df533a")
 
 (package! yankpad
-  :pin "06d85f04133fbd49a6469174032f4c10a0abe98d")
+  :pin "fb9cb7753af971701dcd96a51efb4d70e2b2a18f")
 
 (package! zeal-at-point
   :recipe (:host github :repo "jinzhu/zeal-at-point")
