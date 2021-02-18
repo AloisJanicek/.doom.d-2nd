@@ -27,6 +27,17 @@ is closer to maximum of the range rather then to the scheduled date.
           (< half (org-today))))
 
 ;; Org-ql sort predicates
+(defun agenda-queries-sort-by-recent-clock (a b)
+  "Sort A and B by their latest clock."
+  (let ((get-latest-clock (lambda (elm)
+                            (org-with-point-at (org-element-property :org-marker elm)
+                              (if (re-search-forward org-ql-clock-regexp (save-excursion (org-end-of-subtree)) t)
+                                  (org-parse-time-string
+                                   (plist-get (cadr (org-element-property :value (org-element-at-point))) :raw-value))
+                                (org-parse-time-string "1971-01-01"))))))
+    (time-less-p (funcall get-latest-clock b)
+                 (funcall get-latest-clock a))))
+
 (defun agenda-queries-sort-by-active-timestamp (a b)
   "Sort A and B by their active timestamp.
 

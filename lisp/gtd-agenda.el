@@ -691,14 +691,14 @@ GTD Agenda (%(agenda-filter-preset-string))
           (org-ql-search
             (agenda-filter-combined-agenda-files)
             (agenda-queries--custom-clocked-task-query)
-            :sort 'date
+            :sort 'agenda-queries-sort-by-recent-clock
             :super-groups '((:auto-category t ))
             :title "Clocked"))
          ('agenda-headlines
           (agenda-headlines-goto-query
            :prompt "Clocked"
            :query (agenda-queries--custom-clocked-task-query)
-           :sort-fn 'date
+           :sort-fn 'agenda-queries-sort-by-recent-clock
            :capture-key "k"
            :clock t)))
    "Clocked")
