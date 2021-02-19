@@ -37,7 +37,9 @@ Intended as an around advice org `org-clock-out'."
   "Clock in `org-perpetual-clock-maintenance-task' unless this is about to be cancelled clocked task.
 Intended as an around advice org `org-clock-cancel'."
   (if (string-match (or org-clock-current-task "") (cdr org-perpetual-clock-maintenance-task))
-      (user-error "Cancelling %s is prohibited" (cdr org-perpetual-clock-maintenance-task))
+      (progn
+        (apply orig-fn args)
+        (user-error "Cancelling %s is prohibited" (cdr org-perpetual-clock-maintenance-task)))
     (progn
       (apply orig-fn args)
       (org-perpetual-clock-maintenance-task-clock-in))))
