@@ -271,8 +271,8 @@
   :nm "q" #'kill-this-buffer
   :nm "<tab>" #'org-cycle
   :nm "S-<tab>" #'org-shifttab
-  :nm "C-j" nil
-  :nm "C-k" nil
+  :nm "C-n" #'nov-next-document
+  :nm "C-p" #'nov-previous-document
   :localleader
   "n" #'org-noter
   "i" #'org-noter-insert-note
