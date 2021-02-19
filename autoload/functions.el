@@ -171,6 +171,12 @@ Which operation will be executed depends on value of ENCRYPT."
       (wsl-browse-url url new-window)
     (browse-url-chrome url new-window)))
 
+(defun aj-mpv-browse-url (url &optional new-window)
+  "Play URL with mpv or with chrome when on platform other then linux."
+  (if (string-equal system-type "gnu/linux")
+      (async-shell-command (format "mpv \"%s\" 2>&1 /dev/null" url))
+    (aj-chrome-browse-url-dispatch)))
+
 ;;;###autoload
 (defun wsl-browse-url (url &rest _)
   "Opens link via powershell.exe"
