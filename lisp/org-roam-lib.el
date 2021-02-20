@@ -176,13 +176,26 @@ either eaf-browser or default browser."
   ;;   )
   )
 
+(defun +org-roam-org-file-links (type)
+  "Show org-roam links of the current file.
+TYPE is either 'backlinks or 'forwardlinks."
+  (let ((link-fn (pcase type
+                   ('backlinks #'org-roam-ivy--backlinks-action)
+                   ('forwardlinks #'org-roam-ivy--forwardlinks-action)))
+        org-roam-ivy--last-ivy-text
+        org-roam-ivy-filter-preset)
+    (funcall link-fn
+             (cons nil `(:path ,(buffer-file-name (org-base-buffer (current-buffer))))))))
+
 (defun +org-roam/org-file-backlinks ()
   "Show org-roam backlinks of current org file using `org-roam-ivy'."
   (interactive)
-  (let (org-roam-ivy--last-ivy-text
-        org-roam-ivy-filter-preset)
-    (org-roam-ivy--backlinks-action
-     (cons nil `(:path ,(buffer-file-name (org-base-buffer (current-buffer))))))))
+  (+org-roam-org-file-links 'backlinks))
+
+(defun +org-roam/org-file-forwardlinks ()
+  "Show org-roam forwardlinks of current org file using `org-roam-ivy'."
+  (interactive)
+  (+org-roam-org-file-links 'forwardlinks))
 
 (defvar +org-roam-yankpad-capture-info nil
   "Plist storing title, src-block and yankpad category heading information needed for new yankpad entry.")
@@ -336,5 +349,16 @@ With user prefix prompt allow to edit link and title.
     ;; insert the link
     (insert (format "[[%s][%s]]" link title))
     (save-buffer)))
+
+(defun +org-roam--get-forwardlinks (targets)
+  "Same as `org-roam--get-backlinks' but get forward links instead."
+  (unless (listp targets)
+    (setq targets (list targets)))
+  (let ((conditions (--> targets
+                      (mapcar (lambda (i) (list '= 'source i)) it)
+                      (org-roam--list-interleave it :or))))
+    (org-roam-db-query `[:select [dest source properties] :from links
+                         :where ,@conditions
+                         :order-by (asc source)])))
 
 (provide 'org-roam-lib)

@@ -32,7 +32,7 @@ When using org-roam-ivy interfaces, store valaue of the `ivy-text'
 into this variable and use it to restore the input when returning
 from backlinks back to the top level search or when opening org-roam-ivy again.")
 
-(defvar org-roam-ivy--last-ivy '(:last-ivy nil :backlinks nil)
+(defvar org-roam-ivy--last-ivy '(:last-ivy nil :backlinks nil :forwardlinks nil)
   "Store the function name of the last used org-roam-ivy interface.")
 
 (defvar org-roam-ivy-filter-preset nil
@@ -147,12 +147,17 @@ filter preset."
     (org-roam-db-mark-dirty))
   (org-roam-ivy--last-ivy))
 
-(defun org-roam-ivy--backlinks-action (x)
-  "Browse backlinks of org-roam item X."
+(defun org-roam-ivy--links (x type)
+  "Browse links of TYPE of the org-roam item X."
   (let* ((f (plist-get (cdr x) :path))
          (from this-command))
-    (if-let ((backlinks (org-roam--get-backlinks f))
-             (prompt (format "Backlinks of %s: " (org-roam-db--get-title f)))
+    (if-let ((links (pcase type
+                      ('backlinks (org-roam--get-backlinks f))
+                      ('forwardlinks (+org-roam--get-forwardlinks f))))
+             (link-type (pcase type
+                          ('backlinks :backlinks)
+                          ('forwardlinks :forwardlinks)))
+             (prompt (format "%s of %s: " (prin1-to-string type) (org-roam-db--get-title f)))
              (collection (seq-map
                           (lambda (bklink)
                             (cons
@@ -160,17 +165,25 @@ filter preset."
                               (org-roam-db--get-title (car bklink))
                               (org-roam--extract-tags f))
                              `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
-                          backlinks)))
+                          links)))
         (progn
           (plist-put
            org-roam-ivy--last-ivy
-           :backlinks
+           link-type
            (append
-            (list `(,prompt ,collection ,from))
-            (plist-get org-roam-ivy--last-ivy :backlinks)))
+            (list `(,prompt ,collection ,from ,(current-time)))
+            (plist-get org-roam-ivy--last-ivy link-type)))
           (org-roam-ivy prompt collection from))
-      (message "Item \"%s\" has no backlinks" (org-roam-db--get-title f))
+      (message "Item \"%s\" has no %s" (org-roam-db--get-title f) (prin1-to-string type))
       (org-roam-ivy--last-ivy))))
+
+(defun org-roam-ivy--backlinks-action (x)
+  "Browse backlinks of org-roam item X."
+  (org-roam-ivy--links x 'backlinks))
+
+(defun org-roam-ivy--forwardlinks-action (x)
+  "Browse forwardlinks of org-roam item X."
+  (org-roam-ivy--links x 'forwardlinks))
 
 ;;; org-mode helpers and utilities
 (defun org-roam-ivy--global-property (name &optional file bound)
@@ -200,21 +213,34 @@ of doom-emacs https://github.com/hlissner/doom-emacs."
   (when-let ((last-ivy (plist-get org-roam-ivy--last-ivy :last-ivy)))
     ;; Drop backlinks history when restoring to the top level search view
     (plist-put org-roam-ivy--last-ivy :backlinks nil)
+    (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
     (funcall last-ivy)))
 
-(defun org-roam-ivy--backlinks-back ()
+(defun org-roam-ivy--links-back ()
   "Pop and go to the current backlinks view from `org-roam-ivy--last-ivy'.
 When there isn't one, return to last top level ivy."
-  (if-let* ((backlinks (plist-get org-roam-ivy--last-ivy :backlinks))
-            ;; there must be at least 2 views saved:
-            ;; - current (which will be dropped)
-            ;; - previous
-            (backlinks-length (> (length backlinks) 1)))
+  (if-let* ((type (let ((backlinks-timestamp
+                         (car (last (car (plist-get org-roam-ivy--last-ivy :backlinks)))))
+                        (forwardlinks-timestamp
+                         (car (last (car (plist-get org-roam-ivy--last-ivy :forwardlinks))))))
+                    (cond ((and backlinks-timestamp forwardlinks-timestamp)
+                           (if (time-less-p backlinks-timestamp forwardlinks-timestamp)
+                               :forward-links :backlinks))
+                          (backlinks-timestamp
+                           :backlinks)
+                          (forwardlinks-timestamp
+                           :forwardlinks))))
+            (backlinks (plist-get org-roam-ivy--last-ivy type))
+            (backlinks-length (>= (length backlinks) 1)))
       (progn
-        ;; pop the current
-        (pop (plist-get org-roam-ivy--last-ivy :backlinks))
-        ;; apply the previous
-        (apply #'org-roam-ivy (pop (plist-get org-roam-ivy--last-ivy :backlinks))))
+        ;; pop the current if it is the same as the one about to be re-stored
+        (when (and (string-equal
+                    (ivy-state-prompt ivy-last)
+                    (caar (plist-get org-roam-ivy--last-ivy type)))
+                   (> (length backlinks) 1))
+          (pop (plist-get org-roam-ivy--last-ivy type)))
+        ;; restore the previous
+        (apply #'org-roam-ivy (pop (plist-get org-roam-ivy--last-ivy type))))
     (org-roam-ivy--last-ivy)))
 
 (defun org-roam-ivy--capture (x)
@@ -232,14 +258,17 @@ Adopted from `org-roam'."
   "Improve appereance of org-roam ivy.
 
 For STR make url of org-refs less prominent. Strip unnecessary parentheses
-around urls and tags. Add number of backlinks in front of each item.
+around urls and tags. Add number of backlinks and forwardlinks in front of each item.
 Prepend org-roam-ref items with \"link\" icon."
-  (let ((prepend-backlinks-num
+  (let ((prepend-links-num
          (lambda (f-title)
            (let* ((f-title (substring-no-properties f-title))
                   (f-path (caar
                            (org-roam-db-query [:select [file] :from titles :where (= title $s1)]
                                               f-title)))
+                  (forwardlinks-num (length
+                                     (org-roam-db-query [:select * :from links :where (= source $s1)] f-path)))
+                  (forwardlinks-num-str (number-to-string forwardlinks-num))
                   (backlinks-num (length
                                   (org-roam-db-query [:select * :from links :where (= dest $s1)] f-path)))
                   (backlinks-num-str (number-to-string backlinks-num))
@@ -252,23 +281,26 @@ Prepend org-roam-ref items with \"link\" icon."
              (put-text-property 0 (length backlinks-num-str) 'face
                                 (if (equal 0 backlinks-num) 'org-warning 'org-tag)
                                 backlinks-num-str)
+             (put-text-property 0 (length forwardlinks-num-str) 'face
+                                (if (equal 0 forwardlinks-num) 'org-warning 'org-tag)
+                                forwardlinks-num-str)
              (put-text-property 0 (length ico) 'face 'org-tag ico)
-             (concat backlinks-num-str " " ico f-title)))))
+             (concat backlinks-num-str " " forwardlinks-num-str " " ico f-title)))))
     (cond ((string-match "(//" str 0)
            (let* ((str-list (split-string str "(//" nil))
                   (url (string-trim-right (car (cdr str-list)) ")"))
                   (f-title (string-trim (car str-list))))
              (put-text-property 0 (length url) 'face 'org-tag url)
-             (concat (funcall prepend-backlinks-num f-title) " " url)))
+             (concat (funcall prepend-links-num f-title) " " url)))
           ((string-match ") " str 0)
            (let* ((str-list (split-string str ") " nil))
                   (f-title (substring-no-properties (car (cdr str-list))))
                   (tags (string-trim-left (car str-list) "(")))
-             (concat (funcall prepend-backlinks-num f-title) " " tags)))
-          (t (funcall prepend-backlinks-num str)))))
+             (concat (funcall prepend-links-num f-title) " " tags)))
+          (t (funcall prepend-links-num str)))))
 
 ;;; org-roam-ivy
-(defun org-roam-ivy (prompt collection &optional from)
+(defun org-roam-ivy (prompt collection &optional from &rest _)
   "Exclusive ivy interface for org-roam.
 PROMPT and COLLECTION are the usual `ivy' arguments.
 
@@ -306,6 +338,7 @@ of org-roam item by tag string doesn't make much sense."
   (interactive)
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-refs)
   (plist-put org-roam-ivy--last-ivy :backlinks nil)
+  (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
   (let ((org-roam-ivy--last-ivy-text "")
         org-roam-ivy-filter-preset)
     (org-roam-ivy "Refs: " (org-roam--get-ref-path-completions 1))))
@@ -316,6 +349,7 @@ of org-roam item by tag string doesn't make much sense."
   (interactive)
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-file)
   (plist-put org-roam-ivy--last-ivy :backlinks nil)
+  (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
   (org-roam-ivy "File: " (org-roam--get-title-path-completions)))
 
 ;; org-roam-ivy setup
@@ -325,6 +359,7 @@ of org-roam item by tag string doesn't make much sense."
 (ivy-add-actions
  #'org-roam-ivy
  '(("x" org-roam-ivy--backlinks-action "show backlinks")
+   ("f" org-roam-ivy--forwardlinks-action "show forwardlinks")
    ("i" (lambda (x)
           (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
             (goto-char (point-max))
@@ -364,7 +399,7 @@ of org-roam item by tag string doesn't make much sense."
             (org-roam-ivy--refs-url-open-action x)))
     "browse url Incognito")
    ("h" (lambda (x)
-          (org-roam-ivy--backlinks-back))
+          (org-roam-ivy--links-back))
     "Back")
    ("t" (lambda (x)
           (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
