@@ -19,7 +19,7 @@
                                 "(fset 'org-git-version #'ignore)\n"
                                 "(provide 'org-version)\n"))
            )
-  :pin "c3c2eebeae30d0ad77df39908dd7b98c71b465c6"
+  :pin "6afe70e63509214b4c305f2d8f2d713056b165ed"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -67,7 +67,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "3cfc62cea6f26279e062d6056fa0fec7b6f7ac1c")
+  :pin "f2b48400b2da0bbf64e9c749fa4a5d332ab7c91f")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -107,7 +107,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "8643126f7bfd151a73c9c4046cd24db31eac4339"
+  :pin "e56cf32ce2f5aca1ffd6f0fe1b0b702404fc1c90"
   )
 
 (package! eslintd-fix
