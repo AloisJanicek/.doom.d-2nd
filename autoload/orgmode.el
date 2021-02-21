@@ -286,7 +286,7 @@ Works also in `org-agenda'."
    "Yankpad")
   ("k" (org-capture nil "k") "k inbox")
   ("t" (+org/capture-task) "task")
-  ("T" (org/capture-clocked-task) "clocked Task")
+  ("T" (+org/capture-clocked-task) "clocked Task")
   ("j" (agenda-filter-funcall-with-filtered-agenda-files #'aj-org-capture-into-journal-in) "journal")
   ("q" nil)
   )
