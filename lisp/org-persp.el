@@ -36,14 +36,6 @@ Optional argument ARGS are argument passed to `ORIG-FN'."
              #'org-persp-switch-create-indirect-buffer-per-persp))
     (apply orig-fn args)))
 
-(defun org-persp-respect-sanity-a (&rest _)
-  "This is meant as an advice to all commands which like to opens a lot of org files."
-  (let ((persp-autokill-buffer-on-remove nil))
-    (org-save-all-org-buffers)
-    (dolist (buf (persp-buffers (get-current-persp)))
-      (unless (help-buffers-help-buffer-p buf)
-        (persp-remove-buffer buf)))))
-
 (defun org-persp-pop-buffer-a (orig-fn &rest args)
   "Override `org-persp-window-for-org-buffer' with `org-persp-pop-org-buffer'.
 Intended for overriding default behavior of `org-persp-switch-create-indirect-buffer-per-persp'
@@ -221,7 +213,6 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 (after! org
   (advice-add #'org-goto-marker-or-bmk :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-goto-marker-or-bmk :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-refile :after #'org-persp-respect-sanity-a)
   (advice-add
    #'org-open-file
    :around
@@ -243,11 +234,8 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 (after! org-agenda
   (advice-add #'org-agenda-switch-to :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-agenda-goto :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-agenda-refile :after #'org-persp-respect-sanity-a)
-  (advice-add #'org-agenda-exit :after #'org-persp-respect-sanity-a))
 
 (after! org-brain
-  (advice-add #'org-brain-visualize :after #'org-persp-respect-sanity-a)
   (advice-add #'org-brain-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-brain-goto :around #'org-persp-pop-buffer-a))
 
