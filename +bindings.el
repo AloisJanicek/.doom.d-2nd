@@ -305,10 +305,11 @@
   :nmvi "C-}" (lambda ()
                 "Mark word under cursor and insert org-roam link via `org-roam-insert'."
                 (interactive)
-                (evil-backward-WORD-begin)
-                (set-mark (point))
-                (evil-forward-word-end)
-                (forward-char 1)
+                (unless (region-active-p)
+                  (evil-backward-WORD-begin)
+                  (set-mark (point))
+                  (evil-forward-word-end)
+                  (forward-char 1))
                 (org-roam-insert))
   :nmvi "C-]" #'+org-roam/insert
   :ni "C-h" nil
