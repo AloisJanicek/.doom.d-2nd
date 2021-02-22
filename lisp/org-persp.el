@@ -234,6 +234,7 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 (after! org-agenda
   (advice-add #'org-agenda-switch-to :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-agenda-goto :around #'org-persp-open-file-respect-sanity-a)
+  )
 
 (after! org-brain
   (advice-add #'org-brain-goto :around #'org-persp-open-file-respect-sanity-a)
