@@ -408,6 +408,11 @@ of org-roam item by tag string doesn't make much sense."
           (org-roam-ivy--last-ivy))
     "tags")
    ("r" org-roam-ivy--rename-action "rename")
+   ("R" (lambda (x)
+          (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+            (kill-buffer (org-base-buffer (current-buffer))))
+          (org-roam-ivy--last-ivy))
+    "Restart buffer")
    ("a" (lambda (x)
           (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
             (org-roam-ivy--set-aliases
