@@ -302,6 +302,14 @@
   :n   "J"     #'outline-next-visible-heading
   :n   "K"     #'outline-previous-visible-heading
   :nm "f" #'link-hint-open-link
+  :nmvi "C-}" (lambda ()
+                "Mark word under cursor and insert org-roam link via `org-roam-insert'."
+                (interactive)
+                (evil-backward-WORD-begin)
+                (set-mark (point))
+                (evil-forward-word-end)
+                (forward-char 1)
+                (org-roam-insert))
   :nmvi "C-]" #'+org-roam/insert
   :ni "C-h" nil
   :ni "C-j" nil
