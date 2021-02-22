@@ -393,7 +393,10 @@ Optionally accept valid org-ql QUERY.
 
       (cond
        ;; Visit running clock if any
-       ((bound-and-true-p org-clock-current-task)
+       ((and (bound-and-true-p org-clock-current-task)
+             (if (bound-and-true-p org-perpetual-clock)
+                 (not (string-equal (cdr org-perpetual-clock-maintenance-task) org-clock-current-task))
+               t))
         (org-clock-goto))
 
        ;; Show past scheduled / deadline items if any
