@@ -16,7 +16,7 @@
                           :body-pre
                           (progn
                             (require 'org-roam)
-                            (if (or (eq (car current-prefix-arg) 4)
+                            (if (or (eq (car current-prefix-arg) 16)
                                     (not org-roam-directory))
                                 (+org-roam/switch-roam))))
   "

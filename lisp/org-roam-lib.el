@@ -39,7 +39,11 @@
 
 Heading's title becames org-roam entry's title and content
 of the org entry is being extracted via `org-cut-subtree' and pasted
-into new org-roam entry.
+into new org-roam entry.a
+
+With user prefix argument or when org-mode heading's title is longer
+then 30 characters, turn title into content of the body and ask
+for new shorter title instead.
 "
   (interactive)
   (org-back-to-heading)
@@ -54,11 +58,14 @@ into new org-roam entry.
     (save-buffer))
 
   (let* ((orig-buff (current-buffer))
-         (title (substring-no-properties (car (plist-get (car (cdr (org-element-headline-parser (line-end-position)))) :title))))
-         (body (or (substring-no-properties (org-get-entry)) ""))
+         (orig-title (substring-no-properties (car (plist-get (car (cdr (org-element-headline-parser (line-end-position)))) :title))))
+         (orig-body (or (substring-no-properties (org-get-entry)) ""))
+         (title-body-swap (and (or current-prefix-arg (> (length orig-title) 30))))
+         (title (if title-body-swap (completing-read "title: " nil) orig-title))
+         (body (if title-body-swap (concat orig-title "\n" orig-body) orig-body))
          (org-roam-capture-templates
           `(("d" "default" plain (function org-roam-capture--get-point)
-             ,(concat body "\n" "%?")
+             ,(concat "\n\n" body "\n" "%?")
              ;; TODO Set file-name via variable
              :file-name "inbox/%<%Y%m%d%H%M%S>-${slug}"
              :head "#+title: ${title}\n"
