@@ -60,7 +60,7 @@ for new shorter title instead.
   (let* ((orig-buff (current-buffer))
          (orig-title (substring-no-properties (car (plist-get (car (cdr (org-element-headline-parser (line-end-position)))) :title))))
          (orig-body (or (substring-no-properties (org-get-entry)) ""))
-         (title-body-swap (and (or current-prefix-arg (> (length orig-title) 30))))
+         (title-body-swap (and (or current-prefix-arg (> (length orig-title) 80))))
          (title (if title-body-swap (completing-read "title: " nil) orig-title))
          (body (if title-body-swap (concat orig-title "\n" orig-body) orig-body))
          (org-roam-capture-templates
