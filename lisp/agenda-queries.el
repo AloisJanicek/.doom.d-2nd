@@ -126,6 +126,7 @@ to resole their precedence.
   '(and (todo)
         (descendants (todo))
         (not (descendants (todo "NEXT")))
+        (not (descendants (scheduled)))
         (not (and (or (todo "HOLD")
                       (todo "WAIT")
                       (todo "SOMEDAY")
