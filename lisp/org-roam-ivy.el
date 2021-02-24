@@ -144,8 +144,7 @@ filter preset."
       (mkdir dest t))
     (rename-file f dest)
     (message "%s moved to new location: %s." fname dest)
-    (org-roam-db-mark-dirty))
-  (org-roam-ivy--last-ivy))
+    (org-roam-db-mark-dirty)))
 
 (defun org-roam-ivy--links (x type)
   "Browse links of TYPE of the org-roam item X."
