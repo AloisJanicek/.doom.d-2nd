@@ -19,7 +19,7 @@
                                 "(fset 'org-git-version #'ignore)\n"
                                 "(provide 'org-version)\n"))
            )
-  :pin "6afe70e63509214b4c305f2d8f2d713056b165ed"
+  :pin "8508dda0fa01202c5bc6596f0057c44c31eb29b8"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -107,7 +107,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "e56cf32ce2f5aca1ffd6f0fe1b0b702404fc1c90"
+  :pin "794fde8ce47d3d837b3f1917ef4f5d5aea2e7d66"
   )
 
 (package! eslintd-fix
@@ -139,7 +139,7 @@
   :pin "0513152525c38519a5597db2d6495b56dd9cc3f0")
 
 (package! indium
-  :pin "b870d1ed6b350d3753e7a148c61c373ca76ba78a")
+  :pin "32487a432d6c0728e1fd69db61c4a07b94bb5798")
 
 (package! imenu-list
   :pin "46008738f8fef578a763c308cf6695e5b4d4aa77")
