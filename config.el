@@ -1903,6 +1903,7 @@ When in org-roam file, also create top-level ID.
   (doom-store-persist doom-store-location '(org-roam-directory))
 
   (setq +org-roam-open-buffer-on-find-file nil
+        org-roam-db-update-method 'immediate
         org-roam-buffer-width 0.2
         org-roam-buffer-position 'left
         org-roam-tag-sources '(prop vanilla all-directories)
