@@ -33,6 +33,10 @@
   (interactive)
   (+org-dispatch-on-heading-link #'+org-roam-capture-ref))
 
+(defcustom +org-roam-re-capture-title-threshold 80
+  "Strings longer than this integer will be automatically considered
+ as a body of new org-roam item and user will be prompted for new shorter title.")
+
 ;;;###autoload
 (defun +org-roam/re-capture-as-entry ()
   "Recapture current org entry as org-roam entry.
@@ -44,42 +48,70 @@ into new org-roam entry.a
 With user prefix argument or when org-mode heading's title is longer
 then 30 characters, turn title into content of the body and ask
 for new shorter title instead.
+
+When selection is active under cursort, use that as a title
+of new org-roam item.
 "
   (interactive)
-  (org-back-to-heading)
+  (let* ((orig-sel-beg (region-beginning))
+         (orig-sel-end (region-end))
+         (orig-selection (when (use-region-p)
+                           (buffer-substring-no-properties orig-sel-beg orig-sel-end))))
+    (deactivate-mark)
+    (org-back-to-heading)
 
-  ;; delete PROPERTIES drawer
-  (save-excursion
-    (re-search-forward org-property-start-re (save-excursion (org-end-of-subtree)) t)
-    (when (org-at-property-drawer-p)
-      (delete-region (line-beginning-position)
-                     (save-excursion
-                       (re-search-forward org-property-end-re))))
-    (save-buffer))
+    ;; delete PROPERTIES drawer
+    (save-excursion
+      (when (and (not orig-selection)
+                 (re-search-forward org-property-start-re (save-excursion (org-end-of-subtree)) t)
+                 (org-at-property-drawer-p))
+        (delete-region (line-beginning-position)
+                       (save-excursion
+                         (re-search-forward org-property-end-re)))
+        (save-buffer))
 
-  (let* ((orig-buff (current-buffer))
-         (orig-title (substring-no-properties (car (plist-get (car (cdr (org-element-headline-parser (line-end-position)))) :title))))
-         (orig-body (or (substring-no-properties (org-get-entry)) ""))
-         (title-body-swap (and (or current-prefix-arg (> (length orig-title) 80))))
-         (title (if title-body-swap (completing-read "title: " nil) orig-title))
-         (body (if title-body-swap (concat orig-title "\n" orig-body) orig-body))
-         (org-roam-capture-templates
-          `(("d" "default" plain (function org-roam-capture--get-point)
-             ,(concat "\n\n" body "\n" "%?")
-             ;; TODO Set file-name via variable
-             :file-name "inbox/%<%Y%m%d%H%M%S>-${slug}"
-             :head "#+title: ${title}\n"
-             :immediate-finish t
-             :unnarrowed t)))
-         (org-roam-capture--info
-          `((title . ,title)
-            (slug  . ,(funcall org-roam-title-to-slug-function title))))
-         (org-roam-capture--context 'title))
-    (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
-    (org-roam-capture--capture)
-    (with-current-buffer orig-buff
-      (org-cut-subtree)
-      (save-buffer))))
+      ;; delete LOGBOOK drawer
+      (goto-char (org-log-beginning))
+      (when (and (not orig-selection)
+                 (save-excursion
+                   (save-match-data
+                     (beginning-of-line 0)
+                     (search-forward-regexp org-drawer-regexp)
+                     (goto-char (match-beginning 1))
+                     (looking-at "LOGBOOK"))))
+        (org-mark-element)
+        (delete-region (region-beginning) (region-end))
+        (org-remove-empty-drawer-at (point))
+        (save-buffer)))
+
+    (let* ((orig-buff (current-buffer))
+           (orig-title (substring-no-properties
+                        (car (plist-get (car (cdr (org-element-headline-parser (line-end-position)))) :title))))
+           (orig-body (or (substring-no-properties (org-get-entry)) ""))
+           (title (or orig-selection orig-title))
+           (title-body-swap (or current-prefix-arg (> (length title) +org-roam-re-capture-title-threshold)))
+           (title (if title-body-swap (completing-read "title: " nil) title))
+           (body (if title-body-swap (concat orig-title "\n" orig-body) orig-body))
+           (body (if orig-selection "\n" body))
+           (org-roam-capture-templates
+            `(("d" "default" plain (function org-roam-capture--get-point)
+               ,(concat "\n\n" body "\n" "%?")
+               ;; TODO Set file-name via variable
+               :file-name "inbox/%<%Y%m%d%H%M%S>-${slug}"
+               :head "#+title: ${title}\n"
+               :immediate-finish t
+               :unnarrowed t)))
+           (org-roam-capture--info
+            `((title . ,title)
+              (slug  . ,(funcall org-roam-title-to-slug-function title))))
+           (org-roam-capture--context 'title))
+      (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
+      (org-roam-capture--capture)
+      (with-current-buffer orig-buff
+        (if orig-selection
+            (delete-region orig-sel-beg orig-sel-end)
+          (org-cut-subtree))
+        (save-buffer)))))
 
 (defun +org-roam/switch-roam ()
   "Choose and update `org-roam-directory'."
