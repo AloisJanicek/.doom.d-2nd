@@ -8,6 +8,7 @@
 (require 'org-roam)
 (require 'org-roam-ivy)
 (require 'code-capture)
+(require 'org-lib)
 
 (defcustom +org-roam-inbox-prefix "inbox/"
   "Subfolder inside `org-roam-directory' where newly captured items are initially placed." )
@@ -62,30 +63,8 @@ of new org-roam item.
                            (buffer-substring-no-properties orig-sel-beg orig-sel-end))))
     (deactivate-mark)
     (org-back-to-heading)
-
-    ;; delete PROPERTIES drawer
-    (save-excursion
-      (when (and (not orig-selection)
-                 (re-search-forward org-property-start-re (save-excursion (org-end-of-subtree)) t)
-                 (org-at-property-drawer-p))
-        (delete-region (line-beginning-position)
-                       (save-excursion
-                         (re-search-forward org-property-end-re)))
-        (save-buffer))
-
-      ;; delete LOGBOOK drawer
-      (goto-char (org-log-beginning))
-      (when (and (not orig-selection)
-                 (save-excursion
-                   (save-match-data
-                     (beginning-of-line 0)
-                     (search-forward-regexp org-drawer-regexp)
-                     (goto-char (match-beginning 1))
-                     (looking-at "LOGBOOK"))))
-        (org-mark-element)
-        (delete-region (region-beginning) (region-end))
-        (org-remove-empty-drawer-at (point))
-        (save-buffer)))
+    (+org-delete-properties-drawer)
+    (+org-delete-logbook-drawer)
 
     (let* ((orig-buff (current-buffer))
            (orig-title (substring-no-properties

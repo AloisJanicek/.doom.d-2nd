@@ -362,4 +362,31 @@ preserving priority cookie, statistics cookie, todo keyword and tags string."
     (search-forward old-title)
     (replace-match  new-title)))
 
+(defun +org-delete-properties-drawer ()
+  "Delete properties drawer."
+  (save-excursion
+    (org-back-to-heading)
+    (when (and (re-search-forward org-property-start-re (save-excursion (org-end-of-subtree)) t)
+               (org-at-property-drawer-p))
+      (delete-region (line-beginning-position)
+                     (save-excursion
+                       (re-search-forward org-property-end-re)))
+      (save-buffer))))
+
+(defun +org-delete-logbook-drawer ()
+  "Delete logbook drawer.
+ https://emacs.stackexchange.com/a/38367"
+  (save-excursion
+    (goto-char (org-log-beginning))
+    (when (save-excursion
+            (save-match-data
+              (beginning-of-line 0)
+              (search-forward-regexp org-drawer-regexp)
+              (goto-char (match-beginning 1))
+              (looking-at "LOGBOOK")))
+      (org-mark-element)
+      (delete-region (region-beginning) (region-end))
+      (org-remove-empty-drawer-at (point))
+      (save-buffer))))
+
 (provide 'org-lib)
