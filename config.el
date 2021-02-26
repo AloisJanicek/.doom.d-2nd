@@ -1946,6 +1946,7 @@ When in org-roam file, also create top-level ID.
 
   (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
   (advice-add #'org-roam-doctor :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
+  (advice-add #'org-roam-link--replace-link-on-save :after #'+org-roam/replace-file-with-id-link)
   )
 
 (use-package org-roam-hydra

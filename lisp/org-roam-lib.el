@@ -400,4 +400,18 @@ With user prefix prompt allow to edit link and title.
                          :where ,@conditions
                          :order-by (asc source)])))
 
+(defun +org-roam/replace-file-with-id-link ()
+  "Replaces file links with ID links where possible in current buffer.
+from https://github.com/org-roam/org-roam/issues/1091#issuecomment-703531409."
+  (interactive)
+  (let (path desc)
+    (org-with-point-at 1
+      (while (re-search-forward org-link-bracket-re nil t)
+        (setq desc (match-string 2))
+        (when-let ((link (save-match-data (org-element-lineage (org-element-context) '(link) t))))
+          (when (string-equal "file" (org-element-property :type link))
+            (setq path (expand-file-name (org-element-property :path link)))
+            (replace-match "")
+            (insert (org-roam-format-link path desc))))))))
+
 (provide 'org-roam-lib)
