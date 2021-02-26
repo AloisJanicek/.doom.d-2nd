@@ -14,8 +14,8 @@ equivalently to `pop-to-buffer'."
   )
 
 (defvar help-buffers-modes
-  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode
-             Man-mode woman-mode org-mode org-brain-visualize-mode tldr-mode)
+  '(nov-mode eww-mode eaf-mode helpful-mode pdf-view-mode Info-mode sdcv-mode help-mode
+             Man-mode woman-mode org-mode org-brain-visualize-mode tldr-mode synosaurus-list-mode)
   "List of major modes for buffers to be consider as help buffers.")
 
 (defvar help-buffers-directories nil

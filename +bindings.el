@@ -976,14 +976,20 @@
  (:prefix ("d" . "dict")
   :desc "dictionary"               "d" (cmd! (aj-add-thing-at-point-to-url
                                               "https://dictionary.com/browse/"))
-  :desc "google at point"          "g" #'google-translate-at-point
-  :desc "google at point reverse:" "G" #'google-translate-at-point-reverse
+  :desc "google at point"          "g" (cmd! (if current-prefix-arg
+                                                 (google-translate-at-point)
+                                               (let (current-prefix-arg)
+                                                 (google-translate-at-point-reverse))))
   :desc "powerthesaurus synonym"   "j" #'powerthesaurus-lookup-word
   :desc "wordnet synonym"          "J" #'synosaurus-lookup
   :desc "wordnut"                  "k" #'wordnut-search
   :desc "powerthesaurus replace"   "r" #'powerthesaurus-lookup-word-dwim
   :desc "wordnet synonym replace"  "R" #'synosaurus-choose-and-replace
   :desc "input/stardict"           "i" #'sdcv-search-input
+  :desc "input/google"             "I" (cmd! (if current-prefix-arg
+                                                 (google-translate-query-translate)
+                                               (let (current-prefix-arg)
+                                                 (google-translate-query-translate-reverse))))
   :desc "online"                   "o" #'define-word
   :desc "online/point"             "p" #'define-word-at-point
   :desc "word/stardict"            "s" #'sdcv-search-pointer

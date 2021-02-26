@@ -621,11 +621,17 @@ if running under WSL")
              google-translate-at-point-reverse)
   :init
   (set-popup-rule! "*Google Translate*"        :size 0.4  :side 'top :select t :modeline t)
-  (setq google-translate-default-source-language "en"
-        google-translate-default-target-language "cs"
-        google-translate-listen-program (executable-find "mpv")
-        google-translate-show-phonetic t
-        )
+  (after! google-translate-backend
+    (setq google-translate-backend-method 'curl))
+  (after! google-translate-tk
+    (advice-add #'google-translate--search-tkk :override (lambda () "Search TKK fix." (list 430675 2721866130))))
+
+  :custom
+  (google-translate-default-source-language "en")
+  (google-translate-default-target-language "cs")
+  (google-translate-listen-program (executable-find "mpv"))
+  (google-translate-show-phonetic t)
+
   )
 
 (after! groovy-mode
@@ -653,6 +659,13 @@ if running under WSL")
    '(haskell-mode . (:dir (lambda () (locate-dominating-file "." "stack.yaml"))
                      :fn async-shell-command
                      :cmd "stack test")))
+  )
+
+(after! help-mode
+  (when (featurep! :editor evil)
+    (add-hook #'help-mode-hook (lambda ()
+                                 (doom-mark-buffer-as-real-h)
+                                 (persp-add-buffer (current-buffer)))))
   )
 
 (after! help
@@ -2182,8 +2195,11 @@ When in org-roam file, also create top-level ID.
   :config
   (setq sdcv-dictionary-simple-list '("WordNet"))
   (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t :modeline t)
+
   (when (featurep! :editor evil)
     (add-hook #'sdcv-mode-hook (lambda ()
+                                 (doom-mark-buffer-as-real-h)
+                                 (persp-add-buffer (current-buffer))
                                  (evil-set-initial-state 'sdcv-mode 'motion))))
   )
 
@@ -2215,7 +2231,12 @@ When in org-roam file, also create top-level ID.
   )
 
 (after! synosaurus
-  (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t :modeline t))
+  (set-popup-rule! "*Synonyms List\*"           :size 0.4  :side 'top :select t :modeline t)
+  (add-hook #'synosaurus-list-mode-hook
+            (lambda ()
+              (doom-mark-buffer-as-real-h)
+              (persp-add-buffer (current-buffer))))
+  )
 
 (after! lisp-mode
   (add-hook 'lisp-mode-hook (lambda ()
