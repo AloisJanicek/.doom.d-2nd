@@ -1904,6 +1904,31 @@ When in org-roam file, also create top-level ID.
                                      (org-pomodoro-kill))))
   )
 
+(use-package org-roam-lib
+  :after org-roam
+  )
+
+(use-package org-roam-hydra
+  :after org-roam
+  )
+
+(use-package org-roam-ivy
+  :after org-roam
+  :config
+  (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
+  )
+
+(use-package! org-roam-server-light
+  :after org-roam
+  :commands org-roam-server-light-mode
+  :config
+  (setq org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
+        org-roam-server-light-style "body.darkmode { background-color: #00212b!important; }"
+        org-roam-server-light-default-include-filters "null"
+        org-roam-server-light-default-exclude-filters "[{ \"id\": \"journal\", \"parent\" : \"tags\"  }]"
+        )
+  )
+
 (after! org-roam
   (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
   (add-hook
@@ -1962,26 +1987,6 @@ When in org-roam file, also create top-level ID.
   (advice-add #'org-roam-link--replace-link-on-save :after #'+org-roam/replace-file-with-id-link)
   )
 
-(use-package org-roam-hydra
-  :after org-roam
-  )
-
-(use-package org-roam-ivy
-  :after org-roam
-  :config
-  (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
-  )
-
-(use-package! org-roam-server-light
-  :after org-roam
-  :commands org-roam-server-light-mode
-  :config
-  (setq org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
-        org-roam-server-light-style "body.darkmode { background-color: #00212b!important; }"
-        org-roam-server-light-default-include-filters "null"
-        org-roam-server-light-default-exclude-filters "[{ \"id\": \"journal\", \"parent\" : \"tags\"  }]"
-        )
-  )
 (after! pdf-tools
   (advice-add #'pdf-info-check-epdfinfo :override #'aj/epdfinfo-never-bother-me-again-a)
   (advice-remove #'pdf-view-mode #'+pdf--install-epdfinfo-a)

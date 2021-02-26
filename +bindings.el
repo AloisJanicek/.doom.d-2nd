@@ -316,11 +316,7 @@
                   (evil-forward-word-end)
                   (forward-char 1))
                 (org-roam-insert))
-  :nmvi "C-]" #'+org-roam/insert
-  :ni "C-h" nil
-  :ni "C-j" nil
-  :ni "C-k" nil
-  :ni "C-l" nil
+  :nmvi "C-]"   #'+org-roam/insert
   :n "z w" #'widen
 
   (:prefix "g"
@@ -399,7 +395,10 @@
    )
 
   (:prefix ("c" . "clock")
+   :desc "in"           "i" #'org-clock-in
+   :desc "out"          "o" #'org-clock-out
    :desc "pomodoro"     "p" #'org-pomodoro
+   :desc "goto"         "g" #'org-clock-goto
    )
 
   "l" nil
@@ -470,28 +469,18 @@
    :desc "widen"              "w" #'widen
    )
 
-  ;;; evil-org-mode
-  :map evil-org-mode-map
-  :localleader
-  "d" nil
-  (:prefix ("d" . "decrypt")
-   :desc "decrypt entries" "D" #'org-decrypt-entry
-   :desc "decrypt entry"   "d" #'org-decrypt-entry
-   :desc "encrypt entry"   "e" #'org-encrypt-entry
-   :desc "encrytp entries" "E" #'org-encrypt-entries
-   )
-
-  "c" nil
-  (:prefix ("c" . "clock")
-   :desc "in"           "i" #'org-clock-in
-   :desc "out"          "o" #'org-clock-out
-   :desc "pomodoro"     "p" #'org-pomodoro
-   :desc "goto"         "g" #'org-clock-goto
-   )
-
   :desc "todo"         "t" #'org-todo
   :desc "schedule"     "s" #'org-schedule
   :desc "roam backlinks" "x" #'+org-roam/org-file-backlinks
+  )
+
+  ;;; evil-org-mode
+ (:after evil-org
+  :map evil-org-mode-map
+  :nmvi "C-h"   #'evil-window-left
+  :nmvi "C-j"   #'evil-window-down
+  :nmvi "C-k"   #'evil-window-up
+  :nmvi "C-l"   #'evil-window-right
   )
 
  ;;; evil-org-agenda
