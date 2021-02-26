@@ -1927,16 +1927,16 @@ When in org-roam file, also create top-level ID.
                               (concat doom-etc-dir (file-name-nondirectory org-roam-directory)))
         org-roam-dailies-directory "journal/"
         org-roam-capture-templates
-        '(("d" "default" plain #'org-roam-capture--get-point
+        `(("d" "default" plain #'org-roam-capture--get-point
            "%?"
-           :file-name "inbox/%<%Y%m%d%H%M%S>-${slug}"
+           :file-name ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}")
            :head "#+title: ${title}\n"
            :unnarrowed t
            ))
         org-roam-capture-ref-templates
-        '(("r" "ref" plain #'org-roam-capture--get-point
+        `(("r" "ref" plain #'org-roam-capture--get-point
            "%?"
-           :file-name "inbox/${slug}"
+           :file-name ,(concat +org-roam-inbox-prefix "${slug}")
            :head "#+title: ${title}\n#+roam_key: ${ref}"
            :unnarrowed t
            :immediate-finish t
@@ -1948,9 +1948,9 @@ When in org-roam file, also create top-level ID.
            :head "#+title: %<%A, %d %B %Y>\n"
            ))
         org-roam-capture-immediate-template
-        '("d" "default" plain #'org-roam-capture--get-point
+        `("d" "default" plain #'org-roam-capture--get-point
           "%?"
-          :file-name "inbox/%<%Y%m%d%H%M%S>-${slug}"
+          :file-name ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}")
           :head "#+title: ${title}\n"
           :unnarrowed t
           :immediate-finish t

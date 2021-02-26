@@ -9,6 +9,9 @@
 (require 'org-roam-ivy)
 (require 'code-capture)
 
+(defcustom +org-roam-inbox-prefix "inbox/"
+  "Subfolder inside `org-roam-directory' where newly captured items are initially placed." )
+
 (defun +org-roam-capture-ref (url title)
   "Capture new org-roam reference entry from URL and TITLE."
   (require 'org-roam)
@@ -96,8 +99,7 @@ of new org-roam item.
            (org-roam-capture-templates
             `(("d" "default" plain (function org-roam-capture--get-point)
                ,(concat "\n\n" body "\n" "%?")
-               ;; TODO Set file-name via variable
-               :file-name "inbox/%<%Y%m%d%H%M%S>-${slug}"
+               :file-name ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}")
                :head "#+title: ${title}\n"
                :immediate-finish t
                :unnarrowed t)))
