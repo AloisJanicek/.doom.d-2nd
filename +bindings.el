@@ -184,6 +184,11 @@
   :nm "o" #'imenu
   )
 
+(:after help-mode
+  :map help-mode-map
+  :nm "f" #'link-hint-open-link
+  )
+
  ;;; inferior python
  (:after inferior-python
   :map inferior-python-mode-map
