@@ -12,7 +12,11 @@
 (require 'cl-lib)
 
 (defcustom yoga-youtube-playlists '(("Antranik - Top 10 Follow Along Yoga Videos" . "https://www.youtube.com/playlist?list=PLOj76wV2WfPvMveSA8cRQqBvGUXBPDTMC")
-                                    ("Yoga With Adriene - BRIDGE - YWA Feb 2021" . "https://www.youtube.com/watch?v=YUIlJU7-rB4&list=PLui6Eyny-UzytwJuOoFMlOtDFjo7MwXZY"))
+                                    ("Yoga With Adriene - Under 10 Minute Yoga Practices" . "https://www.youtube.com/watch?v=4C-gxOE0j7s&list=PLui6Eyny-UzwiUzvhM2BjxThodiRWZ2JR")
+                                    ("Yoga With Adriene - 10-20 min Yoga Practices (Yoga For Busy People)" . "https://www.youtube.com/watch?v=dcqW72d5JjI&list=PLui6Eyny-UzxL6NjFMYD5-vESNii8_aLi")
+                                    ("Yoga With Adriene - 20-30 min Yoga Practices" . "https://www.youtube.com/watch?v=v7SN-d4qXx0&list=PLui6Eyny-UzwmsJ9vILet4TJwqcINCz4j")
+                                    ("Yoga With Adriene - 30-45 min Yoga Practices" . "https://www.youtube.com/watch?v=eqQUFdQpqiI&list=PLui6Eyny-UzwheLDyEScgdgbh7z3FgNCX")
+                                    ("Yoga With Adriene - 45-60 min Full Yoga Practices" . "https://www.youtube.com/watch?v=GLy2rYHwUqY&list=PLui6Eyny-Uzwzd-9fi_cmhz3UW9gS1raf"))
   "Alist of yoga YT playlists where car is title and cdr is valid YT playlist url.")
 
 (defcustom yoga-task-heading (cons (expand-file-name "personal.org" org-directory) "Morning Yoga")
