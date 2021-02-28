@@ -184,7 +184,7 @@
   :nm "o" #'imenu
   )
 
-(:after help-mode
+ (:after help-mode
   :map help-mode-map
   :nm "f" #'link-hint-open-link
   )
@@ -901,6 +901,7 @@
   )
 
  (:prefix ("o" . "open")
+  :desc "yoga"                  "y" #'yoga-hydra/body
   :desc "clock"                   "c" #'aj/org-clock-hydra/body
   (:prefix ("C" . "calibre")
    :desc "technical"             "c" (cmd! (aj-open-calibre-book (expand-file-name "Technical/" aj-calibre-path)))

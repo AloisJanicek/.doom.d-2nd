@@ -2572,5 +2572,7 @@ When in org-roam file, also create top-level ID.
 (load! "+local" nil t)
 
 (use-package yoga
-  :commands yoga-exercise
+  :commands yoga-hydra/body
+  :config
+  (doom-store-persist doom-store-location '(yoga-recently-played yoga-favorites))
   )
