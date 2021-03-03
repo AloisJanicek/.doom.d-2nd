@@ -377,13 +377,14 @@ preserving priority cookie, statistics cookie, todo keyword and tags string."
   "Delete logbook drawer.
  https://emacs.stackexchange.com/a/38367"
   (save-excursion
-    (goto-char (org-log-beginning))
+    (goto-char (org-log-beginning t))
     (when (save-excursion
             (save-match-data
               (beginning-of-line 0)
               (search-forward-regexp org-drawer-regexp)
               (goto-char (match-beginning 1))
               (looking-at "LOGBOOK")))
+      (forward-line -1)
       (org-mark-element)
       (delete-region (region-beginning) (region-end))
       (org-remove-empty-drawer-at (point))
