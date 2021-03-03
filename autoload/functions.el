@@ -1054,6 +1054,25 @@ Override advice for `+ivy/project-search'.
   (interactive)
   (swiper-all (aj-symbol-at-point)))
 
+(defun list-dirs-recursively (dir &optional include-symlinks)
+  "Return list of all subdirectories recursively. Returns absolute paths.
+Optionally call recursively on symlinks.
+credits: https://gist.github.com/adamczykm/c18b1dba01492adb403c301da0d3b7c1
+"
+  (let ((result nil)
+        (tramp-mode (and tramp-mode (file-remote-p (expand-file-name dir)))))
+    (dolist (file (file-name-all-completions "" dir))
+      (when (and (directory-name-p file) (not (member file '("./" "../"))))
+        (setq result (nconc result (list (expand-file-name file dir))))
+        (let* ((leaf (substring file 0 (1- (length file))))
+               (full-file (expand-file-name leaf dir)))
+          ;; Don't follow symlinks to other directories.
+          (unless (and (file-symlink-p full-file) (not include-symlinks))
+            (setq result
+                  (nconc result (list-dirs-recursively full-file)))))
+        ))
+    result))
+
 (provide 'functions)
 
 ;;; functions.el ends here
