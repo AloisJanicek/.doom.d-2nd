@@ -1929,6 +1929,18 @@ When in org-roam file, also create top-level ID.
         )
   )
 
+(after! org-noter
+
+  (setq org-noter-notes-search-path nil
+        org-noter-default-notes-file-names nil
+        org-noter-hide-other nil
+        )
+
+  (after! org-roam
+    (dolist (dir (list-dirs-recursively org-roam-directory))
+      (add-to-list 'org-noter-notes-search-path dir)))
+  )
+
 (after! org-roam
   (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
   (add-hook
