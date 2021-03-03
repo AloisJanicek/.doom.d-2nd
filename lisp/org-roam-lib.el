@@ -309,7 +309,13 @@ BLOCK is is valid org-clock time block."
   (let* ((f-today (expand-file-name
                    (format-time-string "%Y-%m-%d.org" (current-time))
                    (expand-file-name "journal" org-roam-directory)))
-         (f-buffer (find-file-noselect f-today)))
+         f-buffer)
+
+    (unless (file-exists-p f-today)
+      (org-roam-dailies-capture-today))
+
+    (setq f-buffer (find-file-noselect f-today))
+
     (with-current-buffer f-buffer
       (+org-roam-dailies--clock-report block))
     (pop-to-buffer f-buffer)))
