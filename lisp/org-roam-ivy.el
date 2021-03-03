@@ -260,17 +260,21 @@ For STR make url of org-refs less prominent. Strip unnecessary parentheses
 around urls and tags. Add number of backlinks and forwardlinks in front of each item.
 Prepend org-roam-ref items with \"link\" icon."
   (let ((prepend-links-num
-         (lambda (f-title)
+         (lambda (f-title str)
            (let* ((f-title (substring-no-properties f-title))
                   (f-path (caar
                            (org-roam-db-query [:select [file] :from titles :where (= title $s1)]
                                               f-title)))
                   (forwardlinks-num (length
                                      (org-roam-db-query [:select * :from links :where (= source $s1)] f-path)))
-                  (forwardlinks-num-str (number-to-string forwardlinks-num))
+                  (forwardlinks-num-str (if (> forwardlinks-num 9)
+                                            (number-to-string forwardlinks-num)
+                                          (concat " " (number-to-string forwardlinks-num))))
                   (backlinks-num (length
                                   (org-roam-db-query [:select * :from links :where (= dest $s1)] f-path)))
-                  (backlinks-num-str (number-to-string backlinks-num))
+                  (backlinks-num-str (if (> backlinks-num 9)
+                                         (number-to-string backlinks-num)
+                                       (concat " " (number-to-string backlinks-num))))
                   (is-ref (org-roam-db-query [:select file :from [refs] :where (= file $s1)] f-path))
                   (ico (concat
                         (if is-ref
@@ -284,19 +288,17 @@ Prepend org-roam-ref items with \"link\" icon."
                                 (if (equal 0 forwardlinks-num) 'org-warning 'org-tag)
                                 forwardlinks-num-str)
              (put-text-property 0 (length ico) 'face 'org-tag ico)
-             (concat backlinks-num-str " " forwardlinks-num-str " " ico f-title)))))
+             (concat backlinks-num-str " " forwardlinks-num-str " " ico str)))))
     (cond ((string-match "(//" str 0)
            (let* ((str-list (split-string str "(//" nil))
                   (url (string-trim-right (car (cdr str-list)) ")"))
                   (f-title (string-trim (car str-list))))
              (put-text-property 0 (length url) 'face 'org-tag url)
-             (concat (funcall prepend-links-num f-title) " " url)))
-          ((string-match ") " str 0)
-           (let* ((str-list (split-string str ") " nil))
-                  (f-title (substring-no-properties (car (cdr str-list))))
-                  (tags (string-trim-left (car str-list) "(")))
-             (concat (funcall prepend-links-num f-title) " " tags)))
-          (t (funcall prepend-links-num str)))))
+             (concat (funcall prepend-links-num f-title f-title) " " url)))
+          ((string-match "^(" str 0)
+           (let ((f-title (substring str (+ 2 (string-match ") " str)) (length str))))
+             (funcall prepend-links-num f-title str)))
+          (t (funcall prepend-links-num str str)))))
 
 ;;; org-roam-ivy
 (defun org-roam-ivy (prompt collection &optional from &rest _)
