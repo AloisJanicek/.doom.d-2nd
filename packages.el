@@ -19,7 +19,7 @@
                                 "(fset 'org-git-version #'ignore)\n"
                                 "(provide 'org-version)\n"))
            )
-  :pin "8508dda0fa01202c5bc6596f0057c44c31eb29b8"
+  :pin "1392d8f96806dbe7a5057ddddcc248a7c9b59592"
   :shadow 'org)
 
 (package! org-roam-server-light
@@ -107,7 +107,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "794fde8ce47d3d837b3f1917ef4f5d5aea2e7d66"
+  :pin "dd43dc200b7da343a2fbdf2b0198381dd8193fe3"
   )
 
 (package! eslintd-fix
@@ -139,7 +139,7 @@
   :pin "0513152525c38519a5597db2d6495b56dd9cc3f0")
 
 (package! indium
-  :pin "32487a432d6c0728e1fd69db61c4a07b94bb5798")
+  :pin "84322967099ad7a700dcd2f21fdd262a8354fe09")
 
 (package! imenu-list
   :pin "46008738f8fef578a763c308cf6695e5b4d4aa77")
@@ -172,7 +172,7 @@
   :pin "6a72fa20e7be6e55c09b1bc9887ee09c5df28e45")
 
 (package! nov
-  :pin "0ece7ccbf79c074a3e4fbad1d1fa06647093f8e4")
+  :pin "b6138895ace3042ed78140b6f4859e544fbca27e")
 
 (package! ob-javascript
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*"))
