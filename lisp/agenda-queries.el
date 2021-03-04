@@ -195,7 +195,9 @@ Accepted are either \"TO DO\" or \"PROJECT\" keywords."
     (todo "NEXT")
     ,(agenda-queries--filter-tags-query)
     (not (or (parent "WAIT")
-             (parent "HOLD")))
+             (parent "HOLD")
+             (parent "SOMEDAY")
+             (parent "MAYBE")))
     (not (ts-active))))
 
 (defun agenda-queries--projects-query ()
