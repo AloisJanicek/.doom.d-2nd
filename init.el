@@ -158,7 +158,7 @@
  nim
  ;;nix
  (ocaml +lsp)
- (org +dragndrop +pandoc +pomodoro +roam)
+ (org +dragndrop +pandoc +pomodoro +roam +noter)
  (php +lsp)
  ;;plantuml
  purescript
