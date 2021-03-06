@@ -252,7 +252,10 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 
 (after! org-roam-ivy
   (advice-add #'org-roam-ivy :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-ivy :around #'org-persp-pop-buffer-a))
+  (advice-add #'org-roam-ivy :around #'org-persp-pop-buffer-a)
+  (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-pop-buffer-a)
+  )
 
 (after! org-lib
   (advice-add #'+org-notes/format-org-links :around #'org-persp-open-file-respect-sanity-a)

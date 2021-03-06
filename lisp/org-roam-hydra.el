@@ -80,7 +80,7 @@
                                :columns 4
                                )
   "
-%(org-roam-db--get-title (buffer-file-name (org-base-buffer (current-buffer))))
+org-roam item: %(org-roam-db--get-title (buffer-file-name (org-base-buffer (current-buffer))))
 "
   ("x" (org-roam-hydra--adapter #'org-roam-ivy--backlinks-action) "show backlinks")
   ("f" (org-roam-hydra--adapter #'org-roam-ivy--forwardlinks-action) "show forwardlinks")

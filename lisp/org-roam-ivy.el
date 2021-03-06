@@ -115,24 +115,26 @@ filter preset."
 
 (defun org-roam-ivy--delete-action (x)
   "Delete org-roam file X action for ivy."
-  (let ((f (plist-get (cdr x) :path)))
-    (org-roam-ivy--delete-file f)
-    (org-roam-ivy--last-ivy)))
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (let ((f (plist-get (cdr x) :path)))
+      (org-roam-ivy--delete-file f))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--rename-action (x)
   "Change title of org-roam file X."
   (interactive)
-  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-    (goto-char (point-min))
-    (re-search-forward "^#\\+title:" (point-max) t)
-    (re-search-forward "^[[:space:]]*#\\+TITLE:" (point-max) t)
-    (kill-line)
-    (insert " ")
-    (insert (completing-read "New title: " nil nil nil (car kill-ring)))
-    (save-buffer)
-    (kill-current-buffer)
-    (org-roam-db-mark-dirty))
-  (org-roam-ivy--last-ivy))
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+      (goto-char (point-min))
+      (re-search-forward "^#\\+title:" (point-max) t)
+      (re-search-forward "^[[:space:]]*#\\+TITLE:" (point-max) t)
+      (kill-line)
+      (insert " ")
+      (insert (completing-read "New title: " nil nil nil (string-trim (car kill-ring))))
+      (save-buffer))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--move-action (x)
   "Move org-roam file X."
@@ -186,35 +188,41 @@ filter preset."
 
 (defun org-roam-ivy--insert-action (x)
   "Insert org-roam link into file X."
-  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-    (goto-char (point-max))
-    (newline)
-    (org-roam-insert)
-    (save-buffer))
-  (org-roam-ivy--last-ivy))
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+      (goto-char (point-max))
+      (newline)
+      (org-roam-insert)
+      (save-buffer))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--decrypt-headings-action (x)
   "Decrypt all headings in org-roam file X."
   (require 'org-crypt)
-  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-    (auto-save-mode -1)
-    (org-decrypt-entries))
-  (org-roam-ivy--last-ivy))
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+      (auto-save-mode -1)
+      (org-decrypt-entries))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--encrypt-action (x)
   "Encrypt every Level 1 heading in org-roam file X.
  Encryption is performed by adding crypt tag specified in `org-crypt-tag-matcher'."
   (require 'org-crypt)
-  (when-let* ((beg (+ 1 (string-match "+" org-crypt-tag-matcher)))
-              (end (string-match "-" org-crypt-tag-matcher))
-              (crypt-tag (substring org-crypt-tag-matcher beg end)))
-    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-      (org-map-entries
-       (lambda ()
-         (org-toggle-tag crypt-tag 'on))
-       "LEVEL=1")
-      (save-buffer)))
-  (org-roam-ivy--last-ivy))
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (when-let* ((beg (+ 1 (string-match "+" org-crypt-tag-matcher)))
+                (end (string-match "-" org-crypt-tag-matcher))
+                (crypt-tag (substring org-crypt-tag-matcher beg end)))
+      (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+        (org-map-entries
+         (lambda ()
+           (org-toggle-tag crypt-tag 'on))
+         "LEVEL=1")
+        (save-buffer)))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--refs-url-private-open-action (x)
   "Open org-roam ref url of file X in incognito / private browser window."
@@ -225,24 +233,32 @@ filter preset."
 
 (defun org-roam-ivy--tags-action (x)
   "Add or remove tags for org-roam file X."
-  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-    (org-roam-ivy--set-tag
-     (org-base-buffer (current-buffer))))
-  (org-roam-ivy--last-ivy))
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+      (org-roam-ivy--set-tag
+       (org-base-buffer (current-buffer))))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--alias-action (x)
   "Add or remove alias for org-roam file X."
-  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-    (org-roam-ivy--set-aliases
-     (org-base-buffer (current-buffer))))
-  (org-roam-ivy--last-ivy))
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+      (org-roam-ivy--set-aliases
+       (org-base-buffer (current-buffer))))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--restart-buffer-action (x)
   "Kill the buffer of org-roam file X.
 In case of current buffer is indirect, kill the base buffer."
-  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-    (kill-buffer (org-base-buffer (current-buffer))))
-  (org-roam-ivy--last-ivy))
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command)))
+        (f-path (plist-get (cdr x) :path)))
+    (with-current-buffer (find-file-noselect f-path)
+      (kill-buffer (org-base-buffer (current-buffer))))
+    (pop-to-buffer (find-file-noselect f-path))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
 
 ;;; org-mode helpers and utilities
 (defun org-roam-ivy--global-property (name &optional file bound)
