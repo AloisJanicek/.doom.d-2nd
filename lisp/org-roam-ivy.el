@@ -376,6 +376,54 @@ Prepend org-roam-ref items with \"link\" icon."
              (funcall prepend-links-num f-title str)))
           (t (funcall prepend-links-num str str)))))
 
+(defun org-roam-ivy--get-not-linking-completions ()
+  "Return an alist for completion of all org-roam items which are not linking to any other org-roam item.
+Adapted from `org-roam--get-title-path-completions'."
+  (let* ((rows (org-roam-db-query [:select [files:file titles:title tags:tags files:meta links:source]
+                                   :from titles
+                                   :left :join tags
+                                   :on (= titles:file tags:file)
+                                   :left :join files
+                                   :on (= titles:file files:file)
+                                   :left :join links
+                                   :on (= titles:file links:source)
+                                   :where links:source :is :null
+                                   ]))
+         completions)
+    (setq rows (seq-sort-by (lambda (x)
+                              (plist-get (nth 3 x) :mtime))
+                            #'time-less-p
+                            rows))
+    (dolist (row rows completions)
+      (pcase-let ((`(,file-path ,title ,tags) row))
+        (let ((k (org-roam--add-tag-string title tags))
+              (v (list :path file-path :title title)))
+          (push (cons k v) completions))))))
+
+(defun org-roam-ivy--get-unlinked-completions ()
+  "Return an alist for completion of all org-roam items which are not linked.
+Adapted from `org-roam--get-title-path-completions'."
+  (let* ((rows (org-roam-db-query [:select [files:file titles:title tags:tags files:meta links:dest]
+                                   :from titles
+                                   :left :join tags
+                                   :on (= titles:file tags:file)
+                                   :left :join files
+                                   :on (= titles:file files:file)
+                                   :left :join links
+                                   :on (= titles:file links:dest)
+                                   :where links:source :is :null
+                                   ]))
+         completions)
+    (setq rows (seq-sort-by (lambda (x)
+                              (plist-get (nth 3 x) :mtime))
+                            #'time-less-p
+                            rows))
+    (dolist (row rows completions)
+      (pcase-let ((`(,file-path ,title ,tags) row))
+        (let ((k (org-roam--add-tag-string title tags))
+              (v (list :path file-path :title title)))
+          (push (cons k v) completions))))))
+
 ;;; org-roam-ivy
 (defun org-roam-ivy (prompt collection &optional from &rest _)
   "Exclusive ivy interface for org-roam.
@@ -428,6 +476,24 @@ of org-roam item by tag string doesn't make much sense."
   (plist-put org-roam-ivy--last-ivy :backlinks nil)
   (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
   (org-roam-ivy "File: " (org-roam--get-title-path-completions)))
+
+;;;###autoload
+(defun org-roam-ivy-find-not-linking ()
+  "Exclusive ivy interface showing all org-roam items which aren't linking to any other org-roam item. "
+  (interactive)
+  (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-not-linking)
+  (plist-put org-roam-ivy--last-ivy :backlinks nil)
+  (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
+  (org-roam-ivy "Not linking: " (org-roam-ivy--get-not-linking-completions)))
+
+;;;###autoload
+(defun org-roam-ivy-find-unlinked ()
+  "Exclusive ivy interface showing all unlinked org-roam items (items without backlink)."
+  (interactive)
+  (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-unlinked)
+  (plist-put org-roam-ivy--last-ivy :backlinks nil)
+  (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
+  (org-roam-ivy "Unlinked: " (org-roam-ivy--get-unlinked-completions)))
 
 ;; org-roam-ivy setup
 (ivy-configure 'org-roam-ivy

@@ -30,6 +30,8 @@
   ("r" #'org-roam-ivy-find-refs "refs")
   ("R" #'org-roam-ivy-filter-preset-set "filter")
   ("f" #'org-roam-ivy-find-file "file")
+  ("U" #'org-roam-ivy-find-unlinked "unlinked")
+  ("N" #'org-roam-ivy-find-not-linking "not linking")
   ("k" #'+org-roam/re-capture-as-entry "re-capture entry")
   ("K" #'+org-roam/re-capture-as-ref "re-capture link ref")
   ("F" (let ((org-roam-ivy--last-ivy-text "")
