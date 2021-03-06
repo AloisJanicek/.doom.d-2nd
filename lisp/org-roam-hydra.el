@@ -71,4 +71,31 @@
   ("T" #'org-roam-buffer-toggle-display "toggle")
   )
 
+(defun org-roam-hydra--adapter (fn)
+  "Allow to run existing `org-roam-ivy' actions on Org file buffers."
+  (let ((x `(nil . (:path ,(buffer-file-name (org-base-buffer (current-buffer)))))))
+    (apply fn (list x))))
+
+(defhydra org-roam-hydra-file (:color blue
+                               :columns 4
+                               )
+  "
+%(org-roam-db--get-title (buffer-file-name (org-base-buffer (current-buffer))))
+"
+  ("x" (org-roam-hydra--adapter #'org-roam-ivy--backlinks-action) "show backlinks")
+  ("f" (org-roam-hydra--adapter #'org-roam-ivy--forwardlinks-action) "show forwardlinks")
+  ("k" (org-roam-hydra--adapter #'org-roam-ivy--delete-action) "delete")
+  ("m" (org-roam-hydra--adapter #'org-roam-ivy--move-action) "move")
+  ("b" (org-roam-hydra--adapter #'org-roam-ivy--refs-url-open-action) "browse url")
+  ("B" (org-roam-hydra--adapter #'org-roam-ivy--refs-url-private-open-action) "incognito browse url")
+  ("r" (org-roam-hydra--adapter #'org-roam-ivy--rename-action) "rename")
+  ("a" (org-roam-hydra--adapter #'org-roam-ivy--alias-action) "aliases")
+  ("t" (org-roam-hydra--adapter #'org-roam-ivy--tags-action) "tags")
+  ("i" (org-roam-hydra--adapter #'org-roam-ivy--insert-action) "insert backlink")
+  ("e" (org-roam-hydra--adapter #'org-roam-ivy--) "encrypt headings")
+  ("n" #'org-noter "org-noter")
+  ("H" #'org-roam-doctor "org-roam doctor")
+  ("R" (org-roam-hydra--adapter #'org-roam-ivy--restart-buffer-action) "restart buffer")
+  )
+
 (provide 'org-roam-hydra)

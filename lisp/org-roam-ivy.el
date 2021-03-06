@@ -184,6 +184,66 @@ filter preset."
   "Browse forwardlinks of org-roam item X."
   (org-roam-ivy--links x 'forwardlinks))
 
+(defun org-roam-ivy--insert-action (x)
+  "Insert org-roam link into file X."
+  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+    (goto-char (point-max))
+    (newline)
+    (org-roam-insert)
+    (save-buffer))
+  (org-roam-ivy--last-ivy))
+
+(defun org-roam-ivy--decrypt-headings-action (x)
+  "Decrypt all headings in org-roam file X."
+  (require 'org-crypt)
+  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+    (auto-save-mode -1)
+    (org-decrypt-entries))
+  (org-roam-ivy--last-ivy))
+
+(defun org-roam-ivy--encrypt-action (x)
+  "Encrypt every Level 1 heading in org-roam file X.
+ Encryption is performed by adding crypt tag specified in `org-crypt-tag-matcher'."
+  (require 'org-crypt)
+  (when-let* ((beg (+ 1 (string-match "+" org-crypt-tag-matcher)))
+              (end (string-match "-" org-crypt-tag-matcher))
+              (crypt-tag (substring org-crypt-tag-matcher beg end)))
+    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+      (org-map-entries
+       (lambda ()
+         (org-toggle-tag crypt-tag 'on))
+       "LEVEL=1")
+      (save-buffer)))
+  (org-roam-ivy--last-ivy))
+
+(defun org-roam-ivy--refs-url-private-open-action (x)
+  "Open org-roam ref url of file X in incognito / private browser window."
+  (let ((browse-url-chrome-arguments (append browse-url-chrome-arguments '("--incognito")))
+        (browse-url-chromium-arguments (append browse-url-chromium-arguments '("--incognito")))
+        (browse-url-firefox-arguments (append browse-url-firefox-arguments '("--private-window"))))
+    (org-roam-ivy--refs-url-open-action x)))
+
+(defun org-roam-ivy--tags-action (x)
+  "Add or remove tags for org-roam file X."
+  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+    (org-roam-ivy--set-tag
+     (org-base-buffer (current-buffer))))
+  (org-roam-ivy--last-ivy))
+
+(defun org-roam-ivy--alias-action (x)
+  "Add or remove alias for org-roam file X."
+  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+    (org-roam-ivy--set-aliases
+     (org-base-buffer (current-buffer))))
+  (org-roam-ivy--last-ivy))
+
+(defun org-roam-ivy--restart-buffer-action (x)
+  "Kill the buffer of org-roam file X.
+In case of current buffer is indirect, kill the base buffer."
+  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+    (kill-buffer (org-base-buffer (current-buffer))))
+  (org-roam-ivy--last-ivy))
+
 ;;; org-mode helpers and utilities
 (defun org-roam-ivy--global-property (name &optional file bound)
   "Get a document property named NAME (string) from an org FILE.
@@ -215,7 +275,7 @@ of doom-emacs https://github.com/hlissner/doom-emacs."
     (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
     (funcall last-ivy)))
 
-(defun org-roam-ivy--links-back ()
+(defun org-roam-ivy--links-back (&rest _)
   "Pop and go to the current backlinks view from `org-roam-ivy--last-ivy'.
 When there isn't one, return to last top level ivy."
   (if-let* ((type (let ((backlinks-timestamp
@@ -361,65 +421,17 @@ of org-roam item by tag string doesn't make much sense."
  #'org-roam-ivy
  '(("x" org-roam-ivy--backlinks-action "show backlinks")
    ("f" org-roam-ivy--forwardlinks-action "show forwardlinks")
-   ("i" (lambda (x)
-          (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-            (goto-char (point-max))
-            (newline)
-            (org-roam-insert)
-            (save-buffer))
-          (org-roam-ivy--last-ivy))
-    "insert backlink")
+   ("i" org-roam-ivy--insert-action "insert backlink")
    ("k" org-roam-ivy--delete-action "delete")
+   ("d" org-roam-ivy--decrypt-headings-action "decrypt headings")
+   ("e" org-roam-ivy--encrypt-action "encrypt headings")
    ("b" org-roam-ivy--refs-url-open-action "browse url")
-   ("d" (lambda (x)
-          (require 'org-crypt)
-          (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-            (auto-save-mode -1)
-            (org-decrypt-entries))
-          (org-roam-ivy--last-ivy))
-    "decrypt headings")
-   ("e" (lambda (x)
-          "Encrypt every Level 1 heading by adding crypt tag specified in `org-crypt-tag-matcher'."
-          (require 'org-crypt)
-          (when-let* ((beg (+ 1 (string-match "+" org-crypt-tag-matcher)))
-                      (end (string-match "-" org-crypt-tag-matcher))
-                      (crypt-tag (substring org-crypt-tag-matcher beg end)))
-            (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-              (org-map-entries
-               (lambda ()
-                 (org-toggle-tag crypt-tag 'on))
-               "LEVEL=1")
-              (save-buffer)))
-          (org-roam-ivy--last-ivy))
-    "encrypt headings")
-   ("B" (lambda (x)
-          ;; Ensure url is opened in private/incognito browser tab
-          (let ((browse-url-chrome-arguments (append browse-url-chrome-arguments '("--incognito")))
-                (browse-url-chromium-arguments (append browse-url-chromium-arguments '("--incognito")))
-                (browse-url-firefox-arguments (append browse-url-firefox-arguments '("--private-window"))))
-            (org-roam-ivy--refs-url-open-action x)))
-    "browse url Incognito")
-   ("h" (lambda (x)
-          (org-roam-ivy--links-back))
-    "Back")
-   ("t" (lambda (x)
-          (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-            (org-roam-ivy--set-tag
-             (org-base-buffer (current-buffer))))
-          (org-roam-ivy--last-ivy))
-    "tags")
+   ("B" org-roam-ivy--refs-url-private-open-action "browse url Incognito")
+   ("h" org-roam-ivy--links-back "Back")
+   ("t" org-roam-ivy--tags-action "tags")
    ("r" org-roam-ivy--rename-action "rename")
-   ("R" (lambda (x)
-          (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-            (kill-buffer (org-base-buffer (current-buffer))))
-          (org-roam-ivy--last-ivy))
-    "Restart buffer")
-   ("a" (lambda (x)
-          (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-            (org-roam-ivy--set-aliases
-             (org-base-buffer (current-buffer))))
-          (org-roam-ivy--last-ivy))
-    "aliases")
+   ("R" org-roam-ivy--restart-buffer-action "Restart buffer")
+   ("a" org-roam-ivy--alias-action "aliases")
    ("m" org-roam-ivy--move-action "move")
    ("n" (lambda (x)
           (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))

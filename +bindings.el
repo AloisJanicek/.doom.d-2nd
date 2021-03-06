@@ -362,7 +362,7 @@
    :desc "decrypt entries"   "D" #'org-decrypt-entries
    )
 
-  :desc "Open"         "o" #'ace-link
+  :desc "roam file hydra actions"       "o" #'org-roam-hydra-file/body
 
   (:prefix ("g" . "tags")
    :desc "tags"           "g" #'counsel-org-tag
