@@ -69,7 +69,7 @@ Credits https://github.com/skeeto/youtube-dl-emacs"
   (setq yoga-recently-played (append yoga-recently-played (list x)))
   (let* ((id (cdr x))
          (url (format "https://www.youtube.com/watch?v=%s" id)))
-    (async-shell-command (format "mpv \"%s\" 2>&1 /dev/null" url)))
+    (async-shell-command (format "mpv \"%s\" --no-terminal" url)))
   (yoga--clock-yoga-task))
 
 (defun yoga--play (prompt collection)

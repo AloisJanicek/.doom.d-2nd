@@ -174,7 +174,7 @@ Which operation will be executed depends on value of ENCRYPT."
 (defun aj-mpv-browse-url (url &optional new-window)
   "Play URL with mpv or with chrome when on platform other then linux."
   (if (string-equal system-type "gnu/linux")
-      (async-shell-command (format "mpv \"%s\" 2>&1 /dev/null" url))
+      (async-shell-command (format "mpv --no-terminal \"%s\"" url))
     (aj-chrome-browse-url-dispatch)))
 
 ;;;###autoload
