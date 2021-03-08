@@ -22,11 +22,7 @@
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\")) %(org-roam-ivy--filter-preset-get org-roam-directory)
 "
-  ("d" (lambda ()
-         (interactive)
-         (org-roam-ivy--delete-file
-          (buffer-file-name (org-base-buffer (current-buffer)))))
-   "delete")
+  ("d" (dired org-roam-directory) "dired directory")
   ("r" #'org-roam-ivy-find-refs "refs")
   ("R" #'org-roam-ivy-filter-preset-set "filter")
   ("f" #'org-roam-ivy-find-file "file")
@@ -47,6 +43,7 @@
         org-roam-directory
         #'+org-roam-filtered-files)
    "grep")
+  ("l" (org-roam-ivy--last-ivy) "last ivy")
   ("j" #'org-roam-dailies-date "journal create")
   ("J" (let ((org-roam-ivy--last-ivy-text "journal "))
          (+org-roam-dailies-open-today)
@@ -59,16 +56,6 @@
          (org-roam-ivy-find-file))
    "books")
   ("I" #'org-roam-jump-to-index "index")
-  ("a" (lambda ()
-         (interactive)
-         (org-roam-ivy--set-aliases
-          (org-base-buffer (current-buffer))))
-   "aliases")
-  ("t" (lambda ()
-         (interactive)
-         (org-roam-ivy--set-tags
-          (org-base-buffer (current-buffer))))
-   "tags")
   ("<tab>" #'org-roam-insert "insert")
   ("T" #'org-roam-buffer-toggle-display "toggle")
   )
