@@ -215,7 +215,8 @@ and has todo childre."
             (descendants (todo))
             (not (or (todo "SOMEDAY")
                      (todo "MAYBE"))))
-       (todo "PROJECT")))
+       (and (todo "PROJECT")
+            ,(agenda-queries--filter-tags-query))))
 
 (defun agenda-queries--project-descendants-query (h-title)
   "Return all descendants of heading matching H-TITLE."
