@@ -134,7 +134,10 @@ to resole their precedence.
                       (descendants (todo)))))
        (and (todo)
             (descendants (done))
-            (not (descendants (todo))))))
+            (not (descendants (todo))))
+       (and (todo "PROJECT")
+            (not (descendants (todo)))
+            (not (descendants (done))))))
 
 (defun agenda-queries--past-dues-query ()
   "Return valid org-ql query searching for past dues."
@@ -183,10 +186,8 @@ to resole their precedence.
         ,(agenda-queries--filter-tags-query)))
 
 (defun agenda-queries--stand-alone-task-query ()
-  "Return custom org-ql queary for stand-alone tasks.
-Accepted are either \"TO DO\" or \"PROJECT\" keywords."
-  `(and (or (todo "TODO")
-            (todo "PROJECT"))
+  "Return custom org-ql queary for stand-alone tasks."
+  `(and (todo "TODO")
         ,(agenda-queries--filter-tags-query)
         (not (scheduled))
         (not (descendants (todo)))
@@ -209,11 +210,12 @@ Accepted are either \"TO DO\" or \"PROJECT\" keywords."
 
 Projects are defined as a todo heading which isn't Someday or Maybe
 and has todo childre."
-  `(and (todo)
-        ,(agenda-queries--filter-tags-query)
-        (descendants (todo))
-        (not (or (todo "SOMEDAY")
-                 (todo "MAYBE")))))
+  `(or (and (todo)
+            ,(agenda-queries--filter-tags-query)
+            (descendants (todo))
+            (not (or (todo "SOMEDAY")
+                     (todo "MAYBE"))))
+       (todo "PROJECT")))
 
 (defun agenda-queries--project-descendants-query (h-title)
   "Return all descendants of heading matching H-TITLE."
