@@ -185,7 +185,7 @@ Accepted are either \"TO DO\" or \"PROJECT\" keywords."
   `(and (or (todo "TODO")
             (todo "PROJECT"))
         ,(agenda-queries--filter-tags-query)
-        (not (ts-active))
+        (not (scheduled))
         (not (descendants (todo)))
         (not (ancestors (todo)))))
 
@@ -198,7 +198,7 @@ Accepted are either \"TO DO\" or \"PROJECT\" keywords."
              (parent "HOLD")
              (parent "SOMEDAY")
              (parent "MAYBE")))
-    (not (ts-active))))
+    (not (scheduled))))
 
 (defun agenda-queries--projects-query ()
   "Return custom org-ql queary for Projects.
