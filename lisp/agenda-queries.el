@@ -123,15 +123,18 @@ to resole their precedence.
 
 (defun agenda-queries--stucked-projects-query ()
   "Stucked projects query for org-ql."
-  '(and (todo)
-        (descendants (todo))
-        (not (descendants (todo "NEXT")))
-        (not (descendants (scheduled)))
-        (not (and (or (todo "HOLD")
-                      (todo "WAIT")
-                      (todo "SOMEDAY")
-                      (todo "MAYBE"))
-                  (descendants (todo))))))
+  '(or (and (todo)
+            (descendants (todo))
+            (not (descendants (todo "NEXT")))
+            (not (descendants (scheduled)))
+            (not (and (or (todo "HOLD")
+                          (todo "WAIT")
+                          (todo "SOMEDAY")
+                          (todo "MAYBE"))
+                      (descendants (todo)))))
+       (and (todo)
+            (descendants (done))
+            (not (descendants (todo))))))
 
 (defun agenda-queries--past-dues-query ()
   "Return valid org-ql query searching for past dues."
@@ -187,6 +190,7 @@ Accepted are either \"TO DO\" or \"PROJECT\" keywords."
         ,(agenda-queries--filter-tags-query)
         (not (scheduled))
         (not (descendants (todo)))
+        (not (descendants (done)))
         (not (ancestors (todo)))))
 
 (defun agenda-queries--next-task-query ()
