@@ -53,7 +53,7 @@
 
 (package! lsp-julia
   :recipe (:host github :repo "non-Jedi/lsp-julia")
-  :pin "c523c250c4bd2777203101ab417e9b7312472f46")
+  :pin "c487ed715c49d863e8a8e76d13b37b6e694520d4")
 
 (package! json-proces-client
   :recipe (:host github :repo "emacsmirror/json-process-client")
@@ -67,7 +67,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "f2b48400b2da0bbf64e9c749fa4a5d332ab7c91f")
+  :pin "82877633366139cc858f243b9d7fdff83c1ebe62")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -82,7 +82,7 @@
   :pin "2de315abddb6af088a2346e142cc305889dcd775")
 
 (package! d-mode
-  :pin "80fad305784b21a818683010bc27d48302ec7110")
+  :pin "199743df55c6bfce3cdb08405bd8519768c8dfa9")
 
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock")
@@ -97,7 +97,7 @@
 
 (package! cyphejor
   :recipe (:host github :repo "mrkkrp/cyphejor")
-  :pin "037c0f2d0cd0e23acd2aacb621d7694080f5eef6")
+  :pin "cf580995f891e339a9485ba91d6cb81a2abd61e4")
 
 (package! define-word
   :pin "6e4a427503aef096484f88332962c346cdd10847")
@@ -107,7 +107,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "dd43dc200b7da343a2fbdf2b0198381dd8193fe3"
+  :pin "21650f9db69881bb20e53f1a3a8c62231f0bff84"
   )
 
 (package! eslintd-fix
@@ -139,10 +139,10 @@
   :pin "0513152525c38519a5597db2d6495b56dd9cc3f0")
 
 (package! indium
-  :pin "84322967099ad7a700dcd2f21fdd262a8354fe09")
+  :pin "8499e156bf7286846c3a2bf8c9e0c4d4f24b224c")
 
 (package! imenu-list
-  :pin "46008738f8fef578a763c308cf6695e5b4d4aa77")
+  :pin "b50222378412fbe321622a84cb2b036e084c697a")
 
 (package! ivy-pages
   :recipe (:host github :repo "igorepst/ivy-pages")
@@ -231,7 +231,7 @@
   :pin "b6ae63a236605b1c5e1069f7d3afe06ae32a7bae")
 
 (package! tldr
-  :pin "269bda7001613c0b70c0662d2a74d200765c1dcb")
+  :pin "d59405bd72f3379417b9e73f06e8848b43cb021d")
 
 (package! transient-posframe
   :recipe (:host github :repo "yanghaoxie/transient-posframe")
