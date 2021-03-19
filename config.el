@@ -1266,6 +1266,7 @@ if running under WSL")
   )
 
 (use-package org-perpetual-clock
+  :disabled
   :after org
   :config
   (setq org-perpetual-clock-maintenance-task
