@@ -1232,8 +1232,8 @@ if running under WSL")
 (use-package! gtd-agenda
   :after org
   :config
-  (when (and (doom-store-persist doom-store-location '(gtd-agenda-queries-history))
-             (doom-store-persist doom-store-location '(agenda-filter-preset)))
+  (when (and (doom-store-persist "custom" '(gtd-agenda-queries-history))
+             (doom-store-persist "custom" '(agenda-filter-preset)))
     ;; HACK doom-store can't handle non-ASCII characters properly
     (setq gtd-agenda-queries-history
           (seq-map (lambda (i)
@@ -1369,7 +1369,7 @@ if running under WSL")
 (use-package! notes-filter
   :after org
   :config
-  (doom-store-persist doom-store-location '(notes-filter-preset))
+  (doom-store-persist "custom" '(notes-filter-preset))
   )
 
 (use-package! org-brain
@@ -1423,7 +1423,7 @@ if running under WSL")
                (string-trim-right org-brain-path "/"))))
      (apply orig-fn args)))
 
-  (doom-store-persist doom-store-location '(org-brain-path))
+  (doom-store-persist "custom" '(org-brain-path))
 
   (unless org-brain-path
     (setq org-brain-path (expand-file-name "brain" org-directory)))
@@ -1819,7 +1819,7 @@ When in org-roam file, also create top-level ID.
                                         (widen)
                                         (+org-narrow-and-show)))
 
-  (doom-store-persist doom-store-location '(org-clock-out-time))
+  (doom-store-persist "custom" '(org-clock-out-time))
   (setq
    org-clock-clocked-in-display nil
    org-clock-history-length 50
@@ -1864,7 +1864,7 @@ When in org-roam file, also create top-level ID.
          (apply orig-fn args)))))
   )
 
-(doom-store-persist doom-store-location '(org-id-locations))
+(doom-store-persist "custom" '(org-id-locations))
 
 (after! org-id
 
@@ -1879,7 +1879,7 @@ When in org-roam file, also create top-level ID.
       (aj/org-id-update-recursively)))
   )
 
-(doom-store-persist doom-store-location '(org-roam-directory))
+(doom-store-persist "custom" '(org-roam-directory))
 
 (unless org-roam-directory
   (require 'ffap)
@@ -1897,7 +1897,7 @@ When in org-roam file, also create top-level ID.
   (setq alert-user-configuration (quote ((((:category . "org-pomodoro")) libnotify nil)))
         org-pomodoro-ask-upon-killing nil
         org-pomodoro-mode-line nil)
-  (doom-store-persist doom-store-location '(org-pomodoro-count))
+  (doom-store-persist "custom" '(org-pomodoro-count))
   (add-hook! 'org-clock-out-hook (lambda ()
                                    "Kill the pomodoro but do not notify user via system notifications."
                                    (cl-letf (((symbol-function 'org-pomodoro-notify) nil))
@@ -1915,7 +1915,7 @@ When in org-roam file, also create top-level ID.
 (use-package org-roam-ivy
   :after org-roam
   :config
-  (doom-store-persist doom-store-location '(org-roam-ivy-filter-preset))
+  (doom-store-persist "custom" '(org-roam-ivy-filter-preset))
   )
 
 (use-package! org-roam-server-light
@@ -1950,7 +1950,7 @@ When in org-roam file, also create top-level ID.
      (save-buffer)
      (org-roam-db-update)))
 
-  (doom-store-persist doom-store-location '(org-roam-directory))
+  (doom-store-persist "custom" '(org-roam-directory))
 
   (setq +org-roam-open-buffer-on-find-file nil
         org-roam-db-update-method 'immediate
@@ -2586,5 +2586,5 @@ When in org-roam file, also create top-level ID.
 (use-package yoga
   :commands yoga-hydra/body
   :config
-  (doom-store-persist doom-store-location '(yoga-recently-played yoga-favorites))
+  (doom-store-persist "custom" '(yoga-recently-played yoga-favorites))
   )
