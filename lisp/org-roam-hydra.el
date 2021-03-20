@@ -82,6 +82,16 @@ org-roam item: %(org-roam-db--get-title (buffer-file-name (org-base-buffer (curr
   ("t" (org-roam-hydra--adapter #'org-roam-ivy--tags-action) "tags")
   ("i" (org-roam-hydra--adapter #'org-roam-ivy--insert-action) "insert backlink")
   ("e" (org-roam-hydra--adapter #'org-roam-ivy--) "encrypt headings")
+  ("s" (lambda ()
+         (interactive)
+         (add-file-local-variable-prop-line
+          'ispell-local-dictionary
+          (completing-read
+           "Use new dictionary (RET for current, SPC to complete): "
+           (and (fboundp 'ispell-valid-dictionary-list)
+                (mapcar #'list (ispell-valid-dictionary-list)))
+           nil t)))
+   "local ispell dict")
   ("n" #'org-noter "org-noter")
   ("H" #'org-roam-doctor "org-roam doctor")
   ("R" (org-roam-hydra--adapter #'org-roam-ivy--restart-buffer-action) "restart buffer")
