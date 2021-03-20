@@ -200,6 +200,8 @@
 (package! org-ql
   :pin "208e103ecc146db71d878df3bd09c6eb60c2797d")
 
+(package! org-web-tools)
+
 (package! paredit
   :recipe (:host github :repo "emacsmirror/paredit")
   :pin "8330a41e8188fe18d3fa805bb9aa529f015318e8")

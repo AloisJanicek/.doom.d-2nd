@@ -1498,6 +1498,9 @@ if running under WSL")
                                                  (org-agenda-filter-apply agenda-filter-preset 'tag)))))
   )
 
+(use-package! org-web-tools
+  :after org
+  )
 (use-package! org-sidebar
   :commands (org-sidebar org-sidebar-tree org-sidebar-ql)
   )
