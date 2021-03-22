@@ -293,10 +293,7 @@ of doom-emacs https://github.com/hlissner/doom-emacs."
 (defun org-roam-ivy--links-back (&rest _)
   "Pop and go to the current links view from `org-roam-ivy--last-ivy'.
 When there isn't one, return to last top level ivy."
-  (let* ((links (cl-sort (plist-get org-roam-ivy--last-ivy :links)
-                         #'time-less-p
-                         :key (lambda (x)
-                                (car (last x))))))
+  (let* ((links (plist-get org-roam-ivy--last-ivy :links)))
     (if (> (length links) 1)
         (progn
           ;; pop the current if it is the same as the one about to be re-stored
