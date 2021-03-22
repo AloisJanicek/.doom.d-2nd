@@ -32,7 +32,7 @@ When using org-roam-ivy interfaces, store valaue of the `ivy-text'
 into this variable and use it to restore the input when returning
 from backlinks back to the top level search or when opening org-roam-ivy again.")
 
-(defvar org-roam-ivy--last-ivy '(:last-ivy nil :backlinks nil :forwardlinks nil)
+(defvar org-roam-ivy--last-ivy '(:last-ivy nil :links nil)
   "Store the function name of the last used org-roam-ivy interface.")
 
 (defvar org-roam-ivy-filter-preset nil
@@ -160,20 +160,20 @@ filter preset."
                           ('forwardlinks :forwardlinks)))
              (prompt (format "%s of %s: " (prin1-to-string type) (org-roam-db--get-title f)))
              (collection (seq-map
-                          (lambda (bklink)
+                          (lambda (link)
                             (cons
                              (org-roam--add-tag-string
-                              (org-roam-db--get-title (car bklink))
+                              (org-roam-db--get-title (car link))
                               (org-roam--extract-tags f))
-                             `(:path ,(car bklink) :title ,(org-roam-db--get-title (car bklink)))))
+                             `(:path ,(car link) :title ,(org-roam-db--get-title (car link)))))
                           links)))
         (progn
           (plist-put
            org-roam-ivy--last-ivy
-           link-type
+           :links
            (append
             (list `(,prompt ,collection ,from ,(current-time)))
-            (plist-get org-roam-ivy--last-ivy link-type)))
+            (plist-get org-roam-ivy--last-ivy :links)))
           (org-roam-ivy prompt collection from))
       (message "Item \"%s\" has no %s" (org-roam-db--get-title f) (prin1-to-string type))
       (org-roam-ivy--last-ivy))))
@@ -287,36 +287,26 @@ of doom-emacs https://github.com/hlissner/doom-emacs."
   "Open last org-roam-ivy stored in `org-roam-ivy--last-ivy'."
   (when-let ((last-ivy (plist-get org-roam-ivy--last-ivy :last-ivy)))
     ;; Drop backlinks history when restoring to the top level search view
-    (plist-put org-roam-ivy--last-ivy :backlinks nil)
-    (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
+    (plist-put org-roam-ivy--last-ivy :links nil)
     (funcall last-ivy)))
 
 (defun org-roam-ivy--links-back (&rest _)
-  "Pop and go to the current backlinks view from `org-roam-ivy--last-ivy'.
+  "Pop and go to the current links view from `org-roam-ivy--last-ivy'.
 When there isn't one, return to last top level ivy."
-  (if-let* ((type (let ((backlinks-timestamp
-                         (car (last (car (plist-get org-roam-ivy--last-ivy :backlinks)))))
-                        (forwardlinks-timestamp
-                         (car (last (car (plist-get org-roam-ivy--last-ivy :forwardlinks))))))
-                    (cond ((and backlinks-timestamp forwardlinks-timestamp)
-                           (if (time-less-p backlinks-timestamp forwardlinks-timestamp)
-                               :forward-links :backlinks))
-                          (backlinks-timestamp
-                           :backlinks)
-                          (forwardlinks-timestamp
-                           :forwardlinks))))
-            (backlinks (plist-get org-roam-ivy--last-ivy type))
-            (backlinks-length (>= (length backlinks) 1)))
-      (progn
-        ;; pop the current if it is the same as the one about to be re-stored
-        (when (and (string-equal
-                    (ivy-state-prompt ivy-last)
-                    (caar (plist-get org-roam-ivy--last-ivy type)))
-                   (> (length backlinks) 1))
-          (pop (plist-get org-roam-ivy--last-ivy type)))
-        ;; restore the previous
-        (apply #'org-roam-ivy (pop (plist-get org-roam-ivy--last-ivy type))))
-    (org-roam-ivy--last-ivy)))
+  (let* ((links (cl-sort (plist-get org-roam-ivy--last-ivy :links)
+                         #'time-less-p
+                         :key (lambda (x)
+                                (car (last x))))))
+    (if (> (length links) 1)
+        (progn
+          ;; pop the current if it is the same as the one about to be re-stored
+          (when (and (string-equal
+                      (ivy-state-prompt ivy-last)
+                      (car (nth 0 links))))
+            (pop (plist-get org-roam-ivy--last-ivy :links)))
+          ;; restore the previous
+          (apply #'org-roam-ivy (pop (plist-get org-roam-ivy--last-ivy :links))))
+      (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--capture (x)
   "Capture X action for org-roam-ivy.
@@ -462,8 +452,7 @@ of org-roam item by tag string doesn't make much sense."
   "Exclusive ivy interface for org-roam refs."
   (interactive)
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-refs)
-  (plist-put org-roam-ivy--last-ivy :backlinks nil)
-  (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
+  (plist-put org-roam-ivy--last-ivy :links nil)
   (let ((org-roam-ivy--last-ivy-text "")
         org-roam-ivy-filter-preset)
     (org-roam-ivy "Refs: " (org-roam--get-ref-path-completions 1))))
@@ -473,8 +462,7 @@ of org-roam item by tag string doesn't make much sense."
   "Exclusive ivy interface for org-roam find file."
   (interactive)
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-file)
-  (plist-put org-roam-ivy--last-ivy :backlinks nil)
-  (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
+  (plist-put org-roam-ivy--last-ivy :links nil)
   (org-roam-ivy "File: " (org-roam--get-title-path-completions)))
 
 ;;;###autoload
@@ -482,8 +470,7 @@ of org-roam item by tag string doesn't make much sense."
   "Exclusive ivy interface showing all org-roam items which aren't linking to any other org-roam item. "
   (interactive)
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-not-linking)
-  (plist-put org-roam-ivy--last-ivy :backlinks nil)
-  (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
+  (plist-put org-roam-ivy--last-ivy :links nil)
   (org-roam-ivy "Not linking: " (org-roam-ivy--get-not-linking-completions)))
 
 ;;;###autoload
@@ -491,8 +478,7 @@ of org-roam item by tag string doesn't make much sense."
   "Exclusive ivy interface showing all unlinked org-roam items (items without backlink)."
   (interactive)
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-unlinked)
-  (plist-put org-roam-ivy--last-ivy :backlinks nil)
-  (plist-put org-roam-ivy--last-ivy :forwardlinks nil)
+  (plist-put org-roam-ivy--last-ivy :links nil)
   (org-roam-ivy "Unlinked: " (org-roam-ivy--get-unlinked-completions)))
 
 ;; org-roam-ivy setup
