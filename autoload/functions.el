@@ -1026,8 +1026,13 @@ Intended as an override advice for `posframe--mouse-banish'.
 (defun aj-symbol-at-point ()
   "Return symbol at point or empty string.
 Make sure string doesn't start with special characters."
-  (string-trim-left
-   (format "%s" (or (symbol-at-point) "")) "[^A-Za-z0-9]"))
+  (let ((search-this (or (when (use-region-p)
+                           (buffer-substring-no-properties (region-beginning) (region-end)))
+                         (symbol-at-point)
+                         ""
+                         )))
+    (string-trim-left
+     (format "%s" search-this) "[+]")))
 
 ;;;###autoload
 (defun +ivy/project-search-a (&optional arg initial-query directory)
