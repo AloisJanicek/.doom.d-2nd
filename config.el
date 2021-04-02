@@ -212,8 +212,13 @@ if running under WSL")
 (use-package! circadian
   :ensure t
   :config
-  (setq calendar-latitude 49.6)
-  (setq calendar-longitude 17.2)
+  (let ((location
+         (seq-map
+          #'string-to-number
+          (split-string (string-trim (shell-command-to-string "curl -s https://ipinfo.io/loc")) ","))))
+    (setq calendar-latitude (or (car location) 49))
+    (setq calendar-longitude (or (cadr location) 17))
+    )
   (setq circadian-themes '((:sunrise . doom-one-light)
                            (:sunset  . aj-dark+)))
   (circadian-setup))
