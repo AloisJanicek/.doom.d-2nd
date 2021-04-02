@@ -164,6 +164,7 @@
  purescript
  (python
   +lsp
+  +pyright
   ;;+conda
   )
  ;;qt
