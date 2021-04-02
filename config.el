@@ -49,7 +49,7 @@ if running under WSL")
       doom-themes-treemacs-theme "doom-colors"
       doom-modeline-height 22
       aj-dark+-blue-modeline t
-      doom-theme 'doom-solarized-dark
+      doom-theme 'aj-dark+
       doom-font                   (font-spec :family "JetBrains Mono 1.1" :size 14)
       doom-big-font               (font-spec :family "JetBrains Mono 1.1" :size 24)
       doom-variable-pitch-font    (font-spec :family "Noto Sans" :size 14)
@@ -208,6 +208,15 @@ if running under WSL")
                       :fn shell-command
                       :cmd "box task run TestRunner")))
   )
+
+(use-package! circadian
+  :ensure t
+  :config
+  (setq calendar-latitude 49.6)
+  (setq calendar-longitude 17.2)
+  (setq circadian-themes '((:sunrise . doom-one-light)
+                           (:sunset  . aj-dark+)))
+  (circadian-setup))
 
 (after! coffee-mode
   (add-to-list
