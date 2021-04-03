@@ -442,7 +442,7 @@ Optionally accept valid org-ql QUERY.
             :clock t))))
 
        ;; Show stucked projects if any
-       ((gtd-agenda--try-query-match (agenda-queries--past-dues-query))
+       ((gtd-agenda--try-query-match (agenda-queries--stucked-projects-query))
         (pcase gtd-agenda-interface
           ('agenda-search
            (gtd-agenda-stucked-projects-search))
