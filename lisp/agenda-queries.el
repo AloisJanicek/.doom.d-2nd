@@ -170,6 +170,7 @@ to resole their precedence.
 (defun agenda-queries--simple-task-query (keyword)
   "Return valid org-ql query searching for todo KEYWORD."
   (remove nil `(and (todo ,keyword)
+                    (not (ancestors (done)))
                     ,(agenda-queries--filter-tags-query)
                     ,(if current-prefix-arg
                          nil
@@ -192,7 +193,8 @@ to resole their precedence.
         (not (scheduled))
         (not (descendants (todo)))
         (not (descendants (done)))
-        (not (ancestors (todo)))))
+        (not (ancestors (todo)))
+        (not (ancestors (done)))))
 
 (defun agenda-queries--next-task-query ()
   "Return custom org-ql queary for NEXT task."
@@ -203,6 +205,7 @@ to resole their precedence.
              (parent "HOLD")
              (parent "SOMEDAY")
              (parent "MAYBE")))
+    (not (ancestors (done)))
     (not (scheduled))))
 
 (defun agenda-queries--projects-query ()
@@ -210,7 +213,7 @@ to resole their precedence.
 
 Projects are defined as a todo heading which isn't Someday or Maybe
 and has todo childre."
-  `(or (and (todo)
+  `(or (and (or (todo) (done))
             ,(agenda-queries--filter-tags-query)
             (descendants (todo))
             (not (or (todo "SOMEDAY")
@@ -227,7 +230,8 @@ and has todo childre."
   `(and (todo "WAIT" )
         ,(agenda-queries--filter-tags-query)
         (not (ancestors
-              (or (todo "HOLD")
+              (or (done)
+                  (todo "HOLD")
                   (todo "WAIT")
                   (todo "SOMEDAY")
                   (todo "MAYBE"))))))
@@ -237,7 +241,8 @@ and has todo childre."
   `(and (todo "HOLD" )
         ,(agenda-queries--filter-tags-query)
         (not (ancestors
-              (or (todo "HOLD")
+              (or (done)
+                  (todo "HOLD")
                   (todo "WAIT")
                   (todo "SOMEDAY")
                   (todo "MAYBE"))))))
