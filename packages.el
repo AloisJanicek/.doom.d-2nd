@@ -53,7 +53,7 @@
 
 (package! lsp-julia
   :recipe (:host github :repo "non-Jedi/lsp-julia")
-  :pin "c487ed715c49d863e8a8e76d13b37b6e694520d4")
+  :pin "81f7de5b9fe8e8e0e1e3a3ccc677f052edad140d")
 
 (package! json-proces-client
   :recipe (:host github :repo "emacsmirror/json-process-client")
@@ -67,7 +67,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "82877633366139cc858f243b9d7fdff83c1ebe62")
+  :pin "2efbbf231ea3b3248177051a10c52c151686c4b4")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -112,7 +112,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "21650f9db69881bb20e53f1a3a8c62231f0bff84"
+  :pin "522e128b28b619ac0a54f9dc4adfcdf533ef24e7"
   )
 
 (package! eslintd-fix
@@ -147,7 +147,7 @@
   :pin "8499e156bf7286846c3a2bf8c9e0c4d4f24b224c")
 
 (package! imenu-list
-  :pin "b50222378412fbe321622a84cb2b036e084c697a")
+  :pin "370cabfd21ffcff8247c676be427a1cc9afb234a")
 
 (package! ivy-pages
   :recipe (:host github :repo "igorepst/ivy-pages")
@@ -177,7 +177,7 @@
   :pin "6a72fa20e7be6e55c09b1bc9887ee09c5df28e45")
 
 (package! nov
-  :pin "b6138895ace3042ed78140b6f4859e544fbca27e")
+  :pin "b3c7cc28e95fe25ce7b443e5f49e2e45360944a3")
 
 (package! ob-javascript
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*"))
