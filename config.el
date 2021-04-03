@@ -1557,7 +1557,7 @@ custom org-ql \"Projects\" search instead of visiting it in the buffer."
          (let ((buffer (marker-buffer (org-get-at-bol 'org-marker)))
                (title (substring-no-properties (car (org-get-at-bol 'title)))))
            (org-ql-search
-             (buffer-file-name (org-base-buffer buffer))
+             buffer
              (agenda-queries--project-descendants-query title)
              :sort (lambda (_a _b) nil)
              :title (format "Descendants of: %s" title)))
