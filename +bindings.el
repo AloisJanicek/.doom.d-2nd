@@ -486,7 +486,7 @@
  ;;; evil-org-agenda
  (:after evil-org-agenda
   :map evil-org-agenda-mode-map
-  :nm "<return>" #'gtd-agenda-descend-into-project
+  :nm "<return>" #'gtd-agenda/descend-into-project
   :m "a" nil
   :m "." (lambda ()
            (interactive)
