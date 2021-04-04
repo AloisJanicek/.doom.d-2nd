@@ -1538,30 +1538,15 @@ if running under WSL")
                                         "Complete tags from all org-agenda files across each other."
                                         (setq-local org-global-tags-completion-table
                                                     (org-global-tags-completion-table org-agenda-contributing-files))))
-  (advice-add 'org-agenda-switch-to :after
-              (lambda (&rest _)
-                "Narrow and show children after switching."
-                (widen)
-                (+org-narrow-and-show)
-                (turn-off-solaire-mode)))
   (advice-add
    #'org-agenda-switch-to
-   :around
-   (lambda (orig-fn &rest args)
-     "Show all descendants of the task under the point if it originates from
-custom org-ql \"Projects\" search instead of visiting it in the buffer."
-     (if (cl-member
-          (buffer-name (current-buffer))
-          '("*Org QL View: Stucked Projects*" "*Org QL View: Projects*")
-          :test #'string-match)
-         (let ((buffer (marker-buffer (org-get-at-bol 'org-marker)))
-               (title (substring-no-properties (car (org-get-at-bol 'title)))))
-           (org-ql-search
-             buffer
-             (agenda-queries--project-descendants-query title)
-             :sort (lambda (_a _b) nil)
-             :title (format "Descendants of: %s" title)))
-       (apply orig-fn args))))
+   :after
+   (lambda (&rest _)
+     "Narrow and show children after switching."
+     (when (derived-mode-p 'org-mode)
+       (widen)
+       (+org-narrow-and-show))))
+
   (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-set-mode-name :after (lambda (&rest _)

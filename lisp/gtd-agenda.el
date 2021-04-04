@@ -267,6 +267,25 @@ which addopted some code snippets.
           'marker marker
           'org-habit-p habit)))))
 
+(defun gtd-agenda/descend-into-project ()
+  "Show all descendants of the task under the point if it originates from
+custom org-ql \"Projects\" search instead of visiting it in the file buffer."
+  (interactive)
+  (if (cl-member
+       (buffer-name (current-buffer))
+       '("*Org QL View: Stucked Projects*" "*Org QL View: Projects*")
+       :test #'string-match)
+      (let ((buffer (marker-buffer (org-get-at-bol 'org-marker)))
+            (title (substring-no-properties (car (org-get-at-bol 'title)))))
+        (if (gtd-agenda--try-query-match (agenda-queries--project-descendants-query title))
+            (org-ql-search
+              buffer
+              (agenda-queries--project-descendants-query title)
+              :sort (lambda (_a _b) nil)
+              :title (format "Descendants of: %s" title))
+          (org-agenda-switch-to)))
+    (org-agenda-switch-to)))
+
 (defun gtd-agenda-normalize-save-query (query)
   "Normalize QUERY, save it into `gtd-agenda-queries' and return it."
   (when-let* (
