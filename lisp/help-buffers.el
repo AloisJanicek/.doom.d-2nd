@@ -6,6 +6,8 @@
 ;;; Code:
 
 (require 'ivy)
+(require 'org-lib)
+(require 'all-the-icons)
 
 (defvar help-buffers-org-files-visit-fn #'pop-to-buffer
   "Function to use for visiting org-mode file buffers.
@@ -72,11 +74,14 @@ Other org-mode files will be considered as regular files and buffers."
         (eq major-mode 'helpful-mode)))
     (buffer-list))))
 
+(defvar help-buffers-org-files-list nil
+  "Holds list of all org files in `org-directory'.")
 
 (ivy-add-actions
  #'ivy-switch-buffer
  '(("c" help-buffers-kill-helpful-buffers "kill helpful-mode buffers")
    ("C" help-buffers-kill-all-help-buffers "kill all help modes buffers")))
+
 (advice-add #'ivy--switch-buffer-action :around #'help-buffers-switch-buffer-maybe-pop-action-a)
 
 (defun help-buffers-switch-buffer-maybe-pop-action-a (orig-fn buffer)
@@ -93,12 +98,30 @@ Around advice for `ivy--switch-buffer-action'."
         (funcall orig-fn buffer))
     (funcall orig-fn buffer)))
 
+(defun help-buffers--transformer (str)
+  "For org mode files try to replace file name with +title property."
+  (if (string-match ".org::" str)
+      (when-let ((file (car (seq-filter
+                             (lambda (f)
+                               (string-match (car (split-string str "::")) f))
+                             help-buffers-org-files-list))))
+        (with-current-buffer (find-file-noselect file)
+          (concat (all-the-icons-fileicon  "org" :v-adjust -0.1)
+                  " "
+                  (+org-get-global-property "TITLE"))))
+    str))
+
 (defun help-buffers-switch-buffers (prompt &optional help)
   "Switch perspective buffers.
 
 When HELP, switch only help buffers.
 See variable `help-buffers-modes' for more details."
   (interactive)
+
+  ;; NOTE: thus this will update only once per session which is sufficient enough
+  (unless help-buffers-org-files-list
+    (setq help-buffers-org-files-list (directory-files-recursively org-directory ".org$")))
+
   (ivy-read prompt 'internal-complete-buffer
             :action #'ivy--switch-buffer-action
             :predicate (lambda (buffer)
@@ -119,5 +142,7 @@ See variable `help-buffers-modes' for more details."
             :keymap ivy-switch-buffer-map
             ;; NOTE A clever disguise, needed for virtual buffers.
             :caller #'ivy-switch-buffer))
+
+(ivy-set-display-transformer 'ivy-switch-buffer #'help-buffers--transformer)
 
 (provide 'help-buffers)
