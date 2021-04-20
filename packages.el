@@ -67,7 +67,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "2efbbf231ea3b3248177051a10c52c151686c4b4")
+  :pin "e7775f85a2bb9c13a4c55417ae8d6f16477e3ca0")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -112,7 +112,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "522e128b28b619ac0a54f9dc4adfcdf533ef24e7"
+  :pin "b21efedaf78a2c41c36932c92884d930448b0516"
   )
 
 (package! eslintd-fix
@@ -123,7 +123,7 @@
   :pin "08a779a821f8d32c1a1985d8d9eb6cf21646ce2e")
 
 (package! google-translate
-  :pin "6f7b75b2aa1ff4e50b6f1579cafddafae5705dbd")
+  :pin "0f7f48a09bca064999ecea03102a7c96f52cbd1b")
 
 (package! flycheck-sml
   :recipe (:host github :repo "creichert/flycheck-sml")
@@ -141,13 +141,13 @@
   :pin "27e9e015b930175896c07536c25e379a4e1997af")
 
 (package! hungry-delete
-  :pin "0513152525c38519a5597db2d6495b56dd9cc3f0")
+  :pin "d919e555e5c13a2edf4570f3ceec84f0ade71657")
 
 (package! indium
   :pin "8499e156bf7286846c3a2bf8c9e0c4d4f24b224c")
 
 (package! imenu-list
-  :pin "370cabfd21ffcff8247c676be427a1cc9afb234a")
+  :pin "1447cdc8c0268e332fb4adc0c643702245d31bde")
 
 (package! ivy-pages
   :recipe (:host github :repo "igorepst/ivy-pages")
@@ -200,7 +200,7 @@
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "c1b20436911f364c9477a17905af2881c765da14")
+  :pin "daa18df6de26b74badab0372e8a64fbde6a7be71")
 
 (package! org-ql
   :pin "208e103ecc146db71d878df3bd09c6eb60c2797d")
