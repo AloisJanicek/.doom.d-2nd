@@ -20,7 +20,7 @@
                                 "(provide 'org-version)\n"))
            )
   :pin "1392d8f96806dbe7a5057ddddcc248a7c9b59592"
-  :shadow 'org)
+  )
 
 (package! org-roam-server-light
   :recipe (:host github :repo "AloisJanicek/org-roam-server-light"
@@ -67,7 +67,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "e7775f85a2bb9c13a4c55417ae8d6f16477e3ca0")
+  :pin "0138c7e7f3b7a6c09665e45a6dd2168359efd47c")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -112,7 +112,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "b21efedaf78a2c41c36932c92884d930448b0516"
+  :pin "e4932b5dfbd0f869bac6f1cc6a0e532c69e1b429"
   )
 
 (package! eslintd-fix
@@ -147,7 +147,7 @@
   :pin "8499e156bf7286846c3a2bf8c9e0c4d4f24b224c")
 
 (package! imenu-list
-  :pin "1447cdc8c0268e332fb4adc0c643702245d31bde")
+  :pin "76f2335ee6f2f066d87fe4e4729219d70c9bc70d")
 
 (package! ivy-pages
   :recipe (:host github :repo "igorepst/ivy-pages")
@@ -185,7 +185,7 @@
 
 (package! org-brain
   :recipe (:host github :repo "Kungsgeten/org-brain")
-  :pin "e9b9b3e5bb3c63cecb1367df49205c346d9c050a")
+  :pin "e0c02b57836d4882da9aa3e65f04ba6045aae537")
 
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags")
