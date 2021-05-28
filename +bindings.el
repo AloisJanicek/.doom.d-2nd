@@ -1077,6 +1077,7 @@
 
  :desc "popup"      "'" #'+popup/toggle
  :desc "restore"    "\"" #'+popup/restore
+ :desc "raise"      "\\" #'+popup/raise
  ;; "z"
 
  ;; scratch-buffer         "x"
