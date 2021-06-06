@@ -12,15 +12,14 @@
 (package! org-mode
   :recipe (:host github
            :repo "yantar92/org"
-           :branch "feature/org-fold"
-           :files ("*.el" "lisp/*.el" "contrib/lisp/*.el")
+           :branch "feature/org-fold-universal-core"
+           :files ("*.el" "lisp/*.el")
            :pre-build (with-temp-file (expand-file-name "org-version.el" (straight--repos-dir "org"))
                         (insert "(fset 'org-release (lambda () \"9.5\"))\n"
                                 "(fset 'org-git-version #'ignore)\n"
                                 "(provide 'org-version)\n"))
-           )
-  :pin "1392d8f96806dbe7a5057ddddcc248a7c9b59592"
-  )
+           :includes (org))
+  :pin "8564acf72931a20e6c8e6aeba0ca8e331ef3fe02")
 
 (package! org-roam-server-light
   :recipe (:host github :repo "AloisJanicek/org-roam-server-light"
@@ -48,16 +47,16 @@
              :files (:defaults "Makefile" "*.h" "*.c" "*.js" "*.css")
              :build ("make")
              )
-    :pin "5f5f8c2b1f0c97a43533c1e16cb0dd93f75ea626")
+    :pin "962b768345252072f961ca100cbdb47c60f0569d")
   )
 
 (package! lsp-julia
   :recipe (:host github :repo "non-Jedi/lsp-julia")
-  :pin "81f7de5b9fe8e8e0e1e3a3ccc677f052edad140d")
+  :pin "d4a7a27d6ac7c6831b4f493dd89f82fa0c75bdf5")
 
 (package! json-proces-client
   :recipe (:host github :repo "emacsmirror/json-process-client")
-  :pin "422606a7bf08d13646e3db4f6c2bddb69bd61dec")
+  :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")
 
 (package! ace-link
   :pin "e1b1c91b280d85fce2194fea861a9ae29e8b03dd")
@@ -67,13 +66,13 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "0138c7e7f3b7a6c09665e45a6dd2168359efd47c")
+  :pin "e0eba9cb8f8c85c0b63434f6117f9fa232d8a890")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
 
 (package! apache-mode
-  :pin "a66dc1f246cd4ce0960773989bc43188f0394948")
+  :pin "f2c11aac2f5fc598123e04f4604bea248689a117")
 
 (package! bats-mode
   :pin "d519f7c89f5ae17dfc33400596df4564b478315f")
@@ -94,7 +93,7 @@
   :pin "6ba0f2ac7e4e5b8c1baec90296d9f24407d8d632")
 
 (package! counsel-tramp
-  :pin "719b38ba2242cc1c6d1d79cab106c8c8b1afa775")
+  :pin "76719eebb791920272c69e75e234f05a815bb5c2")
 
 (package! counsel-web
   :recipe (:host github :repo "mnewt/counsel-web")
@@ -112,12 +111,12 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "e4932b5dfbd0f869bac6f1cc6a0e532c69e1b429"
+  :pin "00b5049279e6bc357fe9bbc763d228843e5f675e"
   )
 
 (package! eslintd-fix
   :recipe (:host github :repo "aaronjensen/eslintd-fix")
-  :pin "5f9daecd4a02418515070b8084cb06e2251e2119")
+  :pin "5488db4436fc312386fdb123289d7fc5f099702b")
 
 (package! esqlite
   :pin "08a779a821f8d32c1a1985d8d9eb6cf21646ce2e")
@@ -185,7 +184,7 @@
 
 (package! org-brain
   :recipe (:host github :repo "Kungsgeten/org-brain")
-  :pin "e0c02b57836d4882da9aa3e65f04ba6045aae537")
+  :pin "a9ca42cb8d1325a4e928716384a0bdb53ea2ad41")
 
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags")
@@ -193,14 +192,14 @@
 
 (package! org-sidebar
   :recipe (:host github :repo "alphapapa/org-sidebar")
-  :pin "67fe1b5c6c879e14d34c34eec2190e9719046b6c")
+  :pin "1b37069e47d1ea4745eacdf2dec2bdad756ee235")
 
 (package! org-super-agenda
   :pin "f5e80e4d0da6b2eeda9ba21e021838fa6a495376")
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "daa18df6de26b74badab0372e8a64fbde6a7be71")
+  :pin "732b84999a5a3f45bbb88b49df31e7250d3d45a4")
 
 (package! org-ql
   :pin "208e103ecc146db71d878df3bd09c6eb60c2797d")
