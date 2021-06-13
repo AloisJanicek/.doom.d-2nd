@@ -255,9 +255,10 @@ Requires esqlite."
                       (concat (nth 1 member) ": " (nth 0 member)))
                     (esqlite-read (expand-file-name "metadata.db" library-path) "SELECT title,id FROM books"))
             :action (lambda (x)
-                      (let ((book-path (aj-get-calibre-book-path x library-path)))
+                      (let* ((book-path (aj-get-calibre-book-path x library-path))
+                             (buf (find-file-noselect book-path)))
                         (kill-new book-path)
-                        (find-file book-path)))))
+                        (pop-to-buffer buf)))))
 
 ;;;###autoload
 (defun aj-get-calibre-book-path (x library-path)
