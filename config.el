@@ -49,7 +49,7 @@ if running under WSL")
       doom-themes-treemacs-theme "doom-colors"
       doom-modeline-height 22
       aj-dark+-blue-modeline t
-      doom-theme 'doom-solarized-dark
+      doom-theme 'aj-dark+
       doom-font                   (font-spec :family "JetBrains Mono 1.1" :size 14)
       doom-big-font               (font-spec :family "JetBrains Mono 1.1" :size 24)
       doom-variable-pitch-font    (font-spec :family "Noto Sans" :size 14)
@@ -210,6 +210,7 @@ if running under WSL")
   )
 
 (use-package! circadian
+  :disabled
   :ensure t
   :config
   (let ((location
