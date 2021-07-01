@@ -19,7 +19,7 @@
                                 "(fset 'org-git-version #'ignore)\n"
                                 "(provide 'org-version)\n"))
            :includes (org))
-  :pin "8564acf72931a20e6c8e6aeba0ca8e331ef3fe02")
+  :pin "d8d63a65ff7a999ba50583d6ce1a3ce8b09d469e")
 
 (package! org-roam-server-light
   :recipe (:host github :repo "AloisJanicek/org-roam-server-light"
@@ -66,7 +66,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "e0eba9cb8f8c85c0b63434f6117f9fa232d8a890")
+  :pin "07b8c5271719afa6a4c598c2a19f4a096ca6efe8")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -97,7 +97,7 @@
 
 (package! counsel-web
   :recipe (:host github :repo "mnewt/counsel-web")
-  :pin "35c648b4cdd9f266ab54512a0fec2a3ca55d5bc6")
+  :pin "1359b3b204fcdac7a3d6664c7d540a88b5acecfd")
 
 (package! cyphejor
   :recipe (:host github :repo "mrkkrp/cyphejor")
@@ -111,7 +111,7 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "00b5049279e6bc357fe9bbc763d228843e5f675e"
+  :pin "dee219fb67b1fc6b0a5f540b6cc89d2a71d823d8"
   )
 
 (package! eslintd-fix
@@ -170,7 +170,7 @@
 
 (package! lfe-mode
   :recipe (:host github :repo "emacsmirror/lfe-mode")
-  :pin "2fecc5df6d49b955a3b44a9169b8a209806df112")
+  :pin "a17da52cf1595ac87a9679e7bf56326e27e801db")
 
 (package! mocha
   :pin "6a72fa20e7be6e55c09b1bc9887ee09c5df28e45")
@@ -199,10 +199,10 @@
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "732b84999a5a3f45bbb88b49df31e7250d3d45a4")
+  :pin "597fafc099a5f82c05b0d6010df2b5ee9da460ba")
 
 (package! org-ql
-  :pin "208e103ecc146db71d878df3bd09c6eb60c2797d")
+  :pin "8342656b2d9af4bb6af9daa0a8b037d3693bd940")
 
 (package! org-web-tools)
 
@@ -249,10 +249,10 @@
 
 (package! which-key-posframe
   :recipe (:host github :repo "yanghaoxie/which-key-posframe")
-  :pin "e7f28608c7fc9507e407c6b840dff09062df533a")
+  :pin "90e85d74899fc23d95798048cc0bbdb4bab9c1b7")
 
 (package! yankpad
-  :pin "fb9cb7753af971701dcd96a51efb4d70e2b2a18f")
+  :pin "6f5c7e5171030663ebda4f1f872c30d0e165b6b7")
 
 (package! zeal-at-point
   :recipe (:host github :repo "jinzhu/zeal-at-point")
