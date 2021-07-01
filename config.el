@@ -2465,20 +2465,10 @@ When in org-roam file, also create top-level ID.
                                                    (interactive)
                                                    (+org-narrow-and-show)))
 
-;;; theme-settings
-(add-hook 'doom-load-theme-hook
-          (lambda ()
-            "+doom-solaire-mode-swap-bg-maybe-h"
-            (when (string-prefix-p "aj-" (symbol-name doom-theme))
-              (require 'solaire-mode)
-              (solaire-mode-swap-bg)))
-          t)
-
 (after! solaire-mode
   (setq solaire-mode-remap-line-numbers t)
   (remove-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
   (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
-  (add-to-list 'solaire-mode-themes-to-face-swap "aj-dark+")
   )
 
 (set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono 1.1" :slant 'italic :height 105 :weight 'medium)

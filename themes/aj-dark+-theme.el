@@ -1,4 +1,5 @@
-;;; aj-dark+-theme.el --- inspired by dark+ Theme by equinusocio -*- no-byte-compile: t; -*-
+;;; aj-dark+-theme.el --- inspired by dark+ Theme by equinusocio -*- lexical-binding: t; no-byte-compile: t; -*-
+
 (require 'doom-themes)
 
 ;;
@@ -88,9 +89,9 @@ Can be an integer to determine the exact padding."
 
   ;;; --- base faces ------------------------
   ((default :background bg :foreground fg)
+   (lazy-highlight :background base4 :foreground fg :distant-foreground fg :weight 'bold)
    (header-line :background base2 :foreground base7)
    (highlight            :background highlight  :foreground base8 :distant-foreground base8)
-   ((lazy-highlight &override) :background base4 :foreground fg :distant-foreground fg :bold bold)
    (doom-modeline-buffer-path       :foreground green :weight 'bold)
    (doom-modeline-buffer-major-mode :inherit 'doom-modeline-buffer-path)
    (mode-line-buffer-id :foreground modeline-fg)
@@ -107,14 +108,7 @@ Can be an integer to determine the exact padding."
     :foreground modeline-fg
     )
 
-   (solaire-mode-line-face
-    :background modeline-bg :foreground modeline-fg
-    :box (if -modeline-pad `(:line-width ,-modeline-pad :color ,modeline-bg)))
-   (solaire-mode-line-inactive-face
-    :background bg :foreground modeline-fg-alt
-    :box (if -modeline-pad `(:line-width ,-modeline-pad :color ,modeline-bg-alt)))
-
-   (fringe :background base2 :foreground base3)
+   (fringe :background bg :foreground base3)
 
    (font-lock-regexp-grouping-construct :foreground yellow)
 
@@ -250,9 +244,9 @@ Can be an integer to determine the exact padding."
    (rjsx-tag :foreground blue)
    (rjsx-attr :foreground cyan :slant 'italic :weight 'medium)
 
-   ;; solaire
+   ;;;; solaire-mode
    (solaire-default-face :background base2 :foreground fg)
-   (solaire-fringe-face :background bg :foreground base4)
+   (solaire-fringe-face :background base2 :foreground base4)
 
    ;; treemacs
    (treemacs-root-face :foreground fg :weight 'bold)
