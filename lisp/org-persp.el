@@ -265,8 +265,8 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 (after! org-roam
   (advice-add #'org-roam-node-visit :around #'org-persp-pop-to-buffer-a)
   (advice-add #'org-roam-node-visit :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-capture--finalize-find-file-a :around #'org-persp-pop-to-buffer-a)
-  (advice-add #'org-roam-capture--finalize-find-file-a :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'+org-roam-capture--finalize-find-file-a :around #'org-persp-pop-to-buffer-a)
+  (advice-add #'+org-roam-capture--finalize-find-file-a :around #'org-persp-open-file-respect-sanity-a)
   )
 
 (after! org-roam-lib
