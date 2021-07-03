@@ -240,16 +240,6 @@ Designed as an override advice for file or buffer opening functions like `pop-to
   (advice-add #'org-brain-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-brain-goto :around #'org-persp-pop-buffer-a))
 
-(after! org-roam
-  (advice-add #'org-roam--find-file :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam--find-file :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-roam-unlinked-references :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-unlinked-references :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-roam-protocol-open-file :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-protocol-open-file :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-roam-capture--capture :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-capture--capture :around #'org-persp-pop-buffer-a))
-
 (after! org-roam-ivy
   (advice-add #'org-roam-ivy :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-roam-ivy :around #'org-persp-pop-buffer-a)

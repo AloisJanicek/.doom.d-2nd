@@ -3,7 +3,14 @@
 
 (unpin! format-all)
 (package! saveplace-pdf-view :disable t)
-(unpin! org-roam)
+
+;; (unpin! org-roam)
+
+(package! org-roam
+  :recipe (:host github :repo "org-roam/org-roam" :branch "v2")
+  :pin "8bed015cdff44bc813cad5c9cbe0194026d53370"
+  )
+
 ;; (package! org-mode
 ;;   :recipe (:repo "https://code.orgmode.org/bzg/org-mode.git"
 ;;            :files ("*.el" "lisp/*.el" "contrib/lisp/*.el"))

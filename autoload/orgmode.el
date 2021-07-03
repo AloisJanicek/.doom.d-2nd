@@ -1001,36 +1001,7 @@ Org manual: 8.4.2 The clock table.
             :action (lambda (x)
                       (jmm-org-ql-ivy-prompt-for-link (cdr x)))))
 
-;;;###autoload
-(defun aj-org-roam-setup-dailies-file-h ()
-  "Setup org-roam dailies file to my taste.
-Initialy create id inside top-level \":PROPERTIES:\" drawer.
-Finally save buffer.
-"
-  (let ((fname (or (buffer-file-name)
-                   (buffer-file-name (buffer-base-buffer))))
-        hstub)
-    ;; Run this only when file is newly created (hasn't been saved yet)
-    (unless (file-exists-p fname)
-      (org-id-get-create)
-      (save-buffer))
-
-    (goto-char (point-max))
-    (newline)
-    ;; prompt for HH:MM if we are not in present day file
-    (if (string-equal (format-time-string "%Y-%m-%d")
-                      (file-name-sans-extension
-                       (file-name-nondirectory
-                        (or (buffer-file-name)
-                            (buffer-file-name (buffer-base-buffer))))))
-        (setq hstub (format-time-string "* %H:%M " (current-time)))
-      (setq hstub (concat "* " (ivy-read
-                                "Time of the day (HH:MM): "
-                                nil)
-                          " ")))
-    (insert hstub)
-    (evil-insert 0)))
-
+;; REVIEW MOVE THIS into org-roam file
 ;;;###autoload
 (defun aj-org-roam-append-tag-string-a (str tags)
   "Append instead of prepend TAGS to STR.
@@ -1041,6 +1012,8 @@ Advice for `org-roam--add-tag-string'.
    (when tags
      (propertize (format " %s" (s-join org-roam-tag-separator tags))
                  'face 'org-roam-tag))))
+
+;; REVIEW why is this here
 ;;;###autoload
 (defun aj-org-roam-prettier-ref-path-a (result)
   "Customize appearance of string outputed by `org-roam--get-ref-path-completions'.

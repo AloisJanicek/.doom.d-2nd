@@ -1619,19 +1619,20 @@ When in org-roam file, also create top-level ID.
 "
      (require 'alert)
      (with-current-buffer (marker-buffer org-capture-last-stored-marker)
-       (let* ((heading-title (progn
-                               (goto-char (marker-position org-capture-last-stored-marker))
-                               (when (org-on-heading-p)
-                                 (org-link-display-format
-                                  (substring-no-properties
-                                   (org-get-heading))))))
-              (file-title (unless heading-title
-                            (+org-get-global-property "TITLE")))
-              (body (concat "Captured: " (or heading-title file-title))))
-         (when file-title ;; this is true for org-roam files
-           (org-id-get-create)
-           (save-buffer))
-         (alert body)))))
+       (save-excursion
+         (let* ((heading-title (progn
+                                 (goto-char (marker-position org-capture-last-stored-marker))
+                                 (when (org-on-heading-p)
+                                   (org-link-display-format
+                                    (substring-no-properties
+                                     (org-get-heading))))))
+                (file-title (unless heading-title
+                              (+org-get-global-property "TITLE")))
+                (body (concat "Captured: " (or heading-title file-title))))
+           (when file-title ;; this is true for org-roam files
+             (org-id-get-create)
+             (save-buffer))
+           (alert body))))))
   (setq
    org-protocol-default-template-key "L"
    org-capture-templates `(("p" "Protocol" entry (file ,gtd-agenda-inbox-file)
@@ -1945,62 +1946,31 @@ When in org-roam file, also create top-level ID.
       (add-to-list 'org-noter-notes-search-path dir)))
   )
 
-(after! org-roam
-  (add-hook 'org-roam-dailies-find-file-hook #'aj-org-roam-setup-dailies-file-h)
-  (add-hook
-   'org-roam-capture-after-find-file-hook
-   (lambda ()
-     (org-id-get-create)
-     (save-buffer)
-     (org-roam-db-update)))
-
+(use-package! org-roam
+  :after org
+  :config
   (doom-store-persist "custom" '(org-roam-directory))
 
-  (setq +org-roam-open-buffer-on-find-file nil
-        org-roam-db-update-method 'immediate
-        org-roam-buffer-width 0.2
-        org-roam-buffer-position 'left
-        org-roam-tag-sources '(prop vanilla all-directories)
-
-        org-roam-prefer-id-links t
-        org-roam-db-location (expand-file-name
+  (advice-add #'org-roam-dailies--capture :after #'+org-roam-dailies-insert-timestamp-a)
+  (setq org-roam-db-location (expand-file-name
                               "org-roam.db"
                               (concat doom-etc-dir (file-name-nondirectory org-roam-directory)))
         org-roam-dailies-directory "journal/"
         org-roam-capture-templates
-        `(("d" "default" plain #'org-roam-capture--get-point
-           "%?"
-           :file-name ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}")
-           :head "#+title: ${title}\n"
-           :unnarrowed t
-           ))
+        `(("d" "default" plain "%?"
+           :if-new (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
+                              "#+title: ${title}\n")
+           :unnarrowed t))
         org-roam-capture-ref-templates
-        `(("r" "ref" plain #'org-roam-capture--get-point
-           "%?"
-           :file-name ,(concat +org-roam-inbox-prefix "${slug}")
-           :head "#+title: ${title}\n#+roam_key: ${ref}"
+        `(("r" "ref" plain "%?"
+           :if-new (file+head ,(concat +org-roam-inbox-prefix "${slug}.org")
+                              "#+title: ${title}")
            :unnarrowed t
            :immediate-finish t
            ))
-        org-roam-dailies-capture-templates
-        `(("d" "default" entry (function org-roam-capture--get-point)
-           "* %?"
-           :file-name ,(concat org-roam-dailies-directory "%<%Y-%m-%d>")
-           :head "#+title: %<%A, %d %B %Y>\n"
-           ))
-        org-roam-capture-immediate-template
-        `("d" "default" plain #'org-roam-capture--get-point
-          "%?"
-          :file-name ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}")
-          :head "#+title: ${title}\n"
-          :unnarrowed t
-          :immediate-finish t
-          )
         )
-
-  (advice-add #'org-roam-db--update-meta :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add #'org-roam-doctor :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add #'org-roam-link--replace-link-on-save :after #'+org-roam/replace-file-with-id-link)
+  (org-roam-setup)
+  (require 'org-roam-protocol)
   )
 
 (after! pdf-tools

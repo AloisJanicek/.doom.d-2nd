@@ -29,23 +29,6 @@ with :after or :override due to some issue with starting the notification proces
 
 ;; indirect buffer compatibility hacks
 (after! org-roam
-  (advice-add #'org-roam--org-roam-file-p :around #'aj-fix-buffer-file-name-for-indirect-buffers-a)
-  (advice-add
-   #'org-roam-buffer--update-maybe
-   :around
-   (lambda (orig-fn &rest args)
-     "When in indirect buffer, make `window-buffer' fn return value of `buffer-base-buffer'.
-For ensuring compatibility with how things are implemented and expected in upstream.
-"
-     (let ((window-buffer-orig (symbol-function 'window-buffer)))
-       (cl-letf (((symbol-function 'window-buffer)
-                  (lambda (&optional window)
-                    (with-selected-window (or window
-                                              (selected-window))
-                      (if (buffer-base-buffer)
-                          (buffer-base-buffer)
-                        (funcall window-buffer-orig))))))
-         (apply orig-fn args)))))
 
   )
 

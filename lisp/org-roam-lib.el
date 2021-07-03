@@ -15,21 +15,7 @@
 
 (defun +org-roam-capture-ref (url title)
   "Capture new org-roam reference entry from URL and TITLE."
-  (require 'org-roam)
-  (let* ((type (and (string-match "^\\([a-z]+\\):" url)
-                    (match-string 1 url)))
-         (orglink (org-link-make-string url (or (org-string-nw-p title) url)))
-         (org-roam-capture-templates org-roam-capture-ref-templates)
-         (org-roam-capture--info
-          `((ref . ,url)
-            (type . ,type)
-            (title . ,title)
-            (body . "")
-            (slug  . ,(funcall org-roam-title-to-slug-function title))
-            (orglink . ,orglink)))
-         (org-roam-capture--context 'ref))
-    (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
-    (org-roam-capture--capture)))
+  (org-roam-protocol-open-ref `(:template "r" :ref ,url :title ,title)))
 
 ;;;###autoload
 (defun +org-roam/re-capture-as-ref ()
@@ -344,6 +330,25 @@ BLOCK is is valid org-clock time block."
         (pop-to-buffer
          (find-file-noselect today-f))
       (org-roam-dailies-find-today))))
+
+;;;###autoload
+(defun +org-roam-dailies-insert-timestamp-a (&rest args)
+  "Insert current timestamp at point.
+
+Intended as an after advice for `org-roam-dailies--capture' for users
+who want to begin their journal headings with (current) timestamp.
+
+When in file which doesn't contain today's date in its name,
+prompt user for timestamp because almost certainly user don't want to
+make new past or future journal entry with current timestamp.
+"
+  (insert (if (string-equal (format-time-string "%Y-%m-%d")
+                            (file-name-sans-extension
+                             (file-name-nondirectory
+                              (or (buffer-file-name)
+                                  (buffer-file-name (buffer-base-buffer))))))
+              (format-time-string "%H:%M " (current-time))
+            (ivy-read "Time of the day (HH:MM): " nil))))
 
 (defun +org-roam/insert ()
   "Insert future org roam link into last word (or marked words) before cursor.
