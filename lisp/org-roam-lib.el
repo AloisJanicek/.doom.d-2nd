@@ -406,4 +406,9 @@ from https://github.com/org-roam/org-roam/issues/1091#issuecomment-703531409."
             (replace-match "")
             (insert (org-roam-format-link path desc))))))))
 
+(defun org-roam-capture--finalize-find-file-a ()
+  "An override advice of `org-roam-capture--finalize-find-file'.
+Use `pop-to-buffer' instead of `switch-to-buffer'."
+  (pop-to-buffer (org-capture-get :buffer)))
+
 (provide 'org-roam-lib)

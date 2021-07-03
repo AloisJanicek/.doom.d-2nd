@@ -1952,6 +1952,8 @@ When in org-roam file, also create top-level ID.
   (doom-store-persist "custom" '(org-roam-directory))
 
   (advice-add #'org-roam-dailies--capture :after #'+org-roam-dailies-insert-timestamp-a)
+  (advice-add #'org-roam-capture--finalize-find-file :override #'org-roam-capture--finalize-find-file-a)
+
   (setq org-roam-db-location (expand-file-name
                               "org-roam.db"
                               (concat doom-etc-dir (file-name-nondirectory org-roam-directory)))

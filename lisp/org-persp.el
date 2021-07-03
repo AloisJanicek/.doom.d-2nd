@@ -45,8 +45,11 @@ to allow pop org buffer into popup window."
     (apply orig-fn args)))
 
 (defun org-persp-pop-to-buffer-a (orig-fn &rest args)
-  ""
-  (cl-letf (((symbol-function 'pop-to-buffer) #'org-persp-pop-org-buffer))
+  "Pop org mode buffer specially.
+Adice for org-mode related functions popping org files into buffers."
+  (cl-letf (((symbol-function 'pop-to-buffer) #'org-persp-pop-org-buffer)
+            ((symbol-function 'pop-to-buffer-same-window) #'org-persp-pop-org-buffer)
+            )
     (apply orig-fn args)))
 
 (defun org-persp-pop-org-buffer (buffer-or-name &rest _)
@@ -258,6 +261,13 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 (after! org-jumplist
   (advice-add #'org-jumplist-back :around #'org-persp-pop-to-buffer-a)
   (advice-add #'org-jumplist-forward :around #'org-persp-pop-to-buffer-a))
+
+(after! org-roam
+  (advice-add #'org-roam-node-visit :around #'org-persp-pop-to-buffer-a)
+  (advice-add #'org-roam-node-visit :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-roam-capture--finalize-find-file-a :around #'org-persp-pop-to-buffer-a)
+  (advice-add #'org-roam-capture--finalize-find-file-a :around #'org-persp-open-file-respect-sanity-a)
+  )
 
 (after! org-roam-lib
   (advice-add #'+org-roam-dailies-clock-report :around #'org-persp-pop-to-buffer-a)
