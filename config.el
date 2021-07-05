@@ -741,7 +741,7 @@ if running under WSL")
   (add-hook 'howdoyou-mode-hook (lambda ()
                                   (doom-mark-buffer-as-real-h)
                                   (persp-add-buffer (current-buffer))
-                                  (turn-off-solaire-mode)
+                                  (solaire-mode +1)
                                   (mkdir "/tmp/howdoyou" t)
                                   (setq-local org-src-fontify-natively nil)
                                   (setq-local buffer-file-name "/tmp/howdoyou/latest.org")
@@ -1105,7 +1105,7 @@ if running under WSL")
 
 (after! markdown-mode
   (add-hook 'markdown-mode-hook (lambda ()
-                                  (solaire-mode -1)))
+                                  (solaire-mode +1)))
   )
 
 (use-package! mocha
@@ -1293,6 +1293,7 @@ if running under WSL")
 
 (after! org
   (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
+  (advice-add #'org-open-at-point :after (lambda () (solaire-mode +1)))
   (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 86   :side 'right :select t :quit t               :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Agenda.*\\*$"       :vslot 1 :size `(max (/ ,(frame-width) 2) 80) :side 'right :select t :quit t   :ttl nil :modeline t)
@@ -1409,7 +1410,7 @@ if running under WSL")
                                         (recenter 0 t)
                                         (when (org-at-heading-p)
                                           (+org-narrow-and-show))
-                                        (turn-off-solaire-mode)))
+                                        (solaire-mode +1)))
   (advice-add #'org-brain-switch-brain :around (lambda (orig-fn directory)
                                                  (let ((encrypted-dir
                                                         (file-truename (expand-file-name "private" org-directory)))
@@ -1953,6 +1954,7 @@ When in org-roam file, also create top-level ID.
 
   (advice-add #'org-roam-dailies--capture :after #'+org-roam-dailies-insert-timestamp-a)
   (advice-add #'org-roam-capture--finalize-find-file :override #'org-roam-capture--finalize-find-file-a)
+  (advice-add #'org-roam-node-find :after (lambda () (solaire-mode +1)))
 
   (setq org-roam-db-location (expand-file-name
                               "org-roam.db"
@@ -2440,8 +2442,7 @@ When in org-roam file, also create top-level ID.
 
 (after! solaire-mode
   (setq solaire-mode-remap-line-numbers t)
-  (remove-hook 'org-capture-mode-hook #'turn-on-solaire-mode)
-  (add-hook 'org-capture-mode-hook #'turn-off-solaire-mode)
+  (add-hook 'org-capture-mode-hook (lambda () (solaire-mode +1)))
   )
 
 (set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono 1.1" :slant 'italic :height 105 :weight 'medium)
