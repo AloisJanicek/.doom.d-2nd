@@ -62,18 +62,16 @@ of new org-roam item.
            (body (if title-body-swap (concat orig-title "\n" orig-body) orig-body))
            (body (if orig-selection "\n" body))
            (org-roam-capture-templates
-            `(("d" "default" plain (function org-roam-capture--get-point)
-               ,(concat "\n\n" body "\n" "%?")
-               :file-name ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}")
-               :head "#+title: ${title}\n"
+            `(("d" "default" plain ,(concat "\n\n" body "\n" "%?")
+               :if-new (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
+                                  "#+title: ${title}\n")
+               :unnarrowed t
                :immediate-finish t
-               :unnarrowed t)))
-           (org-roam-capture--info
-            `((title . ,title)
-              (slug  . ,(funcall org-roam-title-to-slug-function title))))
-           (org-roam-capture--context 'title))
-      (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
-      (org-roam-capture--capture)
+               )))
+           )
+
+      (org-roam-capture- :node (org-roam-node-read title))
+
       (with-current-buffer orig-buff
         (if orig-selection
             (delete-region orig-sel-beg orig-sel-end)
