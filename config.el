@@ -1886,16 +1886,6 @@ When in org-roam file, also create top-level ID.
       (aj/org-id-update-recursively)))
   )
 
-(doom-store-persist "custom" '(org-roam-directory))
-
-(unless (or org-roam-directory
-            (ignore-errors (not (string-match "Dropbox" org-roam-directory))))
-  (require 'ffap)
-  (setq org-roam-directory (car
-                            (seq-filter
-                             (lambda (dir)
-                               (string-match "roam" dir))
-                             (ffap-all-subdirs org-directory 1)))))
 (after! org-list
   (setq
    org-checkbox-hierarchical-statistics t))
@@ -1951,8 +1941,18 @@ When in org-roam file, also create top-level ID.
 
 (use-package! org-roam
   :after org
-  :config
+  :init
   (doom-store-persist "custom" '(org-roam-directory))
+
+  :config
+
+  (unless (ignore-errors (string-match "Dropbox" org-roam-directory))
+    (require 'ffap)
+    (setq org-roam-directory (car
+                              (seq-filter
+                               (lambda (dir)
+                                 (string-match "roam" dir))
+                               (ffap-all-subdirs org-directory 1)))))
 
   (advice-add #'org-roam-dailies--capture :after #'+org-roam-dailies-insert-timestamp-a)
   (advice-add #'org-roam-capture--finalize-find-file :override #'+org-roam-capture--finalize-find-file-a)
