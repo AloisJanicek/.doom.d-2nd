@@ -33,7 +33,7 @@
 
 Heading's title becames org-roam entry's title and content
 of the org entry is being extracted via `org-cut-subtree' and pasted
-into new org-roam entry.a
+into new org-roam entry.
 
 With user prefix argument or when org-mode heading's title is longer
 then 30 characters, turn title into content of the body and ask
@@ -104,7 +104,7 @@ of new org-roam item.
                   'utf-8
                   (format (concat tmp-dir "%s") (symbol-name 'org-roam-directory))))
 
-  (org-roam-db-build-cache)
+  (org-roam-db-sync)
 
   (when (boundp 'org-roam-ivy--last-ivy-text)
     (setq org-roam-ivy--last-ivy-text ""))
@@ -226,41 +226,49 @@ heading in `yankpad-file'."
                                             :where '(level 1))))
                               (prin1-to-string major-mode)))
          (src-block (code-capture-code-snippet))
-         (org-roam-capture--info
-          `((title . ,title)
-            (slug  . ,(funcall org-roam-title-to-slug-function title))))
-         (org-roam-capture--context 'title))
+         (org-roam-capture-templates
+          `(("d" "default" plain "%?"
+             :if-new (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
+                                "#+title: ${title}\n")
+             :unnarrowed t
+             :immediate-finish t
+             )))
+         )
     (setq +org-roam-yankpad-capture-info `(:title ,title :src-block ,src-block :heading ,yankpad-heading))
-    (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
-    (add-hook 'org-roam-capture-after-find-file-hook #'+org-roam-insert-src 99)
-    (org-roam-capture--capture)))
+
+    (add-hook 'org-capture-before-finalize-hook #'+org-roam-insert-src -100)
+    (org-roam-capture- :node (org-roam-node-read)
+                       :props '(:finalize find-file)
+                       )))
 
 (defun +org-roam-insert-src ()
   "From the information in `+org-roam-yankpad-capture-info' insert src-block into current org-mode file.
 
 After insertion link the new src block into `yankpad-file'."
-  (goto-char (point-max))
-  (insert (format "* %s :src:yankpad:" (plist-get +org-roam-yankpad-capture-info :title)))
-  (newline)
-  (org-id-get-create)
-  (newline)
-  (insert (plist-get +org-roam-yankpad-capture-info :src-block))
-  (save-buffer)
-  (remove-hook 'org-roam-capture-after-find-file-hook #'+org-roam-insert-src)
-  (org-back-to-heading)
-  (let* ((id (org-id-get-create))
-         (yankpad-heading (format "* %s" (plist-get +org-roam-yankpad-capture-info :heading)))
-         (item-link (format "** [[id:%s][%s]]"
-                            id
-                            (plist-get +org-roam-yankpad-capture-info :title)
-                            )))
-    (with-current-buffer (find-file-noselect yankpad-file)
-      (goto-char (point-min))
-      (re-search-forward yankpad-heading (point-max))
-      (org-end-of-subtree)
-      (newline)
-      (insert item-link)
-      (save-buffer))))
+  (when (org-roam-capture-p)
+    (goto-char (point-max))
+    (insert (format "* %s :src:yankpad:" (plist-get +org-roam-yankpad-capture-info :title)))
+    (newline)
+    (org-id-get-create)
+    (newline)
+    (insert (plist-get +org-roam-yankpad-capture-info :src-block))
+    (org-overview)
+    (save-buffer)
+    (remove-hook 'org-capture-before-finalize-hook #'+org-roam-insert-src)
+    (let* ((id (org-id-get-create))
+           (yankpad-heading (format "* %s" (plist-get +org-roam-yankpad-capture-info :heading)))
+           (item-link (format "** [[id:%s][%s]]"
+                              id
+                              (plist-get +org-roam-yankpad-capture-info :title)
+                              )))
+      (setq +org-roam-yankpad-capture-info nil)
+      (with-current-buffer (find-file-noselect yankpad-file)
+        (goto-char (point-min))
+        (re-search-forward yankpad-heading (point-max))
+        (org-end-of-subtree)
+        (newline)
+        (insert item-link)
+        (save-buffer)))))
 
 (defun +org-roam-dailies--clock-report (block)
   "Create org-clock table report skipping excluding files without contribution.
@@ -379,13 +387,14 @@ With user prefix prompt allow to edit link and title.
     (insert (format "[[%s][%s]]" link title))
     (save-buffer)))
 
+;; REVIEW This probably doesn't work because of db schema change
 (defun +org-roam--get-forwardlinks (targets)
   "Same as `org-roam--get-backlinks' but get forward links instead."
   (unless (listp targets)
     (setq targets (list targets)))
   (let ((conditions (--> targets
-                      (mapcar (lambda (i) (list '= 'source i)) it)
-                      (org-roam--list-interleave it :or))))
+                         (mapcar (lambda (i) (list '= 'source i)) it)
+                         (org-roam--list-interleave it :or))))
     (org-roam-db-query `[:select [dest source properties] :from links
                          :where ,@conditions
                          :order-by (asc source)])))
