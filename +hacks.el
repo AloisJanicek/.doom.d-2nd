@@ -229,3 +229,101 @@ with :after or :override due to some issue with starting the notification proces
                    (throw 'break t))))))))))
     )
   )
+
+;; HACK see https://github.com/hlissner/doom-emacs/issues/5146
+(defun doom-adjust-font-size-a (increment &optional fixed-size-p font-alist)
+  "Increase size of font in FRAME by INCREMENT.
+
+If FIXED-SIZE-P is non-nil, treat INCREMENT as a font size, rather than a
+scaling factor.
+
+FONT-ALIST is an alist give temporary values to certain Doom font variables,
+like `doom-font' or `doom-variable-pitch-font'. e.g.
+
+  `((doom-font . ,(font-spec :family \"Sans Serif\" :size 12)))
+
+Doesn't work in terminal Emacs."
+  (unless (display-multi-font-p)
+    (user-error "Cannot resize fonts in terminal Emacs"))
+  (condition-case-unless-debug e
+      (let (changed)
+        (dolist (sym '((doom-font . default)
+                       (doom-serif-font . fixed-pitch-serif)
+                       (doom-variable-pitch-font . variable-pitch))
+                     (when changed
+                       (doom-init-fonts-h 'reload)
+                       t))
+          (cl-destructuring-bind (var . face) sym
+            (if (null increment)
+                (when (get var 'initial-value)
+                  (set var (get var 'initial-value))
+                  (put var 'initial-value nil)
+                  (setq changed t))
+              (let* ((original-font (or (symbol-value var)
+                                        (face-font face t)
+                                        (with-temp-buffer (face-font face))))
+                     (font (doom--normalize-font original-font))
+                     (dfont
+                      (or (if-let* ((remap-font (alist-get var font-alist))
+                                    (remap-xlfd (doom--normalize-font remap-font)))
+                              remap-xlfd
+                            (purecopy font))
+                          (error "Could not decompose %s font" var))))
+                (let* ((step      (if fixed-size-p 0 (* increment doom-font-increment)))
+                       ;; Because of this line
+                       ;; (orig-size (font-get dfont :size))
+                       (orig-size (font-get font :size))
+                       (new-size  (if fixed-size-p increment (+ orig-size step))))
+                  (cond ((<= new-size 0)
+                         (error "`%s' font is too small to be resized (%d)" var new-size))
+                        ((= orig-size new-size)
+                         (user-error "Could not resize `%s' for some reason" var))
+                        ((setq changed t)
+                         (unless (get var 'initial-value)
+                           (put var 'initial-value original-font))
+                         (font-put dfont :size new-size)
+                         (set var dfont)))))))))
+    (error
+     (ignore-errors (doom-adjust-font-size nil))
+     (signal (car e) (cdr e)))))
+(advice-add #'doom-adjust-font-size :override #'doom-adjust-font-size-a)
+
+;; HACK Yankpad freezes emacs when the ID from the link doesn't exist
+;; So I added some conditions checking if the id exists first and if not, deleting the whole subtree
+;; with heading containing link to wrong ID
+(after! yankpad
+  (defun yankpad-snippets-from-link-a (link)
+    "Get snippets from LINK."
+    (string-match "\\(^[[:alpha:]]+\\):\\(.+\\)" link)
+    (let* ((type (match-string 1 link))
+           (value (match-string 2 link))
+           (file (car (split-string value "::" t)))
+           (search (cadr (split-string value "::" t))))
+      (cond
+       ((string-equal type "id")
+        ;; Check if ID exists first
+        (if (org-id-find value t)
+            (org-with-point-at (org-id-find value t)
+              (yankpad-snippets-at-point t))
+          (progn
+            (org-back-to-heading)
+            (org-cut-subtree)
+            (save-buffer)
+            nil
+            )
+          )
+        )
+       ((string-equal type "file")
+        (with-current-buffer (find-file-noselect (if (file-name-absolute-p file)
+                                                     file
+                                                   (expand-file-name file)))
+          (if search
+              (let ((org-link-search-must-match-exact-headline t))
+                (org-link-search search)
+                (yankpad-snippets-at-point t))
+            (cl-reduce #'append
+                       (org-map-entries (lambda () (yankpad-snippets-at-point t)))))))
+       (t
+        (user-error "Link type `%s' isn't supported by Yankpad" type)))))
+  (advice-add #'yankpad-snippets-from-link :override #'yankpad-snippets-from-link-a)
+  )
