@@ -1888,7 +1888,8 @@ When in org-roam file, also create top-level ID.
 
 (doom-store-persist "custom" '(org-roam-directory))
 
-(unless org-roam-directory
+(unless (or org-roam-directory
+            (ignore-errors (not (string-match "Dropbox" org-roam-directory))))
   (require 'ffap)
   (setq org-roam-directory (car
                             (seq-filter
