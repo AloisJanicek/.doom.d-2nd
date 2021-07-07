@@ -53,7 +53,8 @@ if running under WSL")
       doom-font                   (font-spec :family "JetBrains Mono 1.1" :size 14)
       doom-big-font               (font-spec :family "JetBrains Mono 1.1" :size 24)
       doom-variable-pitch-font    (font-spec :family "Noto Sans" :size 14)
-      doom-unicode-font           "Noto Color Emoji"
+      doom-serif-font           "Tinos"
+      doom-unicode-font         "Noto Color Emoji"
       all-the-icons-scale-factor 1
       )
 
