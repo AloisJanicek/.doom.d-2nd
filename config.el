@@ -1956,7 +1956,7 @@ When in org-roam file, also create top-level ID.
 
   (advice-add #'org-roam-dailies--capture :after #'+org-roam-dailies-insert-timestamp-a)
   (advice-add #'org-roam-capture--finalize-find-file :override #'+org-roam-capture--finalize-find-file-a)
-  (advice-add #'org-roam-node-find :after (lambda () (solaire-mode +1)))
+  (advice-add #'org-roam-node-visit :after (lambda (&rest _) (solaire-mode +1)))
 
   (setq org-roam-db-location (expand-file-name
                               "org-roam.db"
@@ -2445,6 +2445,7 @@ When in org-roam file, also create top-level ID.
 (after! solaire-mode
   (setq solaire-mode-remap-line-numbers t)
   (add-hook 'org-capture-mode-hook (lambda () (solaire-mode +1)))
+  (advice-add #'solaire-mode-real-buffer-p :override #'solaire-mode-real-buffer-p-a)
   )
 
 (set-face-attribute 'fixed-pitch-serif nil :family "JetBrains Mono 1.1" :slant 'italic :height 105 :weight 'medium)

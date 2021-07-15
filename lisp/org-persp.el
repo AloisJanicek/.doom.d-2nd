@@ -83,7 +83,7 @@ in temporarily popup window on the right side of the frame.
                               (modeline . t)
                               (autosave . t))))
             (with-current-buffer buffer
-              (turn-off-solaire-mode)
+              (turn-on-solaire-mode)
               ;; fix for better compatibility with upstream functions not accounting for indirect buffers
               (when (buffer-base-buffer)
                 (setq-local buffer-file-truename
@@ -153,7 +153,7 @@ split current window and displays `BUFFER' on the left."
 
           (switch-to-buffer buffer)
           (with-current-buffer buffer
-            (turn-off-solaire-mode))))
+            (turn-on-solaire-mode))))
     (message "this is not buffer: %s" buffer)))
 
 ;;;###autoload

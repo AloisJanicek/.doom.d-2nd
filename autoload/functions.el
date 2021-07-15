@@ -1079,6 +1079,15 @@ credits: https://gist.github.com/adamczykm/c18b1dba01492adb403c301da0d3b7c1
         ))
     result))
 
+;;;###autoload
+(defun solaire-mode-real-buffer-p-a ()
+    "Override advice of `solaire-mode-real-buffer-p'.
+This fn considers all org-mode files as special buffers."
+    (let ((f (buffer-file-name (buffer-base-buffer))))
+      (when (stringp f)
+        (unless (derived-mode-p 'org-mode)
+          (buffer-file-name (buffer-base-buffer))))))
+
 (provide 'functions)
 
 ;;; functions.el ends here
