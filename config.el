@@ -174,10 +174,10 @@ if running under WSL")
   (add-hook! '(css-mode-hook scss-mode-hook) #'stylelintd-fix-mode)
   (add-hook 'css-mode-local-vars-hook
             (lambda ()
-              (flycheck-select-checker 'css-stylelint)))
+              (ignore-errors (flycheck-select-checker 'css-stylelint))))
   (add-hook 'scss-mode-local-vars-hook
             (lambda ()
-              (flycheck-select-checker 'scss-stylelint)))
+              (ignore-errors (flycheck-select-checker 'scss-stylelint))))
   )
 
 (after! cc-mode
