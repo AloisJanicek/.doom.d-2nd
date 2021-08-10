@@ -56,7 +56,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "07b8c5271719afa6a4c598c2a19f4a096ca6efe8")
+  :pin "9aaa6de8396753c1f13b9a8122daca9814905671")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -101,12 +101,12 @@
            :repo "manateelazycat/emacs-application-framework"
            :files ("*")
            )
-  :pin "dee219fb67b1fc6b0a5f540b6cc89d2a71d823d8"
+  :pin "b0791f722055c11ca55ad3301e35793f0dcc282f"
   )
 
 (package! eslintd-fix
   :recipe (:host github :repo "aaronjensen/eslintd-fix")
-  :pin "5488db4436fc312386fdb123289d7fc5f099702b")
+  :pin "3897d8a679a6e98e3f5054aaefe07f6b55f8f128")
 
 (package! esqlite
   :pin "08a779a821f8d32c1a1985d8d9eb6cf21646ce2e")
@@ -127,7 +127,7 @@
 
 (package! howdoyou
   :recipe (:host github :repo "thanhvg/emacs-howdoyou")
-  :pin "27e9e015b930175896c07536c25e379a4e1997af")
+  :pin "4943a4ef8d242952ade64903a05c13094de2fbf0")
 
 (package! hungry-delete
   :pin "d919e555e5c13a2edf4570f3ceec84f0ade71657")
@@ -174,7 +174,7 @@
 
 (package! org-brain
   :recipe (:host github :repo "Kungsgeten/org-brain")
-  :pin "a9ca42cb8d1325a4e928716384a0bdb53ea2ad41")
+  :pin "46ca9f766322cff31279ecdf02251ff24a0e9431")
 
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags")
@@ -185,14 +185,14 @@
   :pin "1b37069e47d1ea4745eacdf2dec2bdad756ee235")
 
 (package! org-super-agenda
-  :pin "f5e80e4d0da6b2eeda9ba21e021838fa6a495376")
+  :pin "a5557ea4f51571ee9def3cd9a1ab1c38f1a27af7")
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "597fafc099a5f82c05b0d6010df2b5ee9da460ba")
+  :pin "8cbbade1e3237200c2140741f39ff60176e703e7")
 
 (package! org-ql
-  :pin "8342656b2d9af4bb6af9daa0a8b037d3693bd940")
+  :pin "94f9e6f3031b32cf5e2149beca7074807235dcb0")
 
 (package! org-web-tools)
 
