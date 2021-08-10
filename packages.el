@@ -4,35 +4,18 @@
 (unpin! format-all)
 (package! saveplace-pdf-view :disable t)
 
-;; (unpin! org-roam)
+(unpin! org-roam)
 
-(package! org-roam
-  :recipe (:host github :repo "org-roam/org-roam" :branch "v2")
-  :pin "8bed015cdff44bc813cad5c9cbe0194026d53370"
-  )
-
-;; (package! org-mode
-;;   :recipe (:repo "https://code.orgmode.org/bzg/org-mode.git"
-;;            :files ("*.el" "lisp/*.el" "contrib/lisp/*.el"))
-;;   :pin "8402c4a778")
-
-(package! org-mode
+(package! org
   :recipe (:host github
            :repo "yantar92/org"
            :branch "feature/org-fold-universal-core"
-           :files ("*.el" "lisp/*.el")
-           :pre-build (with-temp-file (expand-file-name "org-version.el" (straight--repos-dir "org"))
-                        (insert "(fset 'org-release (lambda () \"9.5\"))\n"
-                                "(fset 'org-git-version #'ignore)\n"
-                                "(provide 'org-version)\n"))
-           :includes (org))
-  :pin "d8d63a65ff7a999ba50583d6ce1a3ce8b09d469e")
-
-(package! org-roam-server-light
-  :recipe (:host github :repo "AloisJanicek/org-roam-server-light"
-           :files ("*")
            )
-  :pin "f22903a2aadd1cb6b3fb6f011b229d6847009ec4")
+  :pin "664ea34f9cf7ed294a45db7b63cd7cd84cbc1043")
+
+
+(package! websocket)
+(package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
 
 (package! org-appear
   :recipe (:host github :repo "awth13/org-appear"

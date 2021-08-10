@@ -34,8 +34,7 @@
              org-roam-ivy-filter-preset)
          (org-roam-ivy-find-file))
    "file unfiltered")
-  ("s" #'+org-roam/start-open-org-roam-server-light "server")
-  ("S" (org-roam-server-light-mode -1) "Stop")
+  ("s" #'org-roam-ui-mode "UI web server")
   ("y" (+org-roam/capture-yankpad) "yankpad")
   ("g" (+org-notes/format-org-links
         (format "Search %s: "
@@ -60,6 +59,7 @@
   ("T" #'org-roam-buffer-toggle-display "toggle")
   )
 
+;; FIXME Adjust for org-roam v2
 (defun org-roam-hydra--adapter (fn)
   "Allow to run existing `org-roam-ivy' actions on Org file buffers."
   (let ((x `(nil . (:path ,(buffer-file-name (org-base-buffer (current-buffer)))))))
@@ -69,7 +69,7 @@
                                :columns 4
                                )
   "
-org-roam item: %(org-roam-db--get-title (buffer-file-name (org-base-buffer (current-buffer))))
+org-roam item: %(org-roam-node-title (org-roam-node-at-point))
 "
   ("x" (org-roam-hydra--adapter #'org-roam-ivy--backlinks-action) "show backlinks")
   ("f" (org-roam-hydra--adapter #'org-roam-ivy--forwardlinks-action) "show forwardlinks")

@@ -1,0 +1,120 @@
+#+TITLE: Firefox Org Protocol Integration
+
+Use this as an alternative approach to the =org-protocols.js= user script
+
+* Firefox bookmarks with bookmarklets
+
+ [[https://en.wikipedia.org/wiki/Bookmarklet][bookmarklets]] for import into Firefox browser which corresponds to emacs settings in this repository.
+
+#+begin_src html :tangle ~/Downloads/bookmarklets-for-firefox.html
+<!DOCTYPE NETSCAPE-Bookmark-file-1>
+<!-- This is an automatically generated file.
+     It will be read and overwritten.
+     DO NOT EDIT! -->
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<TITLE>Bookmarks</TITLE>
+<H1>Bookmarks Menu</H1>
+
+<DL><p>
+    <DT><A HREF="place:type=6&sort=14&maxResults=10" ADD_DATE="1510868188" LAST_MODIFIED="1627570250">Recent Tags</A>
+    <DT><H3 ADD_DATE="1612086555" LAST_MODIFIED="1627570264" PERSONAL_TOOLBAR_FOLDER="true">Bookmarks Toolbar</H3>
+    <DL><p>
+        <DT><A HREF="place:sort=8&maxResults=10" ADD_DATE="1510868188" LAST_MODIFIED="1612087484">Most Visited</A>
+        <DT><A HREF="javascript:location.href =     'org-protocol://roam-ref?template=r&ref='     + encodeURIComponent(location.href)     + '&title='     + encodeURIComponent(document.title)     + '&body='     + encodeURIComponent(window.getSelection())" ADD_DATE="1627073229" LAST_MODIFIED="1627570256">Org-protocol-roam-ref-r</A>
+        <DT><A HREF="javascript:location.href =     'org-protocol://store-link?url='     + encodeURIComponent(location.href)" ADD_DATE="1627073229" LAST_MODIFIED="1627570256">Org-protocol-store-link</A>
+        <DT><A HREF="javascript:location.href =     'org-protocol://store-link?url='     + encodeURIComponent(location.href) + '&title='     + encodeURIComponent(document.title)" ADD_DATE="1627073229" LAST_MODIFIED="1627570256">Org-protocol-store-link-title</A>
+        <DT><A HREF="javascript:location.href =     'org-protocol://capture-html?template=w&url=' + encodeURIComponent(location.href) + '&title=' + encodeURIComponent(document.title || "[untitled page]") + '&body=' + encodeURIComponent(function () {var html = ""; if (typeof document.getSelection != "undefined") {var sel = document.getSelection(); if (sel.rangeCount) {var container = document.createElement("div"); for (var i = 0, len = sel.rangeCount; i < len; ++i) {container.appendChild(sel.getRangeAt(i).cloneContents());} html = container.innerHTML;}} else if (typeof document.selection != "undefined") {if (document.selection.type == "Text") {html = document.selection.createRange().htmlText;}} var relToAbs = function (href) {var a = document.createElement("a"); a.href = href; var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash; a.remove(); return abs;}; var elementTypes = [['a', 'href'], ['img', 'src']]; var div = document.createElement('div'); div.innerHTML = html; elementTypes.map(function(elementType) {var elements = div.getElementsByTagName(elementType[0]); for (var i = 0; i < elements.length; i++) {elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));}}); return div.innerHTML;}());" ADD_DATE="1627073229" LAST_MODIFIED="1627570256">Org-protocol-capture-w-html</A>
+        <DT><A HREF="javascript:location.href =     'org-protocol://capture?template=L&url='     + encodeURIComponent(location.href)     + '&title='     + encodeURIComponent(document.title)" ADD_DATE="1627073229" LAST_MODIFIED="1627570256">Org-protocol-capture-L-link-title</A>
+        <DT><A HREF="javascript:location.href =     'org-protocol://capture?template=p&url='     + encodeURIComponent(location.href)     + '&title='     + encodeURIComponent(document.title)     + '&body='     + encodeURIComponent(window.getSelection())" ADD_DATE="1627073229" LAST_MODIFIED="1627570256">Org-protocol-capture-p-link-title-selection</A>
+        <DT><A HREF="javascript:location.href =     'org-protocol://capture?template=s&url='     + encodeURIComponent(location.href)     + '&title='     + encodeURIComponent(document.title)     + '&body='     + encodeURIComponent(window.getSelection())" ADD_DATE="1627073229" LAST_MODIFIED="1627570256">Org-protocol-capture-s-code-inbox</A>
+        <DT><A HREF="javascript:location.href =     'org-protocol://capture?template=y&url='     + encodeURIComponent(location.href)     + '&title='     + encodeURIComponent(document.title)     + '&body='     + encodeURIComponent(window.getSelection())" ADD_DATE="1627073229" LAST_MODIFIED="1627570256">Org-protocol-capture-y-code-yankpad</A>
+    </DL><p>
+</DL>
+#+end_src
+* Firefox Shortkeys settings
+
+ Firefox [[https://addons.mozilla.org/cs/firefox/addon/shortkeys/][Shortkeys]] addon settings backup which can be imported in the addon's setting page and which corresponds to both the bookmarklets listed above and the emacs settings in this repository.
+#+begin_src json :tangle ~/Downloads/Shortkeys-settings.json
+[
+  {
+    "key": "ctrl+alt+r",
+    "label": "roam-ref",
+    "action": "openbookmark",
+    "sites": "",
+    "sitesArray": [
+      ""
+    ],
+    "bookmark": "Org-protocol-roam-ref-r"
+  },
+  {
+    "key": "ctrl+alt+k",
+    "label": "store-link",
+    "action": "openbookmark",
+    "bookmark": "Org-protocol-store-link",
+    "sites": "",
+    "sitesArray": [
+      ""
+    ]
+  },
+  {
+    "key": "ctrl+alt+g",
+    "label": "store-link-title",
+    "action": "openbookmark",
+    "bookmark": "Org-protocol-store-link-title",
+    "sites": "",
+    "sitesArray": [
+      ""
+    ]
+  },
+  {
+    "key": "ctrl+alt+b",
+    "label": "capture-link-title",
+    "action": "openbookmark",
+    "sites": "",
+    "sitesArray": [
+      ""
+    ],
+    "bookmark": "Org-protocol-capture-L-link-title"
+  },
+  {
+    "key": "ctrl+alt+x",
+    "label": "capture-link-title-selection",
+    "sites": "",
+    "sitesArray": [
+      ""
+    ],
+    "action": "openbookmark",
+    "bookmark": "Org-protocol-capture-p-link-title-selection"
+  },
+  {
+    "key": "ctrl+alt+i",
+    "label": "capture-link-title-selection-inbox",
+    "action": "openbookmark",
+    "sites": "",
+    "sitesArray": [
+      ""
+    ],
+    "bookmark": "Org-protocol-capture-s-code-inbox"
+  },
+  {
+    "key": "ctrl+alt+y",
+    "label": "capture-link-title-selection-yankpad",
+    "action": "openbookmark",
+    "sites": "",
+    "sitesArray": [
+      ""
+    ],
+    "bookmark": "Org-protocol-capture-y-code-yankpad"
+  },
+  {
+    "key": "ctrl+alt+h",
+    "label": "capture-html",
+    "action": "openbookmark",
+    "bookmark": "Org-protocol-capture-w-html",
+    "sites": "",
+    "sitesArray": [
+      ""
+    ]
+  }
+]
+#+end_src

@@ -7,7 +7,7 @@
 ;; Created: January 21, 2021
 ;; Modified: January 21, 2021
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "26.1") (ivy "0.13.0") (org-roam "1.2.1") (org "9.3") (filter-preset-ivy "0.1") (all-the-icons "4.0"))
+;; Package-Requires: ((emacs "27.2") (ivy "0.13.0") (org-roam "1.2.1") (org "9.3") (filter-preset-ivy "0.1") (all-the-icons "4.0"))
 ;;
 ;; This file is not part of GNU Emacs.
 
@@ -22,6 +22,7 @@
 (require 'ivy-lib)
 (require 'filter-preset-ivy)
 (require 'all-the-icons)
+(require 'ffap)
 
 ;;; Variables
 
@@ -69,54 +70,83 @@ filter preset."
   "Set value of `org-roam-ivy-filter-preset'."
   (interactive)
   (let ((new-preset (filter-preset-ivy
-                     "Tags"
-                     (org-roam-db--get-tags)
+                     "Tags and subdirs"
+                     (append
+                      (org-roam-tag-completions)
+                      (seq-map (lambda (path)
+                                 (file-name-nondirectory
+                                  (directory-file-name
+                                   path)))
+                               (ffap-all-subdirs org-roam-directory 1)))
                      (org-roam-ivy--filter-preset-get org-roam-directory))))
     (org-roam-ivy--filter-preset-set org-roam-directory new-preset)
     (setq org-roam-ivy--last-ivy-text (concat (car new-preset) " "))))
 
 ;;; Helper org-roam functions
-(defun org-roam-ivy--set-aliases (buffer)
-  "For org-roam file set some tags."
-  (with-current-buffer buffer
-    (let* ((file-aliases (org-roam--extract-titles-alias)))
-      (org-roam--set-global-prop
-       "roam_alias"
-       (combine-and-quote-strings
-        (seq-uniq
-         (filter-preset-ivy
-          "Aliases" file-aliases file-aliases))))
-      (save-buffer))))
+(defvar org-roam-ivy--matching-tags-list nil
+  "Preserve the return value of `org-roam-ivy--matching-tags'.")
 
-(defun org-roam-ivy--set-tag (file)
-  "For org-roam FILE set some aliases."
-  (let* ((all-tags (org-roam-db--get-tags))
-         (file-tags (org-roam--extract-tags-prop file)))
-    (org-roam--set-global-prop
-     "roam_tags"
-     (combine-and-quote-strings
-      (seq-uniq
-       (filter-preset-ivy
-        "Tags" all-tags file-tags))))
+(defun org-roam-ivy--matching-tags ()
+  "Return combined list of `org-roam-tag-completions' with `org-roam-directory' sub-dirs names prefixed with #.
+
+Purpose of this functions is to provide unified list of tags which can be filtered out from titles
+of `org-roam-ivy' candidates to get exact title of corresponding `org-roam' item.
+
+This approach assumes that user configuerd `org-roam-node-display-template' in a way that it displays
+also sub-directories of the org-roam entry and the sub-directory name is prefixed with hash symbol (#)
+like the regular tags are prefixed by default in the completion results.
+
+If the user doesn't use subdirectories in the `org-roam-directory' or doesn't want to use them for
+completion candidates filtering, running this fn on the completion candidate should be harmless.
+"
+  (seq-map
+   (lambda (dirname)
+     (concat "#" dirname))
+   (append
+    (org-roam-tag-completions)
+    (seq-map
+     (lambda (dir-path)
+       (file-name-nondirectory dir-path))
+     (ffap-all-subdirs org-roam-directory 1)))))
+
+(defun org-roam-ivy--set-tag ()
+  "For the current org-mode file set some tags."
+  (let* ((all-tags (org-roam-tag-completions))
+         (file-tags
+          (seq-filter
+           (lambda (str)
+             (unless (string-equal str "") str))
+           (split-string
+            (cadr (assoc "FILETAGS"
+                         (org-collect-keywords '("filetags")))) ":"))))
+    (org-roam-set-keyword
+     "filetags"
+     (concat ":"
+             (mapconcat #'identity
+                        (seq-uniq
+                         (filter-preset-ivy
+                          "Tags" all-tags file-tags)) ":") ":"))
     (save-buffer)))
 
 ;;; org-roam-ivy dispatch actions
 (defun org-roam-ivy--refs-url-open-action (x)
   "Open roam_key url from file X."
-  (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-    (browse-url (org-roam-ivy--global-property "roam_key"))))
+  (with-current-buffer
+      (find-file-noselect
+       (org-roam-node-file (org-roam-ivy--get-node x)))
+    (goto-char (point-min))
+    (browse-url (org-entry-get (point) "ROAM_REFS"))))
 
 (defun org-roam-ivy--delete-file (file)
   "Delete org-roam file FILE and kill visiting buffers."
   (kill-buffer (find-buffer-visiting file))
   (move-file-to-trash file)
-  (message "%s moved to trash." (file-name-nondirectory file))
-  (org-roam-db-mark-dirty))
+  (message "%s moved to trash." (file-name-nondirectory file)))
 
 (defun org-roam-ivy--delete-action (x)
   "Delete org-roam file X action for ivy."
   (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
-    (let ((f (plist-get (cdr x) :path)))
+    (let ((f (org-roam-node-file (org-roam-ivy--get-node x))))
       (org-roam-ivy--delete-file f))
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
@@ -125,7 +155,7 @@ filter preset."
   "Change title of org-roam file X."
   (interactive)
   (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
-    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+    (with-current-buffer (find-file-noselect (org-roam-node-file (org-roam-ivy--get-node x)))
       (goto-char (point-min))
       (re-search-forward "^#\\+title:" (point-max) t)
       (re-search-forward "^[[:space:]]*#\\+TITLE:" (point-max) t)
@@ -138,35 +168,34 @@ filter preset."
 
 (defun org-roam-ivy--move-action (x)
   "Move org-roam file X."
-  (let* ((f (plist-get (cdr x) :path))
+  (let* ((f (org-roam-node-file (org-roam-ivy--get-node x)))
          (fname (file-name-nondirectory f))
          (dest (file-name-as-directory
                 (read-directory-name "New location: " org-roam-directory))))
     (unless (file-directory-p dest)
       (mkdir dest t))
     (rename-file f dest)
-    (message "%s moved to new location: %s." fname dest)
-    (org-roam-db-mark-dirty)))
+    (message "%s moved to new location: %s." fname dest)))
 
 (defun org-roam-ivy--links (x type)
   "Browse links of TYPE of the org-roam item X."
-  (let* ((f (plist-get (cdr x) :path))
+  (let* ((node (org-roam-ivy--get-node x))
          (from this-command))
-    (if-let ((links (pcase type
-                      ('backlinks (org-roam--get-backlinks f))
-                      ('forwardlinks (+org-roam--get-forwardlinks f))))
+    (if-let ((collection (pcase type
+                           ('backlinks
+                            (seq-map
+                             (lambda (n)
+                               (org-roam-node-read--to-candidate n))
+                             (+org-roam-backlinks-get node)))
+                           ('forwardlinks
+                            (seq-map
+                             (lambda (n)
+                               (org-roam-node-read--to-candidate n))
+                             (+org-roam-forwardlinks-get node)))))
              (link-type (pcase type
                           ('backlinks :backlinks)
                           ('forwardlinks :forwardlinks)))
-             (prompt (format "%s of %s: " (prin1-to-string type) (org-roam-db--get-title f)))
-             (collection (seq-map
-                          (lambda (link)
-                            (cons
-                             (org-roam--add-tag-string
-                              (org-roam-db--get-title (car link))
-                              (org-roam--extract-tags f))
-                             `(:path ,(car link) :title ,(org-roam-db--get-title (car link)))))
-                          links)))
+             (prompt (format "%s of %s: " (prin1-to-string type) (org-roam-node-title node))))
         (progn
           (plist-put
            org-roam-ivy--last-ivy
@@ -175,7 +204,7 @@ filter preset."
             (list `(,prompt ,collection ,from ,(current-time)))
             (plist-get org-roam-ivy--last-ivy :links)))
           (org-roam-ivy prompt collection from))
-      (message "Item \"%s\" has no %s" (org-roam-db--get-title f) (prin1-to-string type))
+      (message "Item \"%s\" has no %s" (org-roam-node-title node) (prin1-to-string type))
       (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--backlinks-action (x)
@@ -186,6 +215,7 @@ filter preset."
   "Browse forwardlinks of org-roam item X."
   (org-roam-ivy--links x 'forwardlinks))
 
+;; FIXME Adjust for org-roam v2
 (defun org-roam-ivy--insert-action (x)
   "Insert org-roam link into file X."
   (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
@@ -201,7 +231,7 @@ filter preset."
   "Decrypt all headings in org-roam file X."
   (require 'org-crypt)
   (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
-    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+    (with-current-buffer (org-roam-node-file (org-roam-ivy--get-node x))
       (auto-save-mode -1)
       (org-decrypt-entries))
     (unless dont-restore-ivy
@@ -215,7 +245,7 @@ filter preset."
     (when-let* ((beg (+ 1 (string-match "+" org-crypt-tag-matcher)))
                 (end (string-match "-" org-crypt-tag-matcher))
                 (crypt-tag (substring org-crypt-tag-matcher beg end)))
-      (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
+      (with-current-buffer (org-roam-node-file (org-roam-ivy--get-node x))
         (org-map-entries
          (lambda ()
            (org-toggle-tag crypt-tag 'on))
@@ -234,18 +264,30 @@ filter preset."
 (defun org-roam-ivy--tags-action (x)
   "Add or remove tags for org-roam file X."
   (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
-    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-      (org-roam-ivy--set-tag
-       (org-base-buffer (current-buffer))))
+    (with-current-buffer (find-file-noselect (org-roam-node-file (org-roam-ivy--get-node x)))
+      (org-roam-ivy--set-tag))
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--alias-action (x)
-  "Add or remove alias for org-roam file X."
-  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
-    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-      (org-roam-ivy--set-aliases
-       (org-base-buffer (current-buffer))))
+  "Add or remove alias for org-roam completion candidate X."
+  (let* ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command)))
+         (node (org-roam-ivy--get-node x))
+         (node-point (org-roam-node-point node))
+         (node-file (org-roam-node-file node))
+         (node-buffer (or (get-file-buffer node-file) (find-file-noselect node-file))))
+
+    (with-current-buffer node-buffer
+      (goto-char node-point)
+      (let* ((file-aliases (split-string-and-unquote (or (org-entry-get (point) "ROAM_ALIASES") ""))))
+        (org-set-property
+         "ROAM_ALIASES"
+         (combine-and-quote-strings
+          (seq-uniq
+           (filter-preset-ivy
+            "Aliases" file-aliases file-aliases))))
+        (save-buffer)))
+
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
@@ -253,7 +295,7 @@ filter preset."
   "Kill the buffer of org-roam file X.
 In case of current buffer is indirect, kill the base buffer."
   (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command)))
-        (f-path (plist-get (cdr x) :path)))
+        (f-path (org-roam-node-file (org-roam-ivy--get-node x))))
     (with-current-buffer (find-file-noselect f-path)
       (kill-buffer (org-base-buffer (current-buffer))))
     (pop-to-buffer (find-file-noselect f-path))
@@ -261,6 +303,7 @@ In case of current buffer is indirect, kill the base buffer."
       (org-roam-ivy--last-ivy))))
 
 ;;; org-mode helpers and utilities
+;; REVIEW if this isn't obsolete by some native org-roam fn
 (defun org-roam-ivy--global-property (name &optional file bound)
   "Get a document property named NAME (string) from an org FILE.
 \(defaults to current file\). Only scans first 2048 bytes of the document.
@@ -283,6 +326,10 @@ of doom-emacs https://github.com/hlissner/doom-emacs."
       (funcall +org--get-property name bound))))
 
 ;;; org-roam-ivy helpers and utilities
+(defun org-roam-ivy--get-node (x)
+  "Return node from the string of completion candidate X."
+  (get-text-property 0 'node (car x)))
+
 (defun org-roam-ivy--last-ivy ()
   "Open last org-roam-ivy stored in `org-roam-ivy--last-ivy'."
   (when-let ((last-ivy (plist-get org-roam-ivy--last-ivy :last-ivy)))
@@ -308,61 +355,70 @@ When there isn't one, return to last top level ivy."
 (defun org-roam-ivy--capture (x)
   "Capture X action for org-roam-ivy.
 Adopted from `org-roam'."
-  (let ((org-roam-capture--info
-         `((title . ,x)
-           (slug  . ,(funcall org-roam-title-to-slug-function x))))
-        (org-roam-capture--context 'title))
-    (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
-    (org-roam-capture--capture)
+  (let ((test "hi"))
+    (org-roam-capture- :node (org-roam-node-read x))
     (setq org-roam-ivy--last-ivy-text "")))
 
 (defun org-roam-ivy--backlinks-transformer (str)
   "Improve appereance of org-roam ivy.
+"
+  (let* ((ref  (when (string-equal (substring-no-properties str 0 2) "//") t))
+         (taglist  nil)
+         (title (if ref
+                    (org-roam-ref--annotation str)
+                  (combine-and-quote-strings
+                   (seq-filter
+                    (lambda (word)
+                      (let ((tag (cl-member
+                                  word
+                                  org-roam-ivy--matching-tags-list :test #'string-equal)))
+                        (if tag
+                            (progn
+                              (add-to-list 'taglist (car tag))
+                              nil)
+                          t)))
+                    (split-string-and-unquote (substring-no-properties str))))))
+         (node (org-roam-node-from-title-or-alias (substring-no-properties (string-trim title))))
+         (ref (ignore-errors (car (org-roam-node-refs node))))
+         (backlinks (ignore-errors (org-roam-db-query
+                                    [:select [source dest pos properties]
+                                     :from links
+                                     :where (= dest $s1)
+                                     :and (= type "id")]
+                                    (org-roam-node-id node))))
+         (forwardlinks (ignore-errors (org-roam-db-query
+                                       [:select *
+                                        :from links
+                                        :where (= source $s1)]
+                                       (org-roam-node-id node))))
+         (forwardlinks-len (length forwardlinks))
+         (forwardlinks-count (if (> forwardlinks-len 9)
+                                 (number-to-string forwardlinks-len)
+                               (concat " " (number-to-string forwardlinks-len))))
+         (backlinks-len (length backlinks))
+         (backlinks-count (if (> backlinks-len 9)
+                              (number-to-string backlinks-len)
+                            (concat " " (number-to-string backlinks-len))))
+         (tags (mapconcat #'identity (flatten-list taglist) " "))
+         (icon (concat
+                (if ref
+                    (all-the-icons-material "link" :v-adjust 0.05)
+                  (all-the-icons-faicon "file-text" :v-adjust 0.05))
+                " ")))
+    (put-text-property 0 (length forwardlinks-count) 'face
+                       (if (equal 0 forwardlinks-len) 'org-warning 'org-tag)
+                       forwardlinks-count)
+    (put-text-property 0 (length backlinks-count) 'face
+                       (if (equal 0 backlinks-len) 'org-warning 'org-tag)
+                       backlinks-count)
+    (put-text-property 0 (length tags) 'face 'org-tag tags)
+    (put-text-property 0 (length ref) 'face 'org-document-info-keyword ref)
+    (put-text-property 0 (length icon) 'face 'org-tag icon)
+    (if ref
+        (concat backlinks-count " " forwardlinks-count " " icon "" title " " tags " " ref )
+      (concat backlinks-count " " forwardlinks-count " " icon "" title " " tags))))
 
-For STR make url of org-refs less prominent. Strip unnecessary parentheses
-around urls and tags. Add number of backlinks and forwardlinks in front of each item.
-Prepend org-roam-ref items with \"link\" icon."
-  (let ((prepend-links-num
-         (lambda (f-title str)
-           (let* ((f-title (substring-no-properties f-title))
-                  (f-path (caar
-                           (org-roam-db-query [:select [file] :from titles :where (= title $s1)]
-                                              f-title)))
-                  (forwardlinks-num (length
-                                     (org-roam-db-query [:select * :from links :where (= source $s1)] f-path)))
-                  (forwardlinks-num-str (if (> forwardlinks-num 9)
-                                            (number-to-string forwardlinks-num)
-                                          (concat " " (number-to-string forwardlinks-num))))
-                  (backlinks-num (length
-                                  (org-roam-db-query [:select * :from links :where (= dest $s1)] f-path)))
-                  (backlinks-num-str (if (> backlinks-num 9)
-                                         (number-to-string backlinks-num)
-                                       (concat " " (number-to-string backlinks-num))))
-                  (is-ref (org-roam-db-query [:select file :from [refs] :where (= file $s1)] f-path))
-                  (ico (concat
-                        (if is-ref
-                            (all-the-icons-octicon "link" :v-adjust 0.05)
-                          (all-the-icons-octicon "file-text" :v-adjust 0.05))
-                        " ")))
-             (put-text-property 0 (length backlinks-num-str) 'face
-                                (if (equal 0 backlinks-num) 'org-warning 'org-tag)
-                                backlinks-num-str)
-             (put-text-property 0 (length forwardlinks-num-str) 'face
-                                (if (equal 0 forwardlinks-num) 'org-warning 'org-tag)
-                                forwardlinks-num-str)
-             (put-text-property 0 (length ico) 'face 'org-tag ico)
-             (concat backlinks-num-str " " forwardlinks-num-str " " ico str)))))
-    (cond ((string-match "(//" str 0)
-           (let* ((str-list (split-string str "(//" nil))
-                  (url (string-trim-right (car (cdr str-list)) ")"))
-                  (f-title (string-trim (car str-list))))
-             (put-text-property 0 (length url) 'face 'org-tag url)
-             (concat (funcall prepend-links-num f-title f-title) " " url)))
-          ((string-match "^(" str 0)
-           (let ((f-title (substring str (+ 2 (string-match ") " str)) (length str))))
-             (funcall prepend-links-num f-title str)))
-          (t (funcall prepend-links-num str str)))))
-
+;; FIXME Adjust for org-roam v2
 (defun org-roam-ivy--get-not-linking-completions ()
   "Return an alist for completion of all org-roam items which are not linking to any other org-roam item.
 Adapted from `org-roam--get-title-path-completions'."
@@ -387,6 +443,7 @@ Adapted from `org-roam--get-title-path-completions'."
               (v (list :path file-path :title title)))
           (push (cons k v) completions))))))
 
+;; FIXME Adjust for org-roam v2
 (defun org-roam-ivy--get-unlinked-completions ()
   "Return an alist for completion of all org-roam items which are not linked.
 Adapted from `org-roam--get-title-path-completions'."
@@ -420,7 +477,8 @@ FROM serves for altering initial-input, when it is equal either to
 `ivy-read-action/lambda-x-and-exit' or `ivy-posframe-dispatching-done'
 it means that initial-input will be left blank because filtering backlinks
 of org-roam item by tag string doesn't make much sense."
-  (let* ((descended-into (or (equal from 'ivy-read-action/lambda-x-and-exit)
+  (let* ((org-roam-ivy--matching-tags-list (org-roam-ivy--matching-tags))
+         (descended-into (or (equal from 'ivy-read-action/lambda-x-and-exit)
                              (equal from 'ivy-posframe-dispatching-done)))
          (preset-str (when-let ((preset (org-roam-ivy--filter-preset-get org-roam-directory)))
                        (concat (mapconcat #'identity preset " ") " ")))
@@ -437,8 +495,9 @@ of org-roam item by tag string doesn't make much sense."
               :action (lambda (x)
                         (unless (string-match "Backlinks of" ivy--prompt)
                           (setq org-roam-ivy--last-ivy-text ivy-text))
-                        (if-let ((f (ignore-errors (plist-get (cdr x) :path))))
-                            (pop-to-buffer (find-file-noselect f))
+                        (if-let ((node (ignore-errors (get-text-property 0 'node (car x))))
+                                 (f (ignore-errors (org-roam-node-file node))))
+                            (org-roam-node-visit node)
                           (progn
                             ;; prevent :initial-input becoming part of the newly captured file's #+title:
                             (when init-input
@@ -452,7 +511,7 @@ of org-roam item by tag string doesn't make much sense."
   (plist-put org-roam-ivy--last-ivy :links nil)
   (let ((org-roam-ivy--last-ivy-text "")
         org-roam-ivy-filter-preset)
-    (org-roam-ivy "Refs: " (org-roam--get-ref-path-completions 1))))
+    (org-roam-ivy "Refs: " (org-roam-ref-read--completions))))
 
 ;;;###autoload
 (defun org-roam-ivy-find-file ()
@@ -460,7 +519,7 @@ of org-roam item by tag string doesn't make much sense."
   (interactive)
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-file)
   (plist-put org-roam-ivy--last-ivy :links nil)
-  (org-roam-ivy "File: " (org-roam--get-title-path-completions)))
+  (org-roam-ivy "File: " (org-roam-node-read--completions)))
 
 ;;;###autoload
 (defun org-roam-ivy-find-not-linking ()
@@ -502,13 +561,7 @@ of org-roam item by tag string doesn't make much sense."
           (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
             (when (require 'org-noter)
               (org-noter))))
-    "org-noter")
-   ("H" (lambda (x)
-          (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-            (org-roam-doctor)))
-    "health")
-   )
- )
+    "org-noter")))
 
 (provide 'org-roam-ivy)
 ;;; org-roam-ivy.el ends here

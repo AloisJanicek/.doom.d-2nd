@@ -1916,17 +1916,6 @@ When in org-roam file, also create top-level ID.
   (doom-store-persist "custom" '(org-roam-ivy-filter-preset))
   )
 
-(use-package! org-roam-server-light
-  :after org-roam
-  :commands org-roam-server-light-mode
-  :config
-  (setq org-roam-server-light-network-vis-options "{ \"edges\": { \"arrows\": { \"to\": { \"enabled\": true,\"scaleFactor\": 1.15 } } } }"
-        org-roam-server-light-style "body.darkmode { background-color: #00212b!important; }"
-        org-roam-server-light-default-include-filters "null"
-        org-roam-server-light-default-exclude-filters "[{ \"id\": \"journal\", \"parent\" : \"tags\"  }]"
-        )
-  )
-
 (after! org-noter
 
   (setq org-noter-notes-search-path nil
@@ -1943,7 +1932,9 @@ When in org-roam file, also create top-level ID.
   :after org
   :init
   (doom-store-persist "custom" '(org-roam-directory))
-
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-completion-everywhere t)
   :config
 
   (unless (ignore-errors (string-match "Dropbox" org-roam-directory))
@@ -1962,6 +1953,7 @@ When in org-roam file, also create top-level ID.
                               "org-roam.db"
                               (concat doom-etc-dir (file-name-nondirectory org-roam-directory)))
         org-roam-dailies-directory "journal/"
+        org-roam-list-files-commands '(fd)
         org-roam-capture-templates
         `(("d" "default" plain "%?"
            :if-new (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
@@ -1974,10 +1966,63 @@ When in org-roam file, also create top-level ID.
            :unnarrowed t
            :immediate-finish t
            ))
+
+        org-roam-node-display-template "${filedir} ${tags} ${title} "
+        org-roam-node-display-template "${title} ${filedir} ${tags}"
         )
+
   (org-roam-setup)
   (require 'org-roam-protocol)
+
+  ;; NOTE Unfortunately this is too slow to run on every org-roam item when you hava 2 thousands of them
+  (cl-defmethod org-roam-node-backlinksnum ((node org-roam-node))
+    "Return the number of backlinks of the node."
+    (let ((backlinks (length (org-roam-backlinks-get node))))
+      (when (numberp backlinks)
+        (number-to-string backlinks))))
+
+
+  (cl-defmethod org-roam-node-filedir ((node org-roam-node))
+    "Return the directory name of file for the node."
+    (concat "#" (file-name-nondirectory
+                 (directory-file-name
+                  (file-name-directory (org-roam-node-file node)))))
+    )
+
+  (cl-defmethod org-roam-node-filetitle ((node org-roam-node))
+    "Return the file TITLE for the node."
+    (org-roam-get-keyword "TITLE" (org-roam-node-file node)))
+
+  (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
+    "Return the hierarchy for the node."
+    (let ((title (org-roam-node-title node))
+          (olp (org-roam-node-olp node))
+          (level (org-roam-node-level node))
+          (filetitle (org-roam-node-filetitle node)))
+      (concat
+       (if (> level 0) (concat filetitle " > "))
+       (if (> level 1) (concat (string-join olp " > ") " > "))
+       title))
+    )
   )
+
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+  :after org-roam ;; or :after org
+
+  ;; normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+  ;; a hookable mode anymore, you're advised to pick something yourself
+  ;; if you don't care about startup time, use
+
+  ;; :hook (after-init . org-roam-ui-mode)
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+
 
 (after! pdf-tools
   (advice-add #'pdf-info-check-epdfinfo :override #'aj/epdfinfo-never-bother-me-again-a)

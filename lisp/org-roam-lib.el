@@ -96,67 +96,14 @@ of new org-roam item.
     (setq org-roam-directory dir
           org-roam-db-location (expand-file-name "org-roam.db" db-dir)))
 
-  ;; `org-roam-server-light' specific code, harmless otherwise
-  (when-let ((tmp-dir (bound-and-true-p org-roam-server-light-tmp-dir)))
-    (unless (file-exists-p tmp-dir)
-      (make-directory tmp-dir))
-    (f-write-text org-roam-directory
-                  'utf-8
-                  (format (concat tmp-dir "%s") (symbol-name 'org-roam-directory))))
 
   (org-roam-db-sync)
 
   (when (boundp 'org-roam-ivy--last-ivy-text)
     (setq org-roam-ivy--last-ivy-text ""))
 
-  ;; `org-roam-server-light' specific code, harmless otherwise
-  (when (get-process "org-roam-server-light")
-    (delete-process "org-roam-server-light")
-    (let ((default-directory (bound-and-true-p org-roam-server-light-dir)))
-      (start-process-shell-command
-       "org-roam-server-light"
-       "*org-roam-server-light-output-buffer*"
-       "python main.py"))))
+  )
 
-(defun +org-roam/start-open-org-roam-server-light ()
-  "Start `org-roam-server-light' and pop up browser window.
-Depending on current platform emacs is running on open
-either eaf-browser or default browser."
-  (interactive)
-  (when (ignore-errors (require 'org-roam-server-light))
-    (unless (ignore-errors org-roam-server-light-mode)
-      (org-roam-server-light-mode))
-    (if (and (display-graphic-p)
-             (not (string-match "Microsoft"
-                                (with-temp-buffer (shell-command "uname -r" t)
-                                                  (goto-char (point-max))
-                                                  (delete-char -1)
-                                                  (buffer-string))))
-             (ignore-errors (require 'eaf)))
-        (if-let ((server-buff (get-buffer "*eaf Org Roam Server*"))
-                 (pop-size (round (/ (frame-width) 1.6))))
-            (if org-roam-server-light-mode
-                (progn
-                  (+popup-buffer server-buff
-                                 `((side . right)
-                                   (size . ,pop-size)
-                                   (slot)
-                                   (vslot . 1)
-                                   (window-parameters
-                                    (ttl)
-                                    (quit . t)
-                                    (select . t)
-                                    (modeline . t)
-                                    (autosave . nil))))
-                  (when-let ((script (executable-find "eaf-org-roam-adjust-scroll.py")))
-                    (async-start-process
-                     "eaf-scroll"
-                     script
-                     nil)))
-              (kill-buffer server-buff))
-          (when org-roam-server-light-mode
-            (eaf-open-browser "http://127.0.0.1:8080")))
-      (browse-url "http://127.0.0.1:8080"))))
 
 (defun +org-roam-filtered-files ()
   "Return list of org files from `org-roam-dir' filtered by `org-roam-ivy-filter-preset'."
@@ -179,7 +126,7 @@ either eaf-browser or default browser."
   ;;              (org-roam-db-query [:select [tags:file, tags:tags] :from tags]))))
   ;;   )
   )
-
+;; FIXME Adjust for org-roam v2
 (defun +org-roam-org-file-links (type)
   "Show org-roam links of the current file.
 TYPE is either 'backlinks or 'forwardlinks."
@@ -387,31 +334,29 @@ With user prefix prompt allow to edit link and title.
     (insert (format "[[%s][%s]]" link title))
     (save-buffer)))
 
-;; REVIEW This probably doesn't work because of db schema change
-(defun +org-roam--get-forwardlinks (targets)
-  "Same as `org-roam--get-backlinks' but get forward links instead."
-  (unless (listp targets)
-    (setq targets (list targets)))
-  (let ((conditions (--> targets
-                         (mapcar (lambda (i) (list '= 'source i)) it)
-                         (org-roam--list-interleave it :or))))
-    (org-roam-db-query `[:select [dest source properties] :from links
-                         :where ,@conditions
-                         :order-by (asc source)])))
+(defun +org-roam-backlinks-get (node)
+  "Return list of org-roam node NODE's backlinks."
+  (seq-map
+   (lambda (record)
+     (org-roam-node-from-id (car record)))
+   (org-roam-db-query
+    [:select [source dest pos properties]
+     :from links
+     :where (= dest $s1)
+     :and (= type "id")]
+    (org-roam-node-id node))))
 
-(defun +org-roam/replace-file-with-id-link ()
-  "Replaces file links with ID links where possible in current buffer.
-from https://github.com/org-roam/org-roam/issues/1091#issuecomment-703531409."
-  (interactive)
-  (let (path desc)
-    (org-with-point-at 1
-      (while (re-search-forward org-link-bracket-re nil t)
-        (setq desc (match-string 2))
-        (when-let ((link (save-match-data (org-element-lineage (org-element-context) '(link) t))))
-          (when (string-equal "file" (org-element-property :type link))
-            (setq path (expand-file-name (org-element-property :path link)))
-            (replace-match "")
-            (insert (org-roam-format-link path desc))))))))
+(defun +org-roam-forwardlinks-get (node)
+  "Return list of org-roam node NODE's forwardlinks."
+  (seq-map
+   (lambda (record)
+     (org-roam-node-from-id (nth 2 record)))
+   (org-roam-db-query
+    [:select *
+     :from links
+     :where (= source $s1)]
+    (org-roam-node-id node))))
+
 
 (defun +org-roam-capture--finalize-find-file-a ()
   "An override advice of `org-roam-capture--finalize-find-file'.
