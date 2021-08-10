@@ -1016,12 +1016,13 @@ Override adivce for annoying `pdf-info-check-epdfinfo'
   (advice-mapc (lambda (advice _props) (advice-remove sym advice)) sym))
 
 ;;;###autoload
-(defun my-posframe--mouse-banish-a (_parentframe _frame)
+(defun my-posframe--mouse-banish-a (&rest _)
   "Move the cursort out of the way from posframe frames.
 Intended as an override advice for `posframe--mouse-banish'.
 "
   (call-process "/bin/bash" nil t 0 "-c"
-                (concat "nohup xdotool mousemove 500 100"
+                ;; move the cursor at the right edge of the screen
+                (concat "nohup xdotool mousemove_relative 12000 0"
                         " >/dev/null 2>&1 &")))
 
 (defun aj-symbol-at-point ()
