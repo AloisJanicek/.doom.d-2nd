@@ -323,29 +323,6 @@ In case of current buffer is indirect, kill the base buffer."
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
-;;; org-mode helpers and utilities
-;; REVIEW if this isn't obsolete by some native org-roam fn
-(defun org-roam-ivy--global-property (name &optional file bound)
-  "Get a document property named NAME (string) from an org FILE.
-\(defaults to current file\). Only scans first 2048 bytes of the document.
-Specify how far you want to search with BOUND.
-
-Copy of `+org-get-global-property' from modules/lang/org/autoload/org.el
-of doom-emacs https://github.com/hlissner/doom-emacs."
-  (let ((+org--get-property (lambda (name &optional bound)
-                              (save-excursion
-                                (let ((re (format "^#\\+%s:[ \t]*\\([^\n]+\\)" (upcase name))))
-                                  (goto-char (point-min))
-                                  (when (re-search-forward re bound t)
-                                    (buffer-substring-no-properties (match-beginning 1) (match-end 1))))))))
-    (unless bound
-      (setq bound 256))
-    (if file
-        (with-temp-buffer
-          (insert-file-contents-literally file nil 0 bound)
-          (funcall +org--get-property name))
-      (funcall +org--get-property name bound))))
-
 ;;; org-roam-ivy helpers and utilities
 (defun org-roam-ivy--get-node (x)
   "Return node from the string of completion candidate X."
