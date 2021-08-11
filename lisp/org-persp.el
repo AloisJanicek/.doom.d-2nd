@@ -228,7 +228,10 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 
 (after! org-id
   (advice-add #'org-id-open :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-id-open :around #'org-persp-pop-buffer-a))
+  (advice-add #'org-id-open :around #'org-persp-pop-buffer-a)
+  (advice-add #'org-id-goto :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-id-goto :around #'org-persp-pop-buffer-a)
+  )
 
 (after! org-clock
   (advice-add #'org-clock-goto :around #'org-persp-open-file-respect-sanity-a)
