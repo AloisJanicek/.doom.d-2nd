@@ -215,14 +215,29 @@ completion candidates filtering, running this fn on the completion candidate sho
   "Browse forwardlinks of org-roam item X."
   (org-roam-ivy--links x 'forwardlinks))
 
-;; FIXME Adjust for org-roam v2
 (defun org-roam-ivy--insert-action (x)
   "Insert org-roam link into file X."
-  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
-    (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
-      (goto-char (point-max))
-      (newline)
-      (org-roam-insert)
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command)))
+        (node (org-roam-ivy--get-node x)))
+    (with-current-buffer (find-file-noselect (org-roam-node-file node))
+      (goto-char (org-roam-node-point node))
+      ;; if we are working with the file top node
+      (if (equal 1 (point))
+          ;; if there is at least one heading in the file
+          (if (re-search-forward org-heading-regexp nil t)
+              ;; insert into the blank line above the matched heading
+              (progn
+                (end-of-line 0)
+                (open-line 1))
+            ;; otherwise insert at the end of file
+            (progn
+              (goto-char (point-max))
+              (newline)))
+        ;; otherwise insert at the end of current org-roam heading entry
+        (progn
+          (org-end-of-subtree)
+          (newline)))
+      (org-roam-node-insert)
       (save-buffer))
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))

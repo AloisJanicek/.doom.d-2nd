@@ -308,14 +308,14 @@
   :n   "K"     #'outline-previous-visible-heading
   :nm "f" #'link-hint-open-link
   :nmvi "C-}" (lambda ()
-                "Mark word under cursor and insert org-roam link via `org-roam-insert'."
+                "Mark word under cursor and insert org-roam link via `org-roam-node-insert'."
                 (interactive)
                 (unless (region-active-p)
                   (evil-backward-WORD-begin)
                   (set-mark (point))
                   (evil-forward-word-end)
                   (forward-char 1))
-                (org-roam-insert))
+                (org-roam-node-insert))
   :nmvi "C-]"   #'+org-roam/insert
   :n "z w" #'widen
 
