@@ -143,6 +143,8 @@ completion candidates filtering, running this fn on the completion candidate sho
   (move-file-to-trash file)
   (message "%s moved to trash." (file-name-nondirectory file)))
 
+;; TODO Adjust for org-roam heading entries
+;; `org-cut-subtree' or something
 (defun org-roam-ivy--delete-action (x)
   "Delete org-roam file X action for ivy."
   (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
@@ -151,6 +153,8 @@ completion candidates filtering, running this fn on the completion candidate sho
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
+;; TODO Adjust for org-roam heading entries
+;; edit the heading title
 (defun org-roam-ivy--rename-action (x)
   "Change title of org-roam file X."
   (interactive)
@@ -166,6 +170,8 @@ completion candidates filtering, running this fn on the completion candidate sho
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
+;; TODO Adjust for org-roam heading entries
+;; use `org-roam-refile'?
 (defun org-roam-ivy--move-action (x)
   "Move org-roam file X."
   (let* ((f (org-roam-node-file (org-roam-ivy--get-node x)))
