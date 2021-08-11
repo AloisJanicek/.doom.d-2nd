@@ -59,11 +59,13 @@
   ("T" #'org-roam-buffer-toggle-display "toggle")
   )
 
-;; FIXME Adjust for org-roam v2
 (defun org-roam-hydra--adapter (fn)
-  "Allow to run existing `org-roam-ivy' actions on Org file buffers."
-  (let ((x `(nil . (:path ,(buffer-file-name (org-base-buffer (current-buffer)))))))
-    (apply fn (list x))))
+  "Allow to run existing `org-roam-ivy' actions on current org-roam node."
+  (let ((node-string "this is org-roam node"))
+    (add-text-properties 0 (length node-string)
+                         `(node ,(org-roam-node-at-point)) node-string)
+    (funcall fn
+             `(,node-string))))
 
 (defhydra org-roam-hydra-file (:color blue
                                :columns 4

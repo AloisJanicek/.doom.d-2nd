@@ -126,17 +126,20 @@ of new org-roam item.
   ;;              (org-roam-db-query [:select [tags:file, tags:tags] :from tags]))))
   ;;   )
   )
-;; FIXME Adjust for org-roam v2
+
 (defun +org-roam-org-file-links (type)
   "Show org-roam links of the current file.
 TYPE is either 'backlinks or 'forwardlinks."
   (let ((link-fn (pcase type
                    ('backlinks #'org-roam-ivy--backlinks-action)
                    ('forwardlinks #'org-roam-ivy--forwardlinks-action)))
+        (node-string "this is org-roam node")
         org-roam-ivy--last-ivy-text
         org-roam-ivy-filter-preset)
+    (add-text-properties 0 (length node-string)
+                         `(node ,(org-roam-node-at-point)) node-string)
     (funcall link-fn
-             (cons nil `(:path ,(buffer-file-name (org-base-buffer (current-buffer))))))))
+             `(,node-string))))
 
 (defun +org-roam/org-file-backlinks ()
   "Show org-roam backlinks of current org file using `org-roam-ivy'."
