@@ -35,6 +35,7 @@
          (org-roam-ivy-find-file))
    "file unfiltered")
   ("s" #'org-roam-ui-mode "UI web server")
+  ("S" #'+org-roam/switch-roam "Switch roam")
   ("y" (+org-roam/capture-yankpad) "yankpad")
   ("g" (+org-notes/format-org-links
         (format "Search %s: "
