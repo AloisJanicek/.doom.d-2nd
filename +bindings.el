@@ -914,7 +914,10 @@
   :desc "agenda headlines"              "a" (cmd! (setq gtd-agenda-interface 'agenda-search)
                                                   (gtd-agenda-hydra/body))
   :desc "browse eww"               "b" #'eww
-  :desc "browse eaf"               "B" #'eaf-open-browser-with-history
+  :desc "browse eaf"               "B" (lambda ()
+                                         (interactive)
+                                         (require 'eaf)
+                                         (eaf-open-browser-with-history))
   :desc "imenu-list"               "i" #'imenu-list-smart-toggle
   :desc "search eww"               "s" (cmd! (counsel-web-search nil "Search web with eww: " nil #'eww))
   :desc "search eaf"               "S" (cmd! (counsel-web-search nil "Search web with eaf: " nil #'eaf-open-browser))

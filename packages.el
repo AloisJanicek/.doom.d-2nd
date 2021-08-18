@@ -98,10 +98,19 @@
 
 (package! eaf
   :recipe (:host github
-           :repo "manateelazycat/emacs-application-framework"
+           :repo "emacs-eaf/emacs-application-framework"
            :files ("*")
            )
-  :pin "b0791f722055c11ca55ad3301e35793f0dcc282f"
+  :pin "8e1fe7c694ed5f49220ca1d578e475958c6140d0"
+  )
+
+(package! eaf-browser
+  :recipe (:host github
+           :repo "emacs-eaf/eaf-browser"
+           :files ("*")
+           :pre-build ("npm" "install")
+           )
+  :pin "3528e51a4221660bb3d4ade0134bc531c6f5b7f7"
   )
 
 (package! eslintd-fix

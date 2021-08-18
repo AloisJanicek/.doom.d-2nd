@@ -157,12 +157,11 @@ Which operation will be executed depends on value of ENCRYPT."
         (yank)))))
 
 ;;;###autoload
-(defun aj-eaf-browse-url-maybe (url &rest _)
+(defun aj-eaf-browse-url-maybe (url &optional new-window)
   "Open URL with eaf browser unless running under wsl."
   (if (aj-wsl-p)
       (wsl-browse-url url)
-    (eaf-open-browser url)
-    ))
+    (eaf-open url "browser")))
 
 ;;;###autoload
 (defun aj-chrome-browse-url-dispatch (url &optional new-window)
@@ -170,6 +169,38 @@ Which operation will be executed depends on value of ENCRYPT."
   (if (aj-wsl-p)
       (wsl-browse-url url new-window)
     (browse-url-chrome url new-window)))
+
+(defun aj-firefox-dev-edition-browse-url (url &optional new-window)
+  "Open URL with firefox developer edition."
+  (let ((browse-url-firefox-new-window-is-tab t)
+        (browse-url-firefox-program (executable-find "firefox-developer-edition"))
+        (browse-url-firefox-startup-arguments (append
+                                               browse-url-firefox-startup-arguments
+                                               '("-P dev-edition-default"))))
+    (browse-url-firefox url new-window)))
+
+(defun aj-firefox-default-browse-url (url &optional new-window)
+  "Open URL with default release firefox."
+  (let ((browse-url-firefox-new-window-is-tab t)
+        (browse-url-firefox-program (executable-find "firefox"))
+        (browse-url-firefox-startup-arguments (append
+                                               browse-url-firefox-startup-arguments
+                                               '("-P default-release"))))
+    (browse-url-firefox url new-window)))
+
+;;;###autoload
+(defun aj-firefox-default-browse-url-dispatch (url &optional new-window)
+  "Open URL with default firefox or default Windows browser if under wsl."
+  (if (aj-wsl-p)
+      (wsl-browse-url url new-window)
+    (aj-firefox-default-browse-url url new-window)))
+
+;;;###autoload
+(defun aj-firefox-dev-browse-url-dispatch (url &optional new-window)
+  "Open URL with dev-edition firefox or default Windows browser if under wsl."
+  (if (aj-wsl-p)
+      (wsl-browse-url url new-window)
+    (aj-firefox-dev-edition-browse-url url new-window)))
 
 (defun aj-mpv-browse-url (url &optional new-window)
   "Play URL with mpv or with chrome when on platform other then linux."
@@ -197,7 +228,7 @@ Optional argument ARGS represents arguments passed to advised function."
      (if (or (not (display-graphic-p))
              (y-or-n-p (concat "link: " "Browse with EAF browser? ")))
          #'aj-eaf-browse-url-maybe
-       #'aj-chrome-browse-url-dispatch
+       #'aj-firefox-default-browse-url
        )
      args)))
 

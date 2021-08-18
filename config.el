@@ -404,26 +404,9 @@ if running under WSL")
   :commands (dotdrop-update dotdrop-compare dotdrop-import)
   )
 
-(use-package! eaf
-  :unless (or (aj-wsl-p)
-              (not (display-graphic-p)))
-  :commands eaf-open-browser eaf-open-browser-with-history
+(use-package! eaf-browser
+  :after eaf
   :config
-
-  (setq
-   ;; Don't include "pdf" and "epub"
-   eaf-pdf-extension-list
-   '("xps" "oxps" "cbz" "fb2" "fbz" "djvu"))
-
-  (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
-  (advice-add
-   #'eaf--update-buffer-details
-   :after (lambda (&rest _)
-            "Prettify `mode-name' with cyphejor"
-            (when (bound-and-true-p cyphejor-mode)
-              (cyphejor--hook))))
-
-  (eaf-enable-evil-intergration)
   (eaf-bind-key evil-window-left "C-h" eaf-browser-keybinding)
   (eaf-bind-key aj/eaf-browser-org-store-link "C-g" eaf-browser-keybinding)
   (eaf-bind-key aj/eaf-browser-org-capture-link "C-b" eaf-browser-keybinding)
@@ -431,16 +414,10 @@ if running under WSL")
   (eaf-bind-key nil "<space>" eaf-browser-keybinding)
   (eaf-bind-key doom/escape "<escape>" eaf-browser-keybinding)
 
-  (eaf-setq eaf-browser-dark-mode "true")
-  (eaf-setq eaf-browser-enable-plugin "false")
-  (eaf-setq eaf-browser-enable-adblocker "true")
-  (eaf-setq eaf-browser-enable-autofill "false")
-
-  (setq eaf-buffer-title-format "*eaf %s*")
-  (setq eaf-evil-leader-key "SPC")
-
-  (add-to-list 'eaf-app-display-function-alist
-               '("browser" . pop-to-buffer))
+  (setq eaf-browser-dark-mode "true")
+  (setq eaf-browser-enable-plugin "false")
+  (setq eaf-browser-enable-adblocker "true")
+  (setq eaf-browser-enable-autofill "false")
 
   (set-popup-rule! (lambda (buf &rest _)
                      "Find EAF browser buffer."
@@ -449,6 +426,31 @@ if running under WSL")
                                   (string-equal eaf--buffer-app-name "browser"))
                          t)))
     :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)
+  )
+
+(use-package! eaf
+  :unless (or (aj-wsl-p)
+              (not (display-graphic-p)))
+  :commands (eaf-open)
+  :config
+  (require 'eaf-browser)
+  (require 'eaf-evil)
+  (setq eaf-evil-leader-key "SPC")
+
+  (add-hook 'eaf-mode-hook #'doom-mark-buffer-as-real-h)
+
+  (advice-add
+   #'eaf--update-buffer-details
+   :after (lambda (&rest _)
+            "Prettify `mode-name' with cyphejor"
+            (when (bound-and-true-p cyphejor-mode)
+              (cyphejor--hook))))
+
+  (setq eaf-buffer-title-format "*eaf %s*")
+
+  (add-to-list 'eaf-preview-display-function-alist
+               '("browser" . pop-to-buffer))
+
   )
 
 (after! elisp-mode
@@ -968,17 +970,18 @@ if running under WSL")
 (after! loaddefs
   (setq browse-url-handlers
         '(
-          ("github" . aj-chrome-browse-url-dispatch)
-          ("reddit" . aj-chrome-browse-url-dispatch)
-          ("gitlab" . aj-chrome-browse-url-dispatch)
-          ;; ("youtube" . aj-mpv-browse-url)
+          ("github" . aj-firefox-dev-browse-url-dispatch)
+          ("gitlab" . aj-firefox-dev-browse-url-dispatch)
+
+          ("wikipedia" . aj-eaf-browse-url-maybe)
           ("eslint.org" . aj-eaf-browse-url-maybe)
           ("stylelint.io" .  aj-eaf-browse-url-maybe)
+          ("developer.mozilla.org" . aj-eaf-browse-url-maybe)
+
           ("thefreedictionary\\.com" . eww-browse-url)
           ("dictionary\\.com" . eww-browse-url)
           ("merriam-webster\\.com" . eww-browse-url)
-          ("wikipedia" . aj-eaf-browse-url-maybe)
-          ("developer.mozilla.org" . aj-eaf-browse-url-maybe)
+
           ("." . gk-browse-url)
           )
         browse-url-secondary-browser-function (lambda (url &rest _)
