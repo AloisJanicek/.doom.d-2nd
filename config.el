@@ -1959,12 +1959,12 @@ When in org-roam file, also create top-level ID.
         org-roam-list-files-commands '(fd)
         org-roam-capture-templates
         `(("d" "default" plain "%?"
-           :if-new (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
+           :target (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
                               "#+title: ${title}\n")
            :unnarrowed t))
         org-roam-capture-ref-templates
         `(("r" "ref" plain "%?"
-           :if-new (file+head ,(concat +org-roam-inbox-prefix "${slug}.org")
+           :target (file+head ,(concat +org-roam-inbox-prefix "${slug}.org")
                               "#+title: ${title}")
            :unnarrowed t
            :immediate-finish t
@@ -1976,6 +1976,7 @@ When in org-roam file, also create top-level ID.
 
   (org-roam-setup)
   (require 'org-roam-protocol)
+  (require 'org-roam-dailies)
 
   ;; NOTE Unfortunately this is too slow to run on every org-roam item when you hava 2 thousands of them
   (cl-defmethod org-roam-node-backlinksnum ((node org-roam-node))
