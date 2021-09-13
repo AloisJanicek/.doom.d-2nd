@@ -414,10 +414,10 @@ if running under WSL")
   (eaf-bind-key nil "<space>" eaf-browser-keybinding)
   (eaf-bind-key doom/escape "<escape>" eaf-browser-keybinding)
 
-  (setq eaf-browser-dark-mode "true")
-  (setq eaf-browser-enable-plugin "false")
-  (setq eaf-browser-enable-adblocker "true")
-  (setq eaf-browser-enable-autofill "false")
+  (setq eaf-browser-dark-mode t)
+  (setq eaf-browser-enable-plugin nil)
+  (setq eaf-browser-enable-adblocker t)
+  (setq eaf-browser-enable-autofill nil)
 
   (set-popup-rule! (lambda (buf &rest _)
                      "Find EAF browser buffer."
