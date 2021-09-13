@@ -2,6 +2,7 @@
 ;;; packages.el
 
 (unpin! format-all)
+(unpin! hydra)
 (package! saveplace-pdf-view :disable t)
 
 (unpin! org-roam)
@@ -11,7 +12,7 @@
            :repo "yantar92/org"
            :branch "feature/org-fold-universal-core"
            )
-  :pin "664ea34f9cf7ed294a45db7b63cd7cd84cbc1043")
+  :pin "ec36031b4ffc9f4c90e652cfc19864f10670814a")
 
 
 (package! websocket)
@@ -37,12 +38,12 @@
              :files (:defaults "Makefile" "*.h" "*.c" "*.js" "*.css")
              :build ("make")
              )
-    :pin "962b768345252072f961ca100cbdb47c60f0569d")
+    :pin "96a4850676b74ffa55b52ff8e9824f7537df6a47")
   )
 
 (package! lsp-julia
   :recipe (:host github :repo "non-Jedi/lsp-julia")
-  :pin "d4a7a27d6ac7c6831b4f493dd89f82fa0c75bdf5")
+  :pin "809da95c05fe668acbae5a35e03082d9b9577728")
 
 (package! json-proces-client
   :recipe (:host github :repo "emacsmirror/json-process-client")
@@ -56,7 +57,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "9aaa6de8396753c1f13b9a8122daca9814905671")
+  :pin "09b887c01aeb33d715a1f8269f45c38594614d93")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -91,7 +92,7 @@
 
 (package! cyphejor
   :recipe (:host github :repo "mrkkrp/cyphejor")
-  :pin "cf580995f891e339a9485ba91d6cb81a2abd61e4")
+  :pin "576d237a46be79449a22e3a7912a3464d7b0c233")
 
 (package! define-word
   :pin "6e4a427503aef096484f88332962c346cdd10847")
@@ -101,7 +102,7 @@
            :repo "emacs-eaf/emacs-application-framework"
            :files ("*")
            )
-  :pin "8e1fe7c694ed5f49220ca1d578e475958c6140d0"
+  :pin "3249880aae8353524ad5f785101bbcc8a48b5e4e"
   )
 
 (package! eaf-browser
@@ -110,7 +111,7 @@
            :files ("*")
            :pre-build ("npm" "install")
            )
-  :pin "3528e51a4221660bb3d4ade0134bc531c6f5b7f7"
+  :pin "b2a3415ec4e204a8d596e70709e0aefc20b1784e"
   )
 
 (package! eslintd-fix
@@ -136,7 +137,7 @@
 
 (package! howdoyou
   :recipe (:host github :repo "thanhvg/emacs-howdoyou")
-  :pin "4943a4ef8d242952ade64903a05c13094de2fbf0")
+  :pin "a01971a7279c8a031de78513c004d7a09d293712")
 
 (package! hungry-delete
   :pin "d919e555e5c13a2edf4570f3ceec84f0ade71657")
@@ -191,14 +192,14 @@
 
 (package! org-sidebar
   :recipe (:host github :repo "alphapapa/org-sidebar")
-  :pin "1b37069e47d1ea4745eacdf2dec2bdad756ee235")
+  :pin "288703b897449f5110c9c76e78eb9a928ffc0dcd")
 
 (package! org-super-agenda
   :pin "a5557ea4f51571ee9def3cd9a1ab1c38f1a27af7")
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "8cbbade1e3237200c2140741f39ff60176e703e7")
+  :pin "673ded8f4761a8af03be2294fe881b38f34d8919")
 
 (package! org-ql
   :pin "94f9e6f3031b32cf5e2149beca7074807235dcb0")
@@ -251,7 +252,7 @@
   :pin "90e85d74899fc23d95798048cc0bbdb4bab9c1b7")
 
 (package! yankpad
-  :pin "6f5c7e5171030663ebda4f1f872c30d0e165b6b7")
+  :pin "6562d021cfc76b88a7b39b49adc44fcad835bd3f")
 
 (package! zeal-at-point
   :recipe (:host github :repo "jinzhu/zeal-at-point")
