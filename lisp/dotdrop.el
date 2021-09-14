@@ -17,10 +17,10 @@ dotdrop --cfg=/home/username/dotfiles_repo/config.yaml --profile=my_profile")
    nil
    (seq-map
     (lambda (elm)
-      (when-let* ((str (car (last (split-string elm))))
-                  (is-true-str (stringp str))
-                  (path (string-trim str "\"" "\""))
-                  (is-true-file (file-exists-p path)))
+      (when-let* ((elm-list (split-string elm "\"" t  "[ \t\n\r]+"))
+                  (path (if (string-match "/" (car (last elm-list)))
+                            (car (last elm-list))
+                          (car (last (butlast elm-list))))))
         path))
     (split-string
      (shell-command-to-string
@@ -28,23 +28,19 @@ dotdrop --cfg=/home/username/dotfiles_repo/config.yaml --profile=my_profile")
      "=>"))))
 
 (defun dotdrop-all-files ()
+  "Outputs in format f_key dest-path src-path."
   (let* ((cmd-output (shell-command-to-string
-                      (format "%s files -G | grep dst: | sed 's/,link.*//'" dotdrop-base-cmd))))
+                      (format "%s files -G" dotdrop-base-cmd))))
     (seq-map
-     (lambda (elm)
-       (split-string
-        (replace-regexp-in-string
-         ",src:"
-         " "
-         (replace-regexp-in-string
-          ",dst:"
-          " "
-          elm))))
-     (split-string
-      (substring
-       cmd-output
-       (string-search "f_" cmd-output)
-       (length cmd-output))))))
+     (lambda (line)
+       (remove nil
+               (seq-map
+                (lambda (entry)
+                  (if (string-match "link:\\|chmod:" entry 0)
+                      nil
+                    (replace-regexp-in-string ".+?[a-z]:" "" entry)))
+                (split-string line ","))))
+     (split-string cmd-output "\n"))))
 
 (defun dotdrop--dotfile-record (dotfile)
   "For given DOTFILE return its dotdrop record entry.
@@ -74,15 +70,23 @@ file path corresponding with dotfile destination :dest key.
 
 ;;;###autoload
 (defun dotdrop-compare ()
-  "Diff the dotdrop files in emacs with ediff.
-"
+  "Diff the dotdrop files in emacs with ediff."
   (interactive)
   (ivy-read
    "ediff dotfile: "
    (dotdrop-modified)
    :action (lambda (dotfile)
-             (let ((dotfile-record (dotdrop--dotfile-record dotfile)))
-               (ediff (nth 1 dotfile-record) (nth 2 dotfile-record))))))
+             (let* ((dotfile-record (dotdrop--dotfile-record dotfile))
+                    (src (nth 2 dotfile-record))
+                    (dst (nth 1 dotfile-record)))
+               (unless (file-exists-p src)
+                 (when (yes-or-no-p (format "Source file\n %s\n doesn't exist, do you want to create it?" src))
+                   (with-temp-file src (insert ""))))
+               (unless (file-exists-p dst)
+                 (when (yes-or-no-p (format "Destination file\n %s\n doesn't exist, do you want to create it?" src))
+                   (with-temp-file dst (insert ""))))
+               (message "src: %s, dst: %s" src dst)
+               (ediff src dst)))))
 
 ;;;###autoload
 (defun dotdrop-update ()
