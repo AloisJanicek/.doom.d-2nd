@@ -17,12 +17,15 @@ dotdrop --cfg=/home/username/dotfiles_repo/config.yaml --profile=my_profile")
    nil
    (seq-map
     (lambda (elm)
-      (if (string-match "^f_" elm)
-          (replace-regexp-in-string ":" "" elm)
-        nil))
+      (when-let* ((str (car (last (split-string elm))))
+                  (is-true-str (stringp str))
+                  (path (string-trim str "\"" "\""))
+                  (is-true-file (file-exists-p path)))
+        path))
     (split-string
      (shell-command-to-string
-      (format "%s compare --file-only | grep compare " dotdrop-base-cmd))))))
+      (format "%s compare --file-only" dotdrop-base-cmd))
+     "=>"))))
 
 (defun dotdrop-all-files ()
   (let* ((cmd-output (shell-command-to-string
