@@ -73,7 +73,7 @@
                                :columns 4
                                )
   "
-org-roam item: %(org-roam-node-title (org-roam-node-at-point))
+org-roam item: %(ignore-errors (org-roam-node-title (org-roam-node-at-point)))
 "
   ("x" (org-roam-hydra--adapter #'org-roam-ivy--backlinks-action) "show backlinks")
   ("f" (org-roam-hydra--adapter #'org-roam-ivy--forwardlinks-action) "show forwardlinks")
