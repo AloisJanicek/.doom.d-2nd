@@ -84,10 +84,12 @@ of new org-roam item.
   (require 'ffap)
   (let* ((dir (file-truename
                (ivy-read "Choose roam directory: "
-                         (seq-filter
-                          (lambda (dir)
-                            (string-match "roam" dir))
-                          (ffap-all-subdirs org-directory 1)))))
+                         (append
+                          (seq-filter
+                           (lambda (dir)
+                             (string-match "roam" dir))
+                           (ffap-all-subdirs org-directory 1))
+                          (ffap-all-subdirs (expand-file-name "roam" org-directory) 1)))))
          (db-dir (if (bound-and-true-p doom-etc-dir)
                      (concat doom-etc-dir (file-name-nondirectory dir))
                    (concat user-emacs-directory (file-name-nondirectory dir)))))
