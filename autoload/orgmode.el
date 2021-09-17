@@ -1001,33 +1001,6 @@ Org manual: 8.4.2 The clock table.
             :action (lambda (x)
                       (jmm-org-ql-ivy-prompt-for-link (cdr x)))))
 
-;; REVIEW MOVE THIS into org-roam file
-;;;###autoload
-(defun aj-org-roam-append-tag-string-a (str tags)
-  "Append instead of prepend TAGS to STR.
-Advice for `org-roam--add-tag-string'.
-"
-  (concat
-   str
-   (when tags
-     (propertize (format " %s" (s-join org-roam-tag-separator tags))
-                 'face 'org-roam-tag))))
-
-;; REVIEW why is this here
-;;;###autoload
-(defun aj-org-roam-prettier-ref-path-a (result)
-  "Customize appearance of string outputed by `org-roam--get-ref-path-completions'.
-Intended as :filter-return advice manipulating string RESULT.
-"
-  (seq-map
-   (lambda (elm)
-     (let* ((str (replace-regexp-in-string "[()]\\|//" "" (car elm)))
-            (url-beg (string-match " [^ ]*$" str))
-            (url-end (length str)))
-       (when (and url-beg url-end)
-         (put-text-property url-beg url-end 'face 'org-tag str))
-       (cons str (cdr elm))))
-   result))
 
 ;;;###autoload
 (defun aj/org-review-tags ()

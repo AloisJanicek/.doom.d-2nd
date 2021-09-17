@@ -1,6 +1,7 @@
 ;;; ~/.doom.d/+hacks.el -*- lexical-binding: t; -*-
 
 ;; weird backspace issues
+;; REVIEW Is this still relevant?
 (advice-remove #'delete-backward-char #'+default--delete-backward-char-a)
 
 (after! org-protocol
@@ -27,11 +28,6 @@ with :after or :override due to some issue with starting the notification proces
   (advice-add #'org-protocol-store-link :override #'org-protocol-store-link-override-a)
   )
 
-;; indirect buffer compatibility hacks
-(after! org-roam
-
-  )
-
 (after! elisp-mode
   ;; there is some issue with this in doom since 4d5f6f75
   ;; this is the old, "unfixed" version of that advice
@@ -48,7 +44,6 @@ with :after or :override due to some issue with starting the notification proces
                 (format (format "%%0.%ds%%s" (max limit 0))
                         (propertize str 'face 'warning)
                         (if (< (length str) limit) "" truncated)))))))
-
 
 (after! org-noter
   ;; HACK: I just wanted to add #+title: to the newly created org files so in order to do so I had to copy paste the whole thing
