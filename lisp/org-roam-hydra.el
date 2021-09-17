@@ -23,6 +23,7 @@
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\")) %(org-roam-ivy--filter-preset-get org-roam-directory)
 "
   ("d" (dired org-roam-directory) "dired directory")
+  ("D" #'org-roam-ivy-find-duplicate-title "duplicate titles")
   ("r" #'org-roam-ivy-find-refs "refs")
   ("R" #'org-roam-ivy-filter-preset-set "filter")
   ("f" #'org-roam-ivy-find-file "file")
@@ -57,7 +58,7 @@
    "books")
   ("I" #'org-roam-jump-to-index "index")
   ("<tab>" #'org-roam-insert "insert")
-  ("T" #'org-roam-buffer-toggle-display "toggle")
+  ("T" #'org-roam-buffer-toggle "toggle")
   )
 
 (defun org-roam-hydra--adapter (fn)

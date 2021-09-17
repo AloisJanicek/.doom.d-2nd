@@ -1931,15 +1931,9 @@ When in org-roam file, also create top-level ID.
       (add-to-list 'org-noter-notes-search-path dir)))
   )
 
-(use-package! org-roam
-  :after org
-  :init
-  (doom-store-persist "custom" '(org-roam-directory))
-  (setq org-roam-v2-ack t)
-  :custom
-  (org-roam-completion-everywhere t)
-  :config
+(doom-store-persist "custom" '(org-roam-directory))
 
+(after! org-roam
   (unless (ignore-errors (string-match "Dropbox" org-roam-directory))
     (require 'ffap)
     (setq org-roam-directory (car
@@ -1950,13 +1944,21 @@ When in org-roam file, also create top-level ID.
 
   (advice-add #'org-roam-dailies--capture :after #'+org-roam-dailies-insert-timestamp-a)
   (advice-add #'org-roam-capture--finalize-find-file :override #'+org-roam-capture--finalize-find-file-a)
-  (advice-add #'org-roam-node-visit :after (lambda (&rest _) (solaire-mode +1)))
+  (advice-add #'org-roam-node-visit :after  (lambda (&rest _)
+                                              "Narrow view after switching."
+                                              (interactive)
+                                              (widen)
+                                              (+org-narrow-and-show)))
+  ;; REVIEW what is this
+  ;; (advice-add #'org-roam-node-visit :after (lambda (&rest _) (solaire-mode +1)))
 
   (setq org-roam-db-location (expand-file-name
                               "org-roam.db"
-                              (concat doom-etc-dir (file-name-nondirectory org-roam-directory)))
+                              (concat doom-etc-dir (file-name-nondirectory (string-trim-right org-roam-directory "/"))))
         org-roam-dailies-directory "journal/"
         org-roam-list-files-commands '(fd)
+        org-roam-completion-everywhere t
+        +org-roam-open-buffer-on-find-file nil
         org-roam-capture-templates
         `(("d" "default" plain "%?"
            :target (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
@@ -1967,51 +1969,17 @@ When in org-roam file, also create top-level ID.
            :target (file+head ,(concat +org-roam-inbox-prefix "${slug}.org")
                               "#+title: ${title}")
            :unnarrowed t
-           :immediate-finish t
-           ))
+           :immediate-finish t))
 
-        org-roam-node-display-template "${filedir} ${tags} ${title} "
-        org-roam-node-display-template "${title} ${filedir} ${tags}"
+        org-roam-node-display-template "${doom-hierarchy} ${doom-tags}"
         )
-
-  (org-roam-setup)
-  (require 'org-roam-protocol)
-  (require 'org-roam-dailies)
-
-  ;; NOTE Unfortunately this is too slow to run on every org-roam item when you hava 2 thousands of them
-  (cl-defmethod org-roam-node-backlinksnum ((node org-roam-node))
-    "Return the number of backlinks of the node."
-    (let ((backlinks (length (org-roam-backlinks-get node))))
-      (when (numberp backlinks)
-        (number-to-string backlinks))))
-
-
-  (cl-defmethod org-roam-node-filedir ((node org-roam-node))
-    "Return the directory name of file for the node."
-    (concat "#" (file-name-nondirectory
-                 (directory-file-name
-                  (file-name-directory (org-roam-node-file node)))))
-    )
-
-  (cl-defmethod org-roam-node-filetitle ((node org-roam-node))
-    "Return the file TITLE for the node."
-    (org-roam-get-keyword "TITLE" (org-roam-node-file node)))
-
-  (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
-    "Return the hierarchy for the node."
-    (let ((title (org-roam-node-title node))
-          (olp (org-roam-node-olp node))
-          (level (org-roam-node-level node))
-          (filetitle (org-roam-node-filetitle node)))
-      (concat
-       (if (> level 0) (concat filetitle " > "))
-       (if (> level 1) (concat (string-join olp " > ") " > "))
-       title))
-    )
   )
 
+(use-package! org-roam-dailies
+  :after org-roam)
+
 (use-package! websocket
-    :after org-roam)
+  :after org-roam)
 
 (use-package! org-roam-ui
   :after org-roam ;; or :after org

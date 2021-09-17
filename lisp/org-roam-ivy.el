@@ -296,7 +296,7 @@ completion candidates filtering, running this fn on the completion candidate sho
          (node (org-roam-ivy--get-node x))
          (node-point (org-roam-node-point node))
          (node-file (org-roam-node-file node))
-         (node-buffer (or (get-file-buffer node-file) (find-file-noselect node-file))))
+         (node-buffer (ignore-errors (or (get-file-buffer node-file) (find-file-noselect node-file)))))
 
     (with-current-buffer node-buffer
       (goto-char node-point)
@@ -358,63 +358,12 @@ Adopted from `org-roam'."
     (setq org-roam-ivy--last-ivy-text "")))
 
 (defun org-roam-ivy--backlinks-transformer (str)
-  "Improve appereance of org-roam ivy.
-"
-  (let* ((ref  (when (string-equal (substring-no-properties str 0 2) "//") t))
-         (taglist  nil)
-         (title (if ref
-                    (org-roam-ref--annotation str)
-                  (combine-and-quote-strings
-                   (seq-filter
-                    (lambda (word)
-                      (let ((tag (cl-member
-                                  word
-                                  org-roam-ivy--matching-tags-list :test #'string-equal)))
-                        (if tag
-                            (progn
-                              (add-to-list 'taglist (car tag))
-                              nil)
-                          t)))
-                    (split-string-and-unquote (substring-no-properties str))))))
-         (node (org-roam-node-from-title-or-alias (substring-no-properties (string-trim title))))
-         (ref (ignore-errors (car (org-roam-node-refs node))))
-         (backlinks (ignore-errors (org-roam-db-query
-                                    [:select [source dest pos properties]
-                                     :from links
-                                     :where (= dest $s1)
-                                     :and (= type "id")]
-                                    (org-roam-node-id node))))
-         (forwardlinks (ignore-errors (org-roam-db-query
-                                       [:select *
-                                        :from links
-                                        :where (= source $s1)]
-                                       (org-roam-node-id node))))
-         (forwardlinks-len (length forwardlinks))
-         (forwardlinks-count (if (> forwardlinks-len 9)
-                                 (number-to-string forwardlinks-len)
-                               (concat " " (number-to-string forwardlinks-len))))
-         (backlinks-len (length backlinks))
-         (backlinks-count (if (> backlinks-len 9)
-                              (number-to-string backlinks-len)
-                            (concat " " (number-to-string backlinks-len))))
-         (tags (mapconcat #'identity (flatten-list taglist) " "))
-         (icon (concat
-                (if ref
-                    (all-the-icons-material "link" :v-adjust 0.05)
-                  (all-the-icons-faicon "file-text" :v-adjust 0.05))
-                " ")))
-    (put-text-property 0 (length forwardlinks-count) 'face
-                       (if (equal 0 forwardlinks-len) 'org-warning 'org-tag)
-                       forwardlinks-count)
-    (put-text-property 0 (length backlinks-count) 'face
-                       (if (equal 0 backlinks-len) 'org-warning 'org-tag)
-                       backlinks-count)
-    (put-text-property 0 (length tags) 'face 'org-tag tags)
-    (put-text-property 0 (length ref) 'face 'org-document-info-keyword ref)
-    (put-text-property 0 (length icon) 'face 'org-tag icon)
-    (if ref
-        (concat backlinks-count " " forwardlinks-count " " icon "" title " " tags " " ref )
-      (concat backlinks-count " " forwardlinks-count " " icon "" title " " tags))))
+  "Improve appereance of org-roam-ivy candidate STR."
+  (let* ((node (get-text-property 0 'node str))
+         (backlinks-count (org-roam-node-backlinks-num-str node))
+         (forwardlinks-count (org-roam-node-forwardlinks-num-str node))
+         (icon (org-roam-node-type-icon node)))
+    (concat forwardlinks-count " " backlinks-count " " icon "" str)))
 
 ;; FIXME Adjust for org-roam v2
 (defun org-roam-ivy--get-not-linking-completions ()
@@ -493,6 +442,7 @@ of org-roam item by tag string doesn't make much sense."
               :action (lambda (x)
                         (unless (string-match "Backlinks of" ivy--prompt)
                           (setq org-roam-ivy--last-ivy-text ivy-text))
+                        ;; (message "node of action: %s" (get-text-property 0 'node (car x)))
                         (if-let ((node (ignore-errors (get-text-property 0 'node (car x))))
                                  (f (ignore-errors (org-roam-node-file node))))
                             (org-roam-node-visit node)
@@ -534,6 +484,32 @@ of org-roam item by tag string doesn't make much sense."
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-unlinked)
   (plist-put org-roam-ivy--last-ivy :links nil)
   (org-roam-ivy "Unlinked: " (org-roam-ivy--get-unlinked-completions)))
+
+;;;###autoload
+(defun org-roam-ivy-find-duplicate-title ()
+  "Exclusive ivy interface showing org-roam items with duplicate titles."
+  (interactive)
+  (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-duplicate-title)
+  (plist-put org-roam-ivy--last-ivy :links nil)
+  (org-roam-ivy
+   "Duplicate titles: "
+   (mapcar
+    #'org-roam-node-read--to-candidate
+    (seq-map
+     (lambda (record)
+       (org-roam-node-from-id (car record)))
+     (org-roam-db-query
+      "SELECT a.*
+from nodes a
+JOIN (SELECT id, title FROM nodes GROUP BY id, title) b
+ON a.title = b.title
+WHERE a.id != b.id
+ORDER BY a.title"
+      )
+     )
+    )
+   )
+  )
 
 ;; org-roam-ivy setup
 (ivy-configure 'org-roam-ivy
