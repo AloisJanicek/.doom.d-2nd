@@ -216,6 +216,7 @@ Designed as an override advice for file or buffer opening functions like `pop-to
                  (with-current-buffer buf
                    (when (not (equal (org-roam-node-id node)
                                      (org-roam-id-at-point)))
+                     (widen)
                      (goto-char (org-roam-node-point node))
                      (+org-narrow-and-show)))))))
     (apply orig-fn args)))
