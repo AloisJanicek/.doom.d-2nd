@@ -30,9 +30,7 @@ For execution of advised command this functions overrides
 customized alternative `org-persp-switch-create-indirect-buffer-per-persp'.
 Argument ORIG-FN represents advised function.
 Optional argument ARGS are argument passed to `ORIG-FN'."
-  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
-             #'org-persp-switch-create-indirect-buffer-per-persp)
-            ((symbol-function 'pop-to-buffer)
+  (cl-letf (((symbol-function 'pop-to-buffer)
              #'org-persp-switch-create-indirect-buffer-per-persp))
     (apply orig-fn args)))
 
@@ -48,8 +46,7 @@ to allow pop org buffer into popup window."
   "Pop org mode buffer specially.
 Adice for org-mode related functions popping org files into buffers."
   (cl-letf (((symbol-function 'pop-to-buffer) #'org-persp-pop-org-buffer)
-            ((symbol-function 'pop-to-buffer-same-window) #'org-persp-pop-org-buffer)
-            )
+            ((symbol-function 'pop-to-buffer-same-window) #'org-persp-pop-org-buffer))
     (apply orig-fn args)))
 
 (defun org-persp-pop-org-buffer (buffer-or-name &rest _)
@@ -91,7 +88,8 @@ in temporarily popup window on the right side of the frame.
               (setq org-persp-last-popup-window
                     (get-buffer-window (current-buffer))))))
 
-      (message "this is not buffer: %s" buffer-or-name))))
+      (message "this is not buffer: %s" buffer-or-name)))
+  )
 
 (defun org-persp-window-for-org-buffer (buffer)
   "Take `BUFFER' and try to find suitable window for it.
@@ -246,13 +244,6 @@ Designed as an override advice for file or buffer opening functions like `pop-to
   (advice-add #'org-brain-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-brain-goto :around #'org-persp-pop-buffer-a))
 
-(after! org-roam-ivy
-  (advice-add #'org-roam-ivy :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-ivy :around #'org-persp-pop-buffer-a)
-  (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-pop-buffer-a)
-  )
-
 (after! org-lib
   (advice-add #'+org-notes/format-org-links :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'+org-notes/format-org-links :around #'org-persp-pop-buffer-a))
@@ -266,15 +257,22 @@ Designed as an override advice for file or buffer opening functions like `pop-to
   (advice-add #'org-jumplist-forward :around #'org-persp-pop-to-buffer-a))
 
 (after! org-roam
-  (advice-add #'org-roam-node-visit :around #'org-persp-pop-to-buffer-a)
+  (advice-add #'org-roam-node-visit :around #'org-persp-pop-buffer-a)
   (advice-add #'org-roam-node-visit :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'+org-roam-capture--finalize-find-file-a :around #'org-persp-pop-to-buffer-a)
+  (advice-add #'+org-roam-capture--finalize-find-file-a :around #'org-persp-pop-buffer-a)
   (advice-add #'+org-roam-capture--finalize-find-file-a :around #'org-persp-open-file-respect-sanity-a)
   )
 
+(after! org-roam-ivy
+  (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-pop-buffer-a)
+  )
+
 (after! org-roam-lib
-  (advice-add #'+org-roam-dailies-clock-report :around #'org-persp-pop-to-buffer-a)
-  (advice-add #'+org-roam-dailies-open-today :around #'org-persp-pop-to-buffer-a)
+  (advice-add #'+org-roam-dailies-clock-report :around #'org-persp-pop-buffer-a)
+  (advice-add #'+org-roam-dailies-clock-report :around #'org-persp-open-file-respect-sanity-a)
+  (advice-add #'+org-roam-dailies-open-today :around #'org-persp-pop-buffer-a)
+  (advice-add #'+org-roam-dailies-open-today :around #'org-persp-open-file-respect-sanity-a)
   )
 
 (after! agenda-headlines
