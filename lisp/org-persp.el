@@ -19,6 +19,7 @@
 (require 'cl-lib)
 (require 'agenda-filter)
 (require 'help-buffers)
+(require 'org-lib)
 
 (defvar org-persp-last-popup-window nil
   "Last popup window.")
@@ -168,10 +169,10 @@ indirect buffer.
 Designed as an override advice for file or buffer opening functions like `pop-to-buffer'.
 "
 
-  (if (equal (substring (buffer-name buffer-or-path) 0 1) "*")
-      (progn
-        (other-window 1)
-        (set-buffer buffer-or-path))
+  ;; (if (equal (substring (buffer-name buffer-or-path) 0 1) "*")
+  ;;     (progn
+  ;;       (other-window 1)
+  ;;       (set-buffer buffer-or-path))
     (progn
       (unless (bufferp buffer-or-path)
         (when (file-readable-p buffer-or-path)
@@ -198,9 +199,27 @@ Designed as an override advice for file or buffer opening functions like `pop-to
             (with-current-buffer output-buffer
               (widen))
 
-            (org-persp-window-for-org-buffer output-buffer))
+            (org-persp-pop-org-buffer output-buffer)
+            output-buffer)
 
-        (message "this is not buffer or valid file path: %s" buffer-or-path)))))
+        (message "this is not buffer or valid file path: %s" buffer-or-path)))
+    ;; )
+)
+
+;;;###autoload
+(defun org-persp-org-roam-node-visit-a (orig-fn &rest args)
+  "Ensure `org-roam-node-visit' opens buffers specially."
+  (cl-letf (((symbol-function 'org-roam-node-visit)
+             (lambda (node)
+               (let* ((f (ignore-errors (org-roam-node-file node)))
+                      (buf (org-persp-switch-create-indirect-buffer-per-persp f)))
+                 (with-current-buffer buf
+                   (widen)
+                   (when (not (equal (org-roam-node-id node)
+                                     (org-roam-id-at-point)))
+                     (goto-char (org-roam-node-point node))
+                     (+org-narrow-and-show)))))))
+    (apply orig-fn args)))
 
 (after! counsel
   (advice-add #'counsel-org-agenda-headlines-action-goto :around #'org-persp-open-file-respect-sanity-a)
@@ -266,6 +285,7 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 (after! org-roam-ivy
   (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-pop-buffer-a)
+  (advice-add #'org-roam-ivy :around #'org-persp-org-roam-node-visit-a)
   )
 
 (after! org-roam-lib

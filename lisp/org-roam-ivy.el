@@ -442,9 +442,7 @@ of org-roam item by tag string doesn't make much sense."
               :action (lambda (x)
                         (unless (string-match "Backlinks of" ivy--prompt)
                           (setq org-roam-ivy--last-ivy-text ivy-text))
-                        ;; (message "node of action: %s" (get-text-property 0 'node (car x)))
-                        (if-let ((node (ignore-errors (get-text-property 0 'node (car x))))
-                                 (f (ignore-errors (org-roam-node-file node))))
+                        (if-let ((node (ignore-errors (get-text-property 0 'node (car x)))))
                             (org-roam-node-visit node)
                           (progn
                             ;; prevent :initial-input becoming part of the newly captured file's #+title:

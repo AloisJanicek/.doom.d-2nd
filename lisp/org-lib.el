@@ -199,7 +199,8 @@ specified in `+org/capture-file-heading'."
   "Narrow to subtree, show children and entry"
   (org-narrow-to-subtree)
   (org-show-children)
-  (org-show-entry))
+  (org-show-entry)
+  (recenter 0))
 
 (defun +org-heading--parts ()
   "Return plist with parts of the org-heading"
