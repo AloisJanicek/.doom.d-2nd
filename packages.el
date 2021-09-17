@@ -7,12 +7,14 @@
 
 (unpin! org-roam)
 
-(package! org
-  :recipe (:host github
-           :repo "yantar92/org"
-           :branch "feature/org-fold-universal-core"
-           )
-  :pin "ec36031b4ffc9f4c90e652cfc19864f10670814a")
+;; NOTE Unstable since 7,8/20221 due to unpredictable issues with its new caching functionality
+;; otherwise one of the coolest org-mode development in decade, not kidding
+;; (package! org
+;;   :recipe (:host github
+;;            :repo "yantar92/org"
+;;            :branch "feature/org-fold-universal-core"
+;;            )
+;;   :pin "ec36031b4ffc9f4c90e652cfc19864f10670814a")
 
 
 (package! websocket)
@@ -20,7 +22,7 @@
 
 (package! org-appear
   :recipe (:host github :repo "awth13/org-appear"
-           :branch "feature/org-fold-support"
+           ;; :branch "feature/org-fold-support"
            )
   )
 
