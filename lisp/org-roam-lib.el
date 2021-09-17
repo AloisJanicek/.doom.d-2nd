@@ -366,4 +366,84 @@ With user prefix prompt allow to edit link and title.
 Use `pop-to-buffer' instead of `switch-to-buffer'."
   (pop-to-buffer (org-capture-get :buffer)))
 
+;;;###autoload
+(cl-defmethod org-roam-node-type-icon ((node org-roam-node))
+  "Return the simple icon distinguishing between regular node and ref node."
+  (propertize
+   (concat
+    (if (org-roam-node-refs node)
+        (all-the-icons-material "link" :v-adjust 0.05)
+      (all-the-icons-faicon "file-text" :v-adjust 0.05))
+    " ")
+   'face 'shadow))
+
+;;;###autoload
+(cl-defmethod org-roam-node-backlinks-num-str ((node org-roam-node))
+  "Return the backlinks number string for the node."
+  (let* ((backlinks (ignore-errors
+                      (org-roam-db-query
+                       [:select [source dest pos properties]
+                        :from links
+                        :where (= dest $s1)
+                        :and (= type "id")]
+                       (org-roam-node-id node))))
+         (backlinks-len (length backlinks)))
+    (cond ((< backlinks-len 1)
+           (propertize " 0" 'face 'warning))
+          ((< backlinks-len 9)
+           (propertize (concat " " (number-to-string backlinks-len)) 'face 'shadow))
+          (t
+           (propertize (number-to-string backlinks-len) 'face 'shadow)))))
+
+;;;###autoload
+(cl-defmethod org-roam-node-forwardlinks-num-str ((node org-roam-node))
+  "Return the forwardlinks number string for the node."
+  (let* ((forwardlinks (ignore-errors
+                         (org-roam-db-query
+                          [:select *
+                           :from links
+                           :where (= source $s1)]
+                          (org-roam-node-id node))))
+         (forwardlinks-len (length forwardlinks)))
+    (cond ((< forwardlinks-len 1)
+           (propertize " 0" 'face 'warning))
+          ((< forwardlinks-len 9)
+           (propertize (concat " " (number-to-string forwardlinks-len)) 'face 'shadow))
+          (t
+           (propertize (number-to-string forwardlinks-len) 'face 'shadow)))))
+
+;;;###autoload
+(cl-defmethod org-roam-node-filedir ((node org-roam-node))
+  "Return the directory name of file for the node."
+  (concat "#" (file-name-nondirectory
+               (directory-file-name
+                (file-name-directory (org-roam-node-file node))))))
+
+;;;###autoload
+(cl-defmethod org-roam-node-filetitle ((node org-roam-node))
+  "Return the file TITLE for the node."
+  (org-roam-get-keyword "TITLE" (org-roam-node-file node)))
+
+;;;###autoload
+(cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
+  "Return the hierarchy for the node."
+  (let ((title (org-roam-node-title node))
+        (olp (org-roam-node-olp node))
+        (level (org-roam-node-level node))
+        (filetitle (org-roam-node-filetitle node)))
+    (concat
+     (if (> level 0) (concat filetitle " > "))
+     (if (> level 1) (concat (string-join olp " > ") " > "))
+     title)))
+
+;;;###autoload
+(cl-defmethod org-roam-node-refs-propertized ((node org-roam-node))
+  "Return the propertized refs for the node."
+  (let ((ref-str (caar (org-roam-db-query [:select [ref] :from refs
+                                           :where (= node-id $s1)]
+                                          (org-roam-node-id node)))))
+    (when (stringp ref-str)
+      (propertize ref-str
+                  'face 'shadow))))
+
 (provide 'org-roam-lib)
