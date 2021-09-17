@@ -469,16 +469,17 @@ as you name the directory you place the file into.
 "
   (let ((tags-str (apply orig-fn args))
         (sep ":"))
-    (propertize
-     (concat sep
-             (mapconcat
-              #'identity
-              (cl-remove-duplicates
-               (split-string tags-str ":" t)
-               :test #'string-equal)
-              sep)
-             sep)
-     'face 'shadow)
-    ))
+    (message "tags-str: %s" tags-str)
+    (unless (string-equal "" tags-str)
+      (propertize
+       (concat sep
+               (mapconcat
+                #'identity
+                (cl-remove-duplicates
+                 (split-string tags-str ":" t)
+                 :test #'string-equal)
+                sep)
+               sep)
+       'face 'shadow))))
 
 (provide 'org-roam-lib)
