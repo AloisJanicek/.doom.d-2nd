@@ -107,7 +107,6 @@ if running under WSL")
     (ivy-set-display-transformer cmd #'all-the-icons-ivy-file-transformer)))
 
 (use-package! all-the-icons-ivy-rich
-  :disabled
   :after ivy-rich
   :init (all-the-icons-ivy-rich-mode 1)
   :config
