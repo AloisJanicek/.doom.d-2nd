@@ -7,7 +7,7 @@
 ;; Created: January 23, 2021
 ;; Modified: January 23, 2021
 ;; Version: 0.1
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "26.1"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -33,6 +33,9 @@
 ;;; Variables
 (defcustom gtd-agenda-inbox-file (expand-file-name "inbox.org" org-directory)
   "File where all stuff goes initially.")
+
+(defcustom gtd-agenda-mobile-inbox-file (expand-file-name "mobile.org" org-directory)
+  "File where all stuff goes initially for Orgzly preventing annoying sync issues.")
 
 (defvar gtd-agenda-hydra-no-precheck nil
   "When t, do not evaluate \":body-pre\" in `gtd-agenda-hydra/body'.")
@@ -603,12 +606,12 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("i" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            `(,gtd-agenda-inbox-file)
+            `(,gtd-agenda-inbox-file ,gtd-agenda-mobile-inbox-file)
             '(level 1)
             :title "Inbox"))
          ('agenda-headlines
           (agenda-headlines-goto-any
-           :files (list gtd-agenda-inbox-file)
+           :files (list gtd-agenda-inbox-file gtd-agenda-mobile-inbox-file)
            :level 1)))
    "inbox")
 
