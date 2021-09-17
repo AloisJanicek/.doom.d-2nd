@@ -78,6 +78,18 @@ of new org-roam item.
           (org-cut-subtree))
         (save-buffer)))))
 
+(defun +org-roam-db-location ()
+  "Construct the path of `org-roam-db-location'.
+
+Allows to each org-roam to have its own unique database."
+  (expand-file-name
+   "org-roam.db"
+   (expand-file-name
+    (file-name-nondirectory (string-trim-right org-roam-directory "/"))
+    (expand-file-name
+     "roam-dbs"
+     doom-etc-dir))))
+
 (defun +org-roam/switch-roam ()
   "Choose and update `org-roam-directory'."
   (interactive)
@@ -96,7 +108,7 @@ of new org-roam item.
     (unless (file-exists-p db-dir)
       (make-directory db-dir))
     (setq org-roam-directory dir
-          org-roam-db-location (expand-file-name "org-roam.db" db-dir)))
+          org-roam-db-location (+org-roam-db-location)))
 
 
   (org-roam-db-sync)

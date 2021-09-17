@@ -1881,9 +1881,7 @@ When in org-roam file, also create top-level ID.
   ;; REVIEW what is this
   ;; (advice-add #'org-roam-node-visit :after (lambda (&rest _) (solaire-mode +1)))
 
-  (setq org-roam-db-location (expand-file-name
-                              "org-roam.db"
-                              (concat doom-etc-dir (file-name-nondirectory (string-trim-right org-roam-directory "/"))))
+  (setq org-roam-db-location (+org-roam-db-location)
         org-roam-dailies-directory "journal/"
         org-roam-list-files-commands '(fd)
         org-roam-completion-everywhere t
