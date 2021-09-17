@@ -196,8 +196,8 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 
             (setq output-buffer (get-buffer new-buffer-name))
 
-            (with-current-buffer output-buffer
-              (widen))
+            ;; (with-current-buffer output-buffer
+            ;;   (widen))
 
             (org-persp-pop-org-buffer output-buffer)
             output-buffer)
@@ -214,7 +214,6 @@ Designed as an override advice for file or buffer opening functions like `pop-to
                (let* ((f (ignore-errors (org-roam-node-file node)))
                       (buf (org-persp-switch-create-indirect-buffer-per-persp f)))
                  (with-current-buffer buf
-                   (widen)
                    (when (not (equal (org-roam-node-id node)
                                      (org-roam-id-at-point)))
                      (goto-char (org-roam-node-point node))
