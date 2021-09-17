@@ -446,4 +446,25 @@ Use `pop-to-buffer' instead of `switch-to-buffer'."
       (propertize ref-str
                   'face 'shadow))))
 
+;;;###autoload
+(defun org-roam-doom-tags-remove-duplicate (orig-fn &rest args)
+  "Remove duplicate tags from string returned `org-roam-node-doom-tags'.
+
+Duplicate happens when you explicitely tag the file with the same tags
+as you name the directory you place the file into.
+"
+  (let ((tags-str (apply orig-fn args))
+        (sep ":"))
+    (propertize
+     (concat sep
+             (mapconcat
+              #'identity
+              (cl-remove-duplicates
+               (split-string tags-str ":" t)
+               :test #'string-equal)
+              sep)
+             sep)
+     'face 'shadow)
+    ))
+
 (provide 'org-roam-lib)

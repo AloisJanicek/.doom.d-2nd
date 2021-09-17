@@ -1948,6 +1948,8 @@ When in org-roam file, also create top-level ID.
                                               (interactive)
                                               (widen)
                                               (+org-narrow-and-show)))
+  (advice-add #'org-roam-node-doom-tags :around #'org-roam-doom-tags-remove-duplicate)
+
   ;; REVIEW what is this
   ;; (advice-add #'org-roam-node-visit :after (lambda (&rest _) (solaire-mode +1)))
 
