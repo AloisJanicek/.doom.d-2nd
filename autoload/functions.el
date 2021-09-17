@@ -10,6 +10,26 @@
 (require 's)
 
 ;;;###autoload
+(defun aj-convert-org-files-to-gpg (dir)
+  "For DIR recursively convert all .org files into .org.gpg."
+  (let ((old-files (directory-files-recursively dir ".org$"))
+        new-files)
+    (when (y-or-n-p (format "Did you properly backup %s directory?" dir))
+      (seq-map
+       (lambda (file)
+         (with-current-buffer (find-file-noselect file)
+           (let ((text (buffer-substring (point-min) (point-max))))
+             (f-write-text text 'utf-8 (concat file ".gpg")))))
+       old-files)
+      (seq-map
+       (lambda (file)
+         (delete-file file))
+       old-files)
+      (setq new-files
+            (directory-files-recursively dir ".org.gpg$"))
+      (message "Deleted %s '.org' files, created %s '.org.gpg' files" (length old-files) (length new-files)))))
+
+;;;###autoload
 (defun aj-decrypt-encrypt-file (file &optional encrypt)
   "Decrypt or encrypt whole content of a file FILE.
 Which operation will be executed depends on value of ENCRYPT."
