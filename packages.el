@@ -184,10 +184,6 @@
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*"))
   :pin "4aafd53efbc9693fd938d6c1f23a12f7666e0728")
 
-(package! org-brain
-  :recipe (:host github :repo "Kungsgeten/org-brain")
-  :pin "46ca9f766322cff31279ecdf02251ff24a0e9431")
-
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags")
   :pin "5c7521651b35ae9a7d3add4a66ae8cc176ae1c76")

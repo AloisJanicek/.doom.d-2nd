@@ -1243,10 +1243,6 @@ if running under WSL")
   :after org
   )
 
-(use-package! brain-lib
-  :after org-brain
-  )
-
 (use-package! gtd-agenda
   :after org
   :config
@@ -1390,69 +1386,6 @@ if running under WSL")
   :after org
   :config
   (doom-store-persist "custom" '(notes-filter-preset))
-  )
-
-(use-package! org-brain
-  :after org
-  :init
-  (when (featurep! :editor evil)
-    (add-to-list 'evil-motion-state-modes 'org-brain-visualize-mode))
-  :config
-  (set-popup-rule! "^\\*org-brain\\*$" :vslot -1 :size 60 :side 'left :select t :quit t :ttl nil :modeline t)
-  (add-hook 'org-brain-visualize-mode-hook (lambda ()
-                                             (doom-mark-buffer-as-real-h)
-                                             (persp-add-buffer (current-buffer))
-                                             (visual-line-mode)))
-  (advice-add #'org-brain-entry-at-pt :around (lambda (orig-fn &rest args)
-                                                (let ((buffer-file-name (or buffer-file-name
-                                                                            (buffer-file-name (buffer-base-buffer))))
-                                                      (org-brain-path (file-truename org-brain-path)))
-                                                  (apply orig-fn args))))
-  (advice-add #'org-brain-goto :after (lambda (&rest _)
-                                        "Recenter visited heading to the top of the buffer."
-                                        (recenter 0 t)
-                                        (when (org-at-heading-p)
-                                          (+org-narrow-and-show))
-                                        (solaire-mode +1)))
-  (advice-add #'org-brain-switch-brain :around (lambda (orig-fn directory)
-                                                 (let ((encrypted-dir
-                                                        (file-truename (expand-file-name "private" org-directory)))
-                                                       (current-prefix-arg nil)
-                                                       (old-brain org-brain-path))
-                                                   (when (and (file-equal-p
-                                                               (file-truename directory)
-                                                               encrypted-dir)
-                                                              (not +org-brain-currently-refiling))
-                                                     (aj-decrypt-encrypt-files-directory directory))
-                                                   (funcall orig-fn directory)
-                                                   (when (and (file-equal-p
-                                                               encrypted-dir
-                                                               (file-truename old-brain))
-                                                              (not +org-brain-currently-refiling))
-                                                     (aj-decrypt-encrypt-files-directory old-brain t)))))
-
-  (advice-add
-   #'org-brain-choose-entry
-   :around
-   (lambda (orig-fn &rest args)
-     "Set custom prompt indicating current `org-brain-path' directory."
-     (setcar (nthcdr 0 args)
-             (format
-              "Go to (%s:) "
-              (file-name-nondirectory
-               (string-trim-right org-brain-path "/"))))
-     (apply orig-fn args)))
-
-  (doom-store-persist "custom" '(org-brain-path))
-
-  (unless org-brain-path
-    (setq org-brain-path (expand-file-name "brain" org-directory)))
-
-  (setq org-brain-visualize-default-choices 'all
-        org-brain-title-max-length -1
-        org-brain-include-file-entries t
-        org-brain-file-entries-use-title t
-        )
   )
 
 (use-package! org-pretty-tags
