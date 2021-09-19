@@ -199,6 +199,8 @@ Designed as an override advice for file or buffer opening functions like `pop-to
             ;; (with-current-buffer output-buffer
             ;;   (widen))
 
+            ;; NOTE Clean this up since this renders `org-persp-pop-buffer-a'
+            ;; and every advice using it as obsolete
             (org-persp-pop-org-buffer output-buffer)
             output-buffer)
 
