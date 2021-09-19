@@ -264,3 +264,92 @@ with :after or :override due to some issue with starting the notification proces
         (user-error "Link type `%s' isn't supported by Yankpad" type)))))
   (advice-add #'yankpad-snippets-from-link :override #'yankpad-snippets-from-link-a)
   )
+
+
+(after! org-roam-ui
+;; HACK Until #88 is merged
+  (defun org-roam-ui--update-current-node ()
+    "Send the current node data to the web-socket."
+    (when (and (websocket-openp oru-ws) (org-roam-buffer-p) (buffer-file-name (buffer-base-buffer)))
+      (let* ((node (org-roam-id-at-point)))
+        (unless (string= org-roam-ui--ws-current-node node)
+          (setq org-roam-ui--ws-current-node node)
+          (websocket-send-text oru-ws (json-encode `((type . "command") (data . ((commandName . "follow") (id . ,node))))))))))
+
+;; HACK I have different opinion on how and where to open the org-roam node file...
+  (define-minor-mode
+    org-roam-ui-mode
+    "Enable org-roam-ui.
+This serves the web-build and API over HTTP."
+    :lighter " org-roam-ui"
+    :global t
+    :group 'org-roam-ui
+    :init-value nil
+    (if (fboundp #'org-roam-version)
+        (when (eq (seq-first (org-roam-version)) 49)
+          (message "You are running org-roam %s. Org-roam-ui is only compatible with v2, please upgrade." (org-roam-version))
+          (setq org-roam-ui-mode -1))
+      (message "Org-roam is either not installed or not running. Please fix this.")
+      (setq org-roam-ui-mode -1))
+    (cond
+     (org-roam-ui-mode
+   ;;; check if the default keywords actually exist on `orb-preformat-keywords'
+   ;;; else add them
+      (setq-local httpd-port org-roam-ui-port)
+      (setq httpd-root org-roam-ui/app-build-dir)
+      (httpd-start)
+      (setq org-roam-ui-ws
+            (websocket-server
+             35903
+             :host 'local
+             :on-open (lambda (ws) (progn
+                                     (setq oru-ws ws)
+                                     (org-roam-ui--send-graphdata)
+                                     (when org-roam-ui-update-on-save
+                                       (add-hook 'after-save-hook #'org-roam-ui--on-save))
+                                     (message "Connection established with org-roam-ui")
+                                     (when org-roam-ui-follow
+                                       (org-roam-ui-follow-mode 1))))
+             :on-message (lambda (_websocket frame)
+                           (let* ((msg (json-parse-string (websocket-frame-text frame) :object-type 'alist))
+                                  (command (alist-get 'command msg))
+                                  (data (alist-get 'data msg)))
+                             (cond ((string= command "open")
+                                    (let* ((node (org-roam-populate (org-roam-node-create
+                                                                     :id (alist-get 'id data))))
+                                           (pos (org-roam-node-point node))
+                                           (buf (org-roam-node-find-noselect node)))
+                                      ;; My emacs, my way
+                                      (with-current-buffer
+                                          (org-persp-switch-create-indirect-buffer-per-persp buf)
+                                        (widen)
+                                        (goto-char pos)
+                                        (+org-narrow-and-show)
+                                        (current-buffer))))
+
+                                   ((string= command "delete")
+                                    (progn
+                                      (message "Deleted %s" (alist-get 'file data))
+                                      (delete-file (alist-get 'file data))
+                                      (org-roam-db-sync)
+                                      (org-roam-ui--send-graphdata)))
+                                   ((string= command "create")
+                                    (progn
+                                      (if (and (fboundp #'orb-edit-note) (alist-get 'ROAM_REFS data))
+                                          (orb-edit-note (alist-get 'id data)))
+                                      (org-roam-capture-
+                                       :node (org-roam-node-create :title (alist-get 'title data))
+                                       :props '(:finalize find-file))))
+                                   (t (message "Something went wrong when receiving a message from Org-Roam-UI")))))
+             :on-close (lambda (_websocket)
+                         (remove-hook 'after-save-hook #'org-roam-ui--on-save)
+                         (org-roam-ui-follow-mode -1)
+                         (message "Connection with org-roam-ui closed."))))
+      (when org-roam-ui-open-on-start (orui-open)))
+     (t
+      (progn
+        (websocket-server-close org-roam-ui-ws)
+        (httpd-stop)
+        (remove-hook 'after-save-hook #'org-roam-ui--on-save)
+        (org-roam-ui-follow-mode -1)))))
+  )
