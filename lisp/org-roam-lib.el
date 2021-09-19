@@ -117,8 +117,8 @@ Allows to each org-roam to have its own unique database."
   (when (boundp 'org-roam-ivy--last-ivy-text)
     (setq org-roam-ivy--last-ivy-text ""))
 
-  )
-
+  (when (bound-and-true-p org-roam-ui-mode)
+    (org-roam-ui--send-graphdata)))
 
 (defun +org-roam-filtered-files ()
   "Return list of org files from `org-roam-dir' filtered by `org-roam-ivy-filter-preset'."
