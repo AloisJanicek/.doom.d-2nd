@@ -40,6 +40,7 @@ if running under WSL")
       doom-scratch-initial-major-mode 'emacs-lisp-mode
       +doom-quit-messages '("")
       standard-indent 2
+      completion-ignore-case t
       delete-by-moving-to-trash t
       )
 
