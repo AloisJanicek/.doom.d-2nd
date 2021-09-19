@@ -470,7 +470,6 @@ as you name the directory you place the file into.
 "
   (let ((tags-str (apply orig-fn args))
         (sep ":"))
-    (message "tags-str: %s" tags-str)
     (unless (string-equal "" tags-str)
       (propertize
        (concat sep
