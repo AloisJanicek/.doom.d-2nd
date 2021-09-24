@@ -92,7 +92,7 @@
 
  :tools
  ansible
- (debugger +lsp)
+ (debugger) ;; +lsp pulls lsp-mode through dap-mode
  direnv
  docker
  editorconfig
@@ -106,7 +106,7 @@
   +offline
   +docsets
   )
- lsp
+ (lsp +eglot)
  magit
  make
  ;;pass
@@ -130,7 +130,7 @@
  crystal
  (csharp +lsp)
  data
- (dart +flutter +lsp)
+ (dart +flutter) ;; +lsp pulls lsp-mode through lsp-dart
  (elixir +lsp)
  (elm +lsp)
  emacs-lisp
@@ -174,12 +174,12 @@
  ;; rst
  (ruby +lsp)
  (rust +lsp)
- (scala +lsp)
+ (scala) ;; +lsp pulls lsp-mode through lsp-metals
  scheme
  (sh +lsp +powershell)
  sml
  ;;solidity
- (swift +lsp)
+ (swift) ;; +lsp pulls lsp-mode through lsp-sourcekit
  ;;terra
  (web +lsp)
  (yaml +lsp)

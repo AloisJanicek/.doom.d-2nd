@@ -43,10 +43,6 @@
     :pin "96a4850676b74ffa55b52ff8e9824f7537df6a47")
   )
 
-(package! lsp-julia
-  :recipe (:host github :repo "non-Jedi/lsp-julia")
-  :pin "809da95c05fe668acbae5a35e03082d9b9577728")
-
 (package! json-proces-client
   :recipe (:host github :repo "emacsmirror/json-process-client")
   :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")

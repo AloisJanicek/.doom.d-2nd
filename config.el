@@ -653,9 +653,6 @@ if running under WSL")
   )
 
 (after! groovy-mode
-  (add-hook! 'groovy-mode-local-vars-hook #'lsp-deferred)
-  (setq lsp-groovy-server-file "/usr/share/java/groovy-language-server/groovy-language-server-all.jar")
-
   (add-to-list
    'aj-modes-tests-alist
    '(groovy-mode . (:dir (lambda () (locate-dominating-file "." "build.gradle"))
@@ -1056,46 +1053,12 @@ if running under WSL")
 
   )
 
-(after! lsp
-  (setq lsp-ui-sideline-enable nil
-        lsp-semantic-highlighting :deferred
-        )
-  )
-
 (after! lua-mode
-  (add-hook! 'lua-mode-local-vars-hook #'lsp-deferred)
-
   (add-to-list
    'aj-modes-tests-alist
    '(lua-mode . (:dir default-directory
                  :fn async-shell-command
                  :cmd "busted")))
-  )
-
-(after! lsp-clients
-  (setq lsp-csharp-server-path "/opt/omnisharp-roslyn/OmniSharp.exe")
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection (executable-find "reason-language-server"))
-                    :major-modes '(reason-mode)
-                    :notification-handlers (ht ("client/registerCapability" 'ignore))
-                    :priority 1
-                    :server-id 'reason-ls))
-  )
-
-(after! lsp-php
-  (let ((serenata-exec (expand-file-name "serenata.phar" doom-etc-dir)))
-    (unless (file-exists-p serenata-exec)
-      (shell-command
-       (format
-        (concat
-         ;; Serenata 5.4.0
-         ;; more https://gitlab.com/Serenata/Serenata/-/tags
-         "curl https://gitlab.com/Serenata/Serenata/-/jobs/735379568/artifacts/raw/bin/distribution.phar "
-         "--output %s && chmod +x %s")
-        serenata-exec serenata-exec)))
-
-    (setq lsp-serenata-server-path serenata-exec)
-    (setq lsp-serenata-php-version 7.4))
   )
 
 (after! magit
@@ -1972,7 +1935,6 @@ When in org-roam file, also create top-level ID.
   )
 
 (after! perl-mode
-  (add-hook! 'perl-mode-local-vars-hook #'lsp-deferred)
   (add-hook 'perl-mode-local-vars-hook
             (lambda ()
               (when (flycheck-may-enable-checker 'perl)
