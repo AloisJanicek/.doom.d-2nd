@@ -96,13 +96,7 @@ Allows to each org-roam to have its own unique database."
   (require 'ffap)
   (let* ((dir (file-truename
                (ivy-read "Choose roam directory: "
-                         (append
-                          (seq-filter
-                           (lambda (dir)
-                             (string-match "roam" dir))
-                           (ffap-all-subdirs org-directory 1))
-                          (ffap-all-subdirs (expand-file-name "roam" org-directory) 1)
-                          (ffap-all-subdirs (expand-file-name "roam-encrypt" org-directory) 1)))))
+                         (+org-roam-dirs 'valid))))
          (db-dir (if (bound-and-true-p doom-etc-dir)
                      (concat doom-etc-dir (file-name-nondirectory dir))
                    (concat user-emacs-directory (file-name-nondirectory dir)))))
@@ -119,6 +113,29 @@ Allows to each org-roam to have its own unique database."
 
   (when (bound-and-true-p org-roam-ui-mode)
     (org-roam-ui--send-graphdata)))
+
+(defun +org-roam-dirs (&optional valid)
+  "Return list of all `org-directory' sub-dirs which match string \"roam\" in their path.
+
+When optional argument VALID is non-nil, directory isn't valid when its path
+matches to \"journal\", \"inbox\" or \"books\".
+"
+  (seq-filter
+   (lambda (dir)
+     (and
+      (string-match "roam" dir)
+      (if valid
+          (and
+           (not (string-match "inbox" dir))
+           (not (string-match "journal" dir))
+           (not (string-match "books" dir))
+           )
+        t
+        )
+      )
+     )
+   (ffap-all-subdirs org-directory))
+  )
 
 (defun +org-roam-filtered-files ()
   "Return list of org files from `org-roam-dir' filtered by `org-roam-ivy-filter-preset'."

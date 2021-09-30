@@ -177,11 +177,11 @@ completion candidates filtering, running this fn on the completion candidate sho
   (let* ((f (org-roam-node-file (org-roam-ivy--get-node x)))
          (fname (file-name-nondirectory f))
          (dest (file-name-as-directory
-                (read-directory-name "New location: " org-roam-directory))))
+                (ivy-read "New location: " (+org-roam-dirs)))))
     (unless (file-directory-p dest)
       (mkdir dest t))
     (rename-file f dest)
-    (message "%s moved to new location: %s." fname dest)))
+    (message "%s \nmoved to new location: %s." f dest)))
 
 (defun org-roam-ivy--links (x type)
   "Browse links of TYPE of the org-roam item X."
