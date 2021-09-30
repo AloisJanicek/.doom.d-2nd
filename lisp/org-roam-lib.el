@@ -114,6 +114,38 @@ Allows to each org-roam to have its own unique database."
   (when (bound-and-true-p org-roam-ui-mode)
     (org-roam-ui--send-graphdata)))
 
+(defun +org-roam/create-new-roam-linking-files ()
+  "Build new org-roam-directories based on files from other, existing ones.
+
+Leveraging the org-roam's design decision of not resolving symlinks
+use the GNU stow to link files from the existing org-roam directories
+into the choosen one creating it if doesn't already exist.
+
+This allows user to neatly orgnize org-roam directory into different
+sub-directories which can be used either as source of tag category for filtering
+or even as new dedicated org-roam directories themselves.
+"
+  (interactive)
+  (let* ((dir (ivy-read "Choose source org-roam dir-path: " (+org-roam-dirs 'valid)))
+         (dir-path (directory-file-name
+                    (file-name-directory dir)))
+         (dir-name (file-name-nondirectory
+                    (directory-file-name
+                     dir)))
+         (target-path (ivy-read "Target org-roam: " (+org-roam-dirs 'valid)
+                                :action (lambda (x)
+                                          (unless (file-exists-p x)
+                                            (make-directory x))))))
+
+    (shell-command
+     (format "stow %s -d %s -t %s"
+             dir-name
+             dir-path
+             target-path
+             ))
+    )
+  )
+
 (defun +org-roam-dirs (&optional valid)
   "Return list of all `org-directory' sub-dirs which match string \"roam\" in their path.
 

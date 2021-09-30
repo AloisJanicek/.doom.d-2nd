@@ -22,6 +22,8 @@
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\")) %(org-roam-ivy--filter-preset-get org-roam-directory)
 "
+
+  ("C" #'+org-roam/create-new-roam-linking-files "Create new roam domain")
   ("d" (dired org-roam-directory) "dired directory")
   ("D" #'org-roam-ivy-find-duplicate-title "duplicate titles")
   ("r" #'org-roam-ivy-find-refs "refs")
