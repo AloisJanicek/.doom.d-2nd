@@ -126,25 +126,28 @@ sub-directories which can be used either as source of tag category for filtering
 or even as new dedicated org-roam directories themselves.
 "
   (interactive)
-  (let* ((dir (ivy-read "Choose source org-roam dir-path: " (+org-roam-dirs 'valid)))
+  (let* ((dir (ivy-read "WHAT to link: " (+org-roam-dirs 'valid)))
          (dir-path (directory-file-name
                     (file-name-directory dir)))
          (dir-name (file-name-nondirectory
                     (directory-file-name
                      dir)))
-         (target-path (ivy-read "Target org-roam: " (+org-roam-dirs 'valid)
-                                :action (lambda (x)
-                                          (unless (file-exists-p x)
-                                            (make-directory x))))))
-
+         (target-path (ivy-read
+                       "WHERE to link: "
+                       (list
+                        (read-directory-name "WHERE to link: "
+                                             (expand-file-name "roam-virtual" org-directory)))
+                       :action (lambda (x)
+                                 (unless (file-exists-p x)
+                                   (make-directory x)
+                                   (make-directory (expand-file-name "books" x))
+                                   (make-directory (expand-file-name "inbox" x)))))))
     (shell-command
      (format "stow %s -d %s -t %s"
              dir-name
              dir-path
              target-path
-             ))
-    )
-  )
+             ))))
 
 (defun +org-roam-dirs (&optional valid)
   "Return list of all `org-directory' sub-dirs which match string \"roam\" in their path.
