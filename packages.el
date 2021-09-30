@@ -6,15 +6,14 @@
 (package! saveplace-pdf-view :disable t)
 
 (unpin! org-roam)
+(unpin! org)
 
-;; NOTE Unstable since 7,8/20221 due to unpredictable issues with its new caching functionality
-;; otherwise one of the coolest org-mode development in decade, not kidding
-;; (package! org
-;;   :recipe (:host github
-;;            :repo "yantar92/org"
-;;            :branch "feature/org-fold-universal-core"
-;;            )
-;;   :pin "ec36031b4ffc9f4c90e652cfc19864f10670814a")
+(package! org
+  :recipe (:host github
+           :repo "yantar92/org"
+           :branch "feature/org-fold-universal-core"
+           )
+  )
 
 
 (package! websocket)
@@ -22,7 +21,7 @@
 
 (package! org-appear
   :recipe (:host github :repo "awth13/org-appear"
-           ;; :branch "feature/org-fold-support"
+           :branch "feature/org-fold-support"
            )
   )
 
@@ -55,7 +54,7 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "09b887c01aeb33d715a1f8269f45c38594614d93")
+  :pin "8c0cd543c8d79cf223216b3f44ac3a4b0695c484")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
@@ -100,7 +99,7 @@
            :repo "emacs-eaf/emacs-application-framework"
            :files ("*")
            )
-  :pin "3249880aae8353524ad5f785101bbcc8a48b5e4e"
+  :pin "6a9d31dc9063f9dce2f30a40c5a4fafffa4d92ca"
   )
 
 (package! eaf-browser
@@ -109,7 +108,7 @@
            :files ("*")
            :pre-build ("npm" "install")
            )
-  :pin "b2a3415ec4e204a8d596e70709e0aefc20b1784e"
+  :pin "47035a89abd8e9553167f60cb3a96aac708d4fac"
   )
 
 (package! eslintd-fix
@@ -189,14 +188,14 @@
   :pin "288703b897449f5110c9c76e78eb9a928ffc0dcd")
 
 (package! org-super-agenda
-  :pin "a5557ea4f51571ee9def3cd9a1ab1c38f1a27af7")
+  :pin "fb5e2ef277bc811a3b061106c99e4c47b6b86f80")
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
   :pin "673ded8f4761a8af03be2294fe881b38f34d8919")
 
 (package! org-ql
-  :pin "94f9e6f3031b32cf5e2149beca7074807235dcb0")
+  :pin "31aeb0a2505acf8044c07824888ddec7f3e529c1")
 
 (package! org-web-tools)
 
@@ -231,7 +230,7 @@
   :pin "b6ae63a236605b1c5e1069f7d3afe06ae32a7bae")
 
 (package! tldr
-  :pin "d59405bd72f3379417b9e73f06e8848b43cb021d")
+  :pin "d3fd2a809a266c005915026799121c78e8b358f0")
 
 (package! transient-posframe
   :recipe (:host github :repo "yanghaoxie/transient-posframe")
