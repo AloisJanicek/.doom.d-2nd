@@ -147,7 +147,10 @@ or even as new dedicated org-roam directories themselves.
              dir-name
              dir-path
              target-path
-             ))))
+             ))
+
+    (when (string-equal org-roam-directory (string-trim-right target-path "/"))
+      (org-roam-db-sync))))
 
 (defun +org-roam-dirs (&optional valid)
   "Return list of all `org-directory' sub-dirs which match string \"roam\" in their path.
