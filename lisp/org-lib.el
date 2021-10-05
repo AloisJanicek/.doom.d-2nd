@@ -282,7 +282,7 @@ specified in `+org/capture-file-heading'."
   (+org-capture-task))
 
 ;;;###autoload
-(defun +org-notes/format-org-links (&optional prompt directory filtered-files-fn)
+(defun +org-notes/grep-search-format-org-links (&optional prompt directory filtered-files-fn)
   "Remove org link syntax from grep search results."
   (interactive)
   (let* ((prompt (or prompt "Search notes: "))

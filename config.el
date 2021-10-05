@@ -2340,7 +2340,7 @@ When in org-roam file, also create top-level ID.
 
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
 
-(advice-add #'+org-notes/format-org-links :after (lambda (&rest _)
+(advice-add #'+org-notes/grep-search-format-org-links :after (lambda (&rest _)
                                                    "Narrow view after switching."
                                                    (interactive)
                                                    (+org-narrow-and-show)))

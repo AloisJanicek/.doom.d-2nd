@@ -29,6 +29,7 @@
 (require 'agenda-queries)
 (require 'agenda-headlines)
 (require 'agenda-filter)
+(require 'org-lib)
 
 ;;; Variables
 (defcustom gtd-agenda-inbox-file (expand-file-name "inbox.org" org-directory)
@@ -262,13 +263,13 @@ which addopted some code snippets.
                           (when active-timestamp
                             (concat spc active-timestamp)))))
       (--> final-string
-        (concat "  " it)
-        (org-add-props it properties
-          'org-agenda-type 'search
-          'todo-state keyword
-          'tags tag-list
-          'marker marker
-          'org-habit-p habit)))))
+           (concat "  " it)
+           (org-add-props it properties
+             'org-agenda-type 'search
+             'todo-state keyword
+             'tags tag-list
+             'marker marker
+             'org-habit-p habit)))))
 
 (defun gtd-agenda/descend-into-project ()
   "Show all descendants of the task under the point if it originates from
@@ -832,6 +833,21 @@ GTD Agenda (%(agenda-filter-preset-string))
    "jump")
 
   ("Q" (gtd-agenda-select-history-queries "EDIT past queries: ") "edit query")
+  ("g" (lambda ()
+         (interactive)
+         (+org-notes/grep-search-format-org-links
+          "grep archived files: "
+          org-directory
+          #'org-agenda-files))
+   "grep archived files")
+  ("G" (lambda ()
+         (interactive)
+         (+org-notes/grep-search-format-org-links
+          "grep archived files: "
+          org-directory
+          (lambda ()
+            (agenda-filter-filtered-org-files  :archived t))))
+   "grep archived files")
   ("f" #'agenda-filter-set-filter "set filter")
   ("F" #'agenda-filter-clear-filter "clear filter")
   )

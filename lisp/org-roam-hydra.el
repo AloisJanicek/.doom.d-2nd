@@ -40,7 +40,7 @@
   ("s" #'org-roam-ui-mode "UI web server")
   ("S" #'+org-roam/switch-roam "Switch roam")
   ("y" (+org-roam/capture-yankpad) "yankpad")
-  ("g" (+org-notes/format-org-links
+  ("g" (+org-notes/grep-search-format-org-links
         (format "Search %s: "
                 (file-name-nondirectory (string-trim-right org-roam-directory "/")))
         org-roam-directory
