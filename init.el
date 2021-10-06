@@ -68,7 +68,7 @@
 
  :emacs
  (dired
-  ;; +ranger
+  +ranger
   +icons
   )
  electric
