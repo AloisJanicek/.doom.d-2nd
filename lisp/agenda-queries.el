@@ -201,12 +201,20 @@ to resole their precedence.
   `(and
     (todo "NEXT")
     ,(agenda-queries--filter-tags-query)
-    (not (or (parent "WAIT")
-             (parent "HOLD")
-             (parent "SOMEDAY")
-             (parent "MAYBE")))
+    ,(agenda-queries--cancelling-ancestors-query)
     (not (ancestors (done)))
     (not (scheduled))))
+
+(defun agenda-queries--cancelling-ancestors-query ()
+  "Custom org-ql query checking for cancelling ancestors.
+
+Cancelling ancestors are following todo keywords:
+WAIT, HOLD, SOMEDAY, MAYBE
+"
+  `(not (or (ancestors "WAIT")
+            (ancestors "HOLD")
+            (ancestors "SOMEDAY")
+            (ancestors "MAYBE"))))
 
 (defun agenda-queries--projects-query ()
   "Return custom org-ql queary for Projects.
@@ -216,9 +224,9 @@ and has todo childre."
   `(or (and (or (todo) (done))
             ,(agenda-queries--filter-tags-query)
             (descendants (todo))
-            (not (or (todo "SOMEDAY")
-                     (todo "MAYBE"))))
+            ,(agenda-queries--cancelling-ancestors-query))
        (and (todo "PROJECT")
+            ,(agenda-queries--cancelling-ancestors-query)
             ,(agenda-queries--filter-tags-query))))
 
 (defun agenda-queries--project-descendants-query (h-title)
