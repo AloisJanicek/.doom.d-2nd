@@ -2061,7 +2061,7 @@ When in org-roam file, also create top-level ID.
 
 (after! recentf
   (advice-add #'recentf-cleanup :around #'doom-shut-up-a)
-  (dolist (i `(".org$" ".pdf$" ".epub$" ".db$"
+  (dolist (i `(".org$" ".pdf$" ".epub$" ".db$" "org.gpg$"
                ".org_archive$"
                ".local/etc"
                ".local/cache"
