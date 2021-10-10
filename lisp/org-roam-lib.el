@@ -454,7 +454,7 @@ Use `pop-to-buffer' instead of `switch-to-buffer'."
           (all-the-icons-material "link" :v-adjust 0.05)
         (all-the-icons-faicon "file-text" :v-adjust 0.05))
       " ")
-     'face 'shadow)
+     'face 'org-tag)
     )
   )
 
@@ -473,9 +473,9 @@ Use `pop-to-buffer' instead of `switch-to-buffer'."
       (cond ((< backlinks-len 1)
              (propertize " 0" 'face 'warning))
             ((< backlinks-len 9)
-             (propertize (concat " " (number-to-string backlinks-len)) 'face 'shadow))
+             (propertize (concat " " (number-to-string backlinks-len)) 'face 'org-tag))
             (t
-             (propertize (number-to-string backlinks-len) 'face 'shadow))))
+             (propertize (number-to-string backlinks-len) 'face 'org-tag))))
     )
   )
 
@@ -493,9 +493,9 @@ Use `pop-to-buffer' instead of `switch-to-buffer'."
       (cond ((< forwardlinks-len 1)
              (propertize " 0" 'face 'warning))
             ((< forwardlinks-len 9)
-             (propertize (concat " " (number-to-string forwardlinks-len)) 'face 'shadow))
+             (propertize (concat " " (number-to-string forwardlinks-len)) 'face 'org-tag))
             (t
-             (propertize (number-to-string forwardlinks-len) 'face 'shadow))))
+             (propertize (number-to-string forwardlinks-len) 'face 'org-tag))))
     )
   )
 
@@ -534,7 +534,7 @@ Use `pop-to-buffer' instead of `switch-to-buffer'."
                                           (org-roam-node-id node)))))
     (when (stringp ref-str)
       (propertize ref-str
-                  'face 'shadow))))
+                  'face 'org-tag))))
 
 ;;;###autoload
 (defun org-roam-doom-tags-remove-duplicate (orig-fn &rest args)
@@ -556,6 +556,6 @@ as you name the directory you place the file into.
                  :test #'string-equal)
                 sep)
                sep)
-       'face 'shadow))))
+       'face 'org-tag))))
 
 (provide 'org-roam-lib)
