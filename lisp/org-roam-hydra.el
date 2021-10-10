@@ -61,6 +61,7 @@
   ("I" #'org-roam-jump-to-index "index")
   ("<tab>" #'org-roam-insert "insert")
   ("T" #'org-roam-buffer-toggle "toggle")
+  ("." #'org-roam-refile "Refile")
   )
 
 (defun org-roam-hydra--adapter (fn)
