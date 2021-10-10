@@ -178,6 +178,7 @@ completion candidates filtering, running this fn on the completion candidate sho
 ;; use `org-roam-refile'?
 (defun org-roam-ivy--move-action (x)
   "Move org-roam file X."
+  ;; FIXME Check for attachments and move them to
   (let* ((f (org-roam-node-file (org-roam-ivy--get-node x)))
          (fname (file-name-nondirectory f))
          (dest (file-name-as-directory
