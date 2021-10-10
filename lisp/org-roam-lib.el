@@ -423,7 +423,15 @@ With user prefix prompt allow to edit link and title.
   "Return list of org-roam node NODE's forwardlinks."
   (seq-map
    (lambda (record)
-     (org-roam-node-from-id (nth 2 record)))
+     (if (not (string-equal (substring (nth 2 record) 0 1) "/"))
+         (org-roam-node-from-id
+          (nth 2 record))
+       (string-trim-left
+        (nth 2 record)
+        "//"
+        )
+       )
+     )
    (org-roam-db-query
     [:select *
      :from links
@@ -437,57 +445,69 @@ Use `pop-to-buffer' instead of `switch-to-buffer'."
   (pop-to-buffer (org-capture-get :buffer)))
 
 ;;;###autoload
-(cl-defmethod org-roam-node-type-icon ((node org-roam-node))
+(cl-defmethod org-roam-node-type-icon ((node t))
   "Return the simple icon distinguishing between regular node and ref node."
-  (propertize
-   (concat
-    (if (org-roam-node-refs node)
-        (all-the-icons-material "link" :v-adjust 0.05)
-      (all-the-icons-faicon "file-text" :v-adjust 0.05))
-    " ")
-   'face 'shadow))
+  (when (org-roam-node-p node)
+    (propertize
+     (concat
+      (if (org-roam-node-refs node)
+          (all-the-icons-material "link" :v-adjust 0.05)
+        (all-the-icons-faicon "file-text" :v-adjust 0.05))
+      " ")
+     'face 'shadow)
+    )
+  )
 
 ;;;###autoload
-(cl-defmethod org-roam-node-backlinks-num-str ((node org-roam-node))
+(cl-defmethod org-roam-node-backlinks-num-str ((node t))
   "Return the backlinks number string for the node."
-  (let* ((backlinks (ignore-errors
-                      (org-roam-db-query
-                       [:select [source dest pos properties]
-                        :from links
-                        :where (= dest $s1)
-                        :and (= type "id")]
-                       (org-roam-node-id node))))
-         (backlinks-len (length backlinks)))
-    (cond ((< backlinks-len 1)
-           (propertize " 0" 'face 'warning))
-          ((< backlinks-len 9)
-           (propertize (concat " " (number-to-string backlinks-len)) 'face 'shadow))
-          (t
-           (propertize (number-to-string backlinks-len) 'face 'shadow)))))
+  (when (org-roam-node-p node)
+    (let* ((backlinks (ignore-errors
+                        (org-roam-db-query
+                         [:select [source dest pos properties]
+                          :from links
+                          :where (= dest $s1)
+                          :and (= type "id")]
+                         (org-roam-node-id node))))
+           (backlinks-len (length backlinks)))
+      (cond ((< backlinks-len 1)
+             (propertize " 0" 'face 'warning))
+            ((< backlinks-len 9)
+             (propertize (concat " " (number-to-string backlinks-len)) 'face 'shadow))
+            (t
+             (propertize (number-to-string backlinks-len) 'face 'shadow))))
+    )
+  )
 
 ;;;###autoload
-(cl-defmethod org-roam-node-forwardlinks-num-str ((node org-roam-node))
+(cl-defmethod org-roam-node-forwardlinks-num-str ((node t))
   "Return the forwardlinks number string for the node."
-  (let* ((forwardlinks (ignore-errors
-                         (org-roam-db-query
-                          [:select *
-                           :from links
-                           :where (= source $s1)]
-                          (org-roam-node-id node))))
-         (forwardlinks-len (length forwardlinks)))
-    (cond ((< forwardlinks-len 1)
-           (propertize " 0" 'face 'warning))
-          ((< forwardlinks-len 9)
-           (propertize (concat " " (number-to-string forwardlinks-len)) 'face 'shadow))
-          (t
-           (propertize (number-to-string forwardlinks-len) 'face 'shadow)))))
+  (when (org-roam-node-p node)
+    (let* ((forwardlinks (ignore-errors
+                           (org-roam-db-query
+                            [:select *
+                             :from links
+                             :where (= source $s1)]
+                            (org-roam-node-id node))))
+           (forwardlinks-len (length forwardlinks)))
+      (cond ((< forwardlinks-len 1)
+             (propertize " 0" 'face 'warning))
+            ((< forwardlinks-len 9)
+             (propertize (concat " " (number-to-string forwardlinks-len)) 'face 'shadow))
+            (t
+             (propertize (number-to-string forwardlinks-len) 'face 'shadow))))
+    )
+  )
 
 ;;;###autoload
-(cl-defmethod org-roam-node-filedir ((node org-roam-node))
+(cl-defmethod org-roam-node-filedir ((node t))
   "Return the directory name of file for the node."
-  (concat "#" (file-name-nondirectory
-               (directory-file-name
-                (file-name-directory (org-roam-node-file node))))))
+  (when (org-roam-node-p node)
+    (concat "#" (file-name-nondirectory
+                 (directory-file-name
+                  (file-name-directory (org-roam-node-file node)))))
+    )
+  )
 
 ;;;###autoload
 (cl-defmethod org-roam-node-filetitle ((node org-roam-node))
@@ -525,7 +545,8 @@ as you name the directory you place the file into.
 "
   (let ((tags-str (apply orig-fn args))
         (sep ":"))
-    (unless (string-equal "" tags-str)
+    (when (and (stringp tags-str)
+               (not (string-equal "" tags-str)))
       (propertize
        (concat sep
                (mapconcat

@@ -131,11 +131,15 @@ completion candidates filtering, running this fn on the completion candidate sho
 ;;; org-roam-ivy dispatch actions
 (defun org-roam-ivy--refs-url-open-action (x)
   "Open roam_key url from file X."
-  (with-current-buffer
-      (find-file-noselect
-       (org-roam-node-file (org-roam-ivy--get-node x)))
-    (goto-char (point-min))
-    (browse-url (org-entry-get (point) "ROAM_REFS"))))
+  (if (not (ignore-errors (org-roam-ivy--get-node x)))
+      (browse-url (car x))
+    (browse-url
+     (string-trim
+      (car
+       (org-roam-node-refs
+        (org-roam-node-from-id
+         (org-roam-node-id (org-roam-ivy--get-node x)))))
+      "//"))))
 
 (defun org-roam-ivy--delete-file (file)
   "Delete org-roam file FILE and kill visiting buffers."
@@ -196,12 +200,18 @@ completion candidates filtering, running this fn on the completion candidate sho
                            ('forwardlinks
                             (seq-map
                              (lambda (n)
-                               (org-roam-node-read--to-candidate n))
+                               (if (org-roam-node-p n)
+                                   (org-roam-node-read--to-candidate n)
+                                 (cons n n)
+                                 )
+                               )
                              (+org-roam-forwardlinks-get node)))))
              (link-type (pcase type
                           ('backlinks :backlinks)
                           ('forwardlinks :forwardlinks)))
-             (prompt (format "%s of %s: " (prin1-to-string type) (org-roam-node-title node))))
+             (prompt (format "%s of %s: " (prin1-to-string type)
+                             (ignore-errors
+                               (org-roam-node-title node)))))
         (progn
           (plist-put
            org-roam-ivy--last-ivy
@@ -210,7 +220,10 @@ completion candidates filtering, running this fn on the completion candidate sho
             (list `(,prompt ,collection ,from ,(current-time)))
             (plist-get org-roam-ivy--last-ivy :links)))
           (org-roam-ivy prompt collection from))
-      (message "Item \"%s\" has no %s" (org-roam-node-title node) (prin1-to-string type))
+      (message "Item \"%s\" has no %s"
+               (ignore-errors
+                 (org-roam-node-title node))
+               (prin1-to-string type))
       (org-roam-ivy--last-ivy))))
 
 (defun org-roam-ivy--backlinks-action (x)
