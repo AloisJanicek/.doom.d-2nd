@@ -1254,6 +1254,11 @@ if running under WSL")
                            (org-clock-in-last)))
   )
 
+(use-package org-save-buffers
+  :disabled
+  :after org
+  )
+
 (after! org
   (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
   (advice-add #'org-open-at-point :after (lambda () (solaire-mode +1)))
@@ -1263,19 +1268,16 @@ if running under WSL")
   (set-popup-rule! "^\\*Org QL.*\\*$"           :vslot 1 :size 100 :side 'right :select t :quit t   :ttl nil :modeline t)
 
   (add-to-list '+format-on-save-enabled-modes 'org-mode t)
-  (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
   (add-hook 'org-capture-mode-hook #'flyspell-mode)
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook (lambda () (visual-line-mode -1)))
   (add-hook 'org-mode-hook #'mixed-pitch-mode)
-  (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
                                                 (when (derived-mode-p 'org-mode)
                                                   (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
-  (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
   (setcdr (assoc "\\.x?html?\\'" org-file-apps) #'aj-browse-zeal-local-file)
   (org-link-set-parameters "calibre" :follow #'aj-org-calibre-follow :store #'aj-org-calibre-store)
 
@@ -1449,8 +1451,6 @@ if running under WSL")
        (widen)
        (+org-narrow-and-show))))
 
-  (advice-add #'org-agenda-archive :after #'org-save-all-org-buffers)
-  (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-set-mode-name :after (lambda (&rest _)
                                                   "Ensure modes are formated with cyphejor."
                                                   (cyphejor--hook)))
@@ -1460,18 +1460,7 @@ if running under WSL")
                                                (org-ql-view-refresh)
                                              (org-agenda-redo))))
   (advice-add #'org-agenda-redo :around #'doom-shut-up-a)
-  (advice-add #'org-agenda-set-effort :after #'org-save-all-org-buffers)
-  (advice-add #'org-schedule :after (lambda (&rest _)
-                                      (org-save-all-org-buffers)))
-  (advice-add #'org-deadline :after (lambda (&rest _)
-                                      (org-save-all-org-buffers)))
-  (advice-add #'+org-change-title :after (lambda (&rest _)
-                                           (org-save-all-org-buffers)))
-  (advice-add #'org-cut-special :after #'org-save-all-org-buffers)
-  (advice-add #'counsel-org-tag :after #'org-save-all-org-buffers)
   (advice-add #'org-agenda-todo :after #'aj-org-agenda-save-and-refresh-a)
-  (advice-add #'org-todo :after (lambda (&rest _)
-                                  (org-save-all-org-buffers)))
   (advice-add #'org-agenda-kill :after #'aj-org-agenda-save-and-refresh-a)
 
   (setq
@@ -1503,10 +1492,6 @@ if running under WSL")
   )
 
 (after! org-archive
-  (advice-add #'org-archive-subtree :after (lambda (&rest _)
-                                             (org-save-all-org-buffers)))
-  (advice-add #'org-archive-subtree-default :after (lambda (&rest _)
-                                                     (org-save-all-org-buffers)))
   (setq org-archive-location "./archive/%s_archive::")
   )
 
@@ -1711,16 +1696,7 @@ When in org-roam file, also create top-level ID.
   )
 
 (after! org-clock
-  (advice-add #'org-clock-in :after (lambda (&rest _)
-                                      "Save all opened org-mode files."
-                                      (org-save-all-org-buffers)))
-  (advice-add #'org-clock-out :after (lambda (&rest _)
-                                       "Save all opened org-mode files."
-                                       (org-save-all-org-buffers)))
   (advice-add #'org-clock-load :around #'doom-shut-up-a)
-  (advice-add #'org-clock-report :after (lambda (&rest _)
-                                          "Save all opened org-mode files."
-                                          (org-save-all-org-buffers)))
   (advice-add #'org-clock-goto :after (lambda (&rest _)
                                         "Narrow view after switching."
                                         (interactive)
@@ -2341,9 +2317,9 @@ When in org-roam file, also create top-level ID.
 (remove-hook! '(org-mode-hook markdown-mode-hook rst-mode-hook asciidoc-mode-hook latex-mode-hook) #'writegood-mode)
 
 (advice-add #'+org-notes/grep-search-format-org-links :after (lambda (&rest _)
-                                                   "Narrow view after switching."
-                                                   (interactive)
-                                                   (+org-narrow-and-show)))
+                                                               "Narrow view after switching."
+                                                               (interactive)
+                                                               (+org-narrow-and-show)))
 
 (after! solaire-mode
   (setq solaire-mode-remap-line-numbers t)
