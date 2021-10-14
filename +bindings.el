@@ -327,6 +327,7 @@
    )
 
   :localleader
+  :desc "Anki" "O" #'anki-workflow-hydra/body
   :desc "transclusion" "$" #'org-transclusion-mode
   (:prefix ("a" . "attachments")
    :desc "attach file hydra" "a" #'aj/org-attach-hydra/body

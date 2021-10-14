@@ -267,7 +267,7 @@ with :after or :override due to some issue with starting the notification proces
 
 
 (after! org-roam-ui
-;; HACK I have different opinion on how and where to open the org-roam node file...
+  ;; HACK I have different opinion on how and where to open the org-roam node file...
   (define-minor-mode
     org-roam-ui-mode
     "Enable org-roam-ui.
@@ -402,3 +402,15 @@ the tags of, return an empty string."
       )
     )
   )
+
+;; HACK
+;; Just need to autoload this guy
+;;;###autoload
+(defun +snippet--get-template-by-uuid (uuid &optional mode)
+  "Look up the template by uuid in child-most to parent-most mode order.
+Finds correctly active snippets from parent modes (based on Yas' logic)."
+  (cl-loop with mode = (or mode major-mode)
+           for active-mode in (yas--modes-to-activate mode)
+           if (gethash active-mode yas--tables)
+           if (gethash uuid (yas--table-uuidhash it))
+           return it))

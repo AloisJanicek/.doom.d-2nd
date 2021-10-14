@@ -59,6 +59,10 @@
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
 
+(package! org-mode-incremental-reading
+  :recipe (:host github :repo "vascoferreira25/org-mode-incremental-reading")
+  )
+
 (package! apache-mode
   :pin "f2c11aac2f5fc598123e04f4604bea248689a117")
 

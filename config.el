@@ -1,5 +1,7 @@
 ;;;  -*- lexical-binding: t; -*-
 
+(defalias #'equalp (symbol-function 'cl-equalp))
+
 (defvar aj-home-base-dir nil
   "Variable which equals to ~ on linux or to a specified host home directory
 if running under WSL")
@@ -115,9 +117,33 @@ if running under WSL")
   )
 
 (use-package! anki-editor
-  :commands anki-editor-mode
+  :after incremental-reading
   :config
   (setq anki-editor-create-decks t)
+  )
+
+(use-package! incremental-reading
+  :after org
+  :config
+  (defhydra anki-workflow-hydra (:color blue
+                                 :body-pre
+                                 (unless anki-editor-mode
+                                   (anki-editor-mode +1)))
+    "Anki: "
+    ("i" #'incremental-reading-parse-cards "incremental parse")
+    ("b" (lambda ()
+           (interactive)
+           (evil-insert-state)
+           (yas-expand-snippet
+            (+snippet--get-template-by-uuid "incremental-reading-basic" 'org-mode)))
+     "basic")
+    ("c" (lambda ()
+           (interactive)
+           (evil-insert-state)
+           (yas-expand-snippet
+            (+snippet--get-template-by-uuid "incremental-reading-cloze" 'org-mode)))
+     "cloze")
+    )
   )
 
 (after! ansible-doc
@@ -1260,7 +1286,7 @@ if running under WSL")
   )
 
 (after! org
-  (add-hook 'org-mode-local-vars-hook #'org-hide-drawer-all)
+  (add-hook 'after-org-mode-hook #'org-hide-drawer-all)
   (advice-add #'org-open-at-point :after (lambda () (solaire-mode +1)))
   (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 100   :side 'right :select t :quit t               :autosave t :modeline t)
