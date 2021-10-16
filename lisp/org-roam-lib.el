@@ -112,7 +112,12 @@ Allows to each org-roam to have its own unique database."
     (setq org-roam-ivy--last-ivy-text ""))
 
   (when (bound-and-true-p org-roam-ui-mode)
-    (org-roam-ui--send-graphdata)))
+    (org-roam-ui--send-graphdata))
+
+  ;; also update paths for org-noter
+  (dolist (dir (list-dirs-recursively org-roam-directory))
+    (add-to-list 'org-noter-notes-search-path dir))
+  )
 
 (defun +org-roam/create-new-roam-linking-files ()
   "Build new org-roam-directories based on files from other, existing ones.
