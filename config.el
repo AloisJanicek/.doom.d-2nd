@@ -2448,6 +2448,10 @@ When in org-roam file, also create top-level ID.
 (unless (server-running-p)
   (server-start))
 
+(autoload (function +snippet--get-template-by-uuid)
+  (expand-file-name "snippets.el" (expand-file-name
+                                   "editor/snippets/autoload"
+                                   doom-modules-dir)))
 (which-key-mode)
 (ivy-mode)
 

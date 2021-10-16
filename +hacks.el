@@ -402,15 +402,3 @@ the tags of, return an empty string."
       )
     )
   )
-
-;; HACK
-;; Just need to autoload this guy
-;;;###autoload
-(defun +snippet--get-template-by-uuid (uuid &optional mode)
-  "Look up the template by uuid in child-most to parent-most mode order.
-Finds correctly active snippets from parent modes (based on Yas' logic)."
-  (cl-loop with mode = (or mode major-mode)
-           for active-mode in (yas--modes-to-activate mode)
-           if (gethash active-mode yas--tables)
-           if (gethash uuid (yas--table-uuidhash it))
-           return it))
