@@ -149,7 +149,10 @@
  (javascript +lsp)
  (julia +lsp)
  (kotlin +lsp)
- ;;latex
+ (latex
+  +latexmk
+  +cdlatex
+  +fold)
  ;;lean
  ;;factor
  ;;ledger
