@@ -202,9 +202,16 @@ with :after or :override due to some issue with starting the notification proces
                         "#+title:" document-base "\n"
                         ;; end of the important code
                         "* " document-base)
+                (save-buffer)
+                (goto-char (point-min))
+                (org-id-get-create)
+                (save-buffer)
+                (goto-char (point-max))
                 (org-entry-put nil org-noter-property-doc-file
                                (file-relative-name document-used-path
-                                                   (file-name-directory (car notes-files)))))
+                                                   (file-name-directory (car notes-files))))
+                (save-buffer)
+                )
               (setq notes-files-annotating notes-files)))
 
           (when (> (length (cl-delete-duplicates notes-files-annotating :test 'equal)) 1)
