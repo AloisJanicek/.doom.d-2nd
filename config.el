@@ -1370,6 +1370,12 @@ if running under WSL")
         )
   )
 
+(use-package org-fragtog
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'org-fragtog-mode)
+  )
+
 (use-package code-capture
   :after org-capture
   )

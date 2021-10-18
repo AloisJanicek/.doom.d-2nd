@@ -25,6 +25,11 @@
            )
   )
 
+(package! org-fragtog
+  :recipe (:host github :repo "io12/org-fragtog"
+           )
+  )
+
 (defun aj-wsl-p ()
   "Return non-nil value if Emacs is running inside WSL."
   (string-match "Microsoft"
