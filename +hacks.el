@@ -28,22 +28,22 @@ with :after or :override due to some issue with starting the notification proces
   (advice-add #'org-protocol-store-link :override #'org-protocol-store-link-override-a)
   )
 
-(after! elisp-mode
-  ;; there is some issue with this in doom since 4d5f6f75
-  ;; this is the old, "unfixed" version of that advice
-  (defadvice! +emacs-lisp-append-value-to-eldoc-a (orig-fn sym)
-    "Display variable value next to documentation in eldoc."
-    :around #'elisp-get-var-docstring
-    (when-let (ret (funcall orig-fn sym))
-      (concat ret " "
-              (let* ((truncated " [...]")
-                     (print-escape-newlines t)
-                     (str (symbol-value sym))
-                     (str (prin1-to-string str))
-                     (limit (- (frame-width) (length ret) (length truncated) 1)))
-                (format (format "%%0.%ds%%s" (max limit 0))
-                        (propertize str 'face 'warning)
-                        (if (< (length str) limit) "" truncated)))))))
+;; (after! elisp-mode
+;;   ;; there is some issue with this in doom since 4d5f6f75
+;;   ;; this is the old, "unfixed" version of that advice
+;;   (defadvice! +emacs-lisp-append-value-to-eldoc-a (orig-fn sym)
+;;     "Display variable value next to documentation in eldoc."
+;;     :around #'elisp-get-var-docstring
+;;     (when-let (ret (funcall orig-fn sym))
+;;       (concat ret " "
+;;               (let* ((truncated " [...]")
+;;                      (print-escape-newlines t)
+;;                      (str (symbol-value sym))
+;;                      (str (prin1-to-string str))
+;;                      (limit (- (frame-width) (length ret) (length truncated) 1)))
+;;                 (format (format "%%0.%ds%%s" (max limit 0))
+;;                         (propertize str 'face 'warning)
+;;                         (if (< (length str) limit) "" truncated)))))))
 
 (after! org-noter
   ;; HACK: I just wanted to add #+title: to the newly created org files so in order to do so I had to copy paste the whole thing
