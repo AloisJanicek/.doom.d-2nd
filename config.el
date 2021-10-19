@@ -1088,6 +1088,7 @@ if running under WSL")
   )
 
 (after! magit
+  (setq magit-bury-buffer-function #'magit-restore-window-configuration)
   (setq magit-repository-directories `((,aj-repos-dir . 1))
         magit-clone-default-directory `,aj-repos-dir
         )
