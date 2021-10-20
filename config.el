@@ -1270,6 +1270,12 @@ if running under WSL")
        (apply orig-fn args))))
   )
 
+(use-package org-lib
+  :after org
+  :config
+  (setq +org-base-dir (expand-file-name "Dropbox" aj-home-base-dir))
+  )
+
 (use-package org-perpetual-clock
   :disabled
   :after org

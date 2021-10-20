@@ -21,6 +21,9 @@
 (defvar +org-agenda-similar-modes '(org-agenda-mode org-ql-view-mode)
   "List of org-agenda like modes for purpose of running commands from their buffers.")
 
+(defvar +org-base-dir "~/Dropbox"
+  "Directory which contains potential `org-directory' candidates")
+
 (defun +org--get-property (name &optional bound)
   (save-excursion
     (let ((re (format "^#\\+%s:[ \t]*\\([^\n]+\\)" (upcase name))))
@@ -194,6 +197,49 @@ specified in `+org/capture-file-heading'."
   "Ask for file, heading title, tag or tags (empty tag selection won't cancel capture...)."
   (interactive)
   (+org-capture-task t))
+
+;;;###autoload
+(defun +org/switch-org-directory ()
+  "Choose and update `org-directory'."
+  (interactive)
+  (require 'ffap)
+  (let* ((dir (file-truename
+               (ivy-read "Choose org-directory: "
+                         (seq-filter
+                          (lambda (dir)
+                            (string-match "org-*" dir))
+                          (ffap-all-subdirs
+                           (file-truename +org-base-dir) 1))))))
+
+    ;; close all org buffers
+    (mapc 'kill-buffer
+          (seq-filter
+           (lambda (buff)
+             (with-current-buffer buff
+               (when (or
+                      (derived-mode-p 'org-mode)
+                      (derived-mode-p 'org-agenda-mode)
+                      (derived-mode-p 'org-ql))
+                 buff)))
+           (buffer-list)))
+
+    ;; globally change `org-directory'
+    (setq org-directory dir)
+
+    ;; re-set `org-agenda-files'
+    (setq
+     org-agenda-files (seq-filter
+                       (lambda (file)
+                         (not (or (string-match "yankpad.org" file)
+                                  (string-match ".orgids" file))))
+                       (directory-files org-directory t ".org"))
+
+     ;; re-set other variables which depends on `org-directory'
+     gtd-agenda-inbox-file (expand-file-name "inbox.org" org-directory)
+     gtd-agenda-mobile-inbox-file (expand-file-name "mobile.org" org-directory)
+     )
+    )
+  )
 
 (defun +org-narrow-and-show ()
   "Narrow to subtree, show children and entry"

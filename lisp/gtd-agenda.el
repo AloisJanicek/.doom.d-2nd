@@ -519,6 +519,7 @@ Optionally accept valid org-ql QUERY.
 GTD Agenda (%(agenda-filter-preset-string))
 "
 
+  ("." #'+org/switch-org-directory "switch `org-directory'")
   ("a" (pcase gtd-agenda-interface
          ('agenda-search
           (let ((org-agenda-start-day "today")
