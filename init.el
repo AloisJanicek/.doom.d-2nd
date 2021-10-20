@@ -20,27 +20,24 @@
   +prescient
   +childframe
   )
+ ;; vertico
 
  :ui
  ;; deft
  doom
  doom-dashboard
  doom-quit
- ;; (emoji +unicode)
- ;;fill-column
+ (emoji +unicode)
  hl-todo
  ;;hydra
  indent-guides
  ;;ligatures
  ;;minimap
- (modeline
-  +light)
+ (modeline +light)
  nav-flash
  ;;neotree
  ophints
- (popup
-  +all
-  +defaults)
+ (popup +all +defaults)
  ;;tabs
  treemacs
  ;;unicode
@@ -54,9 +51,7 @@
  (evil +everywhere)
  file-templates
  fold
- (format
-  +onsave
-  )
+ (format +onsave)
  ;;god
  ;;lispy
  multiple-cursors
@@ -67,13 +62,12 @@
  ;;word-wrap
 
  :emacs
- (dired
-  +ranger
-  +icons
-  )
+ (dired +ranger +icons)
  electric
  ;;ibuffer
- (undo +tree)
+ (undo 
+                                        ; +tree
+  )
  vc
 
  :term
@@ -97,15 +91,9 @@
  docker
  editorconfig
  ;;ein
- (eval
-  +overlay
-  )
+ (eval +overlay)
  gist
- (lookup
-  +dictionary
-  +offline
-  +docsets
-  )
+ (lookup +dictionary +offline +docsets)
  (lsp +eglot)
  magit
  make
@@ -123,6 +111,7 @@
 
  :lang
  ;;agda
+ ;;beancount
  (cc +lsp)
  (clojure +lsp)
  common-lisp
@@ -136,6 +125,7 @@
  emacs-lisp
  (erlang +lsp)
  (ess +lsp)
+ ;;factor
  ;;faust
  (fsharp +lsp)
  ;;fstar
@@ -149,12 +139,8 @@
  (javascript +lsp)
  (julia +lsp)
  (kotlin +lsp)
- (latex
-  +latexmk
-  +cdlatex
-  +fold)
+ (latex +latexmk +cdlatex +fold)
  ;;lean
- ;;factor
  ;;ledger
  (lua +lsp)
  markdown
@@ -165,11 +151,7 @@
  (php +lsp)
  ;;plantuml
  purescript
- (python
-  +lsp
-  +pyright
-  ;;+conda
-  )
+ (python +lsp +pyright)
  ;;qt
  racket
  raku
@@ -186,14 +168,17 @@
  ;;terra
  (web +lsp)
  (yaml +lsp)
+ ;;zig
 
  :email
- ;;(mu4e +gmail)
+ ;;(mu4e +org +gmail)
  ;;notmuch
  ;;(wanderlust +gmail)
 
  :app
  ;;calendar
+ ;;emms
+ ;;everywhere
  ;;irc
  ;;(rss +org)
  ;;twitter
