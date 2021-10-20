@@ -123,10 +123,11 @@ to resole their precedence.
 
 (defun agenda-queries--stucked-projects-query ()
   "Stucked projects query for org-ql."
-  '(or (and (todo)
+  `(or (and (todo)
             (descendants (todo))
             (not (descendants (todo "NEXT")))
             (not (descendants (scheduled)))
+            ,(agenda-queries--cancelling-ancestors-query)
             (not (and (or (todo "HOLD")
                           (todo "WAIT")
                           (todo "SOMEDAY")
