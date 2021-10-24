@@ -23,6 +23,11 @@
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\")) %(org-roam-ivy--filter-preset-get org-roam-directory)
 "
 
+  ("a" (lambda ()
+         (interactive)
+         (setq gtd-agenda-interface 'agenda-headlines)
+         (gtd-agenda-hydra/body))
+   "agenda")
   ("C" #'+org-roam/create-new-roam-linking-files "Create new roam domain")
   ("d" (dired org-roam-directory) "dired directory")
   ("D" #'org-roam-ivy-find-duplicate-title "duplicate titles")
