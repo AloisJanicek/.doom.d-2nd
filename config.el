@@ -1274,6 +1274,7 @@ if running under WSL")
   :after org
   :config
   (setq +org-base-dir (expand-file-name "Dropbox" aj-home-base-dir))
+  (doom-store-persist "custom" '(+org-all-collected-agenda-files))
   )
 
 (use-package org-perpetual-clock
@@ -1503,11 +1504,6 @@ if running under WSL")
   (advice-add #'org-agenda-kill :after #'aj-org-agenda-save-and-refresh-a)
 
   (setq
-   org-agenda-files (seq-filter
-                     (lambda (file)
-                       (not (or (string-match "yankpad.org" file)
-                                (string-match ".orgids" file))))
-                     (directory-files org-directory t ".org"))
    org-agenda-prefix-format '((agenda    . "  %-6t %6e ")
                               (timeline  . "  %-6t %6e ")
                               (todo      . "  %-6t %6e ")
@@ -1881,6 +1877,9 @@ When in org-roam file, also create top-level ID.
 
         org-roam-node-display-template "${doom-hierarchy} ${doom-tags}"
         )
+
+  ;; Update `org-agenda-files'
+  (org-roam-refresh-agenda-list)
   )
 
 (use-package! org-roam-dailies

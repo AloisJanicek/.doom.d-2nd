@@ -113,7 +113,7 @@ Optionally specify heading LEVEL (default is 3)."
 ;;;###autoload
 (cl-defun agenda-headlines-goto-query (&key (query '(todo))
                                             (prompt "agenda headlines")
-                                            (files (agenda-filter-combined-agenda-files))
+                                            (files (agenda-filter-all-collected-agenda-files))
                                             (sort-fn 'todo)
                                             (initial-input "")
                                             reverse time clock capture-key)

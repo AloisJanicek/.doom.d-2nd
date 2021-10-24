@@ -628,8 +628,9 @@ If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
                       (substring-no-properties org-clock-heading)))
              ((equal :short-break org-pomodoro-state) "Short Break")
              ((equal :long-break org-pomodoro-state) "Long Break"))
-       (or agenda-filter "[ - ]")
-       " - |"
+       ;; (or agenda-filter "[ - ]")
+       ;; " - |"
+       "|"
        (file-name-nondirectory
         (directory-file-name
          org-roam-directory))

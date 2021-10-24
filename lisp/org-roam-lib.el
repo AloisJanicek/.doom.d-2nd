@@ -117,6 +117,9 @@ Allows to each org-roam to have its own unique database."
   ;; also update paths for org-noter
   (dolist (dir (list-dirs-recursively org-roam-directory))
     (add-to-list 'org-noter-notes-search-path dir))
+
+  ;; also update agenda-files
+  (org-roam-refresh-agenda-list)
   )
 
 (defun +org-roam/create-new-roam-linking-files ()
@@ -562,5 +565,28 @@ as you name the directory you place the file into.
                 sep)
                sep)
        'face 'org-tag))))
+
+;; Credits to System Crafters
+;; https://systemcrafters.net/build-a-second-brain-in-emacs/5-org-roam-hacks/
+(defun org-roam-list-notes-by-tag (tag-name)
+  "List org-roam nodes filtered by TAG-NAME."
+  (mapcar #'org-roam-node-file
+          (seq-filter
+           (lambda (node)
+             (member tag-name (org-roam-node-tags node)))
+           (org-roam-node-list))))
+
+(defun org-roam-refresh-agenda-list ()
+  "Build list of all `org-agenda-files' from current org-roam."
+  (setq org-agenda-files
+        (append
+         (list gtd-agenda-inbox-file)
+         (org-roam-list-notes-by-tag "agenda")))
+  (setq +org-all-collected-agenda-files
+        (cl-remove-duplicates
+         (append
+          +org-all-collected-agenda-files
+          org-agenda-files)
+         :test #'string-equal)))
 
 (provide 'org-roam-lib)

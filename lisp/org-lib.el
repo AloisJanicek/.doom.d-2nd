@@ -21,8 +21,11 @@
 (defvar +org-agenda-similar-modes '(org-agenda-mode org-ql-view-mode)
   "List of org-agenda like modes for purpose of running commands from their buffers.")
 
-(defvar +org-base-dir "~/Dropbox"
+(defcustom +org-base-dir "~/Dropbox"
   "Directory which contains potential `org-directory' candidates")
+
+(defcustom +org-all-collected-agenda-files nil
+  "List of all `org-agenda-files' collected throughout the session.")
 
 (defun +org--get-property (name &optional bound)
   (save-excursion

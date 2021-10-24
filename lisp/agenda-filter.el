@@ -54,7 +54,9 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
 (defun agenda-filter--filtered-agenda-files ()
   "Keep file in list if its filetag matches one of the tags in `agenda-filter-preset'."
   (if current-prefix-arg
-      (agenda-filter-combined-agenda-files)
+      (append +org-all-collected-agenda-files
+              (agenda-filter-all-projectile-README-org-files t)
+              )
     (when-let ((taglist (seq-map
                          (lambda (tag)
                            (string-trim-left tag "+"))
@@ -73,6 +75,19 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
      (substring-no-properties (car x)))
    (org-global-tags-completion-table
     (org-agenda-files))))
+
+(defun agenda-filter-all-collected-agenda-files ()
+  "Allows to get all collected agenda-files with user-prefix.
+
+There are two levels of filtering:
+1 - filter by `agenda-filter-preset'
+2 - filter by current `org-roam-directory'
+
+User prefix cancels both filter, providing list of all org-agenda fifes.
+"
+  (or (agenda-filter--filtered-agenda-files)
+      (agenda-filter-combined-agenda-files))
+  )
 
 (defun agenda-filter-funcall-with-filtered-agenda-files (fn &rest args)
   "Run function FN with file as its first argument.

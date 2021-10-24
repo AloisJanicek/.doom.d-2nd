@@ -49,7 +49,7 @@
 
 (defun gtd-agenda-simple-task-search (task)
   "Search for task `TASK' via `org-ql'."
-  (org-ql-search (agenda-filter-combined-agenda-files)
+  (org-ql-search (agenda-filter-all-collected-agenda-files)
     (agenda-queries--simple-task-query task)
     :sort #'agenda-queries-sort-by-effort
     :super-groups '((:auto-category t))
@@ -58,7 +58,7 @@
 (defun gtd-agenda-next-task-search ()
   "Search for next tasks."
   (org-ql-search
-    (agenda-filter-combined-agenda-files)
+    (agenda-filter-all-collected-agenda-files)
     (agenda-queries--next-task-query)
     :sort #'agenda-queries-sort-by-effort
     :super-groups '((:auto-category t))
@@ -69,7 +69,7 @@
 (defun gtd-agenda-stucked-projects-search ()
   "Search for stucked projects."
   (org-ql-search
-    (agenda-filter-combined-agenda-files)
+    (agenda-filter-all-collected-agenda-files)
     (agenda-queries--stucked-projects-query)
     :super-groups '((:auto-category t))
     :title "Stucked Projects")
@@ -78,7 +78,7 @@
 (defun gtd-agenda-stand-alone-task-search ()
   "Search for stand-alone tasks."
   (org-ql-search
-    (agenda-filter-combined-agenda-files)
+    (agenda-filter-all-collected-agenda-files)
     (agenda-queries--stand-alone-task-query)
     :sort #'agenda-queries-sort-by-effort
     :super-groups '((:auto-category t ))
@@ -337,7 +337,7 @@ Optionally accept valid org-ql QUERY.
                           (gtd-agenda-select-history-queries)))))
     (pcase interface
       ('search
-       (org-ql-search (agenda-filter-combined-agenda-files) query))
+       (org-ql-search (agenda-filter-all-collected-agenda-files) query))
       ('agenda-headlines
        (agenda-headlines-goto-query :prompt (format "query search: %s" query)
                                     :query query :sort-fn 'date :capture-key "k")))))
@@ -380,7 +380,7 @@ Optionally accept valid org-ql QUERY.
 
 (defun gtd-agenda--try-query-match (query &optional files)
   "Try if org-ql QUERY matches against org-agenda files or FILES."
-  (let ((files (or files (agenda-filter-combined-agenda-files))))
+  (let ((files (or files (agenda-filter-all-collected-agenda-files))))
     (catch 'heading (org-ql-select
                       files
                       query
@@ -426,7 +426,7 @@ Optionally accept valid org-ql QUERY.
        ((gtd-agenda--try-query-match (agenda-queries--past-dues-query))
         (pcase gtd-agenda-interface
           ('agenda-search
-           (org-ql-search (org-agenda-files) (agenda-queries--past-dues-query)
+           (org-ql-search (agenda-filter-all-collected-agenda-files) (agenda-queries--past-dues-query)
              :sort #'agenda-queries-sort-by-active-timestamp
              :title "Past dues"))
           ('agenda-headlines
@@ -442,13 +442,14 @@ Optionally accept valid org-ql QUERY.
         (pcase gtd-agenda-interface
           ('agenda-search
            ;; (org-ql-search
-           ;;   (agenda-filter-combined-agenda-files)
+           ;;   (agenda-filter-all-collected-agenda-files)
            ;;   scheduled-today-without-hh-mm-query
            ;;   :title "Scheduled today without HH:MM")
            (let ((org-agenda-start-with-log-mode t)
                  (org-agenda-span 1)
                  (org-agenda-start-day nil)
                  (org-agenda-use-time-grid t)
+                 (org-agenda-files (agenda-filter-all-collected-agenda-files))
                  ;; (org-pretty-tags-agenda-unpretty-habits t)
                  (org-agenda-time-grid '((daily today require-timed)
                                          (700 800 900 1000 1100 1200
@@ -523,7 +524,8 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("a" (pcase gtd-agenda-interface
          ('agenda-search
           (let ((org-agenda-start-day "today")
-                (org-agenda-span 1))
+                (org-agenda-span 1)
+                (org-agenda-files (agenda-filter-all-collected-agenda-files)))
             (org-agenda nil "a")))
          ('agenda-headlines
           (agenda-headlines-goto-query
@@ -556,7 +558,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("b" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-combined-agenda-files)
+           (agenda-filter-all-collected-agenda-files)
             (agenda-queries--future-dues-query)
             :sort #'agenda-queries-sort-by-active-timestamp
             :super-groups '((:auto-category t))
@@ -573,7 +575,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("B" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-combined-agenda-files)
+            (agenda-filter-all-collected-agenda-files)
             (agenda-queries--custom-ticklers-query)
             :sort #'agenda-queries-sort-by-active-timestamp
             :super-groups '((:auto-category t))
@@ -588,7 +590,9 @@ GTD Agenda (%(agenda-filter-preset-string))
    "reminders")
 
   ("W" (let ((org-agenda-start-day "today")
-             (org-agenda-span 10))
+             (org-agenda-span 10)
+             (org-agenda-files (agenda-filter-all-collected-agenda-files))
+             )
          (org-agenda nil "a"))
    "10 days Week")
 
@@ -596,6 +600,7 @@ GTD Agenda (%(agenda-filter-preset-string))
              (org-agenda-span 1)
              (org-agenda-start-day nil)
              (org-agenda-use-time-grid t)
+             (org-agenda-files (agenda-filter-all-collected-agenda-files))
              ;; (org-pretty-tags-agenda-unpretty-habits t)
              (org-agenda-time-grid '((daily today require-timed)
                                      (700 800 900 1000 1100 1200
@@ -642,7 +647,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("p" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-combined-agenda-files)
+            (agenda-filter-all-collected-agenda-files)
             (agenda-queries--projects-query)
             :sort #'agenda-queries-sort-by-todo
             :super-groups '((:auto-category t))
@@ -668,7 +673,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("w" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-combined-agenda-files)
+            (agenda-filter-all-collected-agenda-files)
             (agenda-queries--custom-wait-task-query)
             :sort '(date priority todo)
             :super-groups '((:auto-parent t))
@@ -684,7 +689,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("h" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-combined-agenda-files)
+            (agenda-filter-all-collected-agenda-files)
             (agenda-queries--custom-hold-task-query)
             :sort '(date priority todo)
             :super-groups '((:auto-parent t))
@@ -700,7 +705,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("H" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-combined-agenda-files)
+            (agenda-filter-all-collected-agenda-files)
             (agenda-queries--habits-query)
             :sort #'agenda-queries-sort-by-active-timestamp
             :title "Habits"))
@@ -716,7 +721,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("c" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-combined-agenda-files)
+            (agenda-filter-all-collected-agenda-files)
             (agenda-queries--custom-clocked-task-query)
             :sort 'agenda-queries-sort-by-recent-clock
             :super-groups '((:auto-category t ))
@@ -754,7 +759,7 @@ GTD Agenda (%(agenda-filter-preset-string))
    "done")
 
   ("r" (org-ql-search
-         (agenda-filter-combined-agenda-files)
+         (agenda-filter-all-collected-agenda-files)
          '(ts :from -7 :to today)
          :sort '(date priority todo)
          :super-groups '((:auto-ts t))
@@ -774,7 +779,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("T" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-combined-agenda-files)
+            (agenda-filter-all-collected-agenda-files)
             (agenda-queries--non-complete-tasks-query)
             :sort #'agenda-queries-sort-by-todo
             :super-groups '((:auto-category t))
@@ -817,7 +822,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("o" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-combined-agenda-files)
+            (agenda-filter-all-collected-agenda-files)
             (agenda-queries--all-active-tasks-query)
             :sort #'agenda-queries-sort-by-todo
             :super-groups '((:auto-category t))
@@ -829,7 +834,7 @@ GTD Agenda (%(agenda-filter-preset-string))
    "All active")
 
   ("J" (agenda-headlines-goto-any
-        :files (agenda-filter-combined-agenda-files)
+        :files (agenda-filter-all-collected-agenda-files)
         :level 9)
    "jump")
 
