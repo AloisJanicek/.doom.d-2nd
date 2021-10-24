@@ -202,6 +202,18 @@ specified in `+org/capture-file-heading'."
   (+org-capture-task t))
 
 ;;;###autoload
+(defun +org/remove-all-drawers ()
+  "In current buffer remove all drawers."
+  (interactive)
+  (while (re-search-forward org-drawer-regexp (point-max) t)
+    (let ((drawer (org-element-at-point)))
+      (when (memq (org-element-type drawer) '(drawer property-drawer))
+        (delete-region (org-element-property :begin drawer)
+                       (progn (goto-char (org-element-property :end drawer))
+                              (skip-chars-backward " \r\t\n")
+                              (forward-line)
+                              (point)))))))
+;;;###autoload
 (defun +org/switch-org-directory ()
   "Choose and update `org-directory'."
   (interactive)
