@@ -52,7 +52,7 @@
         #'+org-roam-filtered-files)
    "grep")
   ("l" (org-roam-ivy--last-ivy) "last ivy")
-  ("j" #'org-roam-dailies-date "journal create")
+  ("j" #'org-roam-dailies-goto-date "journal create")
   ("J" (let ((org-roam-ivy--last-ivy-text "journal "))
          (+org-roam-dailies-open-today)
          (org-roam-ivy-find-file))

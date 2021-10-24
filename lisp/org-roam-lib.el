@@ -376,13 +376,18 @@ When in file which doesn't contain today's date in its name,
 prompt user for timestamp because almost certainly user don't want to
 make new past or future journal entry with current timestamp.
 "
-  (insert (if (string-equal (format-time-string "%Y-%m-%d")
-                            (file-name-sans-extension
-                             (file-name-nondirectory
-                              (or (buffer-file-name)
-                                  (buffer-file-name (buffer-base-buffer))))))
-              (format-time-string "%H:%M " (current-time))
-            (ivy-read "Time of the day (HH:MM): " nil))))
+  (goto-char (point-max))
+  (insert (concat
+           "* "
+           (if (string-equal (format-time-string "%Y-%m-%d")
+                             (file-name-sans-extension
+                              (file-name-nondirectory
+                               (or (buffer-file-name)
+                                   (buffer-file-name (buffer-base-buffer))))))
+               (format-time-string "%H:%M " (current-time))
+             (ivy-read "Time of the day (HH:MM): " nil))))
+  (when (bound-and-true-p evil-mode)
+    (evil-insert-state)))
 
 (defun +org-roam/insert ()
   "Insert future org roam link into last word (or marked words) before cursor.

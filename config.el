@@ -53,6 +53,7 @@ if running under WSL")
       doom-modeline-height 22
       aj-dark+-blue-modeline t
       doom-theme 'aj-dark+
+      doom-theme 'doom-solarized-dark
       doom-font                   (font-spec :family "JetBrains Mono" :size 15)
       doom-big-font               (font-spec :family "JetBrains Mono" :size 24)
       doom-variable-pitch-font    (font-spec :family "Noto Sans" :size 14)
@@ -1092,7 +1093,7 @@ if running under WSL")
   (setq magit-repository-directories `((,aj-repos-dir . 1))
         magit-clone-default-directory `,aj-repos-dir
         )
-  (magit-todos-mode)
+  ;; (magit-todos-mode)
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (remove-hook 'Man-mode-hook #'hide-mode-line-mode)
@@ -1309,7 +1310,8 @@ if running under WSL")
   (add-hook 'org-mode-hook #'mixed-pitch-mode)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
-                                                (when (derived-mode-p 'org-mode)
+                                                (when (and (derived-mode-p 'org-mode)
+                                                           buffer-file-name)
                                                   (save-buffer))))
   (advice-add #'org-protocol-check-filename-for-protocol :around #'doom-shut-up-a)
   (setcdr (assoc "\\.x?html?\\'" org-file-apps) #'aj-browse-zeal-local-file)
@@ -1558,7 +1560,8 @@ When in org-roam file, also create top-level ID.
                 (body (concat "Captured: " (or heading-title file-title))))
            (when file-title ;; this is true for org-roam files
              (org-id-get-create)
-             (save-buffer))
+             (when buffer-file-name
+               (save-buffer)))
            (alert body))))))
   (setq
    org-protocol-default-template-key "L"

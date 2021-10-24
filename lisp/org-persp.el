@@ -35,6 +35,15 @@ Optional argument ARGS are argument passed to `ORIG-FN'."
              #'org-persp-switch-create-indirect-buffer-per-persp))
     (apply orig-fn args)))
 
+(defun org-persp-open-file-respect-sanity-same-window-a (orig-fn &rest args)
+  "Same as `org-persp-open-file-respect-sanity-a but for `pop-to-buffer-same-window'.
+
+Since both pop-to-buffer-* functions can't be advice in the same lexical environment.
+"
+  (cl-letf (((symbol-function 'pop-to-buffer-same-window)
+             #'org-persp-switch-create-indirect-buffer-per-persp))
+    (apply orig-fn args)))
+
 (defun org-persp-pop-buffer-a (orig-fn &rest args)
   "Override `org-persp-window-for-org-buffer' with `org-persp-pop-org-buffer'.
 Intended for overriding default behavior of `org-persp-switch-create-indirect-buffer-per-persp'
@@ -255,6 +264,11 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 (after! org-clock
   (advice-add #'org-clock-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-clock-goto :around #'org-persp-pop-buffer-a))
+
+(after! org-capture
+  (advice-add #'org-capture-goto-target :around #'org-persp-open-file-respect-sanity-same-window-a)
+  (advice-add #'org-capture-goto-target :around #'org-persp-pop-buffer-a)
+  )
 
 (after! org-agenda
   (advice-add #'org-agenda-switch-to :around #'org-persp-open-file-respect-sanity-a)
