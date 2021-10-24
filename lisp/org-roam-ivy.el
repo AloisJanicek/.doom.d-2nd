@@ -337,6 +337,22 @@ In case of current buffer is indirect, kill the base buffer."
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
+(defun org-roam-ivy--refile-action (x)
+  "`org-roam-refile' org-roam node of X."
+  (let* ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command)))
+         (node (org-roam-ivy--get-node x))
+         (node-point (org-roam-node-point node))
+         (node-file (org-roam-node-file node))
+         (node-buffer (ignore-errors (or (get-file-buffer node-file) (find-file-noselect node-file)))))
+
+    (with-current-buffer node-buffer
+      (goto-char node-point)
+      (org-roam-refile)
+      )
+
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
+
 ;;; org-roam-ivy helpers and utilities
 (defun org-roam-ivy--get-node (x)
   "Return node from the string of completion candidate X."
@@ -547,7 +563,9 @@ ORDER BY a.title"
           (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
             (when (require 'org-noter)
               (org-noter))))
-    "org-noter")))
+    "org-noter")
+   ("." org-roam-ivy--refile-action "refile")
+   ))
 
 (provide 'org-roam-ivy)
 ;;; org-roam-ivy.el ends here
