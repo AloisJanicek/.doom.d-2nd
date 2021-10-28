@@ -2,6 +2,9 @@
 
 (defalias #'equalp (symbol-function 'cl-equalp))
 
+(when (< emacs-major-version 28)
+  (defalias #'native-comp-available-p (lambda () nil)))
+
 (defvar aj-home-base-dir nil
   "Variable which equals to ~ on linux or to a specified host home directory
 if running under WSL")
