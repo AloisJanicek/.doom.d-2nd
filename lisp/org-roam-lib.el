@@ -96,12 +96,8 @@ Allows to each org-roam to have its own unique database."
   (require 'ffap)
   (let* ((dir (file-truename
                (ivy-read "Choose roam directory: "
-                         (+org-roam-dirs 'valid))))
-         (db-dir (if (bound-and-true-p doom-etc-dir)
-                     (concat doom-etc-dir (file-name-nondirectory dir))
-                   (concat user-emacs-directory (file-name-nondirectory dir)))))
-    (unless (file-exists-p db-dir)
-      (make-directory db-dir))
+                         (+org-roam-dirs 'valid)))))
+    (org-roam-db--close-all)
     (setq org-roam-directory dir
           org-roam-db-location (+org-roam-db-location)))
 
