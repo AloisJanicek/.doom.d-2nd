@@ -108,7 +108,7 @@
            :repo "emacs-eaf/emacs-application-framework"
            :files ("*")
            )
-  :pin "97b992318a12287770797a0c942223d2bc8c1c79"
+  :pin "7bbb4e40af1892bc5dbce2f08af49429515b1bab"
   )
 
 (package! eaf-browser
@@ -117,7 +117,7 @@
            :files ("*")
            :pre-build ("npm" "install")
            )
-  :pin "47035a89abd8e9553167f60cb3a96aac708d4fac"
+  :pin "6c536d4d51887380ccb74f00cdf5a1e299fb6f1c"
   )
 
 (package! eslintd-fix
@@ -201,7 +201,7 @@
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "330d761ad5d103bbd6d98507c9e86addc6b33425")
+  :pin "fd2cd265a6f0b9416bdaa36e4934c3c748b016ef")
 
 (package! org-ql
   :pin "31aeb0a2505acf8044c07824888ddec7f3e529c1")
