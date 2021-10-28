@@ -1861,9 +1861,6 @@ When in org-roam file, also create top-level ID.
   (advice-add #'org-roam-capture--finalize-find-file :override #'+org-roam-capture--finalize-find-file-a)
   (advice-add #'org-roam-node-doom-tags :around #'org-roam-doom-tags-remove-duplicate)
 
-  ;; REVIEW what is this
-  ;; (advice-add #'org-roam-node-visit :after (lambda (&rest _) (solaire-mode +1)))
-
   (setq org-roam-db-location (+org-roam-db-location)
         org-roam-dailies-directory "journal/"
         org-roam-list-files-commands '(fd)
