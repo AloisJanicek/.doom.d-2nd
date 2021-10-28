@@ -330,7 +330,9 @@
   :desc "Anki" "O" #'anki-workflow-hydra/body
   :desc "transclusion" "$" #'org-transclusion-mode
   (:prefix ("a" . "attachments")
+   ;; TODO Review this hydra
    :desc "attach file hydra" "a" #'aj/org-attach-hydra/body
+   :desc "attach and insert link" "l" #'+org/choose-attach-file-and-insert-link
    )
   "B"  nil
   (:prefix ("B" . "babel")

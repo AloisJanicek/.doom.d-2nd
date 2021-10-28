@@ -452,4 +452,14 @@ preserving priority cookie, statistics cookie, todo keyword and tags string."
       (org-remove-empty-drawer-at (point))
       (save-buffer))))
 
+;;;###autoload
+(defun +org/choose-attach-file-and-insert-link ()
+  "Allow user to interactively choose file to attach.
+Extends `+org/attach-file-and-insert-link'"
+  (interactive)
+  (let ((file (read-file-name "Attach and insert file: " org-directory)))
+    (if file
+        (+org/attach-file-and-insert-link file)
+      (+org/attach-file-and-insert-link))))
+
 (provide 'org-lib)
