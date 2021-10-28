@@ -529,11 +529,12 @@ GTD Agenda (%(agenda-filter-preset-string))
          ('agenda-search
           (let ((org-agenda-start-day "today")
                 (org-agenda-span 1)
-                (org-agenda-files (agenda-filter-all-collected-agenda-files)))
+                (org-agenda-files (agenda-filter-all-collected-agenda-files t)))
             (org-agenda nil "a")))
          ('agenda-headlines
           (agenda-headlines-goto-query
            :prompt "past due"
+           :files (agenda-filter-all-collected-agenda-files t)
            :query (agenda-queries--past-dues-query)
            :sort-fn #'agenda-queries-sort-by-active-timestamp
            :time t
