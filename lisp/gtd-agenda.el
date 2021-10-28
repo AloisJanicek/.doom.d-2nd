@@ -562,7 +562,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("b" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-           (agenda-filter-all-collected-agenda-files)
+            (agenda-filter-all-collected-agenda-files t)
             (agenda-queries--future-dues-query)
             :sort #'agenda-queries-sort-by-active-timestamp
             :super-groups '((:auto-category t))
@@ -570,6 +570,7 @@ GTD Agenda (%(agenda-filter-preset-string))
          ('agenda-headlines
           (agenda-headlines-goto-query
            :prompt "Future dues"
+           :files (agenda-filter-all-collected-agenda-files t)
            :query (agenda-queries--future-dues-query)
            :sort-fn #'agenda-queries-sort-by-active-timestamp
            :time t
@@ -579,7 +580,7 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("B" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            (agenda-filter-all-collected-agenda-files)
+            (agenda-filter-all-collected-agenda-files t)
             (agenda-queries--custom-ticklers-query)
             :sort #'agenda-queries-sort-by-active-timestamp
             :super-groups '((:auto-category t))
@@ -587,6 +588,7 @@ GTD Agenda (%(agenda-filter-preset-string))
          ('agenda-headlines
           (agenda-headlines-goto-query
            :prompt "tickler reminders"
+           :files (agenda-filter-all-collected-agenda-files t)
            :query (agenda-queries--custom-ticklers-query)
            :sort-fn #'agenda-queries-sort-by-active-timestamp
            :time t
