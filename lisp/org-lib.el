@@ -250,7 +250,7 @@ specified in `+org/capture-file-heading'."
                        (directory-files org-directory t ".org"))
 
      ;; re-set other variables which depends on `org-directory'
-     gtd-agenda-inbox-file (expand-file-name "inbox.org" org-directory)
+     gtd-agenda-inbox-file (expand-file-name "inbox.org.gpg" org-directory)
      gtd-agenda-mobile-inbox-file (expand-file-name "mobile.org" org-directory)
      )
     )
@@ -307,7 +307,7 @@ specified in `+org/capture-file-heading'."
 (defun +org/refile-to-current-file-special (&optional files file heading)
   "Refile to FILE and HEADING and ask user for both if they aren't provided."
   (interactive)
-  (let* ((files (or files (agenda-filter-combined-agenda-files)))
+  (let* ((files (or files (agenda-filter-all-collected-agenda-files)))
          (file (or
                 file
                 (ignore-errors (buffer-file-name (marker-buffer (org-get-at-bol 'org-marker))))

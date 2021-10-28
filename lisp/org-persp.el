@@ -74,7 +74,7 @@ in temporarily popup window on the right side of the frame.
                                          buffer)
                                    (file-truename buffer-file-name))
                                  (mapcar #'file-truename
-                                         (agenda-filter-combined-agenda-files))))
+                                         (agenda-filter-all-collected-agenda-files t))))
                  (edge (if agenda-buffer
                            'right 'left))
                  (vslot-num (if agenda-buffer 1 3)))

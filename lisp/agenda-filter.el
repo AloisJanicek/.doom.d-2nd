@@ -51,9 +51,10 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
   (append (org-agenda-files)
           (agenda-filter-all-projectile-README-org-files t)))
 
-(defun agenda-filter--filtered-agenda-files ()
+(defun agenda-filter--filtered-agenda-files (&optional all)
   "Keep file in list if its filetag matches one of the tags in `agenda-filter-preset'."
-  (if current-prefix-arg
+  (if (or current-prefix-arg
+          all)
       (append +org-all-collected-agenda-files
               (agenda-filter-all-projectile-README-org-files t)
               )
@@ -76,7 +77,7 @@ When optional argument `EXISTING' is supplied, it returns only actual existing f
    (org-global-tags-completion-table
     (org-agenda-files))))
 
-(defun agenda-filter-all-collected-agenda-files ()
+(defun agenda-filter-all-collected-agenda-files (&optional all)
   "Allows to get all collected agenda-files with user-prefix.
 
 There are two levels of filtering:
@@ -85,7 +86,7 @@ There are two levels of filtering:
 
 User prefix cancels both filter, providing list of all org-agenda fifes.
 "
-  (or (agenda-filter--filtered-agenda-files)
+  (or (agenda-filter--filtered-agenda-files all)
       (agenda-filter-combined-agenda-files))
   )
 

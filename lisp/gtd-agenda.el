@@ -32,7 +32,7 @@
 (require 'org-lib)
 
 ;;; Variables
-(defcustom gtd-agenda-inbox-file (expand-file-name "inbox.org" org-directory)
+(defcustom gtd-agenda-inbox-file (expand-file-name "inbox.org.gpg" org-directory)
   "File where all stuff goes initially.")
 
 (defcustom gtd-agenda-mobile-inbox-file (expand-file-name "mobile.org" org-directory)

@@ -64,7 +64,7 @@ of new org-roam item.
            (org-roam-capture-templates
             `(("d" "default" plain ,(concat "\n\n" body "\n" "%?")
                :if-new (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
-                                  "#+title: ${title}\n")
+                                  "#+title: ${title}\n#+category: ${title}\n")
                :unnarrowed t
                :immediate-finish t
                )))
@@ -245,6 +245,7 @@ heading in `yankpad-file'."
   (require 'yankpad)
   (let* ((code-capture-current-buffer (current-buffer))
          (title (completing-read "Choose title: " nil))
+         (solo-entry current-prefix-arg)
          (yankpad-heading (or (when (or (eq major-mode 'pdf-view-mode)
                                         (eq major-mode 'nov-mode))
                                 (ivy-read "Under heading: "
@@ -257,46 +258,58 @@ heading in `yankpad-file'."
          (org-roam-capture-templates
           `(("d" "default" plain "%?"
              :if-new (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
-                                "#+title: ${title}\n")
+                                "#+title: ${title}\n#+category: ${title}\n")
              :unnarrowed t
              :immediate-finish t
              )))
          )
     (setq +org-roam-yankpad-capture-info `(:title ,title :src-block ,src-block :heading ,yankpad-heading))
 
-    (add-hook 'org-capture-before-finalize-hook #'+org-roam-insert-src -100)
-    (org-roam-capture- :node (org-roam-node-read)
-                       :props '(:finalize find-file)
-                       )))
+    (if solo-entry
+        (progn
+          (add-hook 'org-capture-before-finalize-hook #'+org-roam-insert-src -100)
+          (org-roam-capture- :node (org-roam-node-read)
+                             :props '(:finalize find-file)))
+      (progn
+        (add-hook 'org-roam-dailies-find-file-hook #'+org-roam-insert-src 100)
+        (org-roam-dailies--capture (current-time) t)
+        )
+      )
+    )
+  )
 
 (defun +org-roam-insert-src ()
   "From the information in `+org-roam-yankpad-capture-info' insert src-block into current org-mode file.
 
 After insertion link the new src block into `yankpad-file'."
-  (when (org-roam-capture-p)
-    (goto-char (point-max))
-    (insert (format "* %s :src:yankpad:" (plist-get +org-roam-yankpad-capture-info :title)))
-    (newline)
-    (org-id-get-create)
-    (newline)
-    (insert (plist-get +org-roam-yankpad-capture-info :src-block))
-    (org-overview)
-    (save-buffer)
-    (remove-hook 'org-capture-before-finalize-hook #'+org-roam-insert-src)
-    (let* ((id (org-id-get-create))
-           (yankpad-heading (format "* %s" (plist-get +org-roam-yankpad-capture-info :heading)))
-           (item-link (format "** [[id:%s][%s]]"
-                              id
-                              (plist-get +org-roam-yankpad-capture-info :title)
-                              )))
-      (setq +org-roam-yankpad-capture-info nil)
-      (with-current-buffer (find-file-noselect yankpad-file)
-        (goto-char (point-min))
-        (re-search-forward yankpad-heading (point-max))
-        (org-end-of-subtree)
-        (newline)
-        (insert item-link)
-        (save-buffer)))))
+  (goto-char (point-max))
+  (insert (format (concat
+                   (if (member #'+org-roam-insert-src org-roam-dailies-find-file-hook)
+                       "" "* ")
+                   "%s :src:yankpad:")
+                  (plist-get +org-roam-yankpad-capture-info :title)))
+  (newline)
+  (org-id-get-create)
+  (newline)
+  (insert (plist-get +org-roam-yankpad-capture-info :src-block))
+  (remove-hook 'org-capture-before-finalize-hook #'+org-roam-insert-src)
+  (remove-hook 'org-roam-dailies-find-file-hook #'+org-roam-insert-src)
+  (org-overview)
+  (save-buffer)
+  (let* ((id (org-id-get-create))
+         (yankpad-heading (format "* %s" (plist-get +org-roam-yankpad-capture-info :heading)))
+         (item-link (format "** [[id:%s][%s]]"
+                            id
+                            (plist-get +org-roam-yankpad-capture-info :title)
+                            )))
+    (setq +org-roam-yankpad-capture-info nil)
+    (with-current-buffer (find-file-noselect yankpad-file)
+      (goto-char (point-min))
+      (re-search-forward yankpad-heading (point-max))
+      (org-end-of-subtree)
+      (newline)
+      (insert item-link)
+      (save-buffer))))
 
 (defun +org-roam-dailies--clock-report (block)
   "Create org-clock table report skipping excluding files without contribution.
@@ -366,11 +379,10 @@ BLOCK is is valid org-clock time block."
       (org-roam-dailies-find-today))))
 
 ;;;###autoload
-(defun +org-roam-dailies-insert-timestamp-a (&rest args)
+(defun +org-roam-dailies-insert-timestamp-h (&rest args)
   "Insert current timestamp at point.
 
-Intended as an after advice for `org-roam-dailies--capture' for users
-who want to begin their journal headings with (current) timestamp.
+Intended to run in `org-roam-dailies-find-file-hook' hook.
 
 When in file which doesn't contain today's date in its name,
 prompt user for timestamp because almost certainly user don't want to
@@ -573,7 +585,7 @@ as you name the directory you place the file into.
 
 ;; Credits to System Crafters
 ;; https://systemcrafters.net/build-a-second-brain-in-emacs/5-org-roam-hacks/
-(defun org-roam-list-notes-by-tag (tag-name)
+(defun org-roam-list-nodes-by-tag (tag-name)
   "List org-roam nodes filtered by TAG-NAME."
   (mapcar #'org-roam-node-file
           (seq-filter
@@ -586,7 +598,7 @@ as you name the directory you place the file into.
   (setq org-agenda-files
         (append
          (list gtd-agenda-inbox-file)
-         (org-roam-list-notes-by-tag "agenda")))
+         (org-roam-list-nodes-by-tag "agenda")))
   (setq +org-all-collected-agenda-files
         (cl-remove-duplicates
          (append

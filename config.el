@@ -27,7 +27,7 @@ if running under WSL")
 
 (setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir)))
 
-(setq gtd-agenda-inbox-file (expand-file-name "inbox.org" org-directory))
+(setq gtd-agenda-inbox-file (expand-file-name "inbox.org.gpg" org-directory))
 
 (add-load-path! "lisp")
 
@@ -1858,7 +1858,6 @@ When in org-roam file, also create top-level ID.
                                  (string-match "roam" dir))
                                (ffap-all-subdirs org-directory 1)))))
 
-  (advice-add #'org-roam-dailies--capture :after #'+org-roam-dailies-insert-timestamp-a)
   (advice-add #'org-roam-capture--finalize-find-file :override #'+org-roam-capture--finalize-find-file-a)
   (advice-add #'org-roam-node-doom-tags :around #'org-roam-doom-tags-remove-duplicate)
 
@@ -1870,15 +1869,17 @@ When in org-roam file, also create top-level ID.
         org-roam-list-files-commands '(fd)
         org-roam-completion-everywhere t
         +org-roam-open-buffer-on-find-file nil
+        org-roam-db-node-include-function (lambda ()
+                                            (not (member "yankpad" (org-get-tags))))
         org-roam-capture-templates
         `(("d" "default" plain "%?"
            :target (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
-                              "#+title: ${title}\n")
+                              "#+title: ${title}\n#+category: ${title}\n")
            :unnarrowed t))
         org-roam-capture-ref-templates
         `(("r" "ref" plain "%?"
            :target (file+head ,(concat +org-roam-inbox-prefix "${slug}.org")
-                              "#+title: ${title}")
+                              "#+title: ${title}\n#+category: ${title}\n")
            :unnarrowed t
            :immediate-finish t))
 
@@ -1890,7 +1891,10 @@ When in org-roam file, also create top-level ID.
   )
 
 (use-package! org-roam-dailies
-  :after org-roam)
+  :after org-roam
+  :config
+  (add-hook 'org-roam-dailies-find-file-hook #'+org-roam-dailies-insert-timestamp-h)
+  )
 
 (use-package! websocket
   :after org-roam)
