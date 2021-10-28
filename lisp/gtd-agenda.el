@@ -393,6 +393,7 @@ Optionally accept valid org-ql QUERY.
   ;; Don't auto-pop following if true
   (unless gtd-agenda-hydra-no-precheck
     (let* ((today (format-time-string "%F" (current-time)))
+           (files (agenda-filter-all-collected-agenda-files t))
            (space " ")
            ;; NOTE I need to start search today with at least 1 second offset
            ;; otherwise the scheduled-today-hh-mm-query query will include also
@@ -423,33 +424,34 @@ Optionally accept valid org-ql QUERY.
         (org-clock-goto))
 
        ;; Show past scheduled / deadline items if any
-       ((gtd-agenda--try-query-match (agenda-queries--past-dues-query))
+       ((gtd-agenda--try-query-match (agenda-queries--past-dues-query) files)
         (pcase gtd-agenda-interface
           ('agenda-search
-           (org-ql-search (agenda-filter-all-collected-agenda-files) (agenda-queries--past-dues-query)
+           (org-ql-search files (agenda-queries--past-dues-query)
              :sort #'agenda-queries-sort-by-active-timestamp
              :title "Past dues"))
           ('agenda-headlines
            (agenda-headlines-goto-query
             :prompt "Past dues"
             :query (agenda-queries--past-dues-query)
+            :files files
             :sort-fn #'agenda-queries-sort-by-active-timestamp
             :time t
             :capture-key "t"))))
 
        ;; Show today's scheduled / deadline items without "HH:MM" if any
-       ((gtd-agenda--try-query-match scheduled-today-without-hh-mm-query)
+       ((gtd-agenda--try-query-match scheduled-today-without-hh-mm-query files)
         (pcase gtd-agenda-interface
           ('agenda-search
            ;; (org-ql-search
-           ;;   (agenda-filter-all-collected-agenda-files)
+           ;;   files
            ;;   scheduled-today-without-hh-mm-query
            ;;   :title "Scheduled today without HH:MM")
            (let ((org-agenda-start-with-log-mode t)
                  (org-agenda-span 1)
                  (org-agenda-start-day nil)
                  (org-agenda-use-time-grid t)
-                 (org-agenda-files (agenda-filter-all-collected-agenda-files))
+                 (org-agenda-files files)
                  ;; (org-pretty-tags-agenda-unpretty-habits t)
                  (org-agenda-time-grid '((daily today require-timed)
                                          (700 800 900 1000 1100 1200
@@ -461,6 +463,7 @@ Optionally accept valid org-ql QUERY.
            (agenda-headlines-goto-query
             :prompt "Scheduled today without HH:MM"
             :query scheduled-today-without-hh-mm-query
+            :files files
             :sort-fn 'date
             :capture-key "t"
             :clock t))))
@@ -500,6 +503,7 @@ Optionally accept valid org-ql QUERY.
                     :prompt "Stand-alone tasks"
                     :query (agenda-queries--stand-alone-task-query)
                     :sort-fn 'date
+                    :files files
                     :reverse t
                     :capture-key "t")))
               (gtd-agenda-simple-task-search "SOMEDAY")))
