@@ -1866,11 +1866,12 @@ When in org-roam file, also create top-level ID.
 
   (setq org-roam-db-location (+org-roam-db-location)
         org-roam-dailies-directory "journal/"
-        org-roam-list-files-commands '(fd)
+        org-roam-list-files-commands '(fd rg find elisp)
         org-roam-completion-everywhere t
         +org-roam-open-buffer-on-find-file nil
-        org-roam-db-node-include-function (lambda ()
-                                            (not (member "yankpad" (org-get-tags))))
+        ;; TODO Investigate performance impact
+        ;; org-roam-db-node-include-function (lambda ()
+        ;;                                     (not (member "yankpad" (org-get-tags))))
         org-roam-capture-templates
         `(("d" "default" plain "%?"
            :target (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
