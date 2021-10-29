@@ -594,7 +594,9 @@ as you name the directory you place the file into.
   (setq org-agenda-files
         (append
          (list gtd-agenda-inbox-file)
-         (org-roam-list-nodes-by-tag "agenda")))
+         (cl-remove-duplicates
+          (org-roam-list-nodes-by-tag "agenda")
+          :test #'string-equal)))
   (setq +org-all-collected-agenda-files
         (cl-remove-duplicates
          (append
