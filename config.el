@@ -878,9 +878,6 @@ if running under WSL")
 
 
 (setq ispell-dictionary "en")
-(after! flyspell
-  (remove-hook 'flyspell-mode-hook #'flyspell-lazy-load)
-  )
 
 (after! ispell
   (advice-add #'ispell-init-process :around #'doom-shut-up-a)
@@ -1216,8 +1213,6 @@ if running under WSL")
   (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
   )
 
-;; (remove-hook 'org-mode-hook #'flyspell-mode)
-
 (after! ol
   (advice-add
    #'org-link-open-from-string
@@ -1306,7 +1301,6 @@ if running under WSL")
   (set-popup-rule! "^\\*Org QL.*\\*$"           :vslot 1 :size 100 :side 'right :select t :quit t   :ttl nil :modeline t)
 
   (add-to-list '+format-on-save-enabled-modes 'org-mode t)
-  (add-hook 'org-capture-mode-hook #'flyspell-mode)
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
   (add-hook 'org-mode-hook (lambda () (visual-line-mode -1)))

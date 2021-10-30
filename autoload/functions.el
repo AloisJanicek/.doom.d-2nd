@@ -89,26 +89,28 @@ Which operation will be executed depends on value of ENCRYPT."
         (message "Decrypted %s files." (length encrypted))))))
 
 ;;;###autoload
-(defun aj/flyspell-enable ()
+(defun aj/flyspell-toggle ()
   "Toggle command `flyspell-mode' with check for progn-derived mode."
   (interactive)
-  (if (not flyspell-mode)
-      (progn
-        (flyspell-mode 1)
-        (if (derived-mode-p 'prog-mode)
-            (flyspell-prog-mode)))
-    (flyspell-mode 0)))
+  (if (derived-mode-p 'prog-mode)
+      (if (equal flyspell-generic-check-word-predicate #'flyspell-generic-progmode-verify)
+          (progn
+            (setq flyspell-generic-check-word-predicate nil)
+            (flyspell-mode -1))
+        (flyspell-prog-mode))
+    (flyspell-mode 'toggle)
+    (when flyspell-mode
+      (flyspell-buffer))))
 
 ;;;###autoload
 (defun aj-ispell-swap-two-dicts (dict1 dict2)
-  "If DICT1 is active switch to DICT2 or do it backwards."
-  (let ((target-dict
-         (if (string= dict1 ispell-local-dictionary)
-             dict2 dict1)))
-    (progn
-      (ispell-change-dictionary target-dict)
-      (flyspell-mode 1)
-      (flyspell-buffer))))
+  "Swap between two provided dictionaries."
+  (unless ispell-local-dictionary
+    (setq ispell-local-dictionary ispell-dictionary))
+  (ispell-change-dictionary
+   (if (string= dict1 ispell-local-dictionary)
+       dict2 dict1))
+  (flyspell-buffer))
 
 ;;;###autoload
 (defun aj-doom-themes-swap-two-themes (theme1 theme2)
