@@ -101,6 +101,16 @@ Allows to each org-roam to have its own unique database."
     (setq org-roam-directory dir
           org-roam-db-location (+org-roam-db-location)))
 
+  (when-let* ((f-recipe (expand-file-name ".recipe.txt" org-roam-directory))
+              (f-recipe-exist (file-exists-p f-recipe)))
+    (dolist (path (split-string (f-read-text f-recipe 'utf-8)))
+      (let ((dir-path (directory-file-name
+                       (file-name-directory path)))
+            (dir-name (file-name-nondirectory
+                       (directory-file-name path)))
+            (target-path org-roam-directory))
+        (shell-command (format "stow -D %s -d %s -t %s" dir-name dir-path target-path))
+        (shell-command (format "stow %s -d %s -t %s" dir-name dir-path target-path)))))
 
   (org-roam-db-sync)
 
@@ -118,6 +128,36 @@ Allows to each org-roam to have its own unique database."
   (org-roam-refresh-agenda-list)
   )
 
+(defun +org-roam/delete-linked-files ()
+  "Delete linked files from org-roam."
+  (interactive)
+  (let* ((roam-dir (read-directory-name
+                    "Unlink FROM roam: "
+                    (expand-file-name "roam-virtual" org-directory)))
+         (f-recipe (expand-file-name ".recipe.txt" roam-dir))
+         (recipe-str (when (file-exists-p f-recipe) (f-read-text f-recipe 'utf-8))))
+    (if recipe-str
+        (let* ((recipe (split-string recipe-str))
+               (unlink-dir (ivy-read "Unlink WHAT dir: " recipe))
+               (dir-path (directory-file-name
+                          (file-name-directory unlink-dir)))
+               (dir-name (file-name-nondirectory
+                          (directory-file-name
+                           unlink-dir)))
+               (target-path roam-dir))
+
+          (shell-command (format "stow -D %s -d %s -t %s" dir-name dir-path target-path))
+
+          (f-delete f-recipe)
+          (setq recipe (delete unlink-dir recipe))
+
+          (dolist (path recipe)
+            (f-append-text (format "%s\n" path) 'utf-8 f-recipe))
+
+          (when (string-equal org-roam-directory (string-trim-right target-path "/"))
+            (org-roam-db-sync)))
+      (user-error "The %s roam-dir doesn't have recipe file" roam-dir))))
+
 (defun +org-roam/create-new-roam-linking-files ()
   "Build new org-roam-directories based on files from other, existing ones.
 
@@ -128,6 +168,12 @@ into the choosen one creating it if doesn't already exist.
 This allows user to neatly orgnize org-roam directory into different
 sub-directories which can be used either as source of tag category for filtering
 or even as new dedicated org-roam directories themselves.
+
+Stores the \"virtual roam's\" configuration recipe in \".recipe.txt\" file inside
+new `org-roam-directory'.
+
+This recipe contains path of the directories which were linked by gnu stow
+inside this new org-roam directory.
 "
   (interactive)
   (let* ((dir (ivy-read "WHAT to link: " (+org-roam-dirs 'valid)))
@@ -145,13 +191,13 @@ or even as new dedicated org-roam directories themselves.
                                  (unless (file-exists-p x)
                                    (make-directory x)
                                    (make-directory (expand-file-name "books" x))
-                                   (make-directory (expand-file-name "inbox" x)))))))
-    (shell-command
-     (format "stow %s -d %s -t %s"
-             dir-name
-             dir-path
-             target-path
-             ))
+                                   (make-directory (expand-file-name "journal" x))
+                                   (make-directory (expand-file-name "inbox" x))))))
+         (f-recipe (expand-file-name ".recipe.txt" target-path)))
+
+    (f-append-text (format "%s\n" dir) 'utf-8 f-recipe)
+
+    (shell-command (format "stow %s -d %s -t %s" dir-name dir-path target-path))
 
     (when (string-equal org-roam-directory (string-trim-right target-path "/"))
       (org-roam-db-sync))))
