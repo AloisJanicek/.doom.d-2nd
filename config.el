@@ -1293,6 +1293,9 @@ if running under WSL")
   )
 
 (after! org
+  ;; One day it will work but not today
+  (setq org-element-use-cache nil)
+
   (add-hook 'after-org-mode-hook #'org-hide-drawer-all)
   (advice-add #'org-open-at-point :after (lambda () (solaire-mode +1)))
   (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
