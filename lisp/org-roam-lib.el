@@ -125,7 +125,7 @@ Allows to each org-roam to have its own unique database."
     (add-to-list 'org-noter-notes-search-path dir))
 
   ;; also update agenda-files
-  (org-roam-refresh-agenda-list)
+  (+org-roam/refresh-agenda-list)
   )
 
 (defun +org-roam/delete-linked-files ()
@@ -635,8 +635,9 @@ as you name the directory you place the file into.
              (member tag-name (org-roam-node-tags node)))
            (org-roam-node-list))))
 
-(defun org-roam-refresh-agenda-list ()
+(defun +org-roam/refresh-agenda-list ()
   "Build list of all `org-agenda-files' from current org-roam."
+  (interactive)
   (setq org-agenda-files
         (append
          (list gtd-agenda-inbox-file)

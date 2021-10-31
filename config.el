@@ -1891,7 +1891,7 @@ When in org-roam file, also create top-level ID.
         )
 
   ;; Update `org-agenda-files'
-  (org-roam-refresh-agenda-list)
+  (+org-roam/refresh-agenda-list)
   )
 
 (use-package! org-roam-dailies

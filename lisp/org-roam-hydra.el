@@ -35,6 +35,7 @@
   ("r" #'org-roam-ivy-find-refs "refs")
   ("R" #'org-roam-ivy-filter-preset-set "filter")
   ("f" #'org-roam-ivy-find-file "file")
+  ("u" #'+org-roam/refresh-agenda-list "update agenda files")
   ("U" #'org-roam-ivy-find-unlinked "unlinked")
   ("N" #'org-roam-ivy-find-not-linking "not linking")
   ("k" #'+org-roam/re-capture-as-entry "re-capture entry")
