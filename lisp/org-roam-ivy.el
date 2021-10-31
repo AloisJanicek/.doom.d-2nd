@@ -145,6 +145,7 @@ completion candidates filtering, running this fn on the completion candidate sho
   "Delete org-roam file FILE and kill visiting buffers."
   (kill-buffer (find-buffer-visiting file))
   (move-file-to-trash file)
+  (+org-roam/refresh-agenda-list)
   (message "%s moved to trash." (file-name-nondirectory file)))
 
 ;; TODO Adjust for org-roam heading entries
@@ -186,6 +187,7 @@ completion candidates filtering, running this fn on the completion candidate sho
     (unless (file-directory-p dest)
       (mkdir dest t))
     (rename-file f dest)
+    (+org-roam/refresh-agenda-list)
     (message "%s \nmoved to new location: %s." f dest)))
 
 (defun org-roam-ivy--links (x type)

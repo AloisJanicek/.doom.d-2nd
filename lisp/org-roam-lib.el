@@ -645,10 +645,13 @@ as you name the directory you place the file into.
           (org-roam-list-nodes-by-tag "agenda")
           :test #'string-equal)))
   (setq +org-all-collected-agenda-files
-        (cl-remove-duplicates
-         (append
-          +org-all-collected-agenda-files
-          org-agenda-files)
-         :test #'string-equal)))
+        (seq-filter
+         (lambda (file)
+           (file-exists-p file))
+         (cl-remove-duplicates
+          (append
+           +org-all-collected-agenda-files
+           org-agenda-files)
+          :test #'string-equal))))
 
 (provide 'org-roam-lib)
