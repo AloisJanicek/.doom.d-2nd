@@ -2351,7 +2351,14 @@ When in org-roam file, also create top-level ID.
 (after! yasnippet
   (setq yas-wrap-around-region t
         yas-triggers-in-field t
-        ))
+        )
+  (map!
+   :after yasnippet
+   :map yas-keymap
+   "C-<tab>" #'yas-next-field-or-maybe-expand
+   "<tab>" #'yas-next-field
+   )
+  )
 
 (use-package! zeal-at-point
   :commands (zeal-at-point zeal-at-point-search zeal-at-point-set-docset)
