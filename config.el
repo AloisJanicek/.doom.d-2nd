@@ -640,6 +640,12 @@ if running under WSL")
   :after sml-mode
   )
 
+(after! (flymake)
+  (when (and
+         (not (fboundp 'flymake--diag-buffer))
+         (fboundp 'flymake--diag-locus))
+    (defalias 'flymake--diag-buffer 'flymake--diag-locus)))
+
 (after! fsharp-mode
   (add-to-list
    'aj-modes-tests-alist
