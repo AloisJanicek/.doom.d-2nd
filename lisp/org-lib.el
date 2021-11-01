@@ -250,8 +250,7 @@ specified in `+org/capture-file-heading'."
                        (directory-files org-directory t ".org"))
 
      ;; re-set other variables which depends on `org-directory'
-     gtd-agenda-inbox-file (expand-file-name "inbox.org.gpg" org-directory)
-     gtd-agenda-mobile-inbox-file (expand-file-name "mobile.org" org-directory)
+     gtd-agenda-inbox-file (expand-file-name "inbox-roam-encrypt.org.gpg" gtd-agenda-inbox-dir)
      )
     )
   )

@@ -9,6 +9,7 @@
 (require 'org-roam-ivy)
 (require 'code-capture)
 (require 'org-lib)
+(require 'gtd-agenda)
 
 (defcustom +org-roam-inbox-prefix "inbox/"
   "Subfolder inside `org-roam-directory' where newly captured items are initially placed." )
@@ -123,6 +124,12 @@ Allows to each org-roam to have its own unique database."
   ;; also update paths for org-noter
   (dolist (dir (list-dirs-recursively org-roam-directory))
     (add-to-list 'org-noter-notes-search-path dir))
+
+  ;; also update capture templates
+  (org-roam-eval-capture-templates)
+
+  ;; also create inbox file if doesn't exists yet
+  (org-roam-create-inbox-file)
 
   ;; also update agenda-files
   (+org-roam/refresh-agenda-list)
@@ -640,7 +647,7 @@ as you name the directory you place the file into.
   (interactive)
   (setq org-agenda-files
         (append
-         (list gtd-agenda-inbox-file)
+         (gtd-agenda-inbox-files)
          (cl-remove-duplicates
           (org-roam-list-nodes-by-tag "agenda")
           :test #'string-equal)))
@@ -653,5 +660,67 @@ as you name the directory you place the file into.
            +org-all-collected-agenda-files
            org-agenda-files)
           :test #'string-equal))))
+
+
+(defun org-roam-eval-capture-templates ()
+  "Re-eval org-roam capture templates."
+  (setq
+   org-roam-capture-templates
+   `(("d" "default" entry (function
+                           (lambda ()
+                             (concat
+                              (format
+                               "* ${title}\n:PROPERTIES:\n:ID: %s\n:END:\n"
+                               (org-id-uuid))
+                              "%?")))
+      :target `(node (org-roam-current-inbox-title))))
+   org-roam-capture-ref-templates
+   `(("r" "ref" entry (function
+                       (lambda ()
+                         (format
+                          "* ${title} :ref:\n:PROPERTIES:\n:ID: %s\n:ROAM_REFS: ${ref}\n:END:"
+                          (org-id-uuid))))
+      :target (node ,(org-roam-current-inbox-title))
+      :unnarrowed t
+      :immediate-finish t))
+   )
+  )
+
+(defun org-roam-current-inbox-title ()
+  "Return title of the inbox file for current `org-roam-directory'."
+  (format "_Inbox-%s" (file-name-nondirectory
+                       (directory-file-name org-roam-directory))))
+
+(defun org-roam-create-inbox-file ()
+  "Create inbox file specific for current `org-roam-directory'.
+
+In my workflow every org-roam has its \"inbox\" subdirectory
+with its own \"inbox.org\" file.
+
+This file is then linked to global inbox directory where it can
+be easily browsed and managed.
+
+Each inbox file has its unique ID and title so there is no
+conflicts or issues when there is more inbox files in
+one org-roam.
+"
+  (let* ((roam (file-name-nondirectory
+                (directory-file-name org-roam-directory)))
+         (title (org-roam-current-inbox-title))
+         (id (org-id-uuid))
+         (inbox-dir (expand-file-name "inbox" org-roam-directory))
+         (inbox-file-name
+          (if (string-match "-encrypt" roam)
+              (format "inbox-%s.org.gpg" roam)
+            (format "inbox-%s.org" roam)))
+         (inbox-file (expand-file-name inbox-file-name inbox-dir)))
+
+    (unless (file-exists-p inbox-file)
+      (with-temp-file inbox-file
+        (insert
+         (format "# -*- org-src-fontify-natively: nil; -*-\n:PROPERTIES:\n:ID: %s\n:END:\n#+TITLE: %s\n#+FILETAGS: inbox\n" id title)))
+      (org-roam-db-sync))
+
+    (make-symbolic-link inbox-file (expand-file-name inbox-file-name gtd-agenda-inbox-dir) 'ok-if-already-exists)))
 
 (provide 'org-roam-lib)

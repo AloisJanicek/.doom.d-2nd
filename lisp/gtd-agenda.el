@@ -32,11 +32,24 @@
 (require 'org-lib)
 
 ;;; Variables
-(defcustom gtd-agenda-inbox-file (expand-file-name "inbox.org.gpg" org-directory)
+;; NOTE For the simplicity of things lets link every inbox file
+;; into this directory rather then adding inbox files to the list
+(defcustom gtd-agenda-inbox-dir
+  (expand-file-name "inbox" org-directory)
+  "Directory where (possibly) all inbox files resides.")
+
+(defcustom gtd-agenda-inbox-file (expand-file-name "inbox-roam-encrypt.org.gpg" gtd-agenda-inbox-dir)
   "File where all stuff goes initially.")
 
-(defcustom gtd-agenda-mobile-inbox-file (expand-file-name "mobile.org" org-directory)
-  "File where all stuff goes initially for Orgzly preventing annoying sync issues.")
+(defun gtd-agenda-inbox-files ()
+  "Return list of files to be considered as inbox files"
+  (seq-filter
+   (lambda (file)
+     (let ((f (file-truename file)))
+       (if (file-exists-p f)
+           f
+         (delete-file file))))
+   (directory-files gtd-agenda-inbox-dir t ".org")))
 
 (defvar gtd-agenda-hydra-no-precheck nil
   "When t, do not evaluate \":body-pre\" in `gtd-agenda-hydra/body'.")
@@ -620,12 +633,12 @@ GTD Agenda (%(agenda-filter-preset-string))
   ("i" (pcase gtd-agenda-interface
          ('agenda-search
           (org-ql-search
-            `(,gtd-agenda-inbox-file ,gtd-agenda-mobile-inbox-file)
+            `(gtd-agenda-inbox-files)
             '(level 1)
             :title "Inbox"))
          ('agenda-headlines
           (agenda-headlines-goto-any
-           :files (list gtd-agenda-inbox-file gtd-agenda-mobile-inbox-file)
+           :files (gtd-agenda-inbox-files)
            :level 1)))
    "inbox")
 

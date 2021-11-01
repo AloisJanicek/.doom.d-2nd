@@ -30,7 +30,7 @@ if running under WSL")
 
 (setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir)))
 
-(setq gtd-agenda-inbox-file (expand-file-name "inbox.org.gpg" org-directory))
+(setq gtd-agenda-inbox-file (expand-file-name "inbox-roam-encrypt.org.gpg" gtd-agenda-inbox-dir))
 
 (add-load-path! "lisp")
 
@@ -1872,26 +1872,14 @@ When in org-roam file, also create top-level ID.
         org-roam-list-files-commands '(fd rg find elisp)
         org-roam-completion-everywhere t
         +org-roam-open-buffer-on-find-file nil
-        ;; TODO Investigate performance impact
-        ;; org-roam-db-node-include-function (lambda ()
-        ;;                                     (not (member "yankpad" (org-get-tags))))
-        org-roam-capture-templates
-        `(("d" "default" plain "%?"
-           :target (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
-                              "#+title: ${title}\n#+category: ${title}\n")
-           :unnarrowed t))
-        org-roam-capture-ref-templates
-        `(("r" "ref" plain "%?"
-           :target (file+head ,(concat +org-roam-inbox-prefix "${slug}.org")
-                              "#+title: ${title}\n#+category: ${title}\n")
-           :unnarrowed t
-           :immediate-finish t))
-
-        org-roam-node-display-template "${doom-hierarchy} ${doom-tags}"
         )
 
   ;; Update `org-agenda-files'
   (+org-roam/refresh-agenda-list)
+  ;; set capture templates
+  (org-roam-eval-capture-templates)
+  ;; create inbox file
+  (org-roam-create-inbox-file)
   )
 
 (use-package! org-roam-dailies
