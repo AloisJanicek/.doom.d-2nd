@@ -673,7 +673,7 @@ as you name the directory you place the file into.
                                "* ${title}\n:PROPERTIES:\n:ID: %s\n:END:\n"
                                (org-id-uuid))
                               "%?")))
-      :target `(node (org-roam-current-inbox-title))))
+      :target (node ,(org-roam-current-inbox-title))))
    org-roam-capture-ref-templates
    `(("r" "ref" entry (function
                        (lambda ()

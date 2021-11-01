@@ -385,9 +385,8 @@ When there isn't one, return to last top level ivy."
 (defun org-roam-ivy--capture (x)
   "Capture X action for org-roam-ivy.
 Adopted from `org-roam'."
-  (let ((test "hi"))
-    (org-roam-capture- :node (org-roam-node-read x))
-    (setq org-roam-ivy--last-ivy-text "")))
+  (org-roam-capture- :node (org-roam-node-read x))
+  (setq org-roam-ivy--last-ivy-text ""))
 
 (defun org-roam-ivy--backlinks-transformer (str)
   "Improve appereance of org-roam-ivy candidate STR."

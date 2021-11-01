@@ -30,8 +30,6 @@ if running under WSL")
 
 (setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir)))
 
-(setq gtd-agenda-inbox-file (expand-file-name "inbox-roam-encrypt.org.gpg" gtd-agenda-inbox-dir))
-
 (add-load-path! "lisp")
 
 (dolist (i '(ol-info ol-eww org-id))
@@ -1543,6 +1541,7 @@ if running under WSL")
   )
 
 (after! org-capture
+  (require 'gtd-agenda)
   (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
   (add-hook 'org-capture-after-finalize-hook #'aj/org-clock-update-heading)
