@@ -23,6 +23,7 @@
 (require 'filter-preset-ivy)
 (require 'all-the-icons)
 (require 'ffap)
+(require 'org-lib)
 
 ;;; Variables
 
@@ -148,38 +149,52 @@ completion candidates filtering, running this fn on the completion candidate sho
   (+org-roam/refresh-agenda-list)
   (message "%s moved to trash." (file-name-nondirectory file)))
 
-;; TODO Adjust for org-roam heading entries
-;; `org-cut-subtree' or something
 (defun org-roam-ivy--delete-action (x)
-  "Delete org-roam file X action for ivy."
+  "Delete org-roam node X action for ivy."
   (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
-    (let ((f (org-roam-node-file (org-roam-ivy--get-node x))))
-      (org-roam-ivy--delete-file f))
+    (let* ((node (org-roam-ivy--get-node x))
+           (file (org-roam-node-file node))
+           (node-point (org-roam-node-point node))
+           (is-heading (> node-point 1)))
+      (if is-heading
+          (with-current-buffer
+              (find-file-noselect file)
+            (org-with-wide-buffer
+             (goto-char node-point)
+             (org-cut-subtree)
+             (save-buffer)))
+        (org-roam-ivy--delete-file file)))
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
-;; TODO Adjust for org-roam heading entries
-;; edit the heading title
 (defun org-roam-ivy--rename-action (x)
   "Change title of org-roam file X."
   (interactive)
   (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
-    (with-current-buffer (find-file-noselect (org-roam-node-file (org-roam-ivy--get-node x)))
-      (goto-char (point-min))
-      (re-search-forward "^#\\+title:" (point-max) t)
-      (re-search-forward "^[[:space:]]*#\\+TITLE:" (point-max) t)
-      (kill-line)
-      (insert " ")
-      (insert (completing-read "New title: " nil nil nil (string-trim (car kill-ring))))
-      (save-buffer))
+    (let* ((node (org-roam-ivy--get-node x))
+           (file (org-roam-node-file node))
+           (node-point (org-roam-node-point node))
+           (is-heading (> node-point 1)))
+      (with-current-buffer (find-file-noselect file)
+        (if is-heading
+            (progn
+              (goto-char node-point)
+              (+org-change-title (+org-heading--parts))
+              (save-buffer))
+          (progn
+            (goto-char (point-min))
+            (re-search-forward "^#\\+title:" (point-max) t)
+            (re-search-forward "^[[:space:]]*#\\+TITLE:" (point-max) t)
+            (kill-line)
+            (insert " ")
+            (insert (completing-read "New title: " nil nil nil (string-trim (car kill-ring)))))
+          (save-buffer))))
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
-;; TODO Adjust for org-roam heading entries
-;; use `org-roam-refile'?
 (defun org-roam-ivy--move-action (x)
   "Move org-roam file X."
-  ;; FIXME Check for attachments and move them to
+  ;; FIXME Check for attachments and move them too
   (let* ((f (org-roam-node-file (org-roam-ivy--get-node x)))
          (fname (file-name-nondirectory f))
          (dest (file-name-as-directory
@@ -339,18 +354,34 @@ In case of current buffer is indirect, kill the base buffer."
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
+(defun org-roam-ivy--extract-subtree-action (x)
+  "`org-roam-extract-subtree' org-roam node of X."
+  (let* ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command)))
+         (node (org-roam-ivy--get-node x))
+         (node-point (org-roam-node-point node))
+         (is-heading (> node-point 1))
+         (node-file (org-roam-node-file node))
+         (node-buffer (find-file-noselect node-file)))
+    (if is-heading
+        (with-current-buffer node-buffer
+          (org-with-wide-buffer
+           (goto-char node-point)
+           (org-roam-extract-subtree)))
+      (user-error "Extracting file-level node doesn't make sense, maybe you want to move the file instead?"))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
+
 (defun org-roam-ivy--refile-action (x)
   "`org-roam-refile' org-roam node of X."
   (let* ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command)))
          (node (org-roam-ivy--get-node x))
          (node-point (org-roam-node-point node))
          (node-file (org-roam-node-file node))
-         (node-buffer (ignore-errors (or (get-file-buffer node-file) (find-file-noselect node-file)))))
+         (node-buffer (find-file-noselect node-file)))
 
     (with-current-buffer node-buffer
       (goto-char node-point)
-      (org-roam-refile)
-      )
+      (org-roam-refile))
 
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
@@ -565,8 +596,8 @@ ORDER BY a.title"
             (when (require 'org-noter)
               (org-noter))))
     "org-noter")
-   ("." org-roam-ivy--refile-action "refile")
-   ))
+   ("e" org-roam-ivy--extract-subtree-action "extract subtree")
+   ("." org-roam-ivy--refile-action "refile")))
 
 (provide 'org-roam-ivy)
 ;;; org-roam-ivy.el ends here

@@ -190,7 +190,6 @@ Works also in `org-agenda'."
          (aj-get-all-org-files)))
    "file")
   ("v" #'+org/refile-to-visible "visible")
-  ("b" #'+org/refile-under-org-brain-entry "brain")
   ("j" (aj-org-refile-to-datetree
         (aj/choose-file-from
          (directory-files org-directory t ".org")))
@@ -211,18 +210,9 @@ Works also in `org-agenda'."
   ("." #'+org/refile-to-current-file-special "current file")
   ("c" #'+org/refile-to-running-clock "clock")
   ("l" #'+org/refile-to-last-location "last location")
-  ("r" #'+org-brain/refile-link-to-resources-drawer "resources")
-  ("a" (+org-brain/refile-link-to-archived-resources (aj/choose-file-from
-                                                  (directory-files-recursively
-                                                   (expand-file-name "archive" org-brain-path)
-                                                   ".org_archive$")))
-   "archived resources")
-  ("A" (aj/org-refile-to-file (aj/choose-file-from
-                               (directory-files-recursively
-                                (expand-file-name "archive" org-brain-path)
-                                ".org_archive$")))
-   "Archived entry")
-  ("s" (if current-prefix-arg
+  ("r" #'org-roam-refile "roam-refile")
+  ("s" #'org-roam-extract-subtree "roam-extract-subtree")
+  ("S" (if current-prefix-arg
            ;; default to current buffer
            ;; one prefix - filtered brain files
            ;; two prefixes - all brain files
