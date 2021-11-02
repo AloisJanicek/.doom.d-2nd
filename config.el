@@ -67,7 +67,7 @@ if running under WSL")
 
 (set-popup-rule! "*backtrace\*"      :size 0.5            :side 'bottom :select t :quit t :modeline t)
 (set-popup-rule! "*ert\*"            :size 12            :side 'bottom :select t :quit t :modeline nil)
-(set-popup-rule! "*doom:scratch"     :size 24 :vslot -4 :side 'bottom :select t :quit t :ttl nil :modeline nil)
+(set-popup-rule! "*doom:scratch"     :size 0.4 :vslot -4 :side 'bottom :select t :quit t :ttl nil :modeline nil)
 
 (advice-add #'+lookup--jump-to :after (lambda (&rest _) (recenter 0 t)))
 
@@ -149,7 +149,7 @@ if running under WSL")
   )
 
 (after! ansible-doc
-  (set-popup-rule! "*ansible-doc "     :vslot 2 :size 0.32 :side 'left :select t :ttl t :modeline t)
+  (set-popup-rule! "*ansible-doc "     :vslot 2 :size 0.32 :side 'bottom :select t :ttl t :modeline t)
   (when (featurep! :editor evil)
     (add-hook 'ansible-doc-module-mode-hook #'evil-motion-state))
   (add-hook 'ansible-doc-module-mode-hook #'visual-line-mode))
@@ -159,8 +159,8 @@ if running under WSL")
   )
 
 (after! apropos
-  (set-popup-rule! "*apropos\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t)
-  (set-popup-rule! "*Apropos\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t))
+  (set-popup-rule! "*apropos\*"        :vslot 1 :size 0.4  :side 'bottom :select t :modeline t)
+  (set-popup-rule! "*Apropos\*"        :vslot 1 :size 0.4  :side 'bottom :select t :modeline t))
 
 (after! asm-mode
   (add-to-list
@@ -270,7 +270,7 @@ if running under WSL")
   )
 
 (after! cus-edit
-  (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'left :select t :modeline t))
+  (set-popup-rule! "*Customize\*"      :vslot 1 :size 0.4  :side 'bottom :select t :modeline t))
 
 (after! company
   (setq company-idle-delay 1.25
@@ -573,7 +573,7 @@ if running under WSL")
   )
 
 (after! eww
-  (set-popup-rule! "*eww"            :vslot 1 :size 80  :side 'bottom :select t :quit t :ttl nil :modeline t)
+  (set-popup-rule! "*eww"            :vslot 1 :size 0.4 :side 'top :select t :quit t :ttl nil :modeline t)
   (add-hook 'eww-after-render-hook
             (lambda ()
               (shrface-mode)
@@ -713,10 +713,10 @@ if running under WSL")
   )
 
 (after! help
-  (set-popup-rule! "*Help\*"           :vslot 2 :size 82 :side 'left :select t :modeline t))
+  (set-popup-rule! "*Help\*"           :vslot 2 :size 0.4 :side 'top :select t :modeline t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"        :vslot 2 :size 82 :side 'left :select t :quit t :ttl nil :modeline t)
+  (set-popup-rule! "*helpful\*"        :vslot 2 :size 0.4 :side 'top :select t :quit t :ttl nil :modeline t)
   (setq helpful-mode-hook nil)
   (add-hook 'helpful-mode-hook (lambda ()
                                  (doom-mark-buffer-as-real-h)
@@ -765,7 +765,7 @@ if running under WSL")
 (use-package! howdoyou
   :commands (howdoyou-query aj/howdoyou-hydra/body)
   :config
-  (set-popup-rule! "*How Do You"      :vslot 3 :size 82  :side 'left :select t :ttl nil :modeline t :autosave t :quit t)
+  (set-popup-rule! "*How Do You"      :vslot 3 :size 0.5  :side 'top :select t :ttl nil :modeline t :autosave t :quit t)
 
   (add-hook 'howdoyou-mode-hook (lambda ()
                                   (doom-mark-buffer-as-real-h)
@@ -813,7 +813,7 @@ if running under WSL")
   )
 
 (after! ibuffer
-  (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'left :select t :modeline t))
+  (set-popup-rule! "*Ibuffer\*"        :vslot 1 :size 0.4  :side 'bottom :select t :modeline t))
 
 (use-package! imenu-list
   :commands imenu-list-smart-toggle
@@ -851,7 +851,7 @@ if running under WSL")
   )
 
 (after! info
-  (set-popup-rule! "*Info\\|*info"            :vslot 2 :size 80 :side 'left :select t :quit t :ttl nil :modeline t)
+  (set-popup-rule! "*Info\\|*info"            :vslot 2 :size 0.5 :side 'top :select t :quit t :ttl nil :modeline t)
   (setq Info-use-header-line nil)
   (require 'ol-info)
   (add-hook 'Info-selection-hook (lambda ()
@@ -1030,13 +1030,13 @@ if running under WSL")
                               ))
 
 
-  (set-popup-rule! "*jest\*"            :size 20            :side 'bottom :select t :quit t :modeline nil)
+  (set-popup-rule! "*jest\*"            :size 0.4       :side 'bottom :select t :quit t :modeline nil)
   )
 
 (use-package! js-doc
   :after js2-mode
   :config
-  (set-popup-rule! "JsDocTagDescription" :size 20 :side 'bottom :select t :quit t :modeline nil)
+  (set-popup-rule! "JsDocTagDescription" :size 0.4 :side 'bottom :select t :quit t :modeline nil)
   )
 
 (use-package! js-react-redux-yasnippets
@@ -1069,7 +1069,7 @@ if running under WSL")
                                       (doom-mark-buffer-as-real-h)
                                       (persp-add-buffer (current-buffer))))
 
-  (set-popup-rule! "*inferior-lfe\*" :size 14 :side 'bottom :select t :quit t :modeline nil)
+  (set-popup-rule! "*inferior-lfe\*" :size 0.4 :side 'bottom :select t :quit t :modeline nil)
 
   (add-to-list
    'aj-modes-tests-alist
@@ -1107,11 +1107,11 @@ if running under WSL")
   )
 
 (after! woman
-  (setq woman-fill-column 80
-        woman-ll-fill-column 80)
+  (setq woman-fill-column 160
+        woman-ll-fill-column 160)
 
   (set-popup-rule! "^\\*\\(?:Wo\\)?Man "
-    :vslot 1 :size 82  :side 'left :select t :ttl nil :modeline t)
+    :vslot 1 :size 82  :side 'top :select t :ttl nil :modeline t)
   (setq woman-mode-hook nil)
 
   (add-hook 'woman-pre-format-hook (lambda ()
@@ -1125,7 +1125,7 @@ if running under WSL")
   )
 
 (after! man
-  (set-popup-rule! "*Man\\|*man"            :vslot 1 :size 0.4  :side 'left :select t :ttl nil :modeline t)
+  (set-popup-rule! "*Man\\|*man"            :vslot 1 :size 0.5  :side 'top :select t :ttl nil :modeline t)
   (add-hook 'Man-mode-hook (lambda ()
                              (doom-mark-buffer-as-real-h)
                              (persp-add-buffer (current-buffer))))
@@ -1209,7 +1209,7 @@ if running under WSL")
   (advice-add #'ob-javascript--node-path :override #'aj-ob-javascript--node-path-a))
 
 (after! occur
-  (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
+  (set-popup-rule! "*Occur" :vslot 2 :size 80  :side 'bottom :select t :quit t :ttl nil :modeline t)
   )
 
 (after! ol
@@ -1311,10 +1311,10 @@ if running under WSL")
 
   (add-hook 'after-org-mode-hook #'org-hide-drawer-all)
   (advice-add #'org-open-at-point :after (lambda () (solaire-mode +1)))
-  (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'bottom :select t                      :autosave t :modeline t)
-  (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 100   :side 'right :select t :quit t               :autosave t :modeline t)
-  (set-popup-rule! "^\\*Org Agenda.*\\*$"       :vslot 1 :size 100 :side 'right :select t :quit t   :ttl nil :modeline t)
-  (set-popup-rule! "^\\*Org QL.*\\*$"           :vslot 1 :size 100 :side 'right :select t :quit t   :ttl nil :modeline t)
+  ;; (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'top :select t                      :autosave t :modeline t)
+  (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 0.5 :side 'bottom :select t :quit t               :autosave t :modeline t)
+  (set-popup-rule! "^\\*Org Agenda.*\\*$"       :vslot 1 :size 0.5 :side 'top :select t :quit t   :ttl nil :modeline t)
+  (set-popup-rule! "^\\*Org QL.*\\*$"           :vslot 1 :size 0.5 :side 'top :select t :quit t   :ttl nil :modeline t)
 
   (add-to-list '+format-on-save-enabled-modes 'org-mode t)
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
@@ -2041,7 +2041,7 @@ When in org-roam file, also create top-level ID.
 
 (after! python
   (set-docsets! 'python-mode "Python_3")
-  (set-popup-rule! "*Python*"     :size 16 :vslot -2 :side 'bottom :select t :quit t :ttl nil :modeline nil)
+  (set-popup-rule! "*Python*"     :size 0.4 :vslot -2 :side 'bottom :select t :quit t :ttl nil :modeline nil)
   )
 
 (after! python-pytest
@@ -2073,7 +2073,7 @@ When in org-roam file, also create top-level ID.
 (after! racket-mode
   (add-hook 'racket-smart-open-bracket-mode-hook (lambda ()
                                                    (racket-smart-open-bracket-mode -1)))
-  (set-popup-rule! "^\\*Racket REPL"            :size 10 :select t :quit nil :modeline t)
+  (set-popup-rule! "^\\*Racket REPL"            :size 0.4 :select t :quit nil :modeline t)
   (add-to-list
    'aj-modes-tests-alist
    '(racket-mode . (:dir default-directory
@@ -2106,7 +2106,7 @@ When in org-roam file, also create top-level ID.
   )
 
 (after! scheme
-  (set-popup-rule! "^\\* Guile REPL *"          :size 10 :select t :quit nil :modeline t)
+  (set-popup-rule! "^\\* Guile REPL *"          :size 0.4 :select t :quit nil :modeline t)
   (add-to-list
    'aj-modes-tests-alist
    '(scheme-mode . (:dir default-directory
@@ -2307,7 +2307,7 @@ When in org-roam file, also create top-level ID.
 
 (after! vterm
   (remove-hook 'vterm-mode-hook #'hide-mode-line-mode)
-  (set-popup-rule! "*doom:vterm-popup" :size 0.25 :vslot -5 :select t :quit t :ttl nil :modeline nil)
+  (set-popup-rule! "*doom:vterm-popup" :size 0.4 :vslot -5 :select t :quit t :ttl nil :modeline nil)
   )
 
 (after! web-mode

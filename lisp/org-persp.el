@@ -75,12 +75,11 @@ in temporarily popup window on the right side of the frame.
                                    (file-truename buffer-file-name))
                                  (mapcar #'file-truename
                                          (agenda-filter-all-collected-agenda-files t))))
-                 (edge (if agenda-buffer
-                           'right 'left))
+                 (edge 'top)
                  (vslot-num (if agenda-buffer 1 3)))
             (+popup-buffer buffer
                            `((side . ,edge)
-                             (size . 90)
+                             (size . 0.5)
                              (slot)
                              (vslot . ,vslot-num)
                              (window-parameters
