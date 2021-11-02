@@ -461,4 +461,14 @@ Extends `+org/attach-file-and-insert-link'"
         (+org/attach-file-and-insert-link file)
       (+org/attach-file-and-insert-link))))
 
+;;;###autoload
+(defun +org-agenda-kill-all-agenda-buffers ()
+  "Kills all buffers visiting `agenda-filter--filtered-agenda-files'."
+  (seq-map
+   (lambda (file)
+     (let ((buff (find-buffer-visiting file)))
+       (when buff
+         (kill-buffer buff))))
+   (agenda-filter--filtered-agenda-files 'all)))
+
 (provide 'org-lib)

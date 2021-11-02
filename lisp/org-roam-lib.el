@@ -102,6 +102,8 @@ Allows to each org-roam to have its own unique database."
     (setq org-roam-directory dir
           org-roam-db-location (+org-roam-db-location)))
 
+  (+org-agenda-kill-all-agenda-buffers)
+
   (when-let* ((f-recipe (expand-file-name ".recipe.txt" org-roam-directory))
               (f-recipe-exist (file-exists-p f-recipe)))
     (dolist (path (split-string (f-read-text f-recipe 'utf-8)))
