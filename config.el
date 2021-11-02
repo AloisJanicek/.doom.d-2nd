@@ -2014,6 +2014,13 @@ When in org-roam file, also create top-level ID.
 (after! prog-mode
   (add-hook 'prog-mode-hook #'goto-address-mode)
   (add-hook 'prog-mode-hook #'which-function-mode)
+  (add-hook
+   'prog-mode-hook
+   (lambda ()
+     (interactive)
+     (writeroom-mode +1)
+     (display-line-numbers-mode -1))
+   100)
   )
 
 (after! prolog
