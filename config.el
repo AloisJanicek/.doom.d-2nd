@@ -1296,6 +1296,20 @@ if running under WSL")
   :after org
   )
 
+(use-package! org-media-note
+  :hook (org-mode .  org-media-note-mode)
+  :config
+
+  (map!
+   (:after org
+    :map org-mode-map
+    :localleader
+    :desc "Media-note" "N" #'org-media-note-hydra/body
+    )
+   )
+  (setq org-media-note-screenshot-image-dir (expand-file-name "screenshots" org-directory))  ;; Folder to save screenshot
+  )
+
 (after! org
   ;; One day it will work but not today
   (setq org-element-use-cache nil)

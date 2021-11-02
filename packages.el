@@ -19,6 +19,9 @@
 (package! websocket)
 (package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
 
+(package! pretty-hydra)  ;; dependency
+(package! org-media-note :recipe (:host github :repo "yuchen-lea/org-media-note"))
+
 (package! org-appear
   :recipe (:host github :repo "awth13/org-appear"
            ;; :branch "feature/org-fold-support"
