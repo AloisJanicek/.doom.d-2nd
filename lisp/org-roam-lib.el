@@ -667,15 +667,12 @@ as you name the directory you place the file into.
 (defun org-roam-eval-capture-templates ()
   "Re-eval org-roam capture templates."
   (setq
+   ;; capture normal entry as its own file and refile it if desired
    org-roam-capture-templates
-   `(("d" "default" entry (function
-                           (lambda ()
-                             (concat
-                              (format
-                               "* ${title}\n:PROPERTIES:\n:ID: %s\n:END:\n"
-                               (org-id-uuid))
-                              "%?")))
-      :target (node ,(org-roam-current-inbox-title))))
+   `(("d" "default" plain "%?"
+      :target (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
+                         "#+title: ${title}\n#+category: ${title}\n")
+      :unnarrowed t))
    org-roam-capture-ref-templates
    `(("r" "ref" entry (function
                        (lambda ()
