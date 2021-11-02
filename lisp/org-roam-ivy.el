@@ -203,11 +203,7 @@ completion candidates filtering, running this fn on the completion candidate sho
       (with-current-buffer (find-file-noselect file)
         (progn
           (goto-char node-point)
-          (org-attach-open)
-          )
-        ))
-    (unless dont-restore-ivy
-      (org-roam-ivy--last-ivy))))
+          (org-attach-open))))))
 
 (defun org-roam-ivy--move-action (x)
   "Move org-roam file X."
