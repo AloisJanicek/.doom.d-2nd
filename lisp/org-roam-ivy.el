@@ -192,6 +192,23 @@ completion candidates filtering, running this fn on the completion candidate sho
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
+(defun org-roam-ivy--attach-action (x)
+  "Browse attachments of org-roam node of X."
+  (interactive)
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (let* ((node (org-roam-ivy--get-node x))
+           (file (org-roam-node-file node))
+           (node-point (org-roam-node-point node))
+           (is-heading (> node-point 1)))
+      (with-current-buffer (find-file-noselect file)
+        (progn
+          (goto-char node-point)
+          (org-attach-open)
+          )
+        ))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
+
 (defun org-roam-ivy--move-action (x)
   "Move org-roam file X."
   ;; FIXME Check for attachments and move them too
@@ -579,6 +596,7 @@ ORDER BY a.title"
  #'org-roam-ivy
  '(("x" org-roam-ivy--backlinks-action "show backlinks")
    ("f" org-roam-ivy--forwardlinks-action "show forwardlinks")
+   ("A" org-roam-ivy--attach-action "open attachment")
    ("i" org-roam-ivy--insert-action "insert backlink")
    ("k" org-roam-ivy--delete-action "delete")
    ("d" org-roam-ivy--decrypt-headings-action "decrypt headings")
