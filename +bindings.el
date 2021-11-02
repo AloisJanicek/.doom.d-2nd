@@ -344,12 +344,12 @@
    :desc "buffer"  "b" (lambda ()
                          (interactive)
                          (aj-org-teleport-heading-here (buffer-file-name)))
-   :desc "Brain"   "B" (lambda ()
-                         (interactive)
-                         (aj-org-teleport-heading-here (ivy-read "brain file: "
-                                                                 (directory-files-recursively
-                                                                  org-brain-path
-                                                                  ".org$"))))
+   :desc "Org-directory"   "o" (lambda ()
+                                 (interactive)
+                                 (aj-org-teleport-heading-here (ivy-read "org file: "
+                                                                         (directory-files-recursively
+                                                                          org-directory
+                                                                          ".org$"))))
    )
 
   :desc "sort" "^" #'org-sort
@@ -383,7 +383,7 @@
                                                    :archived t
                                                    :recursive t)
                                                 (directory-files-recursively
-                                                 (expand-file-name "archive" org-brain-path)
+                                                 (expand-file-name "archive" org-directory)
                                                  ".org_archive$")))))
   "e" nil
   (:prefix ("e" . "export")
@@ -432,32 +432,6 @@
    )
 
   "m" nil
-  (:prefix ("m" . "mind")
-   :desc "visualize"    "v" #'+org/brain-visualize-entry-at-pt
-
-   (:prefix ("a" . "add")
-    :desc "child"        "c" #'org-brain-add-child
-    :desc "friend"       "f" #'org-brain-add-friendship
-    :desc "parent"       "p" #'org-brain-add-parent
-    :desc "relationship" "R" #'org-brain-add-relationship
-    :desc "resource"     "r" #'org-brain-add-resource
-    )
-
-   (:prefix ("g" . "goto")
-    :desc "child"        "c" #'org-brain-goto-child
-    :desc "current"      "C" #'org-brain-goto-current
-    :desc "end"          "e" #'org-brain-goto-end
-    :desc "friend"       "f" #'org-brain-goto-friend
-    :desc "other window" "o" #'org-brain-goto-other-window
-    :desc "parent"       "p" #'org-brain-goto-parent
-    )
-
-   (:prefix ("r" . "remove")
-    :desc "child"      "c" #'org-brain-remove-child
-    :desc "friendship" "f" #'org-brain-remove-friendship
-    :desc "parent"     "p" #'org-brain-remove-parent
-    )
-   )
 
   "n" #'org-noter
   (:prefix ("z" . "view")
@@ -530,74 +504,6 @@
   (:prefix ("g" . "goto")
    :m "T"  #'org-agenda-goto-today
    )
-  )
-
- ;;; org-brain
- (:after org-brain
-  :map org-brain-visualize-mode-map
-  :m "C-h" #'evil-window-left
-  :m "C-j" #'evil-window-down
-  :m "C-k" #'evil-window-up
-  :m "C-l" #'evil-window-right
-  :m  "-" (cmd! ()
-                (org-brain-visualize-remove-grandparent)
-                (org-brain-visualize-remove-grandchild))
-  :m  "=" (cmd! ()
-                (org-brain-visualize-add-grandparent)
-                (org-brain-visualize-add-grandchild))
-
-  (:prefix ("a" . "add")
-   :m  "c" #'org-brain-add-child
-   :m  "f" #'org-brain-add-friendship
-   :m  "p" #'org-brain-add-parent
-   :m  "r" #'org-brain-add-resource
-   )
-
-  (:prefix ("s" . "set")
-   :m  "a" #'org-brain-visualize-attach
-   :m  "t" #'org-brain-set-tags
-   :m  "T" #'org-brain-set-title
-   )
-
-  :m "p" #'org-brain-visualize-paste-resource
-  :m "R" (cmd! (org-brain-stop-wandering) (revert-buffer))
-
-  (:prefix ("r" . "remove")
-   :m  "c" #'org-brain-remove-child
-   :m  "f" #'org-brain-remove-friendship
-   :m  "p" #'org-brain-remove-paren
-   )
-
-  (:prefix ("d" . "do")
-   :m  "a" #'org-brain-archive
-   :m  "d" #'org-brain-delete-entry
-   :m  "p" #'org-brain-pin
-   )
-
-  :m  "N" #'org-brain-new-child
-
-  (:prefix ("z" . "view")
-   :m  "b" #'org-brain-visualize-back
-   :m  "m" #'org-brain-visualize-mind-map
-   :m  "r" #'org-brain-visualize-random
-   :m  "w" #'org-brain-visualize-wander
-   )
-
-  ;; :m  "RET" #'org-brain-goto-current
-  :m  "f" #'link-hint-open-link
-  :m  "F" #'+org/brain-link-hint-and-goto
-  :m  "j" #'forward-button
-  :m  "k" #'backward-button
-  :m  "o" #'org-brain-goto-current
-  :m  "O" (lambda ()
-            (interactive)
-            (let ((start (point))
-                  (win (selected-window)))
-              (org-brain-goto-current)
-              (select-window win)
-              (goto-char start)))
-  :m  "v" #'org-brain-visualize
-  :m  "q" #'org-brain-visualize-quit
   )
 
  ;;; org-capture
@@ -930,7 +836,6 @@
  (:prefix ("p" . "project")
   :desc "agenda"                   "a" #'aj/agenda-project
   :desc "agenda All"               "A" #'aj/agenda-project-all
-  :desc "brain"                    "B" #'+org/brain-per-project
   :desc "buffer"                   "b" #'counsel-projectile-switch-to-buffer
   :desc "capture ALL "             "K" (cmd! (aj/org-capture-into-project))
   :desc "capture current"          "k" (cmd! (aj/org-capture-into-project t))
@@ -1101,7 +1006,6 @@
   :desc "jump"                     "j" #'ivy-switch-view
   :desc "pop"                      "p" #'ivy-pop-view
   :desc "save"                     "s" #'ivy-push-view
-  :desc "brain-visualize"          "v" #'org-brain-visualize
   )
 
  (:prefix ("b" . "buffer")
@@ -1111,61 +1015,29 @@
   )
 
  (:prefix ("n" . "notes")
-  :desc "brain-goto"           "b" (cmd! (if current-prefix-arg
-                                             (org-brain-switch-brain
-                                              (ivy-read (format "Choose brain: (%s) " (file-name-nondirectory
-                                                                                       (string-trim-right org-brain-path "/")))
-                                                        (+org-brain-get-all-brains)))
-                                           (org-brain-goto nil 'org-persp-switch-create-indirect-buffer-per-persp)))
-  :desc "brain-visualize"      "v" #'org-brain-visualize
   "r" nil
-  :desc "brain-resource"       "R" (cmd! (if (eq (car current-prefix-arg) 4)
-                                             (+org/brain-open-from-all-resources t)
-                                           (if (eq (car current-prefix-arg) 16)
-                                               (org-brain-open-resource
-                                                (org-brain-choose-entry "Resource from: " 'all))
-                                             (+org/brain-open-from-all-resources))))
   :desc "roam"                 "r" #'org-roam-hydra/body
-  :desc "notes grep"           "g" (cmd! (+org-notes/grep-search-format-org-links
-                                          (format "Search %s: "
-                                                  (file-name-nondirectory (string-trim-right org-brain-path "/")))
-                                          org-brain-path
-                                          #'+org-brain-filtered-files))
-  :desc "notes grep"           "G" (cmd! (let ((current-prefix-arg '(4)))
+  :desc "notes grep"           "g" (cmd! (let ((current-prefix-arg '(4)))
                                            (+org-notes/grep-search-format-org-links)))
   :desc "notes query"          "q" (cmd! (cl-letf (((symbol-function 'org-ql-view--complete-buffers-files)
                                                     (lambda (&rest _)
-                                                      (directory-files-recursively org-brain-path ".org$"))))
+                                                      (directory-files-recursively org-directory ".org$"))))
                                            (call-interactively #'org-ql-search)))
   :desc "notes headings"       "n" #'notes-filter/goto-headings
-  :desc "notes open"           "N" (cmd! (if current-prefix-arg
-                                             (aj-org-find-file org-directory)
-                                           (aj-org-find-file org-brain-path)))
-  :desc "archive headings"     "a" (cmd! (if current-prefix-arg
-                                             (agenda-headlines-goto-any
-                                              :files (agenda-filter-filtered-org-files :preset agenda-filter-preset :archived t)
-                                              :level 3)
-                                           (agenda-headlines-goto-any
-                                            :files (agenda-filter-filtered-org-files
-                                                    :dir org-brain-path
-                                                    :archived t
-                                                    :preset (notes-filter-preset--get org-brain-path))
-                                            :level 3)))
+  :desc "notes open"           "N" (cmd! (aj-org-find-file org-directory))
+  :desc "archive headings"     "a" (cmd! (agenda-headlines-goto-any
+                                          :files (agenda-filter-filtered-org-files
+                                                  :dir org-directory
+                                                  :archived t
+                                                  :preset (notes-filter-preset--get org-directory))
+                                          :level 3))
   :desc "archive open"          "A" (cmd!
-                                     (if current-prefix-arg
-                                         (let* ((file (ivy-read "Selet file: "
-                                                                (directory-files-recursively
-                                                                 (expand-file-name "archive" org-brain-path)
-                                                                 ".org_archive$")))
-                                                (buffer (or (get-file-buffer file)
-                                                            (find-file-noselect file))))
-                                           (aj/org-open-from-all-buffer-links buffer))
-                                       (aj-org-find-file (expand-file-name "archive" org-brain-path))))
+                                     (aj-org-find-file (expand-file-name "archive" org-directory)))
   :desc "filter"               "f" (cmd! (if current-prefix-arg
                                              (progn
-                                               (when (notes-filter-preset--get org-brain-path)
-                                                 (notes-filter-preset--set org-brain-path nil))
-                                               (message "Cleared filter preset for %s" org-brain-path)
+                                               (when (notes-filter-preset--get org-directory)
+                                                 (notes-filter-preset--set org-directory nil))
+                                               (message "Cleared filter preset for %s" org-directory)
                                                (notes-filter-set-filter-preset))
                                            (notes-filter-set-filter-preset)))
   :desc "Update IDs"            "u" #'aj/org-id-update-recursively

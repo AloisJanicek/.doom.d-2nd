@@ -16,11 +16,8 @@
 Car is directory returned by `notes-filter--directory-function'.
 Cdr is list of one or more strings returned `notes-filter-get-filetags'.")
 
-(defun notes-filter--org-brain-path ()
-  "Return current value of `org-brain-paht'."
-  org-brain-path)
-
-(defcustom notes-filter--directory-function #'notes-filter--org-brain-path
+(defcustom notes-filter--directory-function (lambda ()
+                                              org-directory)
   "Function returning default directory for notes-filter to act upon.")
 
 (defun notes-filter-preset--set (dir new-val)

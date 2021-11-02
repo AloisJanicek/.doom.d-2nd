@@ -464,19 +464,6 @@ lines are selected, or the NxM dimensions of a block selection.")
     (add-hook 'activate-mark-hook #'+modeline-add-selection-segment-h)
     (add-hook 'deactivate-mark-hook #'+modeline-remove-selection-segment-h)))
 
-;;; `+org-brain-line'
-(def-modeline-var! +org-brain-line
-  '(:eval
-    (let* ((justfile (unless (listp org-brain--vis-entry) org-brain--vis-entry))
-           (file
-            (concat (or justfile
-                        (capitalize (file-name-nondirectory
-                                     (nth 0 org-brain--vis-entry)))) ".org"))
-           (entry (unless justfile (nth 1 org-brain--vis-entry))))
-      (if entry
-          (concat file "::" entry)
-        file))))
-
 ;;; `+org-agenda-line'
 (def-modeline-var! +org-agenda-line
   '(:eval
@@ -486,7 +473,7 @@ lines are selected, or the NxM dimensions of a block selection.")
           (concat title
                   (concat " [" (agenda-filter-preset-string) "]")
                   "::"
-                  (file-name-nondirectory org-brain-path)
+                  (file-name-nondirectory org-roam-directory)
                   )
         title))))
 
@@ -576,11 +563,6 @@ lines are selected, or the NxM dimensions of a block selection.")
     " " +modeline-buffer-identification)
   '("" +modeline-modes " "))
 
-(def-modeline! 'org-brain
-  '("" +modeline-matches
-    " " +org-brain-line)
-  '("" +modeline-modes " "))
-
 (def-modeline! 'org-agenda
   '("" +modeline-matches
     " " +org-agenda-line)
@@ -621,7 +603,6 @@ lines are selected, or the NxM dimensions of a block selection.")
 (set-modeline! :main 'default)
 (set-modeline-hook! '+doom-dashboard-mode-hook 'project)
 (set-modeline-hook! 'eaf-mode-hook 'eaf)
-(set-modeline-hook! 'org-brain-visualize-mode-hook 'org-brain)
 (set-modeline-hook! 'org-agenda-finalize-hook 'org-agenda)
 (set-modeline-hook! 'vterm-mode-hook 'special)
 (set-modeline-hook! 'Info-mode-hook 'special)

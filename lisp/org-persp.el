@@ -111,7 +111,6 @@ split current window and displays `BUFFER' on the left."
       (let* ((start-win (selected-window))
              (start-win-name (prin1-to-string start-win))
              (just-one (= (length (window-list)) 1))
-             (from-brain (string-match "*org-brain*" start-win-name))
              (from-agenda (string-match "*Org QL View\\|*Org Agenda*" start-win-name))
              (too-narrow (< (frame-width) 145))
              (org-window (catch 'org-window
@@ -131,16 +130,12 @@ split current window and displays `BUFFER' on the left."
               (switch-to-buffer buffer))
 
           (progn
-            (when (and (or just-one from-brain)
-                       (not too-narrow))
-              (if from-brain
-                  (split-window (next-window) (floor (/ (frame-width) 1.95)) 'left)
-                (split-window start-win (floor (/ (frame-width) 2.8)) 'right)))
+            (when (and just-one (not too-narrow))
+              (split-window start-win (floor (/ (frame-width) 2.8)) 'right))
 
-            (when (or from-brain
-                      (and too-narrow
-                           (not from-agenda)
-                           (not just-one)))
+            (when (and too-narrow
+                       (not from-agenda)
+                       (not just-one))
               (select-window (some-window (lambda (win)
                                             (not (eq win start-win))))))
 
@@ -274,10 +269,6 @@ Designed as an override advice for file or buffer opening functions like `pop-to
   (advice-add #'org-agenda-switch-to :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'org-agenda-goto :around #'org-persp-open-file-respect-sanity-a)
   )
-
-(after! org-brain
-  (advice-add #'org-brain-goto :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-brain-goto :around #'org-persp-pop-buffer-a))
 
 (after! org-lib
   (advice-add #'+org-notes/grep-search-format-org-links :around #'org-persp-open-file-respect-sanity-a)

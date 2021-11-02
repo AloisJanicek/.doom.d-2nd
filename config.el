@@ -367,7 +367,6 @@ if running under WSL")
    cyphejor-rules
    `(:upcase
      ("agenda"      ,(all-the-icons-faicon      "calendar-check-o" :height 0.95 :v-adjust 0.05 )     :postfix)
-     ("brain"       ,(all-the-icons-fileicon    "brain"                         :v-adjust -0.1)      :postfix)
      ("css"         ,(all-the-icons-alltheicon  "css3"                          :v-adjust 0.1)       :postfix)
      ("c"           ,(all-the-icons-alltheicon  "c"                             :v-adjust 0.1)       :postfix)
      ("dired"       ,(all-the-icons-octicon     "file-directory"                :v-adjust 0.1)       :postfix)
@@ -568,17 +567,13 @@ if running under WSL")
     (advice-add fn :after #'doom-recenter-a))
   )
 
-(after! evil-snipe
-  (add-to-list 'evil-snipe-disabled-modes 'org-brain-visualize-mode nil #'eq)
-  )
-
 (after! emmet-mode
   (advice-add #'emmet-preview-accept :after #'aj-emmet-newline-maybe-a)
   (advice-add #'emmet-expand-yas :after #'aj-emmet-newline-maybe-a)
   )
 
 (after! eww
-  (set-popup-rule! "*eww"            :vslot 1 :size 80  :side 'left :select t :quit t :ttl nil :modeline t)
+  (set-popup-rule! "*eww"            :vslot 1 :size 80  :side 'bottom :select t :quit t :ttl nil :modeline t)
   (add-hook 'eww-after-render-hook
             (lambda ()
               (shrface-mode)

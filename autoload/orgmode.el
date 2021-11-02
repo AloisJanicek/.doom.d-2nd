@@ -173,11 +173,11 @@ Works also in `org-agenda'."
                (file-list
                 (if current-prefix-arg
                     (directory-files-recursively
-                     org-brain-path org-agenda-file-regexp)
+                     org-directory org-agenda-file-regexp)
                   (agenda-filter-filtered-org-files
                    :recursive t
-                   :dir org-brain-path
-                   :preset (cdr (assoc org-brain-path notes-filter-preset))))))
+                   :dir org-directory
+                   :preset (cdr (assoc org-directory notes-filter-preset))))))
 
            (setq org-refile-targets `((,file-list
                                        :maxlevel . 3)))
@@ -214,16 +214,14 @@ Works also in `org-agenda'."
   ("s" #'org-roam-extract-subtree "roam-extract-subtree")
   ("S" (if current-prefix-arg
            ;; default to current buffer
-           ;; one prefix - filtered brain files
-           ;; two prefixes - all brain files
            (if (eq (car current-prefix-arg) 16)
                (aj-org-refile-region
-                (directory-files-recursively org-brain-path ".org$"))
+                (directory-files-recursively org-directory ".org$"))
              (aj-org-refile-region
               (agenda-filter-filtered-org-files
                :recursive t
-               :dir org-brain-path
-               :preset (cdr (assoc org-brain-path notes-filter-preset)))))
+               :dir org-directory
+               :preset (cdr (assoc org-directory notes-filter-preset)))))
          (aj-org-refile-region (buffer-file-name)))
    "refile selection"
    )
