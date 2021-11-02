@@ -65,9 +65,7 @@
  (dired +ranger +icons)
  electric
  ;;ibuffer
- (undo 
-                                        ; +tree
-  )
+ (undo +tree)
  vc
 
  :term
