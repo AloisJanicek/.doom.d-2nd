@@ -192,6 +192,24 @@ completion candidates filtering, running this fn on the completion candidate sho
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
+(defun org-roam-ivy--exclude-action (x)
+  "Tag org-roam of X by \"r_ex\" excluding tag."
+  (interactive)
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (let* ((node (org-roam-ivy--get-node x))
+           (file (org-roam-node-file node))
+           (node-point (org-roam-node-point node))
+           (is-heading (> node-point 1)))
+      (with-current-buffer (find-file-noselect file)
+        (if is-heading
+            (progn
+              (goto-char node-point)
+              (org-roam-tag-add (list "r_ex"))
+              (save-buffer))
+          (user-error "Why would you want to exclude file-level org-roam node?"))))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
+
 (defun org-roam-ivy--add-to-agenda-action (x)
   "Add file of org-roam node X to org-agenda.
 
@@ -562,7 +580,18 @@ of org-roam item by tag string doesn't make much sense."
   (interactive)
   (plist-put org-roam-ivy--last-ivy :last-ivy 'org-roam-ivy-find-file)
   (plist-put org-roam-ivy--last-ivy :links nil)
-  (org-roam-ivy "File: " (org-roam-node-read--completions)))
+  (org-roam-ivy
+   "File: "
+   (if current-prefix-arg
+       (org-roam-node-read--completions)
+     (cl-remove-if-not
+      (lambda (n)
+        (not
+         (cl-member
+          "r_ex"
+          (org-roam-node-tags (cdr n))
+          :test #'string-equal)))
+      (org-roam-node-read--completions)))))
 
 ;;;###autoload
 (defun org-roam-ivy-find-not-linking ()
@@ -618,7 +647,8 @@ ORDER BY a.title"
    ("i" org-roam-ivy--insert-action "insert backlink")
    ("k" org-roam-ivy--delete-action "delete")
    ("d" org-roam-ivy--decrypt-headings-action "decrypt headings")
-   ("e" org-roam-ivy--encrypt-action "encrypt headings")
+   ("c" org-roam-ivy--encrypt-action "encrypt headings")
+   ("E" org-roam-ivy--exclude-action "Exclude with r_ex")
    ("b" org-roam-ivy--refs-url-open-action "browse url")
    ("B" org-roam-ivy--refs-url-private-open-action "browse url Incognito")
    ("h" org-roam-ivy--links-back "Back")

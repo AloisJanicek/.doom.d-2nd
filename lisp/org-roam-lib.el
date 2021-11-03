@@ -677,7 +677,7 @@ as you name the directory you place the file into.
    `(("r" "ref" entry (function
                        (lambda ()
                          (format
-                          "* ${title} :ref:\n:PROPERTIES:\n:ID: %s\n:ROAM_REFS: ${ref}\n:END:"
+                          "* ${title} :r_ex:\n:PROPERTIES:\n:ID: %s\n:ROAM_REFS: ${ref}\n:END:"
                           (org-id-uuid))))
       :target (node ,(org-roam-current-inbox-title))
       :unnarrowed t
