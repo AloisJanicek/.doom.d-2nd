@@ -79,6 +79,7 @@
  (spell
   ;; +everywhere
   +flyspell
+  +hunspell
   )
  grammar
 

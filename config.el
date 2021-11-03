@@ -875,11 +875,15 @@ if running under WSL")
                               ))
   )
 
-
-(setq ispell-dictionary "en")
+(setq ispell-dictionary "en_US,cs_CZ")
 
 (after! ispell
   (advice-add #'ispell-init-process :around #'doom-shut-up-a)
+  (ispell-set-spellchecker-params)
+  (ispell-hunspell-add-multi-dic "en_US,cs_CZ")
+  (setq ispell-personal-dictionary "~/.hunspell_personal")
+  (unless (file-exists-p ispell-personal-dictionary)
+    (write-region "" nil ispell-personal-dictionary nil 0))
   )
 
 (after! ivy
