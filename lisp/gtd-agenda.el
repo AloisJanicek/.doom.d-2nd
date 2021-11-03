@@ -7,7 +7,7 @@
 ;; Created: January 23, 2021
 ;; Modified: January 23, 2021
 ;; Version: 0.1
-;; Package-Requires: ((emacs "26.1"))
+;; Package-Requires: ((emacs "27.1"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -143,14 +143,25 @@ which addopted some code snippets.
                             "For KEYWORD :scheduled or :deadline return human-friendly timestamp string."
                             (ignore-errors
                               (when-let* ((timestamp (plist-get headline keyword))
+                                          (time (org-time-string-to-absolute
+                                                 (org-element-timestamp-interpreter timestamp 'ignore)))
                                           (human-str (org-ql-view--format-relative-date
-                                                      (- today
-                                                         (org-time-string-to-absolute
-                                                          (org-element-timestamp-interpreter timestamp 'ignore)))))
-                                          (hh-mm (+org-hh-mm-from-timestamp timestamp)))
+                                                      (- today time)))
+                                          (day-num (decoded-time-weekday
+                                                    (org-decode-time (org-time-string-to-time
+                                                                      (org-element-timestamp-interpreter timestamp 'ignore)))))
+                                          (hh-mm (+org-hh-mm-from-timestamp timestamp))
+                                          (day-name (pcase day-num
+                                                      (0 "Sunday")
+                                                      (1 "Monday")
+                                                      (2 "Tuesday")
+                                                      (3 "Wednesday")
+                                                      (4 "Thursday")
+                                                      (5 "Friday")
+                                                      (6 "Saturday"))))
                                 (if (string-equal hh-mm "00:00")
-                                    human-str
-                                  (concat human-str " - " hh-mm))))))
+                                    (concat human-str " on " day-name)
+                                  (concat human-str " on " day-name " at " hh-mm))))))
            (scheduled (unless habit
                         (funcall timestamp-str :scheduled)))
            (deadline (unless habit
