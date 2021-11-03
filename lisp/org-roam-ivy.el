@@ -192,6 +192,27 @@ completion candidates filtering, running this fn on the completion candidate sho
     (unless dont-restore-ivy
       (org-roam-ivy--last-ivy))))
 
+(defun org-roam-ivy--add-to-agenda-action (x)
+  "Add file of org-roam node X to org-agenda.
+
+This is done by taging the file with \"agenda\" filetag.
+"
+  (interactive)
+  (let ((dont-restore-ivy (string-match "org-roam-hydra-file" (prin1-to-string this-command))))
+    (let* ((node (org-roam-ivy--get-node x))
+           (file (org-roam-node-file node))
+           (node-point (org-roam-node-point node))
+           (is-heading (> node-point 1)))
+      (with-current-buffer (find-file-noselect file)
+        (goto-char (point-min))
+        (when (re-search-forward "\\+title:" (point-max) t)
+          (end-of-line)
+          (newline-and-indent)
+          (insert "#+filetags: agenda")
+          (save-buffer))))
+    (unless dont-restore-ivy
+      (org-roam-ivy--last-ivy))))
+
 (defun org-roam-ivy--attach-action (x)
   "Browse attachments of org-roam node of X."
   (interactive)
@@ -604,6 +625,7 @@ ORDER BY a.title"
    ("r" org-roam-ivy--rename-action "rename")
    ("R" org-roam-ivy--restart-buffer-action "Restart buffer")
    ("a" org-roam-ivy--alias-action "aliases")
+   ("g" org-roam-ivy--add-to-agenda-action "agenda")
    ("m" org-roam-ivy--move-action "move")
    ("n" (lambda (x)
           (with-current-buffer (find-file-noselect (plist-get (cdr x) :path))
