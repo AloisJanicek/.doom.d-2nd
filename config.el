@@ -452,7 +452,7 @@ if running under WSL")
                        (when (and (eq major-mode 'eaf-mode)
                                   (string-equal eaf--buffer-app-name "browser"))
                          t)))
-    :vslot 2 :size 112   :side 'right :select t :quit t   :ttl nil :modeline t)
+    :vslot 2 :size 0.4   :side 'top :select t :quit t   :ttl nil :modeline t)
   )
 
 (use-package! eaf
@@ -713,10 +713,10 @@ if running under WSL")
   )
 
 (after! help
-  (set-popup-rule! "*Help\*"           :vslot 2 :size 0.4 :side 'top :select t :modeline t))
+  (set-popup-rule! "*Help\*"           :vslot 6 :size 0.4 :side 'top :select t :modeline t))
 
 (after! helpful
-  (set-popup-rule! "*helpful\*"        :vslot 2 :size 0.4 :side 'top :select t :quit t :ttl nil :modeline t)
+  (set-popup-rule! "*helpful\*"        :vslot 7 :size 0.4 :side 'top :select t :quit t :ttl nil :modeline t)
   (setq helpful-mode-hook nil)
   (add-hook 'helpful-mode-hook (lambda ()
                                  (doom-mark-buffer-as-real-h)
@@ -1926,7 +1926,7 @@ When in org-roam file, also create top-level ID.
                      "Find pdf-view-mode browser buffer."
                      (with-current-buffer buf
                        (when (eq major-mode 'pdf-view-mode) t)))
-    :vslot 2 :size 110  :side 'left :select t :quit t :ttl nil :modeline t)
+    :vslot 2 :size 0.7  :side 'top :select t :quit 'current :ttl nil :modeline t)
 
   (advice-add #'pdf-outline :override #'aj/bigger-counsel-imenu)
 
