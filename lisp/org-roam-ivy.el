@@ -532,6 +532,7 @@ of org-roam item by tag string doesn't make much sense."
                            org-roam-ivy--last-ivy-text))))
     (ivy-read prompt collection
               :initial-input init-input
+              :sort t
               :caller 'org-roam-ivy
               :update-fn (when org-roam-ivy-auto-preview
                            #'ivy-update-fn-timer)

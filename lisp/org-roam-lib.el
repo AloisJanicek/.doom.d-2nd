@@ -632,7 +632,7 @@ as you name the directory you place the file into.
                  :test #'string-equal)
                 sep)
                sep)
-       'face 'org-tag))))
+       'face 'shadow))))
 
 ;; Credits to System Crafters
 ;; https://systemcrafters.net/build-a-second-brain-in-emacs/5-org-roam-hacks/
