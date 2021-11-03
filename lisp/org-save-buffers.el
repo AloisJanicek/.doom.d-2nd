@@ -29,6 +29,8 @@
 (advice-add #'org-agenda-archive-default :after #'org-save-all-org-buffers)
 (advice-add #'org-save-all-org-buffers :around #'doom-shut-up-a)
 (advice-add #'org-sort-entries :after #'org-save-all-org-buffers)
+(advice-add #'org-roam-refile :after #'org-save-all-org-buffers)
+(advice-add #'org-roam-extract-subtree :after #'org-save-all-org-buffers)
 ;; (add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
 
 (provide 'org-save-buffers)

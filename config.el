@@ -1291,7 +1291,6 @@ if running under WSL")
   )
 
 (use-package org-save-buffers
-  :disabled
   :after org
   )
 
