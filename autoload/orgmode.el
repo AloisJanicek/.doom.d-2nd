@@ -252,26 +252,26 @@ Works also in `org-agenda'."
   ("y" (progn
          (require 'yankpad)
          (code-capture-code yankpad-file
-                              (ivy-read "Choose title: " nil)
-                              (or (when (or (eq major-mode 'pdf-view-mode)
-                                            (eq major-mode 'nov-mode))
-                                    (ivy-read "Under heading: "
-                                              (org-ql-query
-                                                :select '(org-get-heading t t t t)
-                                                :from yankpad-file
-                                                :where '(level 1))))
-                                  (prin1-to-string major-mode))))
+                            (ivy-read "Choose title: " nil)
+                            (or (when (or (eq major-mode 'pdf-view-mode)
+                                          (eq major-mode 'nov-mode))
+                                  (ivy-read "Under heading: "
+                                            (org-ql-query
+                                              :select '(org-get-heading t t t t)
+                                              :from yankpad-file
+                                              :where '(level 1))))
+                                (prin1-to-string major-mode))))
    "yankpad")
   ("Y" (progn
          (require 'yankpad)
          (code-capture-code yankpad-file
-                              (ivy-read "Choose title: " nil)
-                              (substring-no-properties
-                               (ivy-read "Under heading: "
-                                         (org-ql-query
-                                           :select '(org-get-heading t t t t)
-                                           :from yankpad-file
-                                           :where '(level 1))))))
+                            (ivy-read "Choose title: " nil)
+                            (substring-no-properties
+                             (ivy-read "Under heading: "
+                                       (org-ql-query
+                                         :select '(org-get-heading t t t t)
+                                         :from yankpad-file
+                                         :where '(level 1))))))
    "Yankpad")
   ("k" (org-capture nil "k") "k inbox")
   ("t" (+org/capture-task) "task")
@@ -401,7 +401,7 @@ and all its children are revealed."
                              :where '(level <= 9))
                            (-map
                             (lambda (elm)
-                              (gtd-agenda-format-element elm t t nil t))))
+                              (gtd-agenda-format-element elm t t t t))))
                       :update-fn #'ivy-update-fn-timer
                       :caller 'aj/org-mode-menu
                       :action (lambda (headline)
@@ -961,7 +961,7 @@ Org manual: 8.4.2 The clock table.
             (lambda (file-pair)
               (let* ((file (cdr file-pair)))
                 (org-persp-pop-org-buffer (or (get-file-buffer file)
-                                                 (find-file-noselect file)))))))
+                                              (find-file-noselect file)))))))
 
 ;;;###autoload
 (defun jmm-org-ql-ivy-prompt-for-link (filelist)
@@ -1008,8 +1008,8 @@ Org manual: 8.4.2 The clock table.
          (tag (ivy-read "tag: " (flatten-list
                                  (org-global-tags-completion-table files)))))
     (agenda-headlines-goto-query :query `(tags ,tag)
-                             :prompt (format "tag: %s" tag)
-                             :files files
-                             )))
+                                 :prompt (format "tag: %s" tag)
+                                 :files files
+                                 )))
 (provide 'orgmode)
 ;;; orgmode.el ends here

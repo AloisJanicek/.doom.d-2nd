@@ -327,6 +327,7 @@
    )
 
   :localleader
+  :desc "Goto" "." #'+org/menu
   :desc "Anki" "O" #'anki-workflow-hydra/body
   :desc "transclusion" "$" #'org-transclusion-mode
   (:prefix ("a" . "attachments")

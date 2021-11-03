@@ -287,6 +287,26 @@ specified in `+org/capture-file-heading'."
   (org-show-entry)
   (recenter 0))
 
+(defun +org/menu ()
+  "Simple alternative to counsel-org-goto."
+  (interactive)
+  (let (ivy-sort-functions-alist)
+    (ivy-read
+     "Go to: "
+     (->> (org-ql-query
+            :select 'element-with-markers
+            :from (current-buffer)
+            :where '(level <= 9))
+          (-map
+           (lambda (elm)
+             (gtd-agenda-format-element elm t t t t))))
+     :update-fn #'ivy-update-fn-timer
+     :caller 'aj/org-mode-menu
+     :action (lambda (headline)
+               (widen)
+               (goto-char (get-text-property 0 'marker headline))
+               (recenter 0)))))
+
 (defun +org-heading--parts ()
   "Return plist with parts of the org-heading"
   (require 'toc-org)
