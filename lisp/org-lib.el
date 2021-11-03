@@ -86,9 +86,34 @@ which is suitable for insertion into org-capture template."
       "")
     ))
 
+;;;###autoload
+(defun +capture-task-under-project ()
+  "Capture under project.
+
+Ask user to choose project, type of the captured entry
+and finaly title of the entry."
+  (interactive)
+  (let* ((file (buffer-file-name (org-base-buffer (current-buffer))))
+         (heading (ivy-read "WHERE under PROJECT: "
+                            (->> (org-ql-select
+                                   (agenda-filter-all-collected-agenda-files t)
+                                   (agenda-queries--projects-query)
+                                   :action #'element-with-markers)
+                                 (-map #'org-ql-view--format-element))))
+         (heading-title (substring-no-properties
+                         (car (get-text-property 0 'title heading))))
+         (heading-buffer (marker-buffer
+                          (get-text-property 0 'marker heading)))
+         (heading-file (buffer-file-name heading-buffer))
+         (type (intern  (completing-read
+                         "WHAT of entry type TYPE: "
+                         `(plain todo clock)))))
+
+    (+org/capture-file-heading heading-file heading-title type)))
+
 (defun +org/capture-file-heading (file headline type)
   "Capture TYPE under HEADING in FILE.
-Type can be:
+TYPE can be:
 - plain, which means plain org heading
 - todo, which means org heading with todo keyword
 - clock, which means todo org heading and clock it in

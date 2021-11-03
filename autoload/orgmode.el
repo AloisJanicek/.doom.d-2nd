@@ -248,6 +248,7 @@ Works also in `org-agenda'."
   ("d" #'+org/capture-calendar "date")
   ("C" #'aj/org-capture-code-hydra/body "Code")
   ("c" #'aj/org-capture-under-clock/body "under clock")
+  ("p" #'+capture-task-under-project "under project")
   ("y" (progn
          (require 'yankpad)
          (code-capture-code yankpad-file
