@@ -1017,6 +1017,7 @@
 
  (:prefix ("n" . "notes")
   "r" nil
+  :desc "save all org buffers" "s" #'org-save-all-org-buffers
   :desc "roam"                 "r" #'org-roam-hydra/body
   :desc "notes grep"           "g" (cmd! (let ((current-prefix-arg '(4)))
                                            (+org-notes/grep-search-format-org-links)))

@@ -210,6 +210,10 @@ which addopted some code snippets.
                                tags
                              (org-element-property :tags headline))
                          (org-element-property :tags element))))
+           (tag-list (cl-remove-if
+                      (lambda (tag)
+                        (string-equal tag "agenda"))
+                      tag-list))
            (tags (when (or tag-list habit a-timestamp scheduled deadline)
                    (-some--> (let ((tag-str
                                     (concat ":"
@@ -223,7 +227,7 @@ which addopted some code snippets.
                                             ":")))
                                (unless (string-equal "::" tag-str)
                                  tag-str))
-                     (org-add-props it nil 'face 'org-tag))))
+                     (org-add-props it nil 'face 'shadow))))
            (todo-parent-maybe (org-with-wide-buffer
                                (when-let ((parent (car (last (org-get-outline-path)))))
                                  (unless
