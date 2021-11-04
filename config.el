@@ -795,8 +795,8 @@ if running under WSL")
     (setq hydra-hint-display-type
           'posframe)
     (setq hydra-posframe-show-params
-          `(:internal-border-width 10
-            :internal-border-color ,(doom-color 'base0)
+          `(:internal-border-width 1
+            :internal-border-color ,(doom-color 'fg)
             :poshandler posframe-poshandler-frame-top-center))
 
     (after! ivy-posframe
@@ -909,10 +909,15 @@ if running under WSL")
 
 (after! ivy-posframe
   (setf (alist-get t ivy-posframe-display-functions-alist)
-        #'ivy-posframe-display-at-frame-center)
-  (add-to-list
-   'ivy-posframe-display-functions-alist
-   '(ivy-yasnippet . ivy-display-function-fallback))
+        #'ivy-posframe-display-at-frame-top-center)
+  (add-to-list 'ivy-posframe-display-functions-alist
+               '(ivy-yasnippet . ivy-display-function-fallback))
+  (add-to-list 'ivy-posframe-display-functions-alist
+               '(org-roam-ivy . ivy-posframe-display-at-frame-center))
+  (add-to-list 'ivy-posframe-display-functions-alist
+               '(agenda-headlines-goto-query . ivy-posframe-display-at-frame-center))
+  (add-to-list 'ivy-posframe-display-functions-alist
+               '(agenda-headlines-goto-any . ivy-posframe-display-at-frame-center))
   (setq
    ivy-read-action-function #'ivy-posframe-read-action-by-key
    ivy-posframe-border-width 10
@@ -1295,16 +1300,13 @@ if running under WSL")
   )
 
 (use-package! org-media-note
-  :hook (org-mode .  org-media-note-mode)
   :config
-
+  (add-hook 'org-mode-hook #'org-media-note-mode)
   (map!
    (:after org
     :map org-mode-map
     :localleader
-    :desc "Media-note" "N" #'org-media-note-hydra/body
-    )
-   )
+    :desc "Media-note" "N" #'org-media-note-hydra/body))
   (setq org-media-note-screenshot-image-dir (expand-file-name "screenshots" org-directory))  ;; Folder to save screenshot
   )
 
@@ -2341,7 +2343,7 @@ When in org-roam file, also create top-level ID.
   (when (display-graphic-p)
     (which-key-posframe-mode)
     )
-  (setq which-key-posframe-poshandler #'posframe-poshandler-frame-center)
+  (setq which-key-posframe-poshandler #'posframe-poshandler-frame-top-center)
   )
 
 (after! wordnut
