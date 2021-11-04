@@ -1912,7 +1912,22 @@ When in org-roam file, also create top-level ID.
   (setq org-roam-ui-sync-theme t
         org-roam-ui-follow t
         org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t))
+        org-roam-ui-open-on-start t)
+
+  (advice-add
+   #'org-roam-ui--on-msg-open-node
+   :override
+   #'+org-roam-ui--on-msg-open-node-a)
+
+  (defun +org-roam-ui--on-msg-open-node-a (data)
+    "Open a node when receiving DATA from the websocket."
+    (let* ((node (org-roam-node-from-id (alist-get'id data)))
+           (pos (org-roam-node-point node))
+           (buf (org-roam-node-find-noselect node)))
+      (with-current-buffer (org-persp-pop-org-buffer buf)
+        (goto-char pos)
+        (+org-narrow-and-show))))
+  )
 
 
 (after! pdf-tools

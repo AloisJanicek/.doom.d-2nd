@@ -95,7 +95,8 @@ in temporarily popup window on the right side of the frame.
                 (setq-local buffer-file-truename
                             (file-truename (buffer-file-name (buffer-base-buffer)))))
               (setq org-persp-last-popup-window
-                    (get-buffer-window (current-buffer))))))
+                    (get-buffer-window (current-buffer))))
+            buffer))
 
       (message "this is not buffer: %s" buffer-or-name)))
   )
