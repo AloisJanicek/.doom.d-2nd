@@ -1143,6 +1143,14 @@ This fn considers all org-mode files as special buffers."
         (unless (derived-mode-p 'org-mode)
           (buffer-file-name (buffer-base-buffer))))))
 
+;;;###autoload
+(defun aj-replace-country-name-with-code (country)
+  "Replace COUNTRY name with corresponding code."
+  (pcase country
+    ("american" "us")
+    ("british" "gb")
+    ("czech" "cz")))
+
 (provide 'functions)
 
 ;;; functions.el ends here

@@ -484,7 +484,14 @@ lines are selected, or the NxM dimensions of a block selection.")
       (concat
        (all-the-icons-faicon "language" :v-adjust 0.0 :height 0.9)
        " "
-       (or ispell-current-dictionary
+       (or (mapconcat
+            #'identity
+            (seq-map
+             (lambda (country)
+               (aj-replace-country-name-with-code country))
+             (split-string
+              ispell-current-dictionary ","))
+            ",")
            "en")))))
 
 ;;; `+pdf-page-number'
