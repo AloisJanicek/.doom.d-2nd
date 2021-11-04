@@ -250,8 +250,9 @@ Optional argument ARGS represents arguments passed to advised function."
      (if (or (not (display-graphic-p))
              (y-or-n-p (concat "link: " "Browse with EAF browser? ")))
          #'aj-eaf-browse-url-maybe
-       #'aj-firefox-default-browse-url
-       )
+       (if (y-or-n-p (concat "link: " "Browse with FF dev-profile? "))
+           #'aj-firefox-dev-edition-browse-url
+         #'aj-firefox-default-browse-url))
      args)))
 
 ;;;###autoload
