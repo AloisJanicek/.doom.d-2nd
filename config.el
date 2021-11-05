@@ -1323,7 +1323,7 @@ if running under WSL")
   ;; One day it will work but not today
   (setq org-element-use-cache nil)
 
-  (add-hook 'after-org-mode-hook #'org-hide-drawer-all)
+  ;; (add-hook 'after-org-mode-hook #'org-hide-drawer-all)
   (advice-add #'org-open-at-point :after (lambda () (solaire-mode +1)))
   ;; (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'top :select t                      :autosave t :modeline t)
   (set-popup-rule! "^\\*Org Src"                :vslot 2 :size 0.5 :side 'bottom :select t :quit t               :autosave t :modeline t)
@@ -1333,8 +1333,7 @@ if running under WSL")
   (add-to-list '+format-on-save-enabled-modes 'org-mode t)
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
-  (add-hook 'org-mode-hook (lambda () (visual-line-mode -1)))
-  (add-hook 'org-mode-hook #'mixed-pitch-mode)
+  (add-hook 'org-mode-hook #'mixed-pitch-mode 99)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."
                                                 (when (and (derived-mode-p 'org-mode)
