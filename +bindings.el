@@ -542,6 +542,7 @@
   :localleader
   "n" #'org-noter
   "i" #'org-noter-insert-note
+  "s" #'org-noter-create-skeleton
   :map pdf-outline-minor-mode-map
   :nm "o" (lambda ()
             (interactive)
