@@ -516,4 +516,30 @@ Extends `+org/attach-file-and-insert-link'"
          (kill-buffer buff))))
    (agenda-filter--filtered-agenda-files 'all)))
 
+;;;###autoload
+(defun +org-attach-link-every-attachment-to-current-dir ()
+  "Got through current org buffer, check for attachments
+and link them to the current directory so that there
+aren't any issues with pushing images inserted by
+org-download using attachment: link type into Anki.
+
+Intended as workaround for `anki-editor--ox-html-link'.
+"
+  (org-element-map (org-element-parse-buffer) 'headline
+    (lambda (headline)
+      (let ((tags (org-element-property :tags headline))
+            (buffer-file-dir
+             (directory-file-name
+              (file-name-directory
+               (buffer-file-name (org-base-buffer (current-buffer)))))))
+        (if (cl-member "ATTACH" tags :test #'string-equal)
+            (seq-map
+             (lambda (file)
+               (make-symbolic-link
+                file
+                (expand-file-name (file-name-nondirectory file) buffer-file-dir)
+                'ok-if-already-exists))
+             (directory-files-recursively
+              (org-attach-dir-get-create) ".*" nil)))))))
+
 (provide 'org-lib)

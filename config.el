@@ -132,7 +132,12 @@ if running under WSL")
                                  (unless anki-editor-mode
                                    (anki-editor-mode +1)))
     "Anki: "
-    ("i" #'incremental-reading-parse-cards "incremental parse")
+    ("i" (lambda ()
+           (interactive)
+           (+org-attach-link-every-attachment-to-current-dir)
+           (incremental-reading-parse-cards)
+           )
+     "incremental parse")
     ("b" (lambda ()
            (interactive)
            (evil-insert-state)
