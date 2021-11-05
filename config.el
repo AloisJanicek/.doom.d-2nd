@@ -1309,6 +1309,7 @@ if running under WSL")
   )
 
 (use-package! org-media-note
+  :after org
   :config
   (add-hook 'org-mode-hook #'org-media-note-mode)
   (map!
@@ -2177,13 +2178,13 @@ When in org-roam file, also create top-level ID.
         shrface-paragraph-fill-column 80
         shrface-href-versatile nil
         )
+  (add-to-list 'shr-external-rendering-functions
+               '(pre . shrface-shr-tag-pre-highlight))
   )
 
 (use-package! shr-tag-pre-highlight
-  :after shr
-  :config
-  (add-to-list 'shr-external-rendering-functions
-               '(pre . shrface-shr-tag-pre-highlight)))
+  :commands (shrface-shr-tag-pre-highlight)
+  )
 
 (after! siple
   (advice-add #'next-error :after #'doom-recenter-a)
