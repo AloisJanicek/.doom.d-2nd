@@ -1260,6 +1260,10 @@ if running under WSL")
                    gtd-agenda-queries-history)))
   )
 
+(after! org-downlad
+  (setq org-download-screenshot-method "flameshot gui --raw > %s")
+  )
+
 (use-package org-jumplist
   :after org
   :config
