@@ -1151,6 +1151,22 @@ This fn considers all org-mode files as special buffers."
     ("british" "gb")
     ("czech" "cz")))
 
+;;;###autoload
+(defun browse-url-firefox-a (url &optional new-window)
+  "Launch and detach firefox process.
+Override advice of `browse-url-firefox-a'."
+  (interactive (browse-url-interactive-arg "URL: "))
+  (setq url (browse-url-encode-url url))
+  (call-process
+   browse-url-firefox-program nil 0 nil
+   (append
+    browse-url-firefox-arguments
+    (if (browse-url-maybe-new-window new-window)
+        (if browse-url-firefox-new-window-is-tab
+            '("-new-tab")
+          '("-new-window")))
+    url)))
+
 (provide 'functions)
 
 ;;; functions.el ends here

@@ -1004,6 +1004,10 @@ if running under WSL")
                    :cmd "julia runtests.jl")))
   )
 
+(after! browse-url
+  (advice-add #'browse-url-firefox :override #'browse-url-firefox-a)
+  )
+
 (after! loaddefs
   (setq browse-url-handlers
         '(
