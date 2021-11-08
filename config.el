@@ -1432,30 +1432,6 @@ if running under WSL")
   :config
   (when (display-graphic-p)
     (org-pretty-tags-global-mode +1))
-
-  (setq org-pretty-tags-surrogate-strings
-        `(
-          ;; ("tag" . icon)
-          ("agenda" . ,(all-the-icons-material  "view_agenda" :face 'all-the-icons-lpink))
-          ("book" . ,(all-the-icons-faicon  "book" :face 'all-the-icons-dyellow :v-adjust 0.1 :height 1.1))
-          ("bug" . ,(all-the-icons-octicon  "bug" :face 'all-the-icons-red :height 1.1))
-          ("r_ex" . ,(all-the-icons-octicon  "stop" :face 'all-the-icons-cyan :height 1.1 :v-adjust -0.1))
-          ("ATTACH" . ,(all-the-icons-faicon  "download" :face 'all-the-icons-cyan :height 1.1))
-          ("environment" . ,(all-the-icons-faicon  "cogs" :face 'all-the-icons-dsilver :height 1.1))
-          ("emacs" . ,(all-the-icons-fileicon  "emacs" :face 'all-the-icons-purple :height 1.1))
-          ("education" . ,(all-the-icons-material  "school" :face 'all-the-icons-lpink))
-          ("inbox" . ,(all-the-icons-faicon  "envelope" :face 'all-the-icons-lblue :height 1.0))
-          ("job" . ,(all-the-icons-material  "monetization_on" :face 'all-the-icons-green :height 1.1))
-          ("linux" . ,(all-the-icons-faicon  "linux" :face 'all-the-icons-lorange :height 1.1))
-          ("link" . ,(all-the-icons-octicon  "link" :face 'all-the-icons-dblue :v-adjust 0.1 :height 1.1))
-          ("personal" . ,(all-the-icons-material  "person" :face 'all-the-icons-lpink :v-adjust -0.2 :height 1.1))
-          ("scheduled" . ,(all-the-icons-material  "schedule" :face 'all-the-icons-lpink))
-          ("system" . ,(all-the-icons-faicon  "cog" :face 'all-the-icons-lblue :height 1.1))
-          ("university" . ,(all-the-icons-faicon  "graduation-cap" :face 'all-the-icons-orange :height 1.1))
-          ("vscode" . ,(all-the-icons-fileicon  "codekit" :face 'all-the-icons-cyan :height 1.1))
-          ("windows" . ,(all-the-icons-faicon  "windows" :face 'all-the-icons-blue :height 1.1))
-          )
-        )
   )
 
 (use-package org-persp
