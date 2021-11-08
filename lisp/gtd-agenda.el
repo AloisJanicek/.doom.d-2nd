@@ -210,10 +210,12 @@ which addopted some code snippets.
                                tags
                              (org-element-property :tags headline))
                          (org-element-property :tags element))))
-           (tag-list (cl-remove-if
-                      (lambda (tag)
-                        (string-equal tag "agenda"))
-                      tag-list))
+           (tag-list (cl-remove-duplicates
+                      (cl-remove-if
+                       (lambda (tag)
+                         (string-equal tag "agenda"))
+                       tag-list)
+                      :test #'string-equal))
            (tags (when (or tag-list habit a-timestamp scheduled deadline)
                    (-some--> (let ((tag-str
                                     (concat ":"
