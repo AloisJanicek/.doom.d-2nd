@@ -1,6 +1,6 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
-
+(package! benchmark-init)
 (unpin! format-all)
 (unpin! hydra)
 (package! saveplace-pdf-view :disable t)
