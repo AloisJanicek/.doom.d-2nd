@@ -41,7 +41,7 @@ current file). Only scans first 2048 bytes of the document."
     (setq bound 256))
   (if file
       (with-temp-buffer
-        (insert-file-contents-literally file nil 0 bound)
+        (insert-file-contents file nil 0 bound)
         (+org--get-property name))
     (+org--get-property name bound)))
 
