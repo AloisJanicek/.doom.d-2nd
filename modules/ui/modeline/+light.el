@@ -473,8 +473,8 @@ lines are selected, or the NxM dimensions of a block selection.")
           (concat title
                   (concat " [" (agenda-filter-preset-string) "]")
                   "::"
-                  (file-name-nondirectory org-roam-directory)
-                  )
+                  (file-name-nondirectory
+                   (directory-file-name org-roam-directory)))
         title))))
 
 ;;; `+flyspell'
