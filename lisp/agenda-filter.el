@@ -98,11 +98,21 @@ Any other argument will be passed to the FN after the file.
 "
   (let* ((file-list (agenda-filter--filtered-agenda-files))
          (just-one-file (equal (length file-list) 1))
-         (file (if file-list
-                   (if just-one-file
-                       (car file-list)
-                     (completing-read "file: " file-list))
-                 (completing-read "file: " (agenda-filter-combined-agenda-files)))))
+         (title-collection (lambda (collection)
+                             (mapcar
+                              (lambda (file)
+                                (cons
+                                 (or (+org-get-global-property "title" file) file)
+                                 file))
+                              collection)))
+         (collection (if file-list
+                         (if just-one-file
+                             (car file-list)
+                           (funcall title-collection file-list))
+                       (funcall title-collection (agenda-filter-combined-agenda-files))))
+         (title (completing-read "file: " collection))
+         (file (cdr (assoc title collection)))
+         )
     (if args
         (funcall fn file args)
       (funcall fn file))))
