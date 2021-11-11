@@ -740,7 +740,7 @@ if running under WSL")
   )
 
 (use-package! help-buffers
-  :after org-persp
+  :commands (help-buffers-switch-buffers)
   :config
   (setq help-buffers-org-files-visit-fn #'org-persp-pop-org-buffer)
   (add-to-list 'help-buffers-directories org-directory)
@@ -1436,8 +1436,6 @@ if running under WSL")
 
 (use-package org-persp
   :after org
-  :config
-  (advice-add #'aj-org-jump-to-datetree :around #'org-persp-pop-buffer-a)
   )
 
 (use-package! org-ql

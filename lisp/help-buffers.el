@@ -100,17 +100,34 @@ Around advice for `ivy--switch-buffer-action'."
 
 (defun help-buffers--transformer (str)
   "For org mode files try to replace file name with +title property."
-  (if (string-match ".org::" str)
+  (if (and (string-match ".org" str)
+           (not (string-match ".org.gpg" str)))
       (when-let ((file (car (seq-filter
                              (lambda (f)
                                (string-match (car (split-string str "::")) f))
                              help-buffers-org-files-list))))
         (with-current-buffer (find-file-noselect file)
-          (concat (all-the-icons-fileicon  "org" :v-adjust -0.1)
-                  " "
-                  (+org-get-global-property "TITLE"))))
+          (let ((title (+org-get-global-property "title"))
+                )
+            (concat (all-the-icons-fileicon  "org" :v-adjust -0.1)
+                    " "
+                    title
+                    " "
+                    (mapconcat
+                     #'identity
+                     (ignore-errors
+                       (org-roam-node-aliases
+                        (org-roam-node-from-title-or-alias title)
+                        )
+                       )
+                     " "
+                     )
+                    )
+            )
+          ))
     str))
 
+;;;###autoload
 (defun help-buffers-switch-buffers (prompt &optional help)
   "Switch perspective buffers.
 
