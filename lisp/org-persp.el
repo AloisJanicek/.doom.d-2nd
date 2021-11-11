@@ -6,8 +6,6 @@
 ;; - create independent copies of requested org-files as indirect buffers
 ;;   specific for current persp-mode perspective
 ;;
-;; - place org-mode buffers specially within the frame using `org-persp-window-for-org-buffer'
-;;
 ;; - pop org-mode buffers into popups using `org-persp-pop-org-buffer'
 ;;
 ;; NOTE: A lot of following code is inevitably specific for doom emacs
@@ -44,14 +42,6 @@ Since both pop-to-buffer-* functions can't be advice in the same lexical environ
              #'org-persp-switch-create-indirect-buffer-per-persp))
     (apply orig-fn args)))
 
-(defun org-persp-pop-buffer-a (orig-fn &rest args)
-  "Override `org-persp-window-for-org-buffer' with `org-persp-pop-org-buffer'.
-Intended for overriding default behavior of `org-persp-switch-create-indirect-buffer-per-persp'
-to allow pop org buffer into popup window."
-  (cl-letf (((symbol-function 'org-persp-window-for-org-buffer)
-             #'org-persp-pop-org-buffer))
-    (apply orig-fn args)))
-
 (defun org-persp-pop-to-buffer-a (orig-fn &rest args)
   "Pop org mode buffer specially.
 Adice for org-mode related functions popping org files into buffers."
@@ -60,10 +50,7 @@ Adice for org-mode related functions popping org files into buffers."
     (apply orig-fn args)))
 
 (defun org-persp-pop-org-buffer (buffer-or-name &rest _)
-  "Display org-mode BUFFER-OR-NAME in popup window.
-Similar to `org-persp-window-for-org-buffer' but displays org buffer
-in temporarily popup window on the right side of the frame.
-"
+  "Display org-mode BUFFER-OR-NAME in popup window."
   (let ((buffer (or (when (bufferp buffer-or-name) buffer-or-name)
                     (get-buffer buffer-or-name))))
     (if (bufferp buffer)
@@ -100,64 +87,6 @@ in temporarily popup window on the right side of the frame.
 
       (message "this is not buffer: %s" buffer-or-name)))
   )
-
-(defun org-persp-window-for-org-buffer (buffer)
-  "Take `BUFFER' and try to find suitable window for it.
-First look for available `org-mode' buffers.
-If there isn't one, select fist window which isn't current window.
-If there is only one window,
-split current window and displays `BUFFER' on the left."
-  (if (bufferp buffer)
-      (let* ((start-win (selected-window))
-             (start-win-name (prin1-to-string start-win))
-             (just-one (= (length (window-list)) 1))
-             (from-agenda (string-match "*Org QL View\\|*Org Agenda*" start-win-name))
-             (too-narrow (< (frame-width) 145))
-             (org-window (catch 'org-window
-                           (mapcar (lambda (win)
-                                     (let* ((mode (with-current-buffer (window-buffer win)
-                                                    major-mode)))
-                                       (if (eq 'org-mode mode)
-                                           (unless from-agenda
-                                             (throw 'org-window win)))))
-                                   (window-list))))
-             (not-special-windows (lambda (win)
-                                    (not
-                                     (equal (substring (buffer-name (window-buffer win)) 0 1) "*")))))
-        (if (windowp org-window)
-            (progn
-              (select-window org-window t)
-              (switch-to-buffer buffer))
-
-          (progn
-            (when (and just-one (not too-narrow))
-              (split-window start-win (floor (/ (frame-width) 2.8)) 'right))
-
-            (when (and too-narrow
-                       (not from-agenda)
-                       (not just-one))
-              (select-window (some-window (lambda (win)
-                                            (not (eq win start-win))))))
-
-            (when (< (/ (frame-width) (window-width)) 2)
-              (if (funcall not-special-windows start-win)
-                  (progn (unless (or from-agenda
-                                     too-narrow)
-                           (split-window start-win (floor (/ (frame-width) 2.8)) 'right)
-                           (select-window start-win)))
-                (progn (unless (or too-narrow
-                                   from-agenda)
-                         (split-window
-                          (some-window not-special-windows)
-                          (floor (/ (frame-width) 2.8)) 'right))
-                       (select-window
-                        (or (when from-agenda start-win)
-                            (some-window not-special-windows)))))))
-
-          (switch-to-buffer buffer)
-          (with-current-buffer buffer
-            (turn-on-solaire-mode))))
-    (message "this is not buffer: %s" buffer)))
 
 ;;;###autoload
 (defun org-persp-switch-create-indirect-buffer-per-persp (buffer-or-path &rest _)
@@ -200,13 +129,9 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 
             (setq output-buffer (get-buffer new-buffer-name))
 
-            ;; (with-current-buffer output-buffer
-            ;;   (widen))
-
-            ;; NOTE Clean this up since this renders `org-persp-pop-buffer-a'
-            ;; and every advice using it as obsolete
             (org-persp-pop-org-buffer output-buffer)
-            output-buffer)
+            output-buffer
+            )
 
         (message "this is not buffer or valid file path: %s" buffer-or-path)))
     ;; )
@@ -230,15 +155,12 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 (after! counsel
   (advice-add #'counsel-org-agenda-headlines-action-goto :around #'org-persp-open-file-respect-sanity-a)
   (advice-add #'counsel-org-clock--run-context-action :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'counsel-org-clock--run-context-action :around #'org-persp-pop-buffer-a)
   (advice-add #'counsel-org-clock--run-history-action :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'counsel-org-clock--run-history-action :around #'org-persp-pop-buffer-a)
   (advice-add #'aj-org-find-file :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'aj-org-find-file :around #'org-persp-pop-buffer-a))
+  )
 
 (after! org
   (advice-add #'org-goto-marker-or-bmk :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-goto-marker-or-bmk :around #'org-persp-pop-buffer-a)
   (advice-add
    #'org-open-file
    :around
@@ -251,18 +173,15 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 
 (after! org-id
   (advice-add #'org-id-open :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-id-open :around #'org-persp-pop-buffer-a)
   (advice-add #'org-id-goto :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-id-goto :around #'org-persp-pop-buffer-a)
   )
 
 (after! org-clock
   (advice-add #'org-clock-goto :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-clock-goto :around #'org-persp-pop-buffer-a))
+  )
 
 (after! org-capture
   (advice-add #'org-capture-goto-target :around #'org-persp-open-file-respect-sanity-same-window-a)
-  (advice-add #'org-capture-goto-target :around #'org-persp-pop-buffer-a)
   )
 
 (after! org-agenda
@@ -272,33 +191,27 @@ Designed as an override advice for file or buffer opening functions like `pop-to
 
 (after! org-lib
   (advice-add #'+org-notes/grep-search-format-org-links :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'+org-notes/grep-search-format-org-links :around #'org-persp-pop-buffer-a))
+  )
 
 (after! agenda-headlines
-  (advice-add #'agenda-headlines-goto-query :around #'org-persp-pop-buffer-a)
-  (advice-add #'agenda-headlines-goto-any :around #'org-persp-pop-buffer-a))
+  )
 
 (after! org-jumplist
   (advice-add #'org-jumplist-back :around #'org-persp-pop-to-buffer-a)
   (advice-add #'org-jumplist-forward :around #'org-persp-pop-to-buffer-a))
 
 (after! org-roam
-  (advice-add #'org-roam-node-visit :around #'org-persp-pop-buffer-a)
   (advice-add #'org-roam-node-visit :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'+org-roam-capture--finalize-find-file-a :around #'org-persp-pop-buffer-a)
   (advice-add #'+org-roam-capture--finalize-find-file-a :around #'org-persp-open-file-respect-sanity-a)
   )
 
 (after! org-roam-ivy
   (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'org-roam-ivy--restart-buffer-action :around #'org-persp-pop-buffer-a)
   (advice-add #'org-roam-ivy :around #'org-persp-org-roam-node-visit-a)
   )
 
 (after! org-roam-lib
-  (advice-add #'+org-roam-dailies-clock-report :around #'org-persp-pop-buffer-a)
   (advice-add #'+org-roam-dailies-clock-report :around #'org-persp-open-file-respect-sanity-a)
-  (advice-add #'+org-roam-dailies-open-today :around #'org-persp-pop-buffer-a)
   (advice-add #'+org-roam-dailies-open-today :around #'org-persp-open-file-respect-sanity-a)
   )
 
