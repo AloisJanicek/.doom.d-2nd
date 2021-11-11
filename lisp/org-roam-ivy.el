@@ -621,7 +621,12 @@ of org-roam item by tag string doesn't make much sense."
   (org-roam-ivy
    "Duplicate titles: "
    (mapcar
-    #'org-roam-node-read--to-candidate
+    #'
+    (lambda (n)
+      (org-roam-node-read--to-candidate
+       n
+       (org-roam-node--process-display-format
+        org-roam-node-display-template)))
     (seq-map
      (lambda (record)
        (org-roam-node-from-id (car record)))
@@ -631,11 +636,7 @@ from nodes a
 JOIN (SELECT id, title FROM nodes GROUP BY id, title) b
 ON a.title = b.title
 WHERE a.id != b.id
-ORDER BY a.title"
-      )
-     )
-    (org-roam-node--process-display-format
-     org-roam-node-display-template))))
+ORDER BY a.title")))))
 
 ;; org-roam-ivy setup
 (ivy-configure 'org-roam-ivy
