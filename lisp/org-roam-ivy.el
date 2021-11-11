@@ -261,17 +261,20 @@ This is done by taging the file with \"agenda\" filetag.
   "Browse links of TYPE of the org-roam item X."
   (let* ((node (org-roam-ivy--get-node x))
          (from this-command))
-    (if-let ((collection (pcase type
+    (if-let ((is-node (org-roam-node-p node))
+             (template (org-roam-node--process-display-format
+                        org-roam-node-display-template))
+             (collection (pcase type
                            ('backlinks
                             (seq-map
                              (lambda (n)
-                               (org-roam-node-read--to-candidate n))
+                               (org-roam-node-read--to-candidate n template))
                              (+org-roam-backlinks-get node)))
                            ('forwardlinks
                             (seq-map
                              (lambda (n)
                                (if (org-roam-node-p n)
-                                   (org-roam-node-read--to-candidate n)
+                                   (org-roam-node-read--to-candidate n template)
                                  (cons n n)
                                  )
                                )
@@ -471,13 +474,13 @@ Adopted from `org-roam'."
   (org-roam-capture- :node (org-roam-node-read x))
   (setq org-roam-ivy--last-ivy-text ""))
 
-(defun org-roam-ivy--backlinks-transformer (str)
+(defun org-roam-ivy--transformer (str)
   "Improve appereance of org-roam-ivy candidate STR."
   (let* ((node (get-text-property 0 'node str))
          (backlinks-count (org-roam-node-backlinks-num-str node))
          (forwardlinks-count (org-roam-node-forwardlinks-num-str node))
          (icon (org-roam-node-type-icon node)))
-    (concat forwardlinks-count " " backlinks-count " " icon "" str)))
+    (concat backlinks-count " " forwardlinks-count " " icon "" str)))
 
 ;; FIXME Adjust for org-roam v2
 (defun org-roam-ivy--get-not-linking-completions ()
@@ -631,13 +634,12 @@ WHERE a.id != b.id
 ORDER BY a.title"
       )
      )
-    )
-   )
-  )
+    (org-roam-node--process-display-format
+     org-roam-node-display-template))))
 
 ;; org-roam-ivy setup
 (ivy-configure 'org-roam-ivy
-  :display-transformer-fn #'org-roam-ivy--backlinks-transformer)
+  :display-transformer-fn #'org-roam-ivy--transformer)
 
 (ivy-add-actions
  #'org-roam-ivy
