@@ -95,47 +95,48 @@ Allows to each org-roam to have its own unique database."
   "Choose and update `org-roam-directory'."
   (interactive)
   (require 'ffap)
-  (let* ((dir (file-truename
-               (ivy-read "Choose roam directory: "
-                         (+org-roam-dirs 'valid)))))
+
+  (when-let* ((dir (file-truename
+                    (ivy-read "Choose roam directory: "
+                              (+org-roam-dirs 'valid)))))
+    (+org-roam-kill-all-buffers)
+    (+org-agenda-kill-all-agenda-buffers)
     (org-roam-db--close-all)
     (setq org-roam-directory dir
-          org-roam-db-location (+org-roam-db-location)))
+          org-roam-db-location (+org-roam-db-location))
 
-  (+org-agenda-kill-all-agenda-buffers)
-  (+org-roam-kill-all-buffers)
+    (when-let* ((f-recipe (expand-file-name ".recipe.txt" org-roam-directory))
+                (f-recipe-exist (file-exists-p f-recipe)))
+      (dolist (path (split-string (f-read-text f-recipe 'utf-8)))
+        (let ((dir-path (directory-file-name
+                         (file-name-directory path)))
+              (dir-name (file-name-nondirectory
+                         (directory-file-name path)))
+              (target-path org-roam-directory))
+          (shell-command (format "stow -D %s -d %s -t %s" dir-name dir-path target-path))
+          (shell-command (format "stow %s -d %s -t %s" dir-name dir-path target-path)))))
 
-  (when-let* ((f-recipe (expand-file-name ".recipe.txt" org-roam-directory))
-              (f-recipe-exist (file-exists-p f-recipe)))
-    (dolist (path (split-string (f-read-text f-recipe 'utf-8)))
-      (let ((dir-path (directory-file-name
-                       (file-name-directory path)))
-            (dir-name (file-name-nondirectory
-                       (directory-file-name path)))
-            (target-path org-roam-directory))
-        (shell-command (format "stow -D %s -d %s -t %s" dir-name dir-path target-path))
-        (shell-command (format "stow %s -d %s -t %s" dir-name dir-path target-path)))))
-  (org-roam-db-sync)
+    (org-roam-db-sync)
 
-  (when (boundp 'org-roam-ivy--last-ivy-text)
-    (setq org-roam-ivy--last-ivy-text ""))
 
-  (when (bound-and-true-p org-roam-ui-mode)
-    (org-roam-ui--send-graphdata))
+    (when (boundp 'org-roam-ivy--last-ivy-text)
+      (setq org-roam-ivy--last-ivy-text ""))
 
-  ;; also update paths for org-noter
-  (dolist (dir (list-dirs-recursively org-roam-directory))
-    (add-to-list 'org-noter-notes-search-path dir))
+    (when (bound-and-true-p org-roam-ui-mode)
+      (org-roam-ui--send-graphdata))
 
-  ;; also update capture templates
-  (org-roam-eval-capture-templates)
+    ;; also update paths for org-noter
+    (dolist (dir (list-dirs-recursively org-roam-directory))
+      (add-to-list 'org-noter-notes-search-path dir))
 
-  ;; also create inbox file if doesn't exists yet
-  (org-roam-create-inbox-file)
+    ;; also update capture templates
+    (org-roam-eval-capture-templates)
 
-  ;; also update agenda-files
-  (+org-roam/refresh-agenda-list)
-  )
+    ;; also create inbox file if doesn't exists yet
+    (org-roam-create-inbox-file)
+
+    ;; also update agenda-files
+    (+org-roam/refresh-agenda-list)))
 
 (defun +org-roam/delete-linked-files ()
   "Delete linked files from org-roam."
