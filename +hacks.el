@@ -183,8 +183,10 @@ with :after or :override due to some issue with starting the notification proces
                 (insert (if (save-excursion (beginning-of-line) (looking-at "[[:space:]]*$")) "" "\n")
                         ;; NOTE: copy/pasting whole function just for this one line
                         "#+title:" document-base "\n"
+                        "#+category:" document-base "\n"
+                        "#+filetags:" "books agenda" "\n"
                         ;; end of the important code
-                        "* " document-base)
+                        "* TODO " document-base)
                 (save-buffer)
                 (goto-char (point-min))
                 (org-id-get-create)
