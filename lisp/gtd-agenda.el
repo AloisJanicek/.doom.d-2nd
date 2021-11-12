@@ -565,7 +565,7 @@ GTD Agenda (%(agenda-filter-preset-string))
           (agenda-headlines-goto-query
            :prompt "past due"
            :files (agenda-filter-all-collected-agenda-files t)
-           :query (agenda-queries--past-dues-query)
+           :query (agenda-queries--past-dues-query t)
            :sort-fn #'agenda-queries-sort-by-active-timestamp
            :time t
            :capture-key "t")))

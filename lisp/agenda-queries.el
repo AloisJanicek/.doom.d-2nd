@@ -140,9 +140,11 @@ to resole their precedence.
             (not (descendants (todo)))
             (not (descendants (done))))))
 
-(defun agenda-queries--past-dues-query ()
+(defun agenda-queries--past-dues-query (&optional whole-today)
   "Return valid org-ql query searching for past dues."
-  `(or (and (ts-active :to ,(ts-now))
+  `(or (and ,(if whole-today
+                 `(ts-active :to today)
+               `(ts-active :to ,(ts-now)))
             (not (habit))
             (not (done)))
        (habit-half-due)))
