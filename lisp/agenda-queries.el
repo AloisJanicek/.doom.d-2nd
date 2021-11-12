@@ -156,7 +156,7 @@ to resole their precedence.
 (defun agenda-queries--future-dues-query ()
   "Return valid org-ql query searching for future dues."
   (let ((up-to (if current-prefix-arg 365 2)))
-    `(or (and (planning :from ,(ts-now) :to ,up-to))
+    `(or (and (planning :from 1 :to ,up-to))
          (and (habit)
               (planning :to ,up-to)
               (not (habit-half-due))))))
