@@ -1844,9 +1844,9 @@ When in org-roam file, also create top-level ID.
   )
 
 (after! org-noter
-
   (setq org-noter-notes-search-path nil
         org-noter-default-notes-file-names nil
+        org-noter-notes-window-location 'vertical-split
         org-noter-hide-other nil
         )
 
