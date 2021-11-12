@@ -26,6 +26,8 @@
 (require 'org-lib)
 
 ;;; Variables
+(defvar org-roam-ivy-pre-buffer-list nil
+  "List of all buffers before org-roam-ivy was launched.")
 
 (defvar org-roam-ivy--last-ivy-text ""
   "Variable storing latest `ivy-text' suitable for restoration in org-roam-ivy.
@@ -551,6 +553,9 @@ of org-roam item by tag string doesn't make much sense."
                        (or (when (string-empty-p org-roam-ivy--last-ivy-text)
                              preset-str)
                            org-roam-ivy--last-ivy-text))))
+
+    (setq org-roam-ivy-pre-buffer-list (buffer-list))
+
     (ivy-read prompt collection
               :initial-input init-input
               :sort t
@@ -565,7 +570,12 @@ of org-roam item by tag string doesn't make much sense."
                           (progn
                             ;; prevent :initial-input becoming part of the newly captured file's #+title:
                             (when init-input
-                              (org-roam-ivy--capture (substring x (length init-input) (length x))))))))))
+                              (org-roam-ivy--capture (substring x (length init-input) (length x)))))))
+              :unwind (lambda ()
+                        (mapcar #'kill-buffer
+                                (seq-difference
+                                 (buffer-list)
+                                 (append org-roam-ivy-pre-buffer-list (list `,(current-buffer)))))))))
 
 ;;;###autoload
 (defun org-roam-ivy-find-refs ()
