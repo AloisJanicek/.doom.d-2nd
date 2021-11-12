@@ -103,6 +103,7 @@ Allows to each org-roam to have its own unique database."
           org-roam-db-location (+org-roam-db-location)))
 
   (+org-agenda-kill-all-agenda-buffers)
+  (+org-roam-kill-all-buffers)
 
   (when-let* ((f-recipe (expand-file-name ".recipe.txt" org-roam-directory))
               (f-recipe-exist (file-exists-p f-recipe)))
@@ -114,7 +115,6 @@ Allows to each org-roam to have its own unique database."
             (target-path org-roam-directory))
         (shell-command (format "stow -D %s -d %s -t %s" dir-name dir-path target-path))
         (shell-command (format "stow %s -d %s -t %s" dir-name dir-path target-path)))))
-
   (org-roam-db-sync)
 
   (when (boundp 'org-roam-ivy--last-ivy-text)
@@ -721,5 +721,13 @@ one org-roam.
       (org-roam-db-sync))
 
     (make-symbolic-link inbox-file (expand-file-name inbox-file-name gtd-agenda-inbox-dir) 'ok-if-already-exists)))
+
+;;;###autoload
+(defun +org-roam-kill-all-buffers ()
+  "Kill all current org-roam buffer."
+  (interactive)
+  (mapcar
+   #'kill-buffer
+   (org-roam-buffer-list)))
 
 (provide 'org-roam-lib)
