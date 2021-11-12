@@ -480,9 +480,22 @@ Adopted from `org-roam'."
   "Improve appereance of org-roam-ivy candidate STR."
   (let* ((node (get-text-property 0 'node str))
          (backlinks-count (org-roam-node-backlinks-num-str node))
+         (tags (org-roam-node-tags node))
+         (agenda (seq-contains-p tags "agenda" #'string-equal))
          (forwardlinks-count (org-roam-node-forwardlinks-num-str node))
          (icon (org-roam-node-type-icon node)))
-    (concat backlinks-count " " forwardlinks-count " " icon "" str)))
+    (concat
+     backlinks-count
+     " "
+     forwardlinks-count
+     " "
+     (if agenda
+         (propertize
+          (concat (all-the-icons-material "schedule") " ")
+          'face 'success)
+       icon)
+     ""
+     str)))
 
 ;; FIXME Adjust for org-roam v2
 (defun org-roam-ivy--get-not-linking-completions ()
