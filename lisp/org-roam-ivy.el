@@ -491,7 +491,7 @@ Adopted from `org-roam'."
      " "
      (if agenda
          (propertize
-          (concat (all-the-icons-material "schedule") " ")
+          (concat (all-the-icons-material "schedule" :v-adjust 0.1) " ")
           'face 'success)
        icon)
      ""
