@@ -681,7 +681,7 @@ as you name the directory you place the file into.
                          (format
                           "* ${title} :r_ex:\n:PROPERTIES:\n:ID: %s\n:ROAM_REFS: ${ref}\n:END:"
                           (org-id-uuid))))
-      :target (node ,(org-roam-current-inbox-title))
+      :target (file ,(org-roam-current-inbox-file-path))
       :unnarrowed t
       :immediate-finish t))
    )
@@ -692,6 +692,19 @@ as you name the directory you place the file into.
   (format "_Inbox-%s" (file-name-nondirectory
                        (directory-file-name org-roam-directory))))
 
+(defun org-roam-current-inbox-file-path ()
+  "Return the file path of the inbox file for current `org-roam-directory'."
+  (let* ((roam (file-name-nondirectory
+                (directory-file-name org-roam-directory)))
+         (title (org-roam-current-inbox-title))
+         (inbox-dir (expand-file-name "inbox" org-roam-directory))
+         (inbox-file-name
+          (if (string-match "-encrypt" roam)
+              (format "inbox-%s.org.gpg" roam)
+            (format "inbox-%s.org" roam)))
+         (inbox-file (expand-file-name inbox-file-name inbox-dir)))
+    inbox-file))
+
 (defun org-roam-create-inbox-file ()
   "Create inbox file specific for current `org-roam-directory'.
 
@@ -700,28 +713,16 @@ with its own \"inbox.org\" file.
 
 This file is then linked to global inbox directory where it can
 be easily browsed and managed.
-
-Each inbox file has its unique ID and title so there is no
-conflicts or issues when there is more inbox files in
-one org-roam.
 "
-  (let* ((roam (file-name-nondirectory
-                (directory-file-name org-roam-directory)))
-         (title (org-roam-current-inbox-title))
-         (id (org-id-uuid))
-         (inbox-dir (expand-file-name "inbox" org-roam-directory))
-         (inbox-file-name
-          (if (string-match "-encrypt" roam)
-              (format "inbox-%s.org.gpg" roam)
-            (format "inbox-%s.org" roam)))
-         (inbox-file (expand-file-name inbox-file-name inbox-dir)))
+  (let* ((inbox-file (org-roam-current-inbox-file-path))
+         (inbox-file-name (file-name-nondirectory inbox-file))
+         (title (org-roam-current-inbox-title)))
 
     (unless (file-exists-p inbox-file)
       (with-temp-file inbox-file
         (insert
-         (format "# -*- org-src-fontify-natively: nil; -*-\n:PROPERTIES:\n:ID: %s\n:END:\n#+TITLE: %s\n#+FILETAGS: inbox\n" id title)))
+         (format "# -*- org-src-fontify-natively: nil; -*-\n#+TITLE: %s\n#+FILETAGS: inbox\n" title)))
       (org-roam-db-sync))
-
     (make-symbolic-link inbox-file (expand-file-name inbox-file-name gtd-agenda-inbox-dir) 'ok-if-already-exists)))
 
 ;;;###autoload
