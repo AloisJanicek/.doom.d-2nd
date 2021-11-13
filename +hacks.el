@@ -184,9 +184,9 @@ with :after or :override due to some issue with starting the notification proces
                         ;; NOTE: copy/pasting whole function just for this one line
                         "#+title:" document-base "\n"
                         "#+category:" document-base "\n"
-                        "#+filetags:" "books agenda" "\n"
+                        "#+filetags:" "books" "\n"
                         ;; end of the important code
-                        "* TODO " document-base)
+                        "* " document-base)
                 (save-buffer)
                 (goto-char (point-min))
                 (org-id-get-create)
