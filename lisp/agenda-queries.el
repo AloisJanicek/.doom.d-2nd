@@ -224,10 +224,10 @@ WAIT, HOLD, SOMEDAY, MAYBE
   "Return custom org-ql queary for Projects.
 
 Projects are defined as a todo heading which isn't Someday or Maybe
-and has todo childre."
+and has todo children."
   `(or (and (or (todo) (done))
             ,(agenda-queries--filter-tags-query)
-            (descendants (todo))
+            (descendants (or (todo) (done)))
             ,(agenda-queries--cancelling-ancestors-query))
        (and (todo "PROJECT")
             ,(agenda-queries--cancelling-ancestors-query)
