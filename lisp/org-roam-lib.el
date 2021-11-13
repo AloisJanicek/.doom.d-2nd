@@ -226,6 +226,7 @@ matches to \"journal\", \"inbox\" or \"books\".
           (and
            (not (string-match "inbox" dir))
            (not (string-match "journal" dir))
+           (not (string-match "archive" dir))
            (not (string-match "books" dir))
            )
         t
