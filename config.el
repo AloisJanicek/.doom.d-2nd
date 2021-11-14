@@ -1875,6 +1875,7 @@ When in org-roam file, also create top-level ID.
         org-roam-completion-everywhere t
         +org-roam-open-buffer-on-find-file nil
         org-roam-node-display-template "${doom-hierarchy} ${doom-tags}"
+        org-roam-node-display-template "${doom-hierarchy:*} ${doom-tags}"
         )
 
   ;; Update `org-agenda-files'
