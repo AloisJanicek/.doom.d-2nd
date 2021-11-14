@@ -549,7 +549,7 @@ Use `pop-to-buffer' instead of `switch-to-buffer'."
                          (org-roam-node-id node))))
            (backlinks-len (length backlinks)))
       (cond ((< backlinks-len 1)
-             (propertize " 0" 'face 'warning))
+             (propertize " 0" 'face 'shadow))
             ((< backlinks-len 9)
              (propertize (concat " " (number-to-string backlinks-len)) 'face 'org-tag))
             (t
@@ -569,7 +569,7 @@ Use `pop-to-buffer' instead of `switch-to-buffer'."
                             (org-roam-node-id node))))
            (forwardlinks-len (length forwardlinks)))
       (cond ((< forwardlinks-len 1)
-             (propertize " 0" 'face 'warning))
+             (propertize " 0" 'face 'shadow))
             ((< forwardlinks-len 9)
              (propertize (concat " " (number-to-string forwardlinks-len)) 'face 'org-tag))
             (t
