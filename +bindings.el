@@ -527,6 +527,8 @@
   :nm "C-k" #'evil-window-up
   :nm "C-l" #'evil-window-right
   :nm "M-f" #'pdf-occur
+  :nm "C-n" #'pdf-view-next-page
+  :nm "C-p" #'pdf-view-previous-page
   :nm "j" #'pdf-view-next-line-or-next-page
   :nm "k" #'pdf-view-previous-line-or-previous-page
   :nm "l" #'org-store-link

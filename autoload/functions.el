@@ -1136,12 +1136,12 @@ credits: https://gist.github.com/adamczykm/c18b1dba01492adb403c301da0d3b7c1
 
 ;;;###autoload
 (defun solaire-mode-real-buffer-p-a ()
-    "Override advice of `solaire-mode-real-buffer-p'.
+  "Override advice of `solaire-mode-real-buffer-p'.
 This fn considers all org-mode files as special buffers."
-    (let ((f (buffer-file-name (buffer-base-buffer))))
-      (when (stringp f)
-        (unless (derived-mode-p 'org-mode)
-          (buffer-file-name (buffer-base-buffer))))))
+  (let ((f (buffer-file-name (buffer-base-buffer))))
+    (when (stringp f)
+      (unless (derived-mode-p 'org-mode)
+        (buffer-file-name (buffer-base-buffer))))))
 
 ;;;###autoload
 (defun aj-replace-country-name-with-code (country)
@@ -1166,6 +1166,157 @@ Override advice of `browse-url-firefox-a'."
             '("-new-tab")
           '("-new-window")))
     url)))
+
+;;;###autoload
+(defun aj/toc-shift-text-number-at-the-end-of-line-by ()
+  "Shift number at the end of line by value provided by user.
+
+Usefull when manually manipulating TOCs for pdfs, etc..."
+  (interactive)
+  (let* ((shift-by (read-number "Shift-by: "))
+         (shift-the-num (lambda ()
+                          (goto-char (line-end-position))
+                          (when-let* ((num (number-at-point))
+                                      (is-num (numberp num)))
+                            (backward-kill-word 1)
+                            (insert (format "%s" (+ num shift-by)))))))
+    (goto-char 0)
+    (while (not (eobp))
+      (funcall shift-the-num)
+      (forward-line 1))))
+
+;;;###autoload
+(defun aj/toc-add-chapter-levels ()
+  "Add TOC entry's level for each entry represented by line in current buffer"
+  (interactive)
+  (goto-char 0)
+  (while (not (eobp))
+    (aj-toc-chapter-insert-level)
+    (forward-line 1)))
+
+;;;###autoload
+(defun aj-toc-chapter-insert-level ()
+  "From the chapter numbering at the beginning of the line determine chapter level (depth) and isert it where it belongs.
+
+Chapter numbering is not necessarily valid number.
+4.1.1 is valid chapter numbering but not valid number.
+
+This function expects TOC line entry to exist in following format:
+chapter_numbering chapter title words page_num
+and will insert number representing chapter_level in front of page_num.
+"
+  (goto-char (line-beginning-position))
+  (let* ((chapter-numbering (buffer-substring-no-properties
+                             (point)
+                             (save-excursion
+                               (re-search-forward " " (line-end-position)))))
+         (dots-count (length
+                      (seq-filter
+                       (lambda (char)
+                         (equal char 46))
+                       (string-to-list chapter-numbering))))
+         ;; because 1.1 represents level 2, 1.2.1 represents level 3, etc.
+         (level (+ 1 dots-count)))
+    (goto-char (line-end-position))
+    (backward-word)
+    (goto-char (- (point) 1))
+    (insert (format " %s" level))))
+
+(defun aj/toc-convert-line-entries-into-pdf-bookmark-entries ()
+  "In entire buffer convert TOC line entries into pdf bookmark entries
+using `aj-toc-convert-line-entry-into-pdf-bookmark-entry'."
+  (interactive)
+  (goto-char 0)
+  (while (not (eobp))
+    (aj-toc-convert-line-entry-into-pdf-bookmark-entry)))
+
+(defun aj-toc-convert-line-entry-into-pdf-bookmark-entry ()
+  "Converts single line TOC entry into proper 4 line pdf bookmark entry.
+This function expects line entry in following format:
+
+chapter_numbering chapter title words page_num
+
+so for example this line
+\"4.3 Conversion Factors 2 45\"
+will become this pdf bookmark entry:
+
+BookmarkBegin
+BookmarkTitle: 4.3 Conversion Factors
+BookmarkLevel: 2
+BookmarkPageNumber: 45
+"
+  (goto-char (line-beginning-position))
+  (let* ((line-str
+          (string-trim (buffer-substring-no-properties (point) (line-end-position))))
+         (line-list (split-string line-str))
+         (page-num (car (last line-list)))
+         (line-list (butlast line-list))
+         (level (car (last line-list)))
+         (line-list (butlast line-list))
+         (title (mapconcat #'identity line-list " ")))
+    (kill-whole-line)
+    (insert (mapconcat
+             #'identity
+             (list
+              "BookmarkBegin\n"
+              (format "BookmarkTitle: %s\n" title)
+              (format "BookmarkLevel: %s\n" level)
+              (format "BookmarkPageNumber: %s\n" page-num))
+             ""))))
+
+;;;###autoload
+(defun aj/toc-correct-page-num ()
+  "Get the current pdf-view-mode page num from other-window
+and replace with it the one at the end of the current line."
+  (interactive)
+  (let* ((start-window (selected-window))
+         (pdf-window (car (seq-filter
+                           (lambda (win)
+                             (string-match "pdf" (prin1-to-string win)))
+                           (window-list))))
+         (correct-page-num (with-selected-window pdf-window
+                             (pdf-view-current-page)))
+         (replace-page-num (lambda ()
+                             (save-excursion
+                               (goto-char (line-end-position))
+                               (when-let* ((old-page-num (number-at-point))
+                                           (is-num (numberp old-page-num)))
+                                 (backward-kill-word 1)
+                                 (insert (format "%s" correct-page-num)))))))
+    (funcall replace-page-num)
+    (forward-line 1)))
+
+;;;###autoload
+(defun aj/toc-setup-the-workflow ()
+  "Setup the required workflow for working with TOCs for PDFs."
+  (interactive)
+  ;; eval the fns
+  (defun my/scroll-other-window ()
+    (interactive)
+    (let* ((wind (other-window-for-scrolling))
+           (mode (with-selected-window wind major-mode)))
+      (if (eq mode 'pdf-view-mode)
+          (with-selected-window wind
+            (pdf-view-next-line-or-next-page 2))
+        (scroll-other-window 2))))
+
+  (defun my/scroll-other-window-down ()
+    (interactive)
+    (let* ((wind (other-window-for-scrolling))
+           (mode (with-selected-window wind major-mode)))
+      (if (eq mode 'pdf-view-mode)
+          (with-selected-window wind
+            (progn
+              (pdf-view-previous-line-or-previous-page 2)
+              (other-window 1)))
+        (scroll-other-window-down 2))))
+  ;; register convenient mappings which I don't want to have registered all the time
+  ;; because they conflict with other usual functionalities
+  (map!
+   :mn "C-p" #'my/scroll-other-window-down
+   :mn "C-n" #'my/scroll-other-window
+   :mn "C-f" #'aj/toc-correct-page-num
+   ))
 
 (provide 'functions)
 
