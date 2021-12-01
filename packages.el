@@ -6,7 +6,7 @@
 (package! saveplace-pdf-view :disable t)
 
 (unpin! org-roam)
-(unpin! org)
+;; (unpin! org)
 
 ;; (package! org
 ;;   :recipe (:host github

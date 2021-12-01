@@ -1105,7 +1105,7 @@ if running under WSL")
 
 (after! org
   ;; One day it will work but not today
-  (setq org-element-use-cache nil)
+  (setq org-element-cache-persistent nil)
 
   ;; (add-hook 'after-org-mode-hook #'org-hide-drawer-all)
   (advice-add #'org-open-at-point :after (lambda () (solaire-mode +1)))
