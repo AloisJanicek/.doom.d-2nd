@@ -317,3 +317,12 @@ the tags of, return an empty string."
       )
     )
   )
+
+
+;; HACK Something is wrong with incline images
+(after! org
+  (defadvice! no-errors/+org-inline-image-data-fn (_protocol link _description)
+    :override #'+org-inline-image-data-fn
+    "Interpret LINK as base64-encoded image data. Ignore all errors."
+    (ignore-errors
+      (base64-decode-string link))))
