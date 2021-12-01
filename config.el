@@ -53,9 +53,9 @@ if running under WSL")
       doom-themes-treemacs-theme "doom-colors"
       doom-modeline-height 22
       aj-dark+-blue-modeline t
-      doom-theme 'aj-dark+
       doom-theme 'doom-solarized-dark
-      doom-font                   (font-spec :family "JetBrains Mono" :size 15)
+      doom-theme 'aj-dark+
+      doom-font                   (font-spec :family "JetBrains Mono" :size 17)
       doom-big-font               (font-spec :family "JetBrains Mono" :size 24)
       doom-variable-pitch-font    (font-spec :family "Noto Sans" :size 14)
       doom-serif-font           "Tinos"
@@ -2067,6 +2067,11 @@ When in org-roam file, also create top-level ID.
   `(markdown-header-face-5 :inherit 'outline-5)
   `(markdown-header-face-6 :inherit 'outline-6)
   `(markdown-list-face :foreground ,(doom-color 'blue))
+  `(default :background "#000000" :foreground ,(doom-darken "#d4d4d4" 0.1))
+  `(mode-line :background "#373737")
+  `(mode-line-inactive :background "#000000")
+  `(solaire-default-face :background "#000000")
+  `(fringe :background "#000000")
   )
 
 (after! mixed-pitch
