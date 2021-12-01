@@ -2,7 +2,8 @@
 (when doom-debug-p
   (require 'benchmark-init)
   (add-hook 'doom-first-input-hook #'benchmark-init/deactivate))
-(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
+;; (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 
 (doom!
  :input

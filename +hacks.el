@@ -1,5 +1,8 @@
 ;;; ~/.doom.d/+hacks.el -*- lexical-binding: t; -*-
 
+;; Something somewhere is maximizing emacs, this restores the window from maximized state
+(toggle-frame-maximized)
+
 ;; weird backspace issues
 ;; REVIEW Is this still relevant?
 (advice-remove #'delete-backward-char #'+default--delete-backward-char-a)
