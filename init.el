@@ -30,7 +30,7 @@
  doom
  doom-dashboard
  doom-quit
- (emoji +unicode)
+ ;; (emoji +unicode)
  hl-todo
  ;;hydra
  indent-guides
@@ -68,7 +68,9 @@
  (dired +ranger +icons)
  electric
  ;;ibuffer
- (undo +tree)
+ (undo
+  ;; +tree
+  )
  vc
 
  :term
@@ -149,7 +151,7 @@
  nim
  ;;nix
  (ocaml +lsp)
- (org +dragndrop +gnuplot +jupyter +pandoc +pomodoro +present +noter +roam2)
+ (org +dragndrop +gnuplot +jupyter +pomodoro +present +noter +roam2)
  (php +lsp)
  ;;plantuml
  purescript
