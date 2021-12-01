@@ -937,37 +937,6 @@ Depends on \"jsdv\" yasnippet snippet expanding to jsdoc docstring.
         (cons 'dart project)
       (cons 'transient dir))))
 
-(defvar aj-modes-tests-alist '()
-  "Contains alist specifying shell test tool per major mode.
-
-  Car is a symbol representing major mode and cdr is plist where:
-
-DIR represents directory from within should shell command be executed
-and can be string, variable or lambda producing valid value for `default-directory'.
-
-FN represents function launching shell command.
-(typically `compile', `shell-command' or `async-shell-command')
-
-CMD is a string representing shell command which will execute tests
-(something like \"make test\" or \"ruby *_test.rb\")
-")
-
-;;;###autoload
-(defun aj/run-some-code-test-tool ()
-  "Run shell test tool specified per major modes in `aj-modes-tests-alist'.
-If there is no associated entry present for current major mode, throw warning.
-"
-  (interactive)
-  (let* ((item (cdr (assoc major-mode aj-modes-tests-alist )))
-         (default-directory (if (eq (type-of (plist-get item :dir)) 'cons)
-                                (funcall (plist-get item :dir))
-                              (eval (plist-get item :dir))))
-         (fn (plist-get item :fn))
-         (cmd (plist-get item :cmd)))
-    (if (and item fn cmd)
-        (funcall fn cmd)
-      (warn "%s isn't configured in `aj-modes-tests-alist'" major-mode))))
-
 ;;;###autoload
 (defun aj/chrome-toggle-incognito ()
   "Toggle incognito mode for link opened with Google Chrome browser."
