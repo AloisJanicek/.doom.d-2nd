@@ -530,6 +530,8 @@ if running under WSL")
                 evil-backward-section-end
                 evil-backward-section-begin
                 evil-goto-mark-line
+                evil-ex-search-next
+                evil-ex-search-previous
                 counsel-mark--ivy-read))
     (advice-add fn :after #'doom-recenter-a))
   )
