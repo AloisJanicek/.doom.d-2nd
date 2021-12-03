@@ -811,8 +811,8 @@
   :desc "yoga"                  "y" #'yoga-hydra/body
   :desc "clock"                   "c" #'aj/org-clock-hydra/body
   (:prefix ("C" . "calibre")
-   :desc "technical"             "c" (cmd! (aj-open-calibre-book (expand-file-name "Technical/" aj-calibre-path)))
-   :desc "personal"              "p" (cmd! (aj-open-calibre-book (expand-file-name "Personal/" aj-calibre-path)))
+   :desc "calibre read"       "c" #'calibredb-find-counsel
+   :desc "calibre buffer"     "C" #'calibredb
    :desc "notes"                 "n" #'aj/calibre-org-open-org-noter-note
    )
 

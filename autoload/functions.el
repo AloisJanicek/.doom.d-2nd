@@ -1287,6 +1287,30 @@ and replace with it the one at the end of the current line."
    :mn "C-f" #'aj/toc-correct-page-num
    ))
 
+
+
+
+(defun calibredb-completing-read ()
+  "Select and open book via calibredb."
+  (interactive)
+  (find-file
+   (calibredb-getattr
+    (cdr
+     (car
+      (let ((book (completing-read "Book: " (calibredb-candidates))))
+        (seq-filter
+         (lambda (m)
+           (string-equal book (car m)))
+         (calibredb-candidates)))))
+    :file-path)))
+
+(defun calibredb-consult-ripgrep-all ()
+  "Run ripgrep-all on `calibredb-root-dir'."
+  (interactive)
+  (let ((default-directory calibredb-root-dir)
+        (consult-ripgrep-args "rga --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number ."))
+    (consult-ripgrep)))
+
 (provide 'functions)
 
 ;;; functions.el ends here

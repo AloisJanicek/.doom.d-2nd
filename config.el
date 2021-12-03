@@ -195,6 +195,75 @@ if running under WSL")
               (ignore-errors (flycheck-select-checker 'scss-stylelint))))
   )
 
+(use-package! calibredb
+  :commands calibredb
+  :init
+  (setq calibredb-root-dir (expand-file-name "Technical" aj-calibre-path)
+        calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+
+  (setq calibredb-library-alist `(,calibredb-root-dir))
+  (setq calibredb-virtual-library-alist '(("1. Development - math" . "math")
+                                          ("2. Development - python" . "python")
+                                          ("3. Development - LISP" . "lisp")))
+  :config
+  (ivy-add-actions
+   #'calibredb-ivy-read
+   '(("F" calibredb-search-clear-filter "clear filter")))
+  (setq calibredb-format-all-the-icons t)
+
+  (map!
+   :after calibredb-search
+   :map calibredb-search-mode-map
+   :mno [mouse-3] #'calibredb-search-mouse
+   :mno (kbd "<RET>") #'calibredb-find-file
+   :mno "g" #'calibredb-consult-ripgrep-all
+   :mno "?" #'calibredb-dispatch
+   :mno "?" #'calibredb-dispatch
+   :mno "a" #'calibredb-add
+   :mno "A" #'calibredb-add-dir
+   :mno "c" #'calibredb-clone
+   :mno "dd" #'calibredb-remove
+   :mno "J" #'evil-scroll-page-down
+   :mno "K" 'evil-scroll-page-up
+   :mno "\C-j" #'calibredb-show-next-entry
+   :mno "\C-k" #'calibredb-show-previous-entry
+   :mno "l" #'calibredb-virtual-library-list
+   :mno "L" #'calibredb-library-list
+   :mno "n" #'calibredb-library-next
+   :mno "p" #'calibredb-library-previous
+   :mno "s" #'calibredb-set-metadata-dispatch
+   :mno "S" #'calibredb-switch-library
+   :mno "o" #'calibredb-find-file
+   :mno "O" #'calibredb-find-file-other-frame
+   :mno "v" #'calibredb-view
+   :mno "V" #'calibredb-open-file-with-default-tool
+   :mno "." #'calibredb-open-dired
+   :mno "b" #'calibredb-catalog-bib-dispatch
+   :mno "e" #'calibredb-export-dispatch
+   :mno "r" #'calibredb-search-refresh-and-clear-filter
+   :mno "R" #'calibredb-search-refresh-or-resume
+   :mno "q" #'calibredb-search-quit
+   :mno "m" #'calibredb-mark-and-forward
+   :mno "f" #'calibredb-toggle-favorite-at-point
+   :mno "x" #'calibredb-toggle-archive-at-point
+   :mno "h" #'calibredb-toggle-highlight-at-point
+   :mno "u" #'calibredb-unmark-and-forward
+   :mno "i" #'calibredb-edit-annotation
+   :mno "y" #'calibredb-yank-dispatch
+   :mno "F" #'calibredb-search-clear-filter
+   :mno (kbd "<DEL>") #'calibredb-unmark-and-backward
+   :mno (kbd "<backtab>") #'calibredb-toggle-view
+   :mno (kbd "TAB") #'calibredb-toggle-view-at-point
+   :mno "\M-n" #'calibredb-show-next-entry
+   :mno "\M-p" #'calibredb-show-previous-entry
+   :mno "/" #'calibredb-search-live-filter
+   :mno "\M-t" #'calibredb-set-metadata--tags
+   :mno "\M-a" #'calibredb-set-metadata--author_sort
+   :mno "\M-T" #'calibredb-set-metadata--title
+   :mno "\M-c" #'calibredb-set-metadata--comments
+   )
+  )
+
 (use-package! circadian
   :disabled
   :ensure t

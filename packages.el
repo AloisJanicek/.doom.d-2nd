@@ -77,6 +77,8 @@
 (package! bats-mode
   :pin "d519f7c89f5ae17dfc33400596df4564b478315f")
 
+(package! calibredb)
+
 (package! circadian
   :recipe (:host github :repo "guidoschmidt/circadian.el")
   :pin "925451a00e6defd4f5ac1a7fd76ffefefdbce3ef"
