@@ -2170,7 +2170,7 @@ When in org-roam file, also create top-level ID.
   `(markdown-list-face :foreground ,(doom-color 'blue))
   `(default :background "#000000" :foreground ,(doom-darken "#d4d4d4" 0.1))
   `(mode-line :background "#373737")
-  `(mode-line-inactive :background "#000000")
+  `(mode-line-inactive :background "#1e1e1e")
   `(solaire-default-face :background "#000000")
   `(fringe :background "#000000")
   )
