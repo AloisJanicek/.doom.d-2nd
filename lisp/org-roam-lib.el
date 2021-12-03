@@ -88,8 +88,10 @@ Allows to each org-roam to have its own unique database."
    (expand-file-name
     (file-name-nondirectory (string-trim-right org-roam-directory "/"))
     (expand-file-name
-     "roam-dbs"
-     doom-etc-dir))))
+     (file-name-nondirectory (string-trim-right org-directory "/"))
+     (expand-file-name
+      "roam-dbs"
+      doom-etc-dir)))))
 
 (defun +org-roam/switch-roam ()
   "Choose and update `org-roam-directory'."
@@ -651,7 +653,8 @@ as you name the directory you place the file into.
   (interactive)
   (setq org-agenda-files
         (append
-         (gtd-agenda-inbox-files)
+         ;; (gtd-agenda-inbox-files)
+         (directory-files org-directory t "agenda-*")
          (cl-remove-duplicates
           (org-roam-list-nodes-by-tag "agenda")
           :test #'string-equal)))
@@ -717,6 +720,9 @@ be easily browsed and managed.
   (let* ((inbox-file (org-roam-current-inbox-file-path))
          (inbox-file-name (file-name-nondirectory inbox-file))
          (title (org-roam-current-inbox-title)))
+
+    (mkdir (file-name-directory inbox-file) t)
+    (mkdir gtd-agenda-inbox-dir t)
 
     (unless (file-exists-p inbox-file)
       (with-temp-file inbox-file

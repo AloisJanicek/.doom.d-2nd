@@ -28,7 +28,11 @@ if running under WSL")
 (defvar aj-repos-dir (expand-file-name "repos" "~")
   "Path of the repos folder.")
 
-(setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir)))
+(doom-store-persist "custom" '(org-directory))
+
+(unless org-directory
+  (setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir))))
+
 
 (add-load-path! "lisp")
 
@@ -1194,9 +1198,6 @@ if running under WSL")
   )
 
 (after! org
-  ;; One day it will work but not today
-  (setq org-element-cache-persistent nil)
-
   ;; (add-hook 'after-org-mode-hook #'org-hide-drawer-all)
   (advice-add #'org-open-at-point :after (lambda () (solaire-mode +1)))
   ;; (set-popup-rule! "^CAPTURE.*\\.org$"                   :size 0.4  :side 'top :select t                      :autosave t :modeline t)
@@ -1207,6 +1208,13 @@ if running under WSL")
   (add-to-list '+format-on-save-enabled-modes 'org-mode t)
   (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
+  ;; (add-hook
+  ;;  'org-mode-hook
+  ;;  (lambda ()
+  ;;    (interactive)
+  ;;    (writeroom-mode +1)
+  ;;    (display-line-numbers-mode -1))
+  ;;  100)
   (add-hook 'org-mode-hook #'mixed-pitch-mode 99)
   (advice-add #'+popup--delete-window :before (lambda (&rest _)
                                                 "Save buffer when in `org-mode'."

@@ -6,14 +6,14 @@
 (package! saveplace-pdf-view :disable t)
 
 (unpin! org-roam)
-;; (unpin! org)
+(unpin! org)
 
-;; (package! org
-;;   :recipe (:host github
-;;            :repo "yantar92/org"
-;;            :branch "feature/org-fold-universal-core"
-;;            )
-;;   )
+(package! org
+  :recipe (:host github
+           :repo "yantar92/org"
+           :branch "feature/org-fold-universal-core"
+           )
+  )
 
 
 (package! websocket)
@@ -24,7 +24,7 @@
 
 (package! org-appear
   :recipe (:host github :repo "awth13/org-appear"
-           ;; :branch "feature/org-fold-support"
+           :branch "feature/org-fold-support"
            )
   )
 

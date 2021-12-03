@@ -242,7 +242,7 @@ specified in `+org/capture-file-heading'."
   (interactive)
   (require 'ffap)
   (let* ((dir (file-truename
-               (ivy-read "Choose org-directory: "
+               (ivy-read "Choose new org-directory: "
                          (seq-filter
                           (lambda (dir)
                             (string-match "org-*" dir))
@@ -264,17 +264,9 @@ specified in `+org/capture-file-heading'."
     ;; globally change `org-directory'
     (setq org-directory dir)
 
-    ;; re-set `org-agenda-files'
-    (setq
-     org-agenda-files (seq-filter
-                       (lambda (file)
-                         (not (or (string-match "yankpad.org" file)
-                                  (string-match ".orgids" file))))
-                       (directory-files org-directory t ".org"))
-
-     ;; re-set other variables which depends on `org-directory'
-     gtd-agenda-inbox-file (expand-file-name "inbox-roam-encrypt.org.gpg" gtd-agenda-inbox-dir)
-     )
+    ;; re-set `org-agenda-files' and `org-roam' stuff
+    (setq +org-all-collected-agenda-files nil)
+    (+org-roam/switch-roam)
     )
   )
 

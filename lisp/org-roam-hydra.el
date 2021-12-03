@@ -18,7 +18,7 @@
                             (require 'org-roam)
                             (if (or (eq (car current-prefix-arg) 16)
                                     (not org-roam-directory))
-                                (+org-roam/switch-roam))))
+                                (+org/switch-org-directory))))
   "
 %(file-name-nondirectory (string-trim-right org-roam-directory \"/\")) %(org-roam-ivy--filter-preset-get org-roam-directory)
 "
