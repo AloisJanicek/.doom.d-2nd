@@ -1040,7 +1040,9 @@ if running under WSL")
   )
 
 (use-package! nov
-  :after org
+  :commands nov-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
   :config
   (add-hook 'nov-post-html-render-hook
             (lambda ()
@@ -1061,7 +1063,6 @@ if running under WSL")
         visual-fill-column-center-text t
         nov-save-place-file (expand-file-name "nov-places" doom-cache-dir))
 
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
   (add-hook 'nov-post-html-render-hook (lambda ()
                                          (setq-local header-line-format nil)))
   (add-hook 'nov-mode-hook (lambda ()
@@ -1936,6 +1937,7 @@ When in org-roam file, also create top-level ID.
 
 (use-package! shrface
   ;; :load-path "~/repos/shrface"
+  :disabled
   :after shr
   :config
   (shrface-basic)

@@ -87,9 +87,6 @@
 (package! cfml-mode
   :pin "2de315abddb6af088a2346e142cc305889dcd775")
 
-(package! d-mode
-  :pin "199743df55c6bfce3cdb08405bd8519768c8dfa9")
-
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock")
   :pin "6ba0f2ac7e4e5b8c1baec90296d9f24407d8d632")
@@ -104,6 +101,10 @@
 (package! cyphejor
   :recipe (:host github :repo "mrkkrp/cyphejor")
   :pin "576d237a46be79449a22e3a7912a3464d7b0c233")
+
+
+(package! d-mode
+  :pin "199743df55c6bfce3cdb08405bd8519768c8dfa9")
 
 (package! define-word
   :pin "6e4a427503aef096484f88332962c346cdd10847")
