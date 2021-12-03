@@ -397,6 +397,26 @@ if running under WSL")
 (after! dart-mode
   (set-docsets! 'dart-mode "Dart"))
 
+(use-package! djvu
+  :commands djvu-mode
+  :config
+  (map!
+   :map djvu-read-mode-map
+   :mno "o" #'imenu
+   :mno "i" #'djvu-image-mode
+   :mno "q" #'kill-current-buffer
+   :mno "g" #'djvu-occur
+   :mno "j" #'djvu-next-page
+   :mno "k" #'djvu-prev-page
+   :mno "Q" #'djvu-kill-doc
+   :mno "z" #'bury-buffer
+   )
+  )
+
+(use-package! djvu3
+  :after djvu)
+
+
 (use-package! dotdrop
   :commands (dotdrop-update dotdrop-compare dotdrop-import)
   )

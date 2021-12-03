@@ -108,6 +108,11 @@
 (package! define-word
   :pin "6e4a427503aef096484f88332962c346cdd10847")
 
+(package! djvu)
+
+(package! djvu3
+  :recipe (:host github :repo "dalanicolai/djvu3"))
+
 (package! eaf
   :recipe (:host github
            :repo "emacs-eaf/emacs-application-framework"
