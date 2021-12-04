@@ -66,7 +66,7 @@ Adice for org-mode related functions popping org files into buffers."
                  (vslot-num (if agenda-buffer 1 3)))
             (+popup-buffer buffer
                            `((side . ,edge)
-                             (size . 0.4)
+                             (size . 0.5)
                              (slot)
                              (vslot . ,vslot-num)
                              (window-parameters
