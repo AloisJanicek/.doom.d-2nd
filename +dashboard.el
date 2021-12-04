@@ -1,7 +1,7 @@
 ;;; +dashboard.el -*- lexical-binding: t; -*-
 
 
-(defun dashboard-widget-simple-banner ()
+(defun my-dashboard-widget-simple-banner ()
   (let ((point (point)))
     (mapc (lambda (line)
             (insert (propertize (+doom-dashboard--center +doom-dashboard--width line)
@@ -29,8 +29,11 @@
 
             ))
     ))
+
 (setq +doom-dashboard-functions
-      '(dashboard-widget-simple-banner
+      '(
+        ;; doom-dashboard-widget-banner
+        my-dashboard-widget-simple-banner
         doom-dashboard-widget-loaded
         ;; doom-dashboard-widget-footer
         )
