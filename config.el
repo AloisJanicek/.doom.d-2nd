@@ -269,7 +269,6 @@ if running under WSL")
   )
 
 (use-package! circadian
-  :disabled
   :ensure t
   :config
   (let ((location
@@ -279,8 +278,8 @@ if running under WSL")
     (setq calendar-latitude (or (car location) 49))
     (setq calendar-longitude (or (cadr location) 17))
     )
-  (setq circadian-themes '((:sunrise . doom-solarized-light)
-                           (:sunset  . doom-solarized-dark)))
+  (setq circadian-themes '((:sunrise . doom-one-light)
+                           (:sunset  . aj-dark+)))
   (circadian-setup))
 
 (after! cus-edit
