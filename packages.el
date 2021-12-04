@@ -1,5 +1,6 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
+
 (package! benchmark-init)
 (unpin! format-all)
 (unpin! hydra)
@@ -119,7 +120,7 @@
            :repo "emacs-eaf/emacs-application-framework"
            :files ("*")
            )
-  :pin "7bbb4e40af1892bc5dbce2f08af49429515b1bab"
+  :pin "64dd35cc59b39dbafdae770d9712fb17e15e4913"
   )
 
 (package! eaf-browser
@@ -128,7 +129,7 @@
            :files ("*")
            :pre-build ("npm" "install")
            )
-  :pin "6c536d4d51887380ccb74f00cdf5a1e299fb6f1c"
+  :pin "7daf6f97f41a9ddb9b7367c7d374c6622fd9dc7c"
   )
 
 (package! eslintd-fix
@@ -193,7 +194,7 @@
   :pin "6a72fa20e7be6e55c09b1bc9887ee09c5df28e45")
 
 (package! nov
-  :pin "b3c7cc28e95fe25ce7b443e5f49e2e45360944a3")
+  :pin "436f5ec473b69a9d3b6cb6405508e3564f61cd4b")
 
 (package! ob-javascript
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*"))
@@ -212,7 +213,7 @@
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "fd2cd265a6f0b9416bdaa36e4934c3c748b016ef")
+  :pin "93a9a81d752d1d21114284d59b5e3e0bd34ea043")
 
 (package! org-ql
   :pin "31aeb0a2505acf8044c07824888ddec7f3e529c1")
@@ -225,7 +226,7 @@
 
 (package! powerthesaurus
   :recipe (:host github :repo "SavchenkoValeriy/emacs-powerthesaurus")
-  :pin "93036d3b111925ebc34f747ff846cb0b8669b92e")
+  :pin "02c9d11a3f407023aa7c7b080bb9f8a5f5e7cd7a")
 
 (package! reason-mode
   :recipe (:host github :repo "reasonml-editor/reason-mode")
