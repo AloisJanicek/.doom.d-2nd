@@ -679,16 +679,11 @@ as you name the directory you place the file into.
                          "#+title: ${title}\n#+category: ${title}\n")
       :unnarrowed t))
    org-roam-capture-ref-templates
-   `(("r" "ref" entry (function
-                       (lambda ()
-                         (format
-                          "* ${title} :r_ex:\n:PROPERTIES:\n:ID: %s\n:ROAM_REFS: ${ref}\n:END:"
-                          (org-id-uuid))))
-      :target (file ,(org-roam-current-inbox-file-path))
+   `(("r" "ref" plain "%?"
+      :target (file+head ,(concat +org-roam-inbox-prefix "${slug}.org")
+                         "#+title: ${title}\n#+category: ${title}\n#+filetags: r_ex")
       :unnarrowed t
-      :immediate-finish t))
-   )
-  )
+      :immediate-finish t))))
 
 (defun org-roam-current-inbox-title ()
   "Return title of the inbox file for current `org-roam-directory'."
