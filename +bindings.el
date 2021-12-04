@@ -952,7 +952,6 @@
                                                  (eq major-mode 'debugger-mode))
                                              (helpful-at-point)
                                            (counsel-dash-at-point)))
-  :desc "switch helper buffers"    "," (cmd! (help-buffers-switch-buffers "Help buffer: " t))
 
   )
 
@@ -1059,8 +1058,6 @@
   )
 
  ;; "m" :localleader
-
- :desc "switch buffer"            "," (cmd! (help-buffers-switch-buffers "Buffer: "))
 
  ;; find file              "."
 

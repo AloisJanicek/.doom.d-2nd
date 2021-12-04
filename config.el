@@ -668,6 +668,13 @@ if running under WSL")
   (setq help-buffers-org-files-visit-fn #'org-persp-pop-org-buffer)
   (add-to-list 'help-buffers-directories org-directory)
   (add-to-list 'help-buffers-directories aj-calibre-path)
+
+  (map!
+   :leader
+   (:prefix ("h" . "help")
+    :desc "switch helper buffers"    "," (cmd! (help-buffers-switch-buffers "Help buffer: " t)))
+   :desc "switch buffer"            "," (cmd! (help-buffers-switch-buffers "Buffer: ")))
+
   )
 
 (use-package! highlight-blocks
