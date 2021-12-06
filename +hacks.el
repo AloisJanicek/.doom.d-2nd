@@ -183,7 +183,6 @@ with :after or :override due to some issue with starting the notification proces
                 (insert (if (save-excursion (beginning-of-line) (looking-at "[[:space:]]*$")) "" "\n")
                         ;; NOTE: copy/pasting whole function just for this one line
                         "#+title: " document-base "\n"
-                        "#+category: " document-base "\n"
                         "#+filetags: " "books r_ex" "\n"
                         ;; end of the important code
                         "* " document-base)

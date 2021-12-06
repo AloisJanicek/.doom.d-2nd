@@ -65,7 +65,7 @@ of new org-roam item.
            (org-roam-capture-templates
             `(("d" "default" plain ,(concat "\n\n" body "\n" "%?")
                :if-new (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
-                                  "#+title: ${title}\n#+category: ${title}\n")
+                                  "#+title: ${title}\n")
                :unnarrowed t
                :immediate-finish t
                )))
@@ -313,7 +313,7 @@ heading in `yankpad-file'."
          (org-roam-capture-templates
           `(("d" "default" plain "%?"
              :if-new (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
-                                "#+title: ${title}\n#+category: ${title}\n")
+                                "#+title: ${title}\n")
              :unnarrowed t
              :immediate-finish t
              )))
@@ -676,12 +676,12 @@ as you name the directory you place the file into.
    org-roam-capture-templates
    `(("d" "default" plain "%?"
       :target (file+head ,(concat +org-roam-inbox-prefix "%<%Y%m%d%H%M%S>-${slug}.org")
-                         "#+title: ${title}\n#+category: ${title}\n")
+                         "#+title: ${title}\n")
       :unnarrowed t))
    org-roam-capture-ref-templates
    `(("r" "ref" plain "%?"
       :target (file+head ,(concat +org-roam-inbox-prefix "${slug}.org")
-                         "#+title: ${title}\n#+category: ${title}\n#+filetags: r_ex")
+                         "#+title: ${title}\n#+filetags: r_ex")
       :unnarrowed t
       :immediate-finish t))))
 
