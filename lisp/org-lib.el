@@ -262,11 +262,15 @@ specified in `+org/capture-file-heading'."
            (buffer-list)))
 
     ;; globally change `org-directory'
-    (setq org-directory dir)
-
-    ;; re-set `org-agenda-files' and `org-roam' stuff
-    (setq +org-all-collected-agenda-files nil
+    (setq org-directory dir
+          ;; re-set collected agenda files
+          +org-all-collected-agenda-files nil
+          ;; re-set agenda filter preset
           agenda-filter-preset nil
+          ;; re-set other variables depending on `org-directory'
+          org-media-note-screenshot-image-dir (expand-file-name "screenshots" org-directory)
+          org-icalendar-combined-agenda-file (expand-file-name "agenda.ics" org-directory)
+          yankpad-file (expand-file-name "yankpad.org" org-directory)
           )
     (+org-roam/switch-roam)
     )

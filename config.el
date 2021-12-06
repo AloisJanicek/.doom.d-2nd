@@ -29,6 +29,7 @@ if running under WSL")
   "Path of the repos folder.")
 
 (doom-store-persist "custom" '(org-directory))
+(doom-store-persist "custom" '(org-roam-directory))
 
 (unless org-directory
   (setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir))))
@@ -1737,7 +1738,6 @@ When in org-roam file, also create top-level ID.
       (add-to-list 'org-noter-notes-search-path dir)))
   )
 
-(doom-store-persist "custom" '(org-roam-directory))
 
 (after! org-roam
   (unless (ignore-errors (string-match "Dropbox" org-roam-directory))
