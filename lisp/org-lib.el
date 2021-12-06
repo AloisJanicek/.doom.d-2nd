@@ -265,7 +265,9 @@ specified in `+org/capture-file-heading'."
     (setq org-directory dir)
 
     ;; re-set `org-agenda-files' and `org-roam' stuff
-    (setq +org-all-collected-agenda-files nil)
+    (setq +org-all-collected-agenda-files nil
+          agenda-filter-preset nil
+          )
     (+org-roam/switch-roam)
     )
   )
