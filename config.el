@@ -1751,6 +1751,9 @@ When in org-roam file, also create top-level ID.
   (advice-add #'org-roam-capture--finalize-find-file :override #'+org-roam-capture--finalize-find-file-a)
   (advice-add #'org-roam-node-doom-tags :around #'org-roam-doom-tags-remove-duplicate)
 
+  ;; HACK: prevent incorrectly rendered org links in org-roam-buffer
+  (add-to-list 'org-roam-buffer-postrender-functions #'org-mode)
+
   (setq org-roam-db-location (+org-roam-db-location)
         org-roam-dailies-directory "journal/"
         org-roam-list-files-commands '(fd rg find elisp)
