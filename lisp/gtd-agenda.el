@@ -38,7 +38,7 @@
   (expand-file-name "inbox" org-directory)
   "Directory where (possibly) all inbox files resides.")
 
-(defcustom gtd-agenda-inbox-file (expand-file-name "inbox-roam-encrypt.org.gpg" gtd-agenda-inbox-dir)
+(defcustom gtd-agenda-inbox-file (expand-file-name "inbox.org.gpg" gtd-agenda-inbox-dir)
   "File where all stuff goes initially.")
 
 (defun gtd-agenda-inbox-files ()
