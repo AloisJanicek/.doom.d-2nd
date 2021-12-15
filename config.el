@@ -676,7 +676,11 @@ if running under WSL")
   (setq help-buffers-org-files-visit-fn #'org-persp-pop-org-buffer)
   (add-to-list 'help-buffers-directories org-directory)
   (add-to-list 'help-buffers-directories aj-calibre-path)
-
+  (advice-add
+   #'+org-roam/switch-roam
+   :after (lambda (&rest _)
+            "Add current `org-directory' to `help-buffers-directories'."
+            (add-to-list 'help-buffers-directories org-directory)))
   (map!
    :leader
    (:prefix ("h" . "help")
