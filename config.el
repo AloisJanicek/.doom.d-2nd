@@ -31,9 +31,16 @@ if running under WSL")
 (doom-store-persist "custom" '(org-directory))
 (doom-store-persist "custom" '(org-roam-directory))
 
-(unless org-directory
+(unless (doom-store-get 'org-directory "custom")
   (setq org-directory (file-truename (expand-file-name "Dropbox/org" aj-home-base-dir))))
 
+
+(unless (doom-store-get 'org-roam-directory "custom")
+  (setq org-roam-directory (car
+                            (seq-filter
+                             (lambda (dir)
+                               (string-match "roam" dir))
+                             (ffap-all-subdirs org-directory 1)))))
 
 (add-load-path! "lisp")
 
@@ -1134,9 +1141,11 @@ if running under WSL")
 
 (use-package! gtd-agenda
   :after org
+  :init
+  (doom-store-persist "custom" '(gtd-agenda-queries-history))
+  (doom-store-persist "custom" '(agenda-filter-preset))
   :config
-  (when (and (doom-store-persist "custom" '(gtd-agenda-queries-history))
-             (doom-store-persist "custom" '(agenda-filter-preset)))
+  (when (doom-store-get 'gtd-agenda-queries-history "custom")
     ;; HACK doom-store can't handle non-ASCII characters properly
     (setq gtd-agenda-queries-history
           (seq-map (lambda (i)
@@ -1428,7 +1437,6 @@ if running under WSL")
 
 (after! org-capture
   (require 'gtd-agenda)
-  (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   (add-hook 'org-capture-mode-hook #'aj-org-complete-all-tags-h)
   (add-hook 'org-capture-after-finalize-hook #'aj/org-clock-update-heading)
   (add-hook
@@ -1740,14 +1748,6 @@ When in org-roam file, also create top-level ID.
 
 
 (after! org-roam
-  (unless (ignore-errors (string-match "Dropbox" org-roam-directory))
-    (require 'ffap)
-    (setq org-roam-directory (car
-                              (seq-filter
-                               (lambda (dir)
-                                 (string-match "roam" dir))
-                               (ffap-all-subdirs org-directory 1)))))
-
   (advice-add #'org-roam-capture--finalize-find-file :override #'+org-roam-capture--finalize-find-file-a)
   (advice-add #'org-roam-node-doom-tags :around #'org-roam-doom-tags-remove-duplicate)
 
@@ -2115,9 +2115,8 @@ When in org-roam file, also create top-level ID.
   )
 
 (use-package! yankpad
+  :init (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   :commands (yankpad-insert yankpad-set-category yankpad-append-category)
-  :config
-  (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
   )
 
 (remove-hook 'after-change-major-mode-hook #'yankpad-local-category-to-major-mode)
