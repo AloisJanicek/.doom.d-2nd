@@ -170,6 +170,35 @@ Allows to each org-roam to have its own unique database."
             (org-roam-db-sync)))
       (user-error "The %s roam-dir doesn't have recipe file" roam-dir))))
 
+(defun +org-roam/create-new-subdir ()
+  "Create new subdir in the current `org-roam-directory'."
+  (interactive)
+  (ivy-read
+   "New org-roam sub-dir: "
+   (list
+    (read-directory-name "New org-roam sub-dir: " org-roam-directory))
+   :action (lambda (x)
+             (unless (file-exists-p x)
+               (make-directory x)
+               (make-directory (expand-file-name "books" x))
+               (make-directory (expand-file-name "journal" x))
+               (make-directory (expand-file-name "inbox" x)))))
+  (+org-roam-create-index-file))
+
+(defun +org-roam-create-index-file ()
+  "Create index file specific for current `org-roam-directory'."
+  (let* ((roam-name (file-name-nondirectory
+                     (string-trim-right org-roam-directory "\/")))
+         (index-file (expand-file-name (format "index-%s.org" roam-name) org-roam-directory))
+         (title (format "Index-%s" roam-name))
+         (id (org-id-uuid)))
+
+    (unless (file-exists-p index-file)
+      (with-temp-file index-file
+        (insert
+         (format ":PROPERTIES:\n:ID: %s\n:END:\n#+title: %s\n#+filetags: index\n" id title)))
+      (org-roam-db-sync))))
+
 (defun +org-roam/create-new-roam-linking-files ()
   "Build new org-roam-directories based on files from other, existing ones.
 

@@ -1771,8 +1771,6 @@ When in org-roam file, also create top-level ID.
   (+org-roam/refresh-agenda-list)
   ;; set capture templates
   (org-roam-eval-capture-templates)
-  ;; create inbox file
-  (org-roam-create-inbox-file)
   )
 
 (use-package! org-roam-dailies
