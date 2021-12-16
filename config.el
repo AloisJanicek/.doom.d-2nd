@@ -278,6 +278,7 @@ if running under WSL")
   )
 
 (use-package! circadian
+  :disabled
   :ensure t
   :config
   (let ((location
