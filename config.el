@@ -36,6 +36,7 @@ if running under WSL")
 
 
 (unless (doom-store-get 'org-roam-directory "custom")
+  (require 'ffap)
   (setq org-roam-directory (car
                             (seq-filter
                              (lambda (dir)
