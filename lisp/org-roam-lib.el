@@ -93,6 +93,27 @@ Allows to each org-roam to have its own unique database."
       "roam-dbs"
       doom-etc-dir)))))
 
+(defun +org-roam-rebuild-virtual-roam ()
+  "Re-build (re-sync) current `org-roam-directory' if it is virtual.
+
+If the directory contains \".recipe.txt\", it means it contains file links
+to at least one other org-roam directory.
+
+This fn re-creates the links between directories stated in recipe file and
+current org-roam directory reflecting changes in the linked directories.
+"
+  (when-let* ((f-recipe (expand-file-name ".recipe.txt" org-roam-directory))
+              (f-recipe-exist (file-exists-p f-recipe)))
+    (dolist (path (split-string (f-read-text f-recipe 'utf-8)))
+      (let ((dir-path (directory-file-name
+                       (file-name-directory path)))
+            (dir-name (file-name-nondirectory
+                       (directory-file-name path)))
+            (target-path org-roam-directory))
+        (shell-command (format "stow -D %s -d %s -t %s" dir-name dir-path target-path))
+        (shell-command (format "stow %s -d %s -t %s" dir-name dir-path target-path)))))
+  )
+
 (defun +org-roam/switch-roam ()
   "Choose and update `org-roam-directory'."
   (interactive)
@@ -107,20 +128,10 @@ Allows to each org-roam to have its own unique database."
     (setq org-roam-directory dir
           org-roam-db-location (+org-roam-db-location))
 
-    (when-let* ((f-recipe (expand-file-name ".recipe.txt" org-roam-directory))
-                (f-recipe-exist (file-exists-p f-recipe)))
-      (dolist (path (split-string (f-read-text f-recipe 'utf-8)))
-        (let ((dir-path (directory-file-name
-                         (file-name-directory path)))
-              (dir-name (file-name-nondirectory
-                         (directory-file-name path)))
-              (target-path org-roam-directory))
-          (shell-command (format "stow -D %s -d %s -t %s" dir-name dir-path target-path))
-          (shell-command (format "stow %s -d %s -t %s" dir-name dir-path target-path)))))
+    ;; Re-build file links if the roam is "virtual"
+    (+org-roam-rebuild-virtual-roam)
 
     (org-roam-db-sync)
-
-
     (when (boundp 'org-roam-ivy--last-ivy-text)
       (setq org-roam-ivy--last-ivy-text ""))
 
