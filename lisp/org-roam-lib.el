@@ -119,37 +119,38 @@ current org-roam directory reflecting changes in the linked directories.
   (interactive)
   (require 'ffap)
 
-  (when-let* ((dir (file-truename
-                    (ivy-read "Choose roam directory: "
-                              (+org-roam-dirs 'valid)))))
-    (+org-roam-kill-all-buffers)
-    (+org-agenda-kill-all-agenda-buffers)
-    (org-roam-db--close-all)
-    (setq org-roam-directory dir
-          org-roam-db-location (+org-roam-db-location))
+  (let (ivy-sort-functions-alist)
+    (when-let* ((dir (file-truename
+                      (ivy-read "Choose roam directory: "
+                                (+org-roam-dirs 'valid)))))
+      (+org-roam-kill-all-buffers)
+      (+org-agenda-kill-all-agenda-buffers)
+      (org-roam-db--close-all)
+      (setq org-roam-directory dir
+            org-roam-db-location (+org-roam-db-location))
 
-    ;; Re-build file links if the roam is "virtual"
-    (+org-roam-rebuild-virtual-roam)
+      ;; Re-build file links if the roam is "virtual"
+      (+org-roam-rebuild-virtual-roam)
 
-    (org-roam-db-sync)
-    (when (boundp 'org-roam-ivy--last-ivy-text)
-      (setq org-roam-ivy--last-ivy-text ""))
+      (org-roam-db-sync)
+      (when (boundp 'org-roam-ivy--last-ivy-text)
+        (setq org-roam-ivy--last-ivy-text ""))
 
-    (when (bound-and-true-p org-roam-ui-mode)
-      (org-roam-ui--send-graphdata))
+      (when (bound-and-true-p org-roam-ui-mode)
+        (org-roam-ui--send-graphdata))
 
-    ;; also update paths for org-noter
-    (dolist (dir (list-dirs-recursively org-roam-directory))
-      (add-to-list 'org-noter-notes-search-path dir))
+      ;; also update paths for org-noter
+      (dolist (dir (list-dirs-recursively org-roam-directory))
+        (add-to-list 'org-noter-notes-search-path dir))
 
-    ;; also update capture templates
-    (org-roam-eval-capture-templates)
+      ;; also update capture templates
+      (org-roam-eval-capture-templates)
 
-    ;; also create inbox file if doesn't exists yet
-    (org-roam-create-inbox-file)
+      ;; also create inbox file if doesn't exists yet
+      (org-roam-create-inbox-file)
 
-    ;; also update agenda-files
-    (+org-roam/refresh-agenda-list)))
+      ;; also update agenda-files
+      (+org-roam/refresh-agenda-list))))
 
 (defun +org-roam/delete-linked-files ()
   "Delete linked files from org-roam."
@@ -190,7 +191,7 @@ current org-roam directory reflecting changes in the linked directories.
     (read-directory-name "New org-roam sub-dir: " org-roam-directory))
    :action (lambda (x)
              (unless (file-exists-p x)
-               (make-directory x)
+               (make-directory x t)
                (make-directory (expand-file-name "books" x))
                (make-directory (expand-file-name "journal" x))
                (make-directory (expand-file-name "inbox" x)))))
