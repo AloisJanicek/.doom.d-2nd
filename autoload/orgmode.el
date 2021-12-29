@@ -609,7 +609,7 @@ If either `org-pomodoro' or org-clock aren't active, print \"no active task \""
                           (org-clock-get-clocked-time)
                           org-clock-effort
                           (substring-no-properties org-clock-heading))
-                "- no active task - "))
+                "-   "))
              ((equal :pomodoro org-pomodoro-state)
               (format "⦿ %d m (%d) - %s"
                       (/ (org-pomodoro-remaining-seconds) 60)
