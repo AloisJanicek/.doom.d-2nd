@@ -42,6 +42,7 @@
              org-roam-ivy-filter-preset)
          (org-roam-ivy-find-file))
    "file unfiltered")
+  ("o" #'org-roam-ivy-node-find "find node")
   ("s" #'org-roam-ui-mode "Web server")
   ("S" #'+org-roam/switch-roam "Switch roam")
   ("g" (+org-notes/grep-search-format-org-links

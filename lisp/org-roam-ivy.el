@@ -446,7 +446,7 @@ In case of current buffer is indirect, kill the base buffer."
 ;;; org-roam-ivy helpers and utilities
 (defun org-roam-ivy--get-node (x)
   "Return node from the string of completion candidate X."
-  (get-text-property 0 'node (car x)))
+  (ignore-errors (get-text-property 0 'node (if (stringp x) x (car x)))))
 
 (defun org-roam-ivy--last-ivy ()
   "Open last org-roam-ivy stored in `org-roam-ivy--last-ivy'."
@@ -581,17 +581,56 @@ of org-roam item by tag string doesn't make much sense."
               :action (lambda (x)
                         (unless (string-match "Backlinks of" ivy--prompt)
                           (setq org-roam-ivy--last-ivy-text ivy-text))
-                        (if-let ((node (ignore-errors (get-text-property 0 'node (car x)))))
-                            (org-roam-node-visit node)
-                          (progn
-                            ;; prevent :initial-input becoming part of the newly captured file's #+title:
-                            (when init-input
-                              (org-roam-ivy--capture (substring x (length init-input) (length x)))))))
+                        (if-let ((node (org-roam-ivy--get-node x)))
+                            (when (org-roam-node-p node)
+                              (org-roam-node-visit node))
+
+                          ;; prevent :initial-input becoming part of the newly captured file's #+title:
+                          (when init-input
+                            (org-roam-ivy--capture (substring x (length init-input) (length x))))))
               :unwind (lambda ()
                         (mapcar #'kill-buffer
                                 (seq-difference
                                  (buffer-list)
                                  (append org-roam-ivy-pre-buffer-list (list `,(current-buffer)))))))))
+
+(defun org-roam-ivy-function (input)
+  "Return org-roam node completion filtered by INPUT.
+Implements dynamic-collection for `org-roam-ivy-node-find'.
+"
+  ;; TODO MAYBE re-introduce exclusion of refs denounced by "r_ex" tag
+  (or
+   (ivy-more-chars)
+   (seq-filter
+    (lambda (n)
+      (let* ((node (cdr n))
+             (tags (org-roam-node-doom-tags node))
+             (title (org-roam-node-title node))
+             (node-str (concat title " " tags)))
+        (string-match input node-str)))
+    (org-roam-node-read--completions))
+   `(,input)))
+
+(defun org-roam-ivy-node-find ()
+  "Find org-roam node after typing at least 3 chars."
+  (interactive)
+  (ivy-read "find node: " #'org-roam-ivy-function
+            :dynamic-collection t
+            :sort t
+            :caller 'org-roam-ivy
+            :update-fn (when org-roam-ivy-auto-preview
+                         #'ivy-update-fn-timer)
+            :action (lambda (x)
+                      (if-let ((node (ignore-errors (get-text-property 0 'node x))))
+                          (when (org-roam-node-p node)
+                            (org-roam-node-visit node))
+                        (unless (ivy-more-chars)
+                          (org-roam-ivy--capture x))))
+            :unwind (lambda ()
+                      (mapcar #'kill-buffer
+                              (seq-difference
+                               (buffer-list)
+                               (append org-roam-ivy-pre-buffer-list (list `,(current-buffer))))))))
 
 ;;;###autoload
 (defun org-roam-ivy-find-refs ()
