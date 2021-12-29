@@ -148,7 +148,7 @@
  ;;ledger
  (lua +lsp)
  markdown
- nim
+ ;; nim
  ;;nix
  (ocaml +lsp)
  (org +dragndrop +gnuplot +jupyter +pomodoro +present +noter +roam2)
