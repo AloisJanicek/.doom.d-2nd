@@ -1,9 +1,19 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
 
-(package! benchmark-init)
+(defun aj-wsl-p ()
+  "Return non-nil value if Emacs is running inside WSL."
+  (string-match "Microsoft"
+                (with-temp-buffer (shell-command "uname -r" t)
+                                  (goto-char (point-max))
+                                  (delete-char -1)
+                                  (buffer-string))))
+
+(package! benchmark-init :pin "7a0f263282bbc86b01b662636306f22813082647")
+
 (unpin! format-all)
 (unpin! hydra)
+
 (package! saveplace-pdf-view :disable t)
 
 (unpin! org-roam)
@@ -17,30 +27,22 @@
   )
 
 
-(package! websocket)
+(package! websocket :pin "fda4455333309545c0787a79d73c19ddbeb57980")
 (package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
 
-(package! pretty-hydra)  ;; dependency
-(package! org-media-note :recipe (:host github :repo "yuchen-lea/org-media-note"))
+(package! pretty-hydra :pin "84c1929a5153be169ca5c36737439d51dffde505")  ;; dependency
+(package! org-media-note :recipe (:host github :repo "yuchen-lea/org-media-note") :pin "feed0731c41936eabe32e573f74925f85c2cdb9b")
 
 (package! org-appear
   :recipe (:host github :repo "awth13/org-appear"
            :branch "feature/org-fold-support"
            )
-  )
+  :pin "e202e655b3aa6f0b2723249c7b392f7d70b110a9")
 
 (package! org-fragtog
   :recipe (:host github :repo "io12/org-fragtog"
            )
-  )
-
-(defun aj-wsl-p ()
-  "Return non-nil value if Emacs is running inside WSL."
-  (string-match "Microsoft"
-                (with-temp-buffer (shell-command "uname -r" t)
-                                  (goto-char (point-max))
-                                  (delete-char -1)
-                                  (buffer-string))))
+  :pin "15861261a437aca2ec858317de71603d2957b423")
 
 (when (aj-wsl-p)
   (package! webkit
@@ -63,14 +65,14 @@
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "8c0cd543c8d79cf223216b3f44ac3a4b0695c484")
+  :pin "bb302919160aef69b5841027418b6bcc8617cc67")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
 
 (package! org-mode-incremental-reading
   :recipe (:host github :repo "vascoferreira25/org-mode-incremental-reading")
-  )
+  :pin "77cb9d8f2359c6e1e09a583eb562bbd9b9de64f4")
 
 (package! apache-mode
   :pin "f2c11aac2f5fc598123e04f4604bea248689a117")
@@ -78,7 +80,7 @@
 (package! bats-mode
   :pin "d519f7c89f5ae17dfc33400596df4564b478315f")
 
-(package! calibredb)
+(package! calibredb :pin "cb93563d0ec9e0c653210bc574f9546d1e7db437")
 
 (package! circadian
   :recipe (:host github :repo "guidoschmidt/circadian.el")
@@ -110,17 +112,17 @@
 (package! define-word
   :pin "6e4a427503aef096484f88332962c346cdd10847")
 
-(package! djvu)
+(package! djvu :pin "cb89f97ee36a67c575903d5ba637180a96b3c7d9")
 
 (package! djvu3
-  :recipe (:host github :repo "dalanicolai/djvu3"))
+  :recipe (:host github :repo "dalanicolai/djvu3") :pin "32e8a8bae9f9a62a512f598fae0af58470ec382f")
 
 (package! eaf
   :recipe (:host github
            :repo "emacs-eaf/emacs-application-framework"
            :files ("*")
            )
-  :pin "64dd35cc59b39dbafdae770d9712fb17e15e4913"
+  :pin "b2c5552a2d284baba818550432465da9277f0100"
   )
 
 (package! eaf-browser
@@ -129,7 +131,7 @@
            :files ("*")
            :pre-build ("npm" "install")
            )
-  :pin "7daf6f97f41a9ddb9b7367c7d374c6622fd9dc7c"
+  :pin "93dca1856b9328c855f08b3464474fa83ffe84b7"
   )
 
 (package! eslintd-fix
@@ -194,7 +196,7 @@
   :pin "6a72fa20e7be6e55c09b1bc9887ee09c5df28e45")
 
 (package! nov
-  :pin "436f5ec473b69a9d3b6cb6405508e3564f61cd4b")
+  :pin "587ff2fe25b0a75726f090001441bca76aa0ce4b")
 
 (package! ob-javascript
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*"))
@@ -202,7 +204,7 @@
 
 (package! org-pretty-tags
   :recipe (:host gitlab :repo "marcowahl/org-pretty-tags")
-  :pin "5c7521651b35ae9a7d3add4a66ae8cc176ae1c76")
+  :pin "e127a1e08df8273b909a99594ffaad84960ff212")
 
 (package! org-sidebar
   :recipe (:host github :repo "alphapapa/org-sidebar")
@@ -213,12 +215,12 @@
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "93a9a81d752d1d21114284d59b5e3e0bd34ea043")
+  :pin "535e4681f2d7af20158f3b106503cfc3a07cbee8")
 
 (package! org-ql
   :pin "31aeb0a2505acf8044c07824888ddec7f3e529c1")
 
-(package! org-web-tools)
+(package! org-web-tools :pin "b94a07add8558ef7b0666173dbb8a2554f1d41a6")
 
 (package! paredit
   :recipe (:host github :repo "emacsmirror/paredit")
