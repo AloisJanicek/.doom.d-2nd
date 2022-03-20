@@ -1669,7 +1669,7 @@ When in org-roam file, also create top-level ID.
   )
 
 (after! org-crypt
-  (setq org-crypt-key (car epa-file-encrypt-to)
+  (setq org-crypt-key epa-file-encrypt-to
         org-crypt-tag-matcher "+crypt-nocrypt")
   )
 
