@@ -215,10 +215,10 @@ to resole their precedence.
 Cancelling ancestors are following todo keywords:
 WAIT, HOLD, SOMEDAY, MAYBE
 "
-  `(not (or (ancestors "WAIT")
-            (ancestors "HOLD")
-            (ancestors "SOMEDAY")
-            (ancestors "MAYBE"))))
+  `(not (or (ancestors (todo "WAIT"))
+            (ancestors (todo "HOLD"))
+            (ancestors (todo "SOMEDAY"))
+            (ancestors (todo "MAYBE")))))
 
 (defun agenda-queries--projects-query ()
   "Return custom org-ql queary for Projects.
@@ -252,12 +252,10 @@ and has todo children."
   "Return custom org-ql queary for HOLD task."
   `(and (todo "HOLD" )
         ,(agenda-queries--filter-tags-query)
-        (not (ancestors
-              (or (done)
-                  (todo "HOLD")
-                  (todo "WAIT")
-                  (todo "SOMEDAY")
-                  (todo "MAYBE"))))))
+        (not (or (ancestors (todo "WAIT"))
+                 (ancestors (todo "HOLD"))
+                 (ancestors (todo "SOMEDAY"))
+                 (ancestors (todo "MAYBE"))))))
 
 (defun agenda-queries--custom-clocked-task-query ()
   "Return custom org-ql queary for relevant clock headings.
