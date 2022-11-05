@@ -1,4 +1,5 @@
 ;;;  -*- lexical-binding: t; -*-
+(add-to-list 'load-path (expand-file-name "lisp" (file-name-directory load-file-name)))
 
 (defalias #'equalp (symbol-function 'cl-equalp))
 
@@ -42,8 +43,6 @@ if running under WSL")
                              (lambda (dir)
                                (string-match "roam" dir))
                              (ffap-all-subdirs org-directory 1)))))
-
-(add-load-path! "lisp")
 
 (dolist (i '(ol-info ol-eww org-id))
   (add-to-list 'org-modules i))
@@ -1810,7 +1809,6 @@ When in org-roam file, also create top-level ID.
 
 (after! pdf-tools
   (advice-add #'pdf-info-check-epdfinfo :override #'aj/epdfinfo-never-bother-me-again-a)
-  (advice-remove #'pdf-view-mode #'+pdf--install-epdfinfo-a)
   )
 
 (after! pdf-view
