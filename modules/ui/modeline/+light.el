@@ -236,7 +236,7 @@ LHS and RHS will accept."
                                 anzu--last-isearch-string anzu--overflow-p)))
 
   (use-package! evil-anzu
-    :when (featurep! :editor evil)
+    :when (modulep! :editor evil)
     :after-call (evil-ex-start-search evil-ex-start-word-search evil-ex-search-activate-highlight))
 
   (defun +modeline--anzu ()

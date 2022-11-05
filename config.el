@@ -160,7 +160,7 @@ if running under WSL")
 
 (after! ansible-doc
   (set-popup-rule! "*ansible-doc "     :vslot 2 :size 0.32 :side 'bottom :select t :ttl t :modeline t)
-  (when (featurep! :editor evil)
+  (when (modulep! :editor evil)
     (add-hook 'ansible-doc-module-mode-hook #'evil-motion-state))
   (add-hook 'ansible-doc-module-mode-hook #'visual-line-mode))
 
@@ -644,7 +644,7 @@ if running under WSL")
   )
 
 (after! help-mode
-  (when (featurep! :editor evil)
+  (when (modulep! :editor evil)
     (add-hook #'help-mode-hook (lambda ()
                                  (doom-mark-buffer-as-real-h)
                                  (persp-add-buffer (current-buffer)))))
@@ -1951,7 +1951,7 @@ When in org-roam file, also create top-level ID.
   (setq sdcv-dictionary-simple-list '("WordNet"))
   (set-popup-rule! "*SDCV\*"                    :size 0.4  :side 'top :select t :modeline t)
 
-  (when (featurep! :editor evil)
+  (when (modulep! :editor evil)
     (add-hook #'sdcv-mode-hook (lambda ()
                                  (doom-mark-buffer-as-real-h)
                                  (persp-add-buffer (current-buffer))

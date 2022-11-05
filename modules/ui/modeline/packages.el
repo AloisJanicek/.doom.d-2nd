@@ -3,5 +3,5 @@
 
 
 (package! anzu)
-(when (featurep! :editor evil)
+(when (modulep! :editor evil)
   (package! evil-anzu))
