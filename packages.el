@@ -9,7 +9,7 @@
                                   (delete-char -1)
                                   (buffer-string))))
 
-(package! benchmark-init :pin "7a0f263282bbc86b01b662636306f22813082647")
+(package! benchmark-init :pin "02435560415bbadbcf5051fb7042880549170e7e")
 
 (unpin! format-all)
 (unpin! hydra)
@@ -19,30 +19,18 @@
 (unpin! org-roam)
 (unpin! org)
 
-(package! org
-  :recipe (:host github
-           :repo "yantar92/org"
-           :branch "feature/org-fold-universal-core"
-           )
-  )
-
-
-(package! websocket :pin "fda4455333309545c0787a79d73c19ddbeb57980")
+(package! websocket :pin "82b370602fa0158670b1c6c769f223159affce9b")
 (package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :files ("*.el" "out")))
 
 (package! pretty-hydra :pin "84c1929a5153be169ca5c36737439d51dffde505")  ;; dependency
-(package! org-media-note :recipe (:host github :repo "yuchen-lea/org-media-note") :pin "feed0731c41936eabe32e573f74925f85c2cdb9b")
+(package! org-media-note :recipe (:host github :repo "yuchen-lea/org-media-note") :pin "dd458c3260530d1866eaa0cde4b1bb71c6f8cf0e")
 
-(package! org-appear
-  :recipe (:host github :repo "awth13/org-appear"
-           :branch "feature/org-fold-support"
-           )
-  :pin "e202e655b3aa6f0b2723249c7b392f7d70b110a9")
+(package! org-appear :recipe (:host github :repo "awth13/org-appear"))
 
 (package! org-fragtog
   :recipe (:host github :repo "io12/org-fragtog"
            )
-  :pin "15861261a437aca2ec858317de71603d2957b423")
+  :pin "c675563af3f9ab5558cfd5ea460e2a07477b0cfd")
 
 (when (aj-wsl-p)
   (package! webkit
@@ -58,21 +46,21 @@
   :pin "373b2cc7e3d26dc00594e0b2c1bb66815aad2826")
 
 (package! ace-link
-  :pin "e1b1c91b280d85fce2194fea861a9ae29e8b03dd")
+  :pin "06ab398df85e81d1dc763b3210732dd26cba60a1")
 
 (package! ahk-mode
   :pin "729007b5f22a49f5187ff47fca18c0d674e73047")
 
 (package! all-the-icons-ivy-rich
   :recipe (:host github :repo "seagle0128/all-the-icons-ivy-rich")
-  :pin "bb302919160aef69b5841027418b6bcc8617cc67")
+  :pin "773252936485377270b9d855dfcbbfd49e83fe17")
 
 (package! anki-editor
   :pin "546774a453ef4617b1bcb0d1626e415c67cc88df")
 
 (package! org-mode-incremental-reading
   :recipe (:host github :repo "vascoferreira25/org-mode-incremental-reading")
-  :pin "77cb9d8f2359c6e1e09a583eb562bbd9b9de64f4")
+  :pin "f403db1d3951a8620d4293cf7dac5ffd28b41fbe")
 
 (package! apache-mode
   :pin "f2c11aac2f5fc598123e04f4604bea248689a117")
@@ -80,11 +68,12 @@
 (package! bats-mode
   :pin "d519f7c89f5ae17dfc33400596df4564b478315f")
 
-(package! calibredb :pin "cb93563d0ec9e0c653210bc574f9546d1e7db437")
+(package! calibredb :pin "2f2cfc38f2d1c705134b692127c3008ac1382482"
+  )
 
 (package! circadian
   :recipe (:host github :repo "guidoschmidt/circadian.el")
-  :pin "925451a00e6defd4f5ac1a7fd76ffefefdbce3ef"
+  :pin "bf5a00ea45c14dfdcda72c5d9f61bcd230c48159"
   )
 
 (package! cfml-mode
@@ -92,7 +81,7 @@
 
 (package! counsel-org-clock
   :recipe (:host github :repo "akirak/counsel-org-clock")
-  :pin "6ba0f2ac7e4e5b8c1baec90296d9f24407d8d632")
+  :pin "0f790def6ac2b5a84d01eed47a7ee53619a8f5b9")
 
 (package! counsel-tramp
   :pin "76719eebb791920272c69e75e234f05a815bb5c2")
@@ -103,36 +92,36 @@
 
 (package! cyphejor
   :recipe (:host github :repo "mrkkrp/cyphejor")
-  :pin "576d237a46be79449a22e3a7912a3464d7b0c233")
+  :pin "a9c75a38ecd17e6628c5516c2534c6454f6db95e")
 
 
 (package! d-mode
-  :pin "199743df55c6bfce3cdb08405bd8519768c8dfa9")
+  :pin "024aca97d07e72bf3500fb6bf0cdf50c4992a741")
 
 (package! define-word
-  :pin "6e4a427503aef096484f88332962c346cdd10847")
+  :pin "31a8c67405afa99d0e25e7c86a4ee7ef84a808fe")
 
-(package! djvu :pin "cb89f97ee36a67c575903d5ba637180a96b3c7d9")
+(package! djvu :pin "3e4c7ab30114aa89127235bb9a3cabc5512450d2")
 
 (package! djvu3
   :recipe (:host github :repo "dalanicolai/djvu3") :pin "32e8a8bae9f9a62a512f598fae0af58470ec382f")
 
-(package! eaf
-  :recipe (:host github
-           :repo "emacs-eaf/emacs-application-framework"
-           :files ("*")
-           )
-  :pin "b2c5552a2d284baba818550432465da9277f0100"
-  )
+;; (package! eaf
+;;   :recipe (:host github
+;;            :repo "emacs-eaf/emacs-application-framework"
+;;            :files ("*")
+;;            )
+;;   :pin "9faaae34c9fa43edf68fe760743186cd8de6fde6"
+;;   )
 
-(package! eaf-browser
-  :recipe (:host github
-           :repo "emacs-eaf/eaf-browser"
-           :files ("*")
-           :pre-build ("npm" "install")
-           )
-  :pin "93dca1856b9328c855f08b3464474fa83ffe84b7"
-  )
+; (package! eaf-browser
+;   :recipe (:host github
+;            :repo "emacs-eaf/eaf-browser"
+;            :files ("*")
+;            :pre-build ("npm" "install")
+;            )
+;   :pin "5eaaef8dc980f1ae702a2807cf452aae62c079d0"
+;   )
 
 (package! eslintd-fix
   :recipe (:host github :repo "aaronjensen/eslintd-fix")
@@ -142,7 +131,7 @@
   :pin "08a779a821f8d32c1a1985d8d9eb6cf21646ce2e")
 
 (package! google-translate
-  :pin "0f7f48a09bca064999ecea03102a7c96f52cbd1b")
+  :pin "e60dd6eeb9cdb931d9d8bfbefc29a48ef9a21bd9")
 
 (package! flycheck-sml
   :recipe (:host github :repo "creichert/flycheck-sml")
@@ -157,7 +146,7 @@
 
 (package! howdoyou
   :recipe (:host github :repo "thanhvg/emacs-howdoyou")
-  :pin "a01971a7279c8a031de78513c004d7a09d293712")
+  :pin "f6c659a45f59a08546578c169524a12f0945c29b")
 
 (package! hungry-delete
   :pin "d919e555e5c13a2edf4570f3ceec84f0ade71657")
@@ -196,7 +185,7 @@
   :pin "6a72fa20e7be6e55c09b1bc9887ee09c5df28e45")
 
 (package! nov
-  :pin "587ff2fe25b0a75726f090001441bca76aa0ce4b")
+  :pin "cb5f45cbcfbcf263cdeb2d263eb15edefc8b07cb")
 
 (package! ob-javascript
   :recipe (:host github :repo "zweifisch/ob-javascript" :files ("*"))
@@ -211,35 +200,35 @@
   :pin "288703b897449f5110c9c76e78eb9a928ffc0dcd")
 
 (package! org-super-agenda
-  :pin "fb5e2ef277bc811a3b061106c99e4c47b6b86f80")
+  :pin "f4f528985397c833c870967884b013cf91a1da4a")
 
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion")
-  :pin "535e4681f2d7af20158f3b106503cfc3a07cbee8")
+  :pin "20cfc81a5651df5d356abdfb6eb1ff5ae3f76a1f")
 
 (package! org-ql
-  :pin "31aeb0a2505acf8044c07824888ddec7f3e529c1")
+  :pin "5f70636556bffca92d8ef8297ba3002a4ab5b52d")
 
-(package! org-web-tools :pin "b94a07add8558ef7b0666173dbb8a2554f1d41a6")
+(package! org-web-tools :pin "b5b7fee01eaac845ca80240f3a2d22d426179ce3")
 
 (package! paredit
   :recipe (:host github :repo "emacsmirror/paredit")
-  :pin "8330a41e8188fe18d3fa805bb9aa529f015318e8")
+  :pin "e4a67f4f23ba936b4bdc8d7e66bd8c6729064558")
 
 (package! powerthesaurus
   :recipe (:host github :repo "SavchenkoValeriy/emacs-powerthesaurus")
-  :pin "02c9d11a3f407023aa7c7b080bb9f8a5f5e7cd7a")
+  :pin "88bc5229cba1604c8f74db0a1456d99259d538cc")
 
 (package! reason-mode
   :recipe (:host github :repo "reasonml-editor/reason-mode")
   :pin "5690544a7091630e0ea0023bbbd57a733cea8bde")
 
 (package! robots-txt-mode
-  :pin "8bf67285a25a6756607354d184e36583f2847e7d")
+  :pin "0d79161dfece3920600ad155ab1cc1a59da06964")
 
 (package! sdcv
-  :recipe (:host github :repo "stardiviner/sdcv.el" :files ("sdcv.el"))
-  :pin "943ae3e90cc9a0a88a37cc710acd7424fd4defc4")
+  :recipe (:host github :repo "manateelazycat/sdcv")
+  )
 
 (package! shrface
   :recipe (:host github :repo "AloisJanicek/shrface" :branch "fix-regexp-vars")
@@ -268,7 +257,7 @@
   :pin "90e85d74899fc23d95798048cc0bbdb4bab9c1b7")
 
 (package! yankpad
-  :pin "6562d021cfc76b88a7b39b49adc44fcad835bd3f")
+  :pin "927e6d26956ac7219b8a69d641acf486854fba16")
 
 (package! zeal-at-point
   :recipe (:host github :repo "jinzhu/zeal-at-point")
