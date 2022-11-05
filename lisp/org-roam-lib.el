@@ -147,7 +147,7 @@ current org-roam directory reflecting changes in the linked directories.
       (org-roam-eval-capture-templates)
 
       ;; also create inbox file if doesn't exists yet
-      (org-roam-create-inbox-file)
+      ;; (org-roam-create-inbox-file)
 
       ;; also update agenda-files
       (+org-roam/refresh-agenda-list))))

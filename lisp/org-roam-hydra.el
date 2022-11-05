@@ -57,7 +57,7 @@
          (+org-roam-dailies-open-today)
          (org-roam-ivy-find-file))
    "journal jump")
-  ("I" (let ((org-roam-ivy--last-ivy-text "inbox ")
+  ("i" (let ((org-roam-ivy--last-ivy-text "inbox ")
              (current-prefix-arg '(4)))
          (org-roam-ivy-find-file))
    "inbox")
@@ -65,7 +65,7 @@
          (org-roam-ivy-find-file))
    "books")
   ("n" #'+org-roam/create-new-subdir "new subdir")
-  ("i" (lambda ()
+  ("I" (lambda ()
          (interactive)
          (+org-roam-create-index-file)
          (if current-prefix-arg
