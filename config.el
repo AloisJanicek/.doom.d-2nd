@@ -458,6 +458,7 @@ if running under WSL")
   )
 
 (use-package! eaf
+  :disabled
   :unless (or (aj-wsl-p)
               (not (display-graphic-p)))
   :commands eaf-open
