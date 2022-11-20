@@ -17,7 +17,7 @@ if running under WSL")
                            (expand-file-name (aj-get-wsl-user-name) (concat aj-wsl-win-root  "/Users/"))
                          (setq aj-home-base-dir (expand-file-name "~/"))))
 
-(defvar aj-reference-dir (expand-file-name "MEGAsync" aj-home-base-dir)
+(defvar aj-reference-dir (expand-file-name "MEGA" aj-home-base-dir)
   "Location of the Reference folder.")
 
 (defvar aj-library-dir "Libraries"
@@ -210,7 +210,7 @@ if running under WSL")
 (use-package! calibredb
   :commands calibredb
   :init
-  (setq calibredb-root-dir (expand-file-name "Technical" aj-calibre-path)
+  (setq calibredb-root-dir (expand-file-name "Primary" aj-calibre-path)
         calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
 
   (setq calibredb-library-alist `(,calibredb-root-dir))
